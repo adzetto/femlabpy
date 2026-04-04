@@ -15,6 +15,8 @@ manual/ch03_assembly_statics
 manual/ch04_materials
 manual/ch05_dynamics
 manual/ch06_periodic_io
+manual/ch07_advanced_examples
+manual/ch08_custom_elements
 api
 ```
 
