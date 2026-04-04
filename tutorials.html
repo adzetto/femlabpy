@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Tutorials &#8212; femlabpy 0.6.0 documentation</title>
+    <title>Tutorials &amp; Usage Manual &#8212; femlabpy 0.6.0 documentation</title>
   
   
   
@@ -41,6 +41,8 @@
     <script src="_static/documentation_options.js?v=8fa8b3e9"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -131,7 +133,7 @@
     
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="#">
-    Tutorials
+    Tutorials & Usage Manual
   </a>
 </li>
 
@@ -225,7 +227,7 @@
     
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="#">
-    Tutorials
+    Tutorials & Usage Manual
   </a>
 </li>
 
@@ -317,7 +319,7 @@
         <i class="fa-solid fa-home"></i>
       </a>
     </li>
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Tutorials</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Tutorials &amp; Usage Manual</span></li>
   </ul>
 </nav>
 </div>
@@ -334,180 +336,194 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="tutorials">
-<h1>Tutorials<a class="headerlink" href="#tutorials" title="Link to this heading">#</a></h1>
-<p>This page guides you through using femlabpy. You will learn how to build a mesh, apply loads, and solve finite element problems. We use short, practical code blocks.</p>
-<section id="installation">
-<h2>1. Installation<a class="headerlink" href="#installation" title="Link to this heading">#</a></h2>
-<p>First, install femlabpy and its mesh tools.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;femlabpy[mesh]&quot;</span>
-</pre></div>
-</div>
-<p>We recommend installing <code class="docutils literal notranslate"><span class="pre">gmsh</span></code> to create and load geometry.</p>
+  <section class="tex2jax_ignore mathjax_ignore" id="tutorials-usage-manual">
+<h1>Tutorials &amp; Usage Manual<a class="headerlink" href="#tutorials-usage-manual" title="Link to this heading">#</a></h1>
+<p>This manual explains how to build and solve finite element models using femlabpy. The workflow follows standard finite element procedures. We focus on how to define the model, assemble the matrices, and solve the equations.</p>
+<section id="core-variables">
+<h2>Core Variables<a class="headerlink" href="#core-variables" title="Link to this heading">#</a></h2>
+<p>All model data in femlabpy is stored in standard arrays. To use the library effectively, you should understand these five core matrices:</p>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">X</span></code> (Node Coordinates):</strong> Each row represents a node. For 2D problems, a row is <code class="docutils literal notranslate"><span class="pre">[x,</span> <span class="pre">y]</span></code>. The row index (1-based) is the global node number.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">T</span></code> (Topology):</strong> Each row represents an element. It contains the node numbers that make up the element, followed by a material property ID. For a 4-node quad, a row is <code class="docutils literal notranslate"><span class="pre">[node1,</span> <span class="pre">node2,</span> <span class="pre">node3,</span> <span class="pre">node4,</span> <span class="pre">prop_id]</span></code>.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">G</span></code> (Material Properties):</strong> Each row defines a set of material properties. The <code class="docutils literal notranslate"><span class="pre">prop_id</span></code> in the topology matrix points to a row in <code class="docutils literal notranslate"><span class="pre">G</span></code>.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">C</span></code> (Constraints):</strong> Defines prescribed displacements. A row is <code class="docutils literal notranslate"><span class="pre">[node_id,</span> <span class="pre">dof_index,</span> <span class="pre">prescribed_value]</span></code>.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">P</span></code> (Loads):</strong> Defines point loads. A row is <code class="docutils literal notranslate"><span class="pre">[node_id,</span> <span class="pre">dof_index,</span> <span class="pre">force_value]</span></code>.</p></li>
+</ul>
 </section>
 <hr class="docutils" />
-<section id="basic-static-analysis">
-<h2>2. Basic Static Analysis<a class="headerlink" href="#basic-static-analysis" title="Link to this heading">#</a></h2>
-<p>In this example, we model a cantilever beam fixed on the left and loaded on the right.</p>
-<section id="step-1-create-a-mesh">
-<h3>Step 1: Create a Mesh<a class="headerlink" href="#step-1-create-a-mesh" title="Link to this heading">#</a></h3>
-<p>You can create a mesh using the Gmsh Python API. We will make a 4x0.5 rectangle.</p>
+<section id="linear-static-analysis">
+<h2>1. Linear Static Analysis<a class="headerlink" href="#linear-static-analysis" title="Link to this heading">#</a></h2>
+<p>We will model a 2D cantilever beam. The beam is fixed on the left and subjected to a downward point load on the right.</p>
+<section id="model-generation">
+<h3>Model Generation<a class="headerlink" href="#model-generation" title="Link to this heading">#</a></h3>
+<p>First, we generate the nodes <code class="docutils literal notranslate"><span class="pre">X</span></code> and elements <code class="docutils literal notranslate"><span class="pre">T</span></code>. We use the <code class="docutils literal notranslate"><span class="pre">gmsh</span></code> Python API to create a 4.0 by 0.5 meter rectangular mesh.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">gmsh</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">femlabpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">fp</span>
 
+<span class="c1"># 1. Create a structured mesh using Gmsh</span>
 <span class="n">gmsh</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
 <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;beam&quot;</span><span class="p">)</span>
-
-<span class="c1"># Create a 4.0 by 0.5 rectangle</span>
 <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">occ</span><span class="o">.</span><span class="n">addRectangle</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
 <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">occ</span><span class="o">.</span><span class="n">synchronize</span><span class="p">()</span>
-
-<span class="c1"># Mesh it with structured quads</span>
-<span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">setRecombine</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># 2D surface 1</span>
+<span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">setRecombine</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># Force quadrilateral elements</span>
 <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
 <span class="n">gmsh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;beam.msh&quot;</span><span class="p">)</span>
 <span class="n">gmsh</span><span class="o">.</span><span class="n">finalize</span><span class="p">()</span>
-</pre></div>
-</div>
-</section>
-<section id="step-2-load-the-mesh">
-<h3>Step 2: Load the Mesh<a class="headerlink" href="#step-2-load-the-mesh" title="Link to this heading">#</a></h3>
-<p>Use femlabpy to read the <code class="docutils literal notranslate"><span class="pre">.msh</span></code> file.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">femlabpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">fp</span>
 
+<span class="c1"># 2. Load the mesh into femlabpy</span>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">load_gmsh2</span><span class="p">(</span><span class="s2">&quot;beam.msh&quot;</span><span class="p">)</span>
-
-<span class="c1"># Extract quad elements and node coordinates</span>
 <span class="n">T</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">quads</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
 <span class="n">X</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">positions</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">2</span><span class="p">]</span>
 
-<span class="n">nn</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># Number of nodes</span>
-<span class="n">dof</span> <span class="o">=</span> <span class="mi">2</span>          <span class="c1"># Degrees of freedom per node</span>
+<span class="n">nn</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># Total number of nodes</span>
+<span class="n">dof</span> <span class="o">=</span> <span class="mi">2</span>          <span class="c1"># Degrees of freedom per node (x and y)</span>
 </pre></div>
 </div>
 </section>
-<section id="step-3-properties-and-assembly">
-<h3>Step 3: Properties and Assembly<a class="headerlink" href="#step-3-properties-and-assembly" title="Link to this heading">#</a></h3>
-<p>Set the material table <code class="docutils literal notranslate"><span class="pre">G</span></code>. The order for 2D is: Young’s Modulus, Poisson’s Ratio, Plane Stress (1) or Strain (2), Thickness, Density.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># E=210GPa, nu=0.3, Plane Stress, t=0.1m, rho=7850kg/m3</span>
+<section id="material-properties-and-assembly">
+<h3>Material Properties and Assembly<a class="headerlink" href="#material-properties-and-assembly" title="Link to this heading">#</a></h3>
+<p>Next, we define the material and build the global stiffness matrix <code class="docutils literal notranslate"><span class="pre">K</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Material matrix G for 2D elements: [E, nu, type, thickness, density]</span>
+<span class="c1"># type = 1 means plane stress.</span>
 <span class="n">G</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">210e9</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">7850.0</span><span class="p">]])</span>
 
-<span class="c1"># Initialize empty stiffness matrix K and load vector p</span>
+<span class="c1"># Initialize the global stiffness matrix K and load vector p.</span>
+<span class="c1"># They are sized based on the number of nodes and degrees of freedom.</span>
 <span class="n">K</span><span class="p">,</span> <span class="n">p</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">nn</span><span class="p">,</span> <span class="n">dof</span><span class="p">)</span>
 
-<span class="c1"># Assemble global stiffness matrix</span>
+<span class="c1"># Assemble the stiffness matrix using the 4-node quad driver (kq4e).</span>
 <span class="n">K</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">kq4e</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">G</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
-<section id="step-4-boundary-conditions-and-solving">
-<h3>Step 4: Boundary Conditions and Solving<a class="headerlink" href="#step-4-boundary-conditions-and-solving" title="Link to this heading">#</a></h3>
-<p>Fix the left edge (x=0) and apply a downward force at the top right node.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Find nodes on the left edge</span>
-<span class="n">tol</span> <span class="o">=</span> <span class="mf">1e-6</span>
-<span class="n">left_nodes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">tol</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>  <span class="c1"># +1 because femlabpy uses 1-based node IDs</span>
+<section id="boundary-conditions-and-solving">
+<h3>Boundary Conditions and Solving<a class="headerlink" href="#boundary-conditions-and-solving" title="Link to this heading">#</a></h3>
+<p>We fix the left boundary and apply a load to the right boundary. The functions <code class="docutils literal notranslate"><span class="pre">setload</span></code> and <code class="docutils literal notranslate"><span class="pre">setbc</span></code> modify the global matrices in place.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">tol</span> <span class="o">=</span> <span class="mf">1e-6</span>
 
-<span class="c1"># Create constraint array C: [node_id, dof, value]</span>
+<span class="c1"># Find nodes on the left edge (x = 0)</span>
+<span class="n">left_nodes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">tol</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>  <span class="c1"># +1 for 1-based indexing</span>
+
+<span class="c1"># Build the constraint matrix C</span>
 <span class="n">C</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">left_nodes</span><span class="p">:</span>
-    <span class="n">C</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">n</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">])</span> <span class="c1"># fix X</span>
-    <span class="n">C</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">n</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">])</span> <span class="c1"># fix Y</span>
+    <span class="n">C</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">n</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">])</span> <span class="c1"># Fix displacement in X (dof 1)</span>
+    <span class="n">C</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">n</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">])</span> <span class="c1"># Fix displacement in Y (dof 2)</span>
 <span class="n">C</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">C</span><span class="p">)</span>
 
-<span class="c1"># Find top right node</span>
+<span class="c1"># Find the top-right node and apply a 1000 N downward load</span>
 <span class="n">right_nodes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">X</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">4.0</span> <span class="o">-</span> <span class="n">tol</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">X</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.5</span> <span class="o">-</span> <span class="n">tol</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
-<span class="n">P</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">right_nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mf">1000.0</span><span class="p">]])</span> <span class="c1"># -1000 N in Y direction</span>
+<span class="n">P</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">right_nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mf">1000.0</span><span class="p">]])</span>
 
-<span class="c1"># Apply loads and constraints</span>
+<span class="c1"># Apply loads to vector p</span>
 <span class="n">p</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">setload</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">dof</span><span class="p">)</span>
+
+<span class="c1"># Apply boundary conditions to K and p</span>
 <span class="n">K_bc</span><span class="p">,</span> <span class="n">p_bc</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">setbc</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">dof</span><span class="p">)</span>
 
-<span class="c1"># Solve the linear system</span>
+<span class="c1"># Solve the linear equation system (K * u = p)</span>
 <span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">K_bc</span><span class="p">,</span> <span class="n">p_bc</span><span class="p">)</span>
 
-<span class="c1"># The result &#39;u&#39; is a 1D array of displacements</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Max displacement: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">u</span><span class="p">)</span><span class="si">:</span><span class="s2">.6e</span><span class="si">}</span><span class="s2"> m&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Max vertical displacement: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">u</span><span class="p">)</span><span class="si">:</span><span class="s2">.6e</span><span class="si">}</span><span class="s2"> meters&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="post-processing">
+<h3>Post-processing<a class="headerlink" href="#post-processing" title="Link to this heading">#</a></h3>
+<p>To evaluate internal forces, stresses, and strains, we pass the displacement vector <code class="docutils literal notranslate"><span class="pre">u</span></code> back to the element driver <code class="docutils literal notranslate"><span class="pre">qq4e</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Evaluate internal forces (q), element stresses (S), and strains (E)</span>
+<span class="n">q</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">E</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">qq4e</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">p</span><span class="p">),</span> <span class="n">T</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">u</span><span class="p">)</span>
+
+<span class="c1"># Plot the deformed shape</span>
+<span class="n">fp</span><span class="o">.</span><span class="n">plotelem</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">X</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
 </section>
 <hr class="docutils" />
 <section id="dynamic-analysis">
-<h2>3. Dynamic Analysis<a class="headerlink" href="#dynamic-analysis" title="Link to this heading">#</a></h2>
-<p>You can also solve time-dependent problems. We use the same stiffness matrix <code class="docutils literal notranslate"><span class="pre">K</span></code> from above.</p>
+<h2>2. Dynamic Analysis<a class="headerlink" href="#dynamic-analysis" title="Link to this heading">#</a></h2>
+<p>femlabpy supports free vibration (modal) and forced vibration (time-history) analysis.</p>
 <section id="modal-analysis">
 <h3>Modal Analysis<a class="headerlink" href="#modal-analysis" title="Link to this heading">#</a></h3>
-<p>Find the natural frequencies and mode shapes.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Assemble mass matrix</span>
+<p>Modal analysis extracts the natural frequencies and mode shapes of the structure. It solves the generalized eigenvalue problem <span class="math notranslate nohighlight">\(K \phi = \omega^2 M \phi\)</span>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Assemble the global mass matrix M using the quad driver (mq4e)</span>
 <span class="n">M</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">K</span><span class="p">)</span>
 <span class="n">M</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">mq4e</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">G</span><span class="p">)</span>
 
-<span class="c1"># Solve for the first 3 modes</span>
+<span class="c1"># Solve for the first 3 natural modes</span>
+<span class="c1"># C_bc is required so the solver knows which DOFs are fixed</span>
 <span class="n">modal_result</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">solve_modal</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">n_modes</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">C_bc</span><span class="o">=</span><span class="n">C</span><span class="p">,</span> <span class="n">dof</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Frequencies (Hz):&quot;</span><span class="p">,</span> <span class="n">modal_result</span><span class="o">.</span><span class="n">freq_hz</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Natural frequencies (Hz):&quot;</span><span class="p">,</span> <span class="n">modal_result</span><span class="o">.</span><span class="n">freq_hz</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
 <section id="time-history-analysis-earthquake">
 <h3>Time-History Analysis (Earthquake)<a class="headerlink" href="#time-history-analysis-earthquake" title="Link to this heading">#</a></h3>
-<p>Apply a ground acceleration to the base.</p>
+<p>We can simulate an earthquake by applying a base acceleration to the structure. This is done using the implicit Newmark-beta time integrator.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">femlabpy.dynamics</span><span class="w"> </span><span class="kn">import</span> <span class="n">seismic_load</span><span class="p">,</span> <span class="n">solve_newmark</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">femlabpy.damping</span><span class="w"> </span><span class="kn">import</span> <span class="n">rayleigh_damping</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">femlabpy.damping</span><span class="w"> </span><span class="kn">import</span> <span class="n">rayleigh_coefficients</span><span class="p">,</span> <span class="n">rayleigh_damping</span>
 
-<span class="c1"># Create an effective seismic load for horizontal (X) shaking</span>
-<span class="c1"># inf_vec has 1.0 for X DOFs and 0.0 for Y DOFs</span>
+<span class="c1"># 1. Define the effective seismic load</span>
+<span class="c1"># The influence vector tells the solver which direction the ground shakes.</span>
+<span class="c1"># Here, we set 1.0 for all X degrees of freedom, and 0.0 for Y.</span>
 <span class="n">inf_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nn</span> <span class="o">*</span> <span class="n">dof</span><span class="p">)</span>
 <span class="n">inf_vec</span><span class="p">[</span><span class="mi">0</span><span class="p">::</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
 
-<span class="c1"># Assume accel_data is a numpy array of ground acceleration in m/s^2</span>
-<span class="n">dt</span> <span class="o">=</span> <span class="mf">0.01</span>
+<span class="c1"># accel_data is a 1D numpy array of ground acceleration (m/s^2)</span>
+<span class="n">dt</span> <span class="o">=</span> <span class="mf">0.01</span> 
 <span class="n">p_eff</span> <span class="o">=</span> <span class="n">seismic_load</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">inf_vec</span><span class="p">,</span> <span class="n">accel_data</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
 
-<span class="c1"># Add 5% Rayleigh damping based on the first two modes</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">femlabpy.damping</span><span class="w"> </span><span class="kn">import</span> <span class="n">rayleigh_coefficients</span>
-<span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">rayleigh_coefficients</span><span class="p">(</span><span class="n">modal_result</span><span class="o">.</span><span class="n">freq_hz</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">modal_result</span><span class="o">.</span><span class="n">freq_hz</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">)</span>
-<span class="n">C_damp</span> <span class="o">=</span> <span class="n">rayleigh_damping</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+<span class="c1"># 2. Define Rayleigh Damping</span>
+<span class="c1"># We anchor 5% critical damping to the first two natural frequencies.</span>
+<span class="n">f1</span><span class="p">,</span> <span class="n">f2</span> <span class="o">=</span> <span class="n">modal_result</span><span class="o">.</span><span class="n">freq_hz</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">modal_result</span><span class="o">.</span><span class="n">freq_hz</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span> <span class="o">=</span> <span class="n">rayleigh_coefficients</span><span class="p">(</span><span class="n">f1</span><span class="p">,</span> <span class="n">f2</span><span class="p">,</span> <span class="n">zeta1</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">zeta2</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span>
+<span class="n">C_damp</span> <span class="o">=</span> <span class="n">rayleigh_damping</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">)</span>
 
-<span class="c1"># Initial conditions</span>
+<span class="c1"># 3. Set initial conditions (start from rest)</span>
 <span class="n">u0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nn</span> <span class="o">*</span> <span class="n">dof</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
 <span class="n">v0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nn</span> <span class="o">*</span> <span class="n">dof</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
 
-<span class="c1"># Solve using implicit Newmark-beta</span>
+<span class="c1"># 4. Solve the transient equations</span>
 <span class="n">nsteps</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">accel_data</span><span class="p">)</span>
-<span class="n">result</span> <span class="o">=</span> <span class="n">solve_newmark</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">C_damp</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">p_eff</span><span class="p">,</span> <span class="n">u0</span><span class="p">,</span> <span class="n">v0</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">nsteps</span><span class="p">,</span> <span class="n">C_bc</span><span class="o">=</span><span class="n">C</span><span class="p">)</span>
+<span class="n">history</span> <span class="o">=</span> <span class="n">solve_newmark</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">C_damp</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">p_eff</span><span class="p">,</span> <span class="n">u0</span><span class="p">,</span> <span class="n">v0</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">nsteps</span><span class="p">,</span> <span class="n">C_bc</span><span class="o">=</span><span class="n">C</span><span class="p">)</span>
 
-<span class="c1"># result.u contains the displacement history</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Max dynamic roof displacement:&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">u</span><span class="p">)))</span>
+<span class="c1"># history.u is a 2D array of shape (nsteps+1, total_dofs)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Maximum dynamic roof displacement:&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">history</span><span class="o">.</span><span class="n">u</span><span class="p">)))</span>
 </pre></div>
 </div>
 </section>
 </section>
 <hr class="docutils" />
 <section id="periodic-boundaries-homogenization">
-<h2>4. Periodic Boundaries (Homogenization)<a class="headerlink" href="#periodic-boundaries-homogenization" title="Link to this heading">#</a></h2>
-<p>If you model a repeating unit cell (like a composite material), you must tie opposite boundaries together so they deform equally.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">femlabpy.periodic</span><span class="w"> </span><span class="kn">import</span> <span class="n">find_periodic_pairs</span><span class="p">,</span> <span class="n">solve_periodic</span><span class="p">,</span> <span class="n">homogenize</span>
+<h2>3. Periodic Boundaries (Homogenization)<a class="headerlink" href="#periodic-boundaries-homogenization" title="Link to this heading">#</a></h2>
+<p>If you are modeling a repeating unit cell (RVE) of a material, you must enforce periodic boundary conditions. This ensures that the opposite edges of the cell deform in exactly the same way.</p>
+<p>femlabpy provides tools to automatically find matching nodes on opposite boundaries and apply the necessary constraint equations.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">femlabpy.periodic</span><span class="w"> </span><span class="kn">import</span> <span class="n">find_periodic_pairs</span><span class="p">,</span> <span class="n">homogenize</span>
 
-<span class="c1"># 1. Find nodes on the left/right and bottom/top boundaries</span>
+<span class="c1"># 1. Identify the nodes on the boundary faces</span>
 <span class="n">left_nodes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">tol</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
 <span class="n">right_nodes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">tol</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
 <span class="n">bottom_nodes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">tol</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
 <span class="n">top_nodes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">tol</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
 
-<span class="c1"># 2. Pair them up</span>
+<span class="c1"># 2. Link the opposite boundaries</span>
+<span class="c1"># This matches nodes by their Y-coordinate (for left/right) </span>
+<span class="c1"># and X-coordinate (for bottom/top)</span>
 <span class="n">lr_pairs</span> <span class="o">=</span> <span class="n">find_periodic_pairs</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">left_nodes</span><span class="p">,</span> <span class="n">right_nodes</span><span class="p">)</span>
 <span class="n">bt_pairs</span> <span class="o">=</span> <span class="n">find_periodic_pairs</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">bottom_nodes</span><span class="p">,</span> <span class="n">top_nodes</span><span class="p">)</span>
 <span class="n">all_pairs</span> <span class="o">=</span> <span class="n">lr_pairs</span> <span class="o">+</span> <span class="n">bt_pairs</span>
 
-<span class="c1"># 3. Compute effective stiffness (C_eff) of the unit cell</span>
-<span class="c1"># This applies 3 macro-strain states and computes the average stress.</span>
+<span class="c1"># 3. Compute the effective homogenized stiffness matrix</span>
+<span class="c1"># This function applies macro-strains to the unit cell and averages the resulting stress.</span>
 <span class="n">C_eff</span> <span class="o">=</span> <span class="n">homogenize</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">all_pairs</span><span class="p">,</span> <span class="n">dof</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Effective Homogenized Modulus Matrix:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Effective 3x3 Modulus Matrix:&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">C_eff</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>These simple tools allow you to build scripts for research, testing, or production.</p>
 </section>
 </section>
 
@@ -558,20 +574,20 @@
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation">1. Installation</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-static-analysis">2. Basic Static Analysis</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-1-create-a-mesh">Step 1: Create a Mesh</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-2-load-the-mesh">Step 2: Load the Mesh</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-3-properties-and-assembly">Step 3: Properties and Assembly</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-4-boundary-conditions-and-solving">Step 4: Boundary Conditions and Solving</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core-variables">Core Variables</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#linear-static-analysis">1. Linear Static Analysis</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#model-generation">Model Generation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#material-properties-and-assembly">Material Properties and Assembly</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#boundary-conditions-and-solving">Boundary Conditions and Solving</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#post-processing">Post-processing</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dynamic-analysis">3. Dynamic Analysis</a><ul class="nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dynamic-analysis">2. Dynamic Analysis</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#modal-analysis">Modal Analysis</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#time-history-analysis-earthquake">Time-History Analysis (Earthquake)</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#periodic-boundaries-homogenization">4. Periodic Boundaries (Homogenization)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#periodic-boundaries-homogenization">3. Periodic Boundaries (Homogenization)</a></li>
 </ul>
   </nav></div>
 
