@@ -2,7 +2,7 @@
 
 Welcome to the **femlabpy** documentation!
 
-femlabpy is a powerful, pure-Python finite element library designed for both educational clarity and production-grade performance. It brings the intuitive API of MATLAB/Scilab FemLab into the modern Python scientific ecosystem.
+femlabpy is a pure-Python finite element library. It brings the array-based approach of MATLAB/Scilab FemLab into the Python scientific ecosystem.
 
 ```{toctree}
 :maxdepth: 2
@@ -23,7 +23,7 @@ pip install femlabpy
 - **Elements:** Truss, Plane Stress/Strain (T3, Q4), 3D Solids (T4, H8).
 - **Material Models:** Elastic, von Mises Plasticity, Drucker-Prager.
 - **Dynamic Analysis:** Modal extraction, Newmark-beta, HHT-alpha time-history integration.
-- **Advanced Tools:** Periodic boundary conditions for homogenization.
-- **I/O:** Full `gmsh` support for loading industrial-scale meshes.
+- **Boundary Conditions:** Standard fixities and periodic boundaries for homogenization.
+- **I/O:** `gmsh` support for loading 2D and 3D meshes.
 
-Check out the [Tutorials](tutorials.md) or the detailed [API Reference](api.rst) for more!
+Check out the [Tutorials](tutorials.md) or the [API Reference](api.rst) to get started.
