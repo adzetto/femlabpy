@@ -1,0 +1,913 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Mesh I/O, Data Types, and Helpers &#8212; femlabpy 0.6.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=7f76b32a3354e82990f2" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=7f76b32a3354e82990f2" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=7f76b32a3354e82990f2"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=7f76b32a3354e82990f2" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=7f76b32a3354e82990f2" />
+
+    <script src="../_static/documentation_options.js?v=8fa8b3e9"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'theory/10_io_mesh';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="API Reference" href="../api.html" />
+    <link rel="prev" title="Chapter 9: Eigenvalue Problems and Periodic Boundaries" href="09_modal_periodic.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">femlabpy 0.6.0 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../tutorials.html">
+    Tutorials & Usage Manual
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../manual/ch01_fundamentals.html">
+    Chapter 1: Fundamentals & Data Structures
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../manual/ch02_elements.html">
+    Chapter 2: Element Library
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../manual/ch03_assembly_statics.html">
+    Chapter 3: Assembly & Constraints
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../manual/ch04_materials.html">
+    Chapter 4: Material Models
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../manual/ch05_dynamics.html">
+    Chapter 5: Structural Dynamics Theory & Time Integration
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../manual/ch06_periodic_io.html">
+    Chapter 6: Periodic Boundaries & I/O
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../manual/ch07_advanced_examples.html">
+    Chapter 7: Advanced Workflows & Examples
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../manual/ch08_custom_elements.html">
+    Chapter 8: Custom Element Development
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../manual/ch09_dynamic_workflows.html">
+    Chapter 9: Advanced Dynamic Workflows
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="01_core_assembly.html">
+    Global Matrix Assembly in Finite Element Analysis
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="02_boundary_loads.html">
+    Chapter 2: Boundary Conditions and Loads
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="03_1d_bars.html">
+    Chapter 3: 1D Bar Elements (Linear & Nonlinear)
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="04_2d_triangles.html">
+    2D Triangular Elements (CST)
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="05_2d_quads.html">
+    Chapter 5: 2D Isoparametric Quadrilateral Elements
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="06_3d_solids.html">
+    3D Solid Elements: Tetrahedrons and Hexahedrons
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="07_plasticity.html">
+    Chapter 7: Constitutive Models & Plasticity
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="08_dynamics.html">
+    Structural Dynamics and Time Integration
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="09_modal_periodic.html">
+    Chapter 9: Eigenvalue Problems and Periodic Boundaries
+  </a>
+</li>
+
+
+<li class=" current active">
+  <a class="nav-link dropdown-item nav-internal" href="#">
+    Mesh I/O, Data Types, and Helpers
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../api.html">
+    API Reference
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/adzetto/femlabpy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../tutorials.html">
+    Tutorials & Usage Manual
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../manual/ch01_fundamentals.html">
+    Chapter 1: Fundamentals & Data Structures
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../manual/ch02_elements.html">
+    Chapter 2: Element Library
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../manual/ch03_assembly_statics.html">
+    Chapter 3: Assembly & Constraints
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../manual/ch04_materials.html">
+    Chapter 4: Material Models
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../manual/ch05_dynamics.html">
+    Chapter 5: Structural Dynamics Theory & Time Integration
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../manual/ch06_periodic_io.html">
+    Chapter 6: Periodic Boundaries & I/O
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../manual/ch07_advanced_examples.html">
+    Chapter 7: Advanced Workflows & Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../manual/ch08_custom_elements.html">
+    Chapter 8: Custom Element Development
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../manual/ch09_dynamic_workflows.html">
+    Chapter 9: Advanced Dynamic Workflows
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="01_core_assembly.html">
+    Global Matrix Assembly in Finite Element Analysis
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="02_boundary_loads.html">
+    Chapter 2: Boundary Conditions and Loads
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="03_1d_bars.html">
+    Chapter 3: 1D Bar Elements (Linear & Nonlinear)
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="04_2d_triangles.html">
+    2D Triangular Elements (CST)
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="05_2d_quads.html">
+    Chapter 5: 2D Isoparametric Quadrilateral Elements
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="06_3d_solids.html">
+    3D Solid Elements: Tetrahedrons and Hexahedrons
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="07_plasticity.html">
+    Chapter 7: Constitutive Models & Plasticity
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="08_dynamics.html">
+    Structural Dynamics and Time Integration
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="09_modal_periodic.html">
+    Chapter 9: Eigenvalue Problems and Periodic Boundaries
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#">
+    Mesh I/O, Data Types, and Helpers
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/adzetto/femlabpy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar"><svg class="pst-icon svg-inline--fa" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"></div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Mesh I/O, Data Types, and Helpers</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="mesh-i-o-data-types-and-helpers">
+<h1>Mesh I/O, Data Types, and Helpers<a class="headerlink" href="#mesh-i-o-data-types-and-helpers" title="Link to this heading">#</a></h1>
+<p>In computational mechanics, finite element analysis (FEA) heavily relies on robust and efficient representation of mesh data and sparse linear algebra operations. The <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> framework is designed to bridge the gap between traditional, legacy MATLAB implementations and modern, Pythonic object-oriented paradigms.</p>
+<p>This chapter provides a comprehensive overview of how mesh topologies are imported, the data structures used to store them, and the underlying mathematical and programmatic helpers that facilitate the assembly and solution of the resulting finite element systems.</p>
+<hr class="docutils" />
+<section id="the-gmsh-file-format-msh">
+<h2>1. The Gmsh File Format (<code class="docutils literal notranslate"><span class="pre">.msh</span></code>)<a class="headerlink" href="#the-gmsh-file-format-msh" title="Link to this heading">#</a></h2>
+<p>The open-source mesh generator <strong>Gmsh</strong> is the standard source of finite element meshes for <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code>. Over time, Gmsh has evolved its <code class="docutils literal notranslate"><span class="pre">.msh</span></code> file format. <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> must accommodate both the legacy 2.2 format and the modern 4.1 format.</p>
+<section id="the-legacy-v2-2-format">
+<h3>1.1 The Legacy v2.2 Format<a class="headerlink" href="#the-legacy-v2-2-format" title="Link to this heading">#</a></h3>
+<p>The Gmsh v2.2 format is characterized by its simple ASCII block structure, which is easily parsed by line-by-line readers. The file is divided into distinct sections such as <code class="docutils literal notranslate"><span class="pre">$MeshFormat</span></code>, <code class="docutils literal notranslate"><span class="pre">$PhysicalNames</span></code>, <code class="docutils literal notranslate"><span class="pre">$Nodes</span></code>, and <code class="docutils literal notranslate"><span class="pre">$Elements</span></code>.</p>
+<p>A typical v2.2 node section looks like this:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$Nodes
+number_of_nodes
+node_number x-coord y-coord z-coord
+...
+$EndNodes
+</pre></div>
+</div>
+<p>The coordinate vector for a node <span class="math notranslate nohighlight">\(i\)</span> is denoted as <span class="math notranslate nohighlight">\(\mathbf{x}_i \in \mathbb{R}^3\)</span>.</p>
+<p>The element section defines the topological connectivity:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$Elements
+number_of_elements
+element_number element_type number_of_tags &lt;tags&gt; node_number_list
+...
+$EndElements
+</pre></div>
+</div>
+<p>Here, the <code class="docutils literal notranslate"><span class="pre">element_type</span></code> corresponds to standardized integer IDs (e.g., <code class="docutils literal notranslate"><span class="pre">1</span></code> for lines, <code class="docutils literal notranslate"><span class="pre">2</span></code> for triangles, <code class="docutils literal notranslate"><span class="pre">3</span></code> for quadrilaterals, <code class="docutils literal notranslate"><span class="pre">4</span></code> for tetrahedrons). The <code class="docutils literal notranslate"><span class="pre">tags</span></code> usually encapsulate the physical and elementary regions, representing the material property IDs or boundary condition labels.</p>
+</section>
+<section id="the-modern-v4-1-format">
+<h3>1.2 The Modern v4.1 Format<a class="headerlink" href="#the-modern-v4-1-format" title="Link to this heading">#</a></h3>
+<p>The modern Gmsh v4.1 format introduces block-based data storage, which significantly improves read/write performance for extremely large meshes. However, the block-based layout is incompatible with simple line-by-line procedural parsers written for v2.2.</p>
+<p>To natively support v4.1 without rewriting the entire legacy logic, <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> employs a strategic workaround: if the Python <code class="docutils literal notranslate"><span class="pre">gmsh</span></code> SDK is installed, <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> loads the v4.1 mesh into the SDK’s internal memory and temporarily re-emits it as a v2.2 legacy ASCII file. This guarantees backward compatibility and unified parsing behavior:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">gmsh</span>
+<span class="n">gmsh</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">readConfigFiles</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">gmsh</span><span class="o">.</span><span class="n">option</span><span class="o">.</span><span class="n">setNumber</span><span class="p">(</span><span class="s2">&quot;Mesh.MshFileVersion&quot;</span><span class="p">,</span> <span class="mf">2.2</span><span class="p">)</span>
+<span class="n">gmsh</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;mesh_v41.msh&quot;</span><span class="p">)</span>
+<span class="n">gmsh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;legacy_v22_ascii.msh&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<hr class="docutils" />
+<section id="parsing-meshes-with-load-gmsh2">
+<h2>2. Parsing Meshes with <code class="docutils literal notranslate"><span class="pre">load_gmsh2</span></code><a class="headerlink" href="#parsing-meshes-with-load-gmsh2" title="Link to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">load_gmsh2</span></code> parser in <code class="docutils literal notranslate"><span class="pre">femlabpy.io.gmsh</span></code> is responsible for translating the <code class="docutils literal notranslate"><span class="pre">.msh</span></code> text structure into structured numpy arrays.</p>
+<section id="physical-groups-and-topology-arrays">
+<h3>2.1 Physical Groups and Topology Arrays<a class="headerlink" href="#physical-groups-and-topology-arrays" title="Link to this heading">#</a></h3>
+<p>A critical step in FEA preprocessing is associating specific regions of the mesh with physical properties (e.g., Young’s modulus, mass density). In Gmsh, these are defined via “Physical Groups”.</p>
+<p>When <code class="docutils literal notranslate"><span class="pre">load_gmsh2</span></code> processes an element row, it extracts the tags. In the v2.2 format, the first tag in the <code class="docutils literal notranslate"><span class="pre">&lt;tags&gt;</span></code> list corresponds to the Physical Group ID.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">load_gmsh2</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GmshMesh</span><span class="p">:</span>
+    <span class="c1"># ...</span>
+    <span class="c1"># Within the element parsing loop:</span>
+    <span class="c1"># tags = element_parts[3 : 3 + num_tags]</span>
+    <span class="c1"># The first tag is typically the Physical Group ID</span>
+</pre></div>
+</div>
+<p>This Physical Group ID directly maps to the material property IDs in the topology array <code class="docutils literal notranslate"><span class="pre">T</span></code>. For example, in a simple 2D triangle element, <code class="docutils literal notranslate"><span class="pre">T</span></code> is a row matrix where the first 3 columns are the node numbers, and the last column is the material property ID:
+$<span class="math notranslate nohighlight">\( T_e = [n_1, n_2, n_3, \text{PhysicalGroupID}] \)</span>$</p>
+<p><code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> organizes elements by type and appends this tag to the explicit topology arrays, enabling quick lookup of material properties during integration.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="the-gmshmesh-data-structure">
+<h2>3. The <code class="docutils literal notranslate"><span class="pre">GmshMesh</span></code> Data Structure<a class="headerlink" href="#the-gmshmesh-data-structure" title="Link to this heading">#</a></h2>
+<p>To manage the parsed data, <code class="docutils literal notranslate"><span class="pre">femlabpy.types</span></code> implements the <code class="docutils literal notranslate"><span class="pre">GmshMesh</span></code> dataclass. This structure bridges the gap between modern Python attributes and the legacy MATLAB variables.</p>
+<section id="nodal-and-element-arrays">
+<h3>3.1 Nodal and Element Arrays<a class="headerlink" href="#nodal-and-element-arrays" title="Link to this heading">#</a></h3>
+<p>At its core, <code class="docutils literal notranslate"><span class="pre">GmshMesh</span></code> maintains the nodal positions <span class="math notranslate nohighlight">\(\mathbf{X} \in \mathbb{R}^{N_{nodes} \times 3}\)</span>, and aggregated arrays like <code class="docutils literal notranslate"><span class="pre">element_infos</span></code> and <code class="docutils literal notranslate"><span class="pre">element_tags</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">GmshMesh</span><span class="p">:</span>
+    <span class="n">positions</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>          <span class="c1"># Shape: (N, 3)</span>
+    <span class="n">element_infos</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>      <span class="c1"># Element ID, Type, Tag count, Dimension</span>
+    <span class="n">element_tags</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>       <span class="c1"># Tag values</span>
+    <span class="n">element_nodes</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>      <span class="c1"># Connectivity</span>
+    <span class="c1"># ...</span>
+</pre></div>
+</div>
+</section>
+<section id="explicit-element-topologies">
+<h3>3.2 Explicit Element Topologies<a class="headerlink" href="#explicit-element-topologies" title="Link to this heading">#</a></h3>
+<p>The class provides explicit, zero-padded numpy arrays for different element types:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">points</span></code>: 1-node points (Type 15)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">lines</span></code>: 2-node lines (Type 1)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">triangles</span></code>: 3-node triangles (Type 2)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">quads</span></code>: 4-node quadrilaterals (Type 3)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tets</span></code>: 4-node tetrahedrons (Type 4)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">hexa</span></code>: 8-node hexahedrons (Type 5)</p></li>
+</ul>
+<p>Each of these arrays holds the node numbers followed by the physical tag. For instance, the <code class="docutils literal notranslate"><span class="pre">triangles</span></code> array has a shape of <code class="docutils literal notranslate"><span class="pre">(N_triangles,</span> <span class="pre">4)</span></code>.</p>
+</section>
+<section id="legacy-aliases">
+<h3>3.3 Legacy Aliases<a class="headerlink" href="#legacy-aliases" title="Link to this heading">#</a></h3>
+<p>To maintain backward compatibility with classroom scripts that expect MATLAB variable names, <code class="docutils literal notranslate"><span class="pre">GmshMesh</span></code> uses a custom <code class="docutils literal notranslate"><span class="pre">__getattr__</span></code> implementation to provide upper-case aliases:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">mesh.POS</span></code> resolves to <code class="docutils literal notranslate"><span class="pre">mesh.positions</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mesh.TRIANGLES</span></code> resolves to <code class="docutils literal notranslate"><span class="pre">mesh.triangles</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mesh.nbTriangles</span></code> resolves to the number of rows in <code class="docutils literal notranslate"><span class="pre">mesh.triangles</span></code></p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="helper-functions-for-computational-mechanics">
+<h2>4. Helper Functions for Computational Mechanics<a class="headerlink" href="#helper-functions-for-computational-mechanics" title="Link to this heading">#</a></h2>
+<p>Once the mesh is loaded, <code class="docutils literal notranslate"><span class="pre">femlabpy._helpers</span></code> provides the essential building blocks for matrix assembly, degree-of-freedom mapping, and linear system solving.</p>
+<section id="array-coercion">
+<h3>4.1 Array Coercion<a class="headerlink" href="#array-coercion" title="Link to this heading">#</a></h3>
+<p>In Python, sequences can take many forms (lists, tuples, raw numpy arrays). FEA routines require strict dimensional and datatype constraints.</p>
+<p><strong><code class="docutils literal notranslate"><span class="pre">as_float_array</span></code></strong>: Coerces any array-like structure into a floating-point numpy array. It uses <code class="docutils literal notranslate"><span class="pre">dtype=float</span></code> internally.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">femlabpy._helpers</span><span class="w"> </span><span class="kn">import</span> <span class="n">as_float_array</span>
+<span class="n">node_coords</span> <span class="o">=</span> <span class="n">as_float_array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>
+</pre></div>
+</div>
+<p><strong><code class="docutils literal notranslate"><span class="pre">as_column</span></code></strong>: Specifically reshapes the input to a 2D column vector <span class="math notranslate nohighlight">\(\mathbf{v} \in \mathbb{R}^{n \times 1}\)</span>, which is critical when assembling force vectors <span class="math notranslate nohighlight">\(\mathbf{F}\)</span>.</p>
+</section>
+<section id="matrix-operations-and-sparsity">
+<h3>4.2 Matrix Operations and Sparsity<a class="headerlink" href="#matrix-operations-and-sparsity" title="Link to this heading">#</a></h3>
+<p>FEA generates large, highly sparse stiffness matrices <span class="math notranslate nohighlight">\(\mathbf{K}\)</span>. Knowing whether a matrix is dense or sparse dictates how operations like matrix factorization and solution are handled.</p>
+<p><strong><code class="docutils literal notranslate"><span class="pre">is_sparse</span></code></strong>: Uses <code class="docutils literal notranslate"><span class="pre">scipy.sparse.issparse</span></code> to verify if a given matrix is sparse.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">femlabpy._helpers</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_sparse</span><span class="p">,</span> <span class="n">zeros_matrix</span>
+<span class="n">K</span> <span class="o">=</span> <span class="n">zeros_matrix</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="n">use_sparse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">is_sparse</span><span class="p">(</span><span class="n">K</span><span class="p">))</span>  <span class="c1"># Returns: True</span>
+</pre></div>
+</div>
+</section>
+<section id="solving-linear-systems">
+<h3>4.3 Solving Linear Systems<a class="headerlink" href="#solving-linear-systems" title="Link to this heading">#</a></h3>
+<p>The core of any finite element code is solving the algebraic system:
+$<span class="math notranslate nohighlight">\( \mathbf{K} \mathbf{U} = \mathbf{F} \)</span><span class="math notranslate nohighlight">\(
+where \)</span>\mathbf{K}<span class="math notranslate nohighlight">\( is the global stiffness matrix, \)</span>\mathbf{U}<span class="math notranslate nohighlight">\( is the vector of nodal displacements, and \)</span>\mathbf{F}$ is the global force vector.</p>
+<p><code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> provides the <strong><code class="docutils literal notranslate"><span class="pre">solve_linear_system</span></code></strong> function to handle this generically. It checks the sparsity of <span class="math notranslate nohighlight">\(\mathbf{K}\)</span> and routes the calculation to the most appropriate solver:</p>
+<ul class="simple">
+<li><p>For <strong>sparse</strong> matrices, it uses <code class="docutils literal notranslate"><span class="pre">scipy.sparse.linalg.spsolve</span></code>.</p></li>
+<li><p>For <strong>dense</strong> matrices, it uses <code class="docutils literal notranslate"><span class="pre">numpy.linalg.solve</span></code>.</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">femlabpy._helpers</span><span class="w"> </span><span class="kn">import</span> <span class="n">solve_linear_system</span><span class="p">,</span> <span class="n">zeros_vector</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scipy.sparse</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sp</span>
+
+<span class="c1"># Assemble a simple system</span>
+<span class="n">K_sparse</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;csc&quot;</span><span class="p">)</span> <span class="o">*</span> <span class="mf">2.0</span>
+<span class="n">F</span> <span class="o">=</span> <span class="n">as_column</span><span class="p">([</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">20.0</span><span class="p">,</span> <span class="mf">30.0</span><span class="p">])</span>
+
+<span class="c1"># Solve the system</span>
+<span class="n">U</span> <span class="o">=</span> <span class="n">solve_linear_system</span><span class="p">(</span><span class="n">K_sparse</span><span class="p">,</span> <span class="n">F</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">U</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span> <span class="c1"># Outputs: [ 5. 10. 15.]</span>
+</pre></div>
+</div>
+<p>For tiny classroom examples, the legacy MATLAB behavior involved fallback heuristics based on the condition number of the system. <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> implements <code class="docutils literal notranslate"><span class="pre">solve_legacy_symmetric_system</span></code> which gracefully falls back to <code class="docutils literal notranslate"><span class="pre">scipy.linalg.solve</span></code> with <code class="docutils literal notranslate"><span class="pre">assume_a='pos'</span></code> (Cholesky decomposition) or <code class="docutils literal notranslate"><span class="pre">'sym'</span></code> (symmetric indefinite factorization) depending on the evaluated matrix condition.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="summary">
+<h2>5. Summary<a class="headerlink" href="#summary" title="Link to this heading">#</a></h2>
+<p>The infrastructure laid out in <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> perfectly encapsulates the raw strings of a <code class="docutils literal notranslate"><span class="pre">.msh</span></code> file into highly optimized, algebraically-ready array structures. By leveraging <code class="docutils literal notranslate"><span class="pre">GmshMesh</span></code> and the robust numeric helpers, engineers can abstract away file I/O and topological parsing, focusing solely on the assembly of the stiffness operators and the mathematical formulations of computational mechanics.</p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="09_modal_periodic.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Chapter 9: Eigenvalue Problems and Periodic Boundaries</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../api.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">API Reference</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-gmsh-file-format-msh">1. The Gmsh File Format (<code class="docutils literal notranslate"><span class="pre">.msh</span></code>)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-legacy-v2-2-format">1.1 The Legacy v2.2 Format</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-modern-v4-1-format">1.2 The Modern v4.1 Format</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#parsing-meshes-with-load-gmsh2">2. Parsing Meshes with <code class="docutils literal notranslate"><span class="pre">load_gmsh2</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#physical-groups-and-topology-arrays">2.1 Physical Groups and Topology Arrays</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-gmshmesh-data-structure">3. The <code class="docutils literal notranslate"><span class="pre">GmshMesh</span></code> Data Structure</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nodal-and-element-arrays">3.1 Nodal and Element Arrays</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#explicit-element-topologies">3.2 Explicit Element Topologies</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#legacy-aliases">3.3 Legacy Aliases</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#helper-functions-for-computational-mechanics">4. Helper Functions for Computational Mechanics</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#array-coercion">4.1 Array Coercion</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#matrix-operations-and-sparsity">4.2 Matrix Operations and Sparsity</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#solving-linear-systems">4.3 Solving Linear Systems</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">5. Summary</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../_sources/theory/10_io_mesh.md.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=7f76b32a3354e82990f2"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=7f76b32a3354e82990f2"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, femlabpy contributors.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.17.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
