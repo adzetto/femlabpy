@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>femlabpy.elements.triangles &#8212; femlabpy 0.6.0 documentation</title>
+    <title>Chapter 4: Material Models &#8212; femlabpy 0.6.0 documentation</title>
   
   
   
@@ -41,12 +41,14 @@
     <script src="../_static/documentation_options.js?v=8fa8b3e9"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/femlabpy.elements.triangles';</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'manual/ch04_materials';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="femlabpy.elements.solids" href="femlabpy.elements.solids.html" />
-    <link rel="prev" title="femlabpy.elements.quads" href="femlabpy.elements.quads.html" />
+    <link rel="next" title="Chapter 5: Structural Dynamics" href="ch05_dynamics.html" />
+    <link rel="prev" title="Chapter 3: Assembly &amp; Constraints" href="ch03_assembly_statics.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -137,28 +139,28 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../manual/ch01_fundamentals.html">
+  <a class="nav-link nav-internal" href="ch01_fundamentals.html">
     Chapter 1: Fundamentals & Data Structures
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../manual/ch02_elements.html">
+  <a class="nav-link nav-internal" href="ch02_elements.html">
     Chapter 2: Element Library
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../manual/ch03_assembly_statics.html">
+  <a class="nav-link nav-internal" href="ch03_assembly_statics.html">
     Chapter 3: Assembly & Constraints
   </a>
 </li>
 
 
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../manual/ch04_materials.html">
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#">
     Chapter 4: Material Models
   </a>
 </li>
@@ -172,20 +174,20 @@
                 <ul id="pst-nav-more-links" class="dropdown-menu">
                     
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../manual/ch05_dynamics.html">
+  <a class="nav-link dropdown-item nav-internal" href="ch05_dynamics.html">
     Chapter 5: Structural Dynamics
   </a>
 </li>
 
 
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../manual/ch06_periodic_io.html">
+  <a class="nav-link dropdown-item nav-internal" href="ch06_periodic_io.html">
     Chapter 6: Periodic Boundaries & I/O
   </a>
 </li>
 
 
-<li class=" current active">
+<li class=" ">
   <a class="nav-link dropdown-item nav-internal" href="../api.html">
     API Reference
   </a>
@@ -283,48 +285,48 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../manual/ch01_fundamentals.html">
+  <a class="nav-link nav-internal" href="ch01_fundamentals.html">
     Chapter 1: Fundamentals & Data Structures
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../manual/ch02_elements.html">
+  <a class="nav-link nav-internal" href="ch02_elements.html">
     Chapter 2: Element Library
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../manual/ch03_assembly_statics.html">
+  <a class="nav-link nav-internal" href="ch03_assembly_statics.html">
     Chapter 3: Assembly & Constraints
   </a>
 </li>
 
 
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../manual/ch04_materials.html">
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#">
     Chapter 4: Material Models
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../manual/ch05_dynamics.html">
+  <a class="nav-link nav-internal" href="ch05_dynamics.html">
     Chapter 5: Structural Dynamics
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../manual/ch06_periodic_io.html">
+  <a class="nav-link nav-internal" href="ch06_periodic_io.html">
     Chapter 6: Periodic Boundaries & I/O
   </a>
 </li>
 
 
-<li class="nav-item current active">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../api.html">
     API Reference
   </a>
@@ -372,21 +374,7 @@
 <nav class="bd-docs-nav bd-links"
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
-  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="femlabpy.core.html">femlabpy.core</a></li>
-<li class="toctree-l1"><a class="reference internal" href="femlabpy.assembly.html">femlabpy.assembly</a></li>
-<li class="toctree-l1"><a class="reference internal" href="femlabpy.boundary.html">femlabpy.boundary</a></li>
-<li class="toctree-l1"><a class="reference internal" href="femlabpy.dynamics.html">femlabpy.dynamics</a></li>
-<li class="toctree-l1"><a class="reference internal" href="femlabpy.damping.html">femlabpy.damping</a></li>
-<li class="toctree-l1"><a class="reference internal" href="femlabpy.modal.html">femlabpy.modal</a></li>
-<li class="toctree-l1"><a class="reference internal" href="femlabpy.periodic.html">femlabpy.periodic</a></li>
-<li class="toctree-l1"><a class="reference internal" href="femlabpy.materials.html">femlabpy.materials</a></li>
-<li class="toctree-l1"><a class="reference internal" href="femlabpy.elements.bars.html">femlabpy.elements.bars</a></li>
-<li class="toctree-l1"><a class="reference internal" href="femlabpy.elements.quads.html">femlabpy.elements.quads</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">femlabpy.elements.triangles</a></li>
-<li class="toctree-l1"><a class="reference internal" href="femlabpy.elements.solids.html">femlabpy.elements.solids</a></li>
-</ul>
-</div>
+  <div class="bd-toc-item navbar-nav"></div>
 </nav></div>
     </div>
   
@@ -425,10 +413,7 @@
         <i class="fa-solid fa-home"></i>
       </a>
     </li>
-    
-    <li class="breadcrumb-item"><a href="../api.html" class="nav-link">API Reference</a></li>
-    
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">femlabpy.elements.triangles</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Chapter 4: Material Models</span></li>
   </ul>
 </nav>
 </div>
@@ -445,44 +430,67 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="module-femlabpy.elements.triangles">
-<span id="femlabpy-elements-triangles"></span><h1>femlabpy.elements.triangles<a class="headerlink" href="#module-femlabpy.elements.triangles" title="Link to this heading">#</a></h1>
-<p class="rubric">Functions</p>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ket3e</span></code>(Xe, Ge)</p></td>
-<td><p>Compute the element stiffness matrix for a 3-node triangular element (CST).</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ket3p</span></code>(Xe, Ge)</p></td>
-<td><p>Compute the conductivity matrix for a 3-node scalar potential triangle.</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">kt3e</span></code>(K, T, X, G)</p></td>
-<td><p>Assemble T3 (CST) element stiffness matrices into global stiffness matrix.</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">kt3p</span></code>(K, T, X, G)</p></td>
-<td><p>Assemble T3 conductivity matrices into a global scalar system.</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">met3e</span></code>(Xe, Ge, *[, lumped])</p></td>
-<td><p>Compute the element mass matrix for a 3-node triangular (CST) element.</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">mt3e</span></code>(M, T, X, G, *[, lumped])</p></td>
-<td><p>Assemble T3 element mass matrices into the global mass matrix.</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">qet3e</span></code>(Xe, Ge, Ue)</p></td>
-<td><p>Compute stresses and strains for a single T3 element.</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">qet3p</span></code>(Xe, Ge, Ue)</p></td>
-<td><p>Recover gradients and fluxes for one 3-node scalar potential triangle.</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">qt3e</span></code>(q, T, X, G, u)</p></td>
-<td><p>Compute element stresses/strains for all T3 elements and assemble internal forces.</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">qt3p</span></code>(q, T, X, G, u)</p></td>
-<td><p>Recover T3 scalar gradients and assemble equivalent nodal fluxes.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
+  <section class="tex2jax_ignore mathjax_ignore" id="chapter-4-material-models">
+<h1>Chapter 4: Material Models<a class="headerlink" href="#chapter-4-material-models" title="Link to this heading">#</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> supports a variety of constitutive models, mapped through the material matrix <span class="math notranslate nohighlight">\(\mathbf{D}\)</span> relating stress to strain: <span class="math notranslate nohighlight">\(\sigma = \mathbf{D} \epsilon\)</span>. This chapter outlines the theoretical foundations for elasticity and plasticity implementations.</p>
+<section id="linear-elasticity">
+<h2>4.1 Linear Elasticity<a class="headerlink" href="#linear-elasticity" title="Link to this heading">#</a></h2>
+<p>For an isotropic linear elastic material, the compliance tensor depends solely on Young’s Modulus <span class="math notranslate nohighlight">\(E\)</span> and Poisson’s ratio <span class="math notranslate nohighlight">\(\nu\)</span>. In 2D formulations, we distinguish between two states:</p>
+<section id="plane-stress">
+<h3>Plane Stress<a class="headerlink" href="#plane-stress" title="Link to this heading">#</a></h3>
+<p>Assume <span class="math notranslate nohighlight">\(\sigma_z = \tau_{xz} = \tau_{yz} = 0\)</span>. The material stiffness matrix is:
+$<span class="math notranslate nohighlight">\( \mathbf{D} = \frac{E}{1 - \nu^2} \begin{bmatrix}
+1 &amp; \nu &amp; 0 \\
+\nu &amp; 1 &amp; 0 \\
+0 &amp; 0 &amp; \frac{1-\nu}{2}
+\end{bmatrix} \)</span>$</p>
+</section>
+<section id="plane-strain">
+<h3>Plane Strain<a class="headerlink" href="#plane-strain" title="Link to this heading">#</a></h3>
+<p>Assume <span class="math notranslate nohighlight">\(\epsilon_z = \gamma_{xz} = \gamma_{yz} = 0\)</span>. The material stiffness matrix is:
+$<span class="math notranslate nohighlight">\( \mathbf{D} = \frac{E}{(1+\nu)(1-2\nu)} \begin{bmatrix}
+1-\nu &amp; \nu &amp; 0 \\
+\nu &amp; 1-\nu &amp; 0 \\
+0 &amp; 0 &amp; \frac{1-2\nu}{2}
+\end{bmatrix} \)</span>$</p>
+</section>
+</section>
+<section id="von-mises-elastoplasticity">
+<h2>4.2 von Mises Elastoplasticity<a class="headerlink" href="#von-mises-elastoplasticity" title="Link to this heading">#</a></h2>
+<p>For ductile metals, the von Mises yield criterion is employed with isotropic hardening.</p>
+<section id="yield-function">
+<h3>Yield Function<a class="headerlink" href="#yield-function" title="Link to this heading">#</a></h3>
+<p>The yield function <span class="math notranslate nohighlight">\(f\)</span> defines the elastic limit based on the deviatoric stress invariants:
+$<span class="math notranslate nohighlight">\( f(\sigma, \bar{\epsilon}_p) = \sigma_{eq} - (\sigma_y + H \bar{\epsilon}_p) \le 0 \)</span><span class="math notranslate nohighlight">\(
+where \)</span>\sigma_{eq} = \sqrt{\frac{3}{2} \mathbf{s}:\mathbf{s}}<span class="math notranslate nohighlight">\( is the equivalent von Mises stress, \)</span>\mathbf{s}<span class="math notranslate nohighlight">\( is the deviatoric stress tensor, \)</span>\sigma_y<span class="math notranslate nohighlight">\( is the initial yield stress, \)</span>H<span class="math notranslate nohighlight">\( is the hardening modulus, and \)</span>\bar{\epsilon}_p$ is the accumulated equivalent plastic strain.</p>
+</section>
+<section id="radial-return-mapping-algorithm">
+<h3>Radial Return Mapping Algorithm<a class="headerlink" href="#radial-return-mapping-algorithm" title="Link to this heading">#</a></h3>
+<p>When the elastic trial stress violates the yield condition (<span class="math notranslate nohighlight">\(f_{trial} &gt; 0\)</span>), a backward-Euler integration scheme (Radial Return) is executed at the Gauss point level to return the stress to the yield surface:</p>
+<ol class="arabic simple">
+<li><p>Compute elastic trial stress: <span class="math notranslate nohighlight">\(\sigma_{trial} = \mathbf{D} \epsilon_{total}\)</span></p></li>
+<li><p>Compute trial deviatoric stress <span class="math notranslate nohighlight">\(\mathbf{s}_{trial}\)</span> and equivalent stress <span class="math notranslate nohighlight">\(q_{trial}\)</span>.</p></li>
+<li><p>Check yield condition. If plastic, compute the plastic multiplier increment <span class="math notranslate nohighlight">\(\Delta \gamma\)</span>:
+$<span class="math notranslate nohighlight">\( \Delta \gamma = \frac{q_{trial} - \sigma_y - H \bar{\epsilon}_p}{3G + H} \)</span><span class="math notranslate nohighlight">\(
+where \)</span>G = \frac{E}{2(1+\nu)}$ is the shear modulus.</p></li>
+<li><p>Update the stress tensor:
+$<span class="math notranslate nohighlight">\( \sigma_{n+1} = \mathbf{s}_{trial} \left( 1 - \frac{3G \Delta \gamma}{q_{trial}} \right) + p \mathbf{I} \)</span><span class="math notranslate nohighlight">\(
+where \)</span>p$ is the hydrostatic pressure.</p></li>
+<li><p>Update plastic strain: <span class="math notranslate nohighlight">\(\bar{\epsilon}_{p, n+1} = \bar{\epsilon}_{p, n} + \Delta \gamma\)</span>.</p></li>
+</ol>
+</section>
+<section id="consistent-tangent-modulus">
+<h3>Consistent Tangent Modulus<a class="headerlink" href="#consistent-tangent-modulus" title="Link to this heading">#</a></h3>
+<p>To preserve the quadratic convergence of the global Newton-Raphson iterations, the algorithmic consistent tangent stiffness <span class="math notranslate nohighlight">\(\mathbf{D}^{ep}\)</span> must be computed, modifying the elastic <span class="math notranslate nohighlight">\(\mathbf{D}\)</span> matrix based on the normal flow direction <span class="math notranslate nohighlight">\(\mathbf{n} = \frac{3}{2} \frac{\mathbf{s}}{q}\)</span>.</p>
+</section>
+</section>
+<section id="drucker-prager-plasticity">
+<h2>4.3 Drucker-Prager Plasticity<a class="headerlink" href="#drucker-prager-plasticity" title="Link to this heading">#</a></h2>
+<p>For soils and concrete, the yield strength depends heavily on hydrostatic pressure. The Drucker-Prager model approximates the Mohr-Coulomb failure surface using the invariants <span class="math notranslate nohighlight">\(I_1\)</span> (pressure) and <span class="math notranslate nohighlight">\(J_2\)</span> (deviatoric shear).</p>
+<div class="math notranslate nohighlight">
+\[ f(\sigma) = \sqrt{J_2} + \alpha I_1 - k \le 0 \]</div>
+<p>The parameters <span class="math notranslate nohighlight">\(\alpha\)</span> and <span class="math notranslate nohighlight">\(k\)</span> are derived from the internal friction angle <span class="math notranslate nohighlight">\(\phi\)</span> and cohesion <span class="math notranslate nohighlight">\(c\)</span>. The return mapping algorithm iteratively projects the trial stress back to the conical yield surface or to the cone apex if tension prevails.</p>
+</section>
 </section>
 
 
@@ -496,20 +504,20 @@
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="femlabpy.elements.quads.html"
+       href="ch03_assembly_statics.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">femlabpy.elements.quads</p>
+        <p class="prev-next-title">Chapter 3: Assembly &amp; Constraints</p>
       </div>
     </a>
     <a class="right-next"
-       href="femlabpy.elements.solids.html"
+       href="ch05_dynamics.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">femlabpy.elements.solids</p>
+        <p class="prev-next-title">Chapter 5: Structural Dynamics</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -525,9 +533,32 @@
 
 
   <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#linear-elasticity">4.1 Linear Elasticity</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plane-stress">Plane Stress</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plane-strain">Plane Strain</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#von-mises-elastoplasticity">4.2 von Mises Elastoplasticity</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#yield-function">Yield Function</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#radial-return-mapping-algorithm">Radial Return Mapping Algorithm</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#consistent-tangent-modulus">Consistent Tangent Modulus</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#drucker-prager-plasticity">4.3 Drucker-Prager Plasticity</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
 
   <div class="tocsection sourcelink">
-    <a href="../_sources/generated/femlabpy.elements.triangles.rst.txt">
+    <a href="../_sources/manual/ch04_materials.md.txt">
       <i class="fa-solid fa-file-lines"></i> Show Source
     </a>
   </div>

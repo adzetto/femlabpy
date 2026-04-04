@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>femlabpy.elements.triangles &#8212; femlabpy 0.6.0 documentation</title>
+    <title>Chapter 6: Periodic Boundaries &amp; I/O &#8212; femlabpy 0.6.0 documentation</title>
   
   
   
@@ -41,12 +41,14 @@
     <script src="../_static/documentation_options.js?v=8fa8b3e9"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/femlabpy.elements.triangles';</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'manual/ch06_periodic_io';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="femlabpy.elements.solids" href="femlabpy.elements.solids.html" />
-    <link rel="prev" title="femlabpy.elements.quads" href="femlabpy.elements.quads.html" />
+    <link rel="next" title="API Reference" href="../api.html" />
+    <link rel="prev" title="Chapter 5: Structural Dynamics" href="ch05_dynamics.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -137,28 +139,28 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../manual/ch01_fundamentals.html">
+  <a class="nav-link nav-internal" href="ch01_fundamentals.html">
     Chapter 1: Fundamentals & Data Structures
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../manual/ch02_elements.html">
+  <a class="nav-link nav-internal" href="ch02_elements.html">
     Chapter 2: Element Library
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../manual/ch03_assembly_statics.html">
+  <a class="nav-link nav-internal" href="ch03_assembly_statics.html">
     Chapter 3: Assembly & Constraints
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../manual/ch04_materials.html">
+  <a class="nav-link nav-internal" href="ch04_materials.html">
     Chapter 4: Material Models
   </a>
 </li>
@@ -172,20 +174,20 @@
                 <ul id="pst-nav-more-links" class="dropdown-menu">
                     
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../manual/ch05_dynamics.html">
+  <a class="nav-link dropdown-item nav-internal" href="ch05_dynamics.html">
     Chapter 5: Structural Dynamics
   </a>
 </li>
 
 
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../manual/ch06_periodic_io.html">
+<li class=" current active">
+  <a class="nav-link dropdown-item nav-internal" href="#">
     Chapter 6: Periodic Boundaries & I/O
   </a>
 </li>
 
 
-<li class=" current active">
+<li class=" ">
   <a class="nav-link dropdown-item nav-internal" href="../api.html">
     API Reference
   </a>
@@ -283,48 +285,48 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../manual/ch01_fundamentals.html">
+  <a class="nav-link nav-internal" href="ch01_fundamentals.html">
     Chapter 1: Fundamentals & Data Structures
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../manual/ch02_elements.html">
+  <a class="nav-link nav-internal" href="ch02_elements.html">
     Chapter 2: Element Library
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../manual/ch03_assembly_statics.html">
+  <a class="nav-link nav-internal" href="ch03_assembly_statics.html">
     Chapter 3: Assembly & Constraints
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../manual/ch04_materials.html">
+  <a class="nav-link nav-internal" href="ch04_materials.html">
     Chapter 4: Material Models
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../manual/ch05_dynamics.html">
+  <a class="nav-link nav-internal" href="ch05_dynamics.html">
     Chapter 5: Structural Dynamics
   </a>
 </li>
 
 
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../manual/ch06_periodic_io.html">
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#">
     Chapter 6: Periodic Boundaries & I/O
   </a>
 </li>
 
 
-<li class="nav-item current active">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../api.html">
     API Reference
   </a>
@@ -372,21 +374,7 @@
 <nav class="bd-docs-nav bd-links"
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
-  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="femlabpy.core.html">femlabpy.core</a></li>
-<li class="toctree-l1"><a class="reference internal" href="femlabpy.assembly.html">femlabpy.assembly</a></li>
-<li class="toctree-l1"><a class="reference internal" href="femlabpy.boundary.html">femlabpy.boundary</a></li>
-<li class="toctree-l1"><a class="reference internal" href="femlabpy.dynamics.html">femlabpy.dynamics</a></li>
-<li class="toctree-l1"><a class="reference internal" href="femlabpy.damping.html">femlabpy.damping</a></li>
-<li class="toctree-l1"><a class="reference internal" href="femlabpy.modal.html">femlabpy.modal</a></li>
-<li class="toctree-l1"><a class="reference internal" href="femlabpy.periodic.html">femlabpy.periodic</a></li>
-<li class="toctree-l1"><a class="reference internal" href="femlabpy.materials.html">femlabpy.materials</a></li>
-<li class="toctree-l1"><a class="reference internal" href="femlabpy.elements.bars.html">femlabpy.elements.bars</a></li>
-<li class="toctree-l1"><a class="reference internal" href="femlabpy.elements.quads.html">femlabpy.elements.quads</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">femlabpy.elements.triangles</a></li>
-<li class="toctree-l1"><a class="reference internal" href="femlabpy.elements.solids.html">femlabpy.elements.solids</a></li>
-</ul>
-</div>
+  <div class="bd-toc-item navbar-nav"></div>
 </nav></div>
     </div>
   
@@ -425,10 +413,7 @@
         <i class="fa-solid fa-home"></i>
       </a>
     </li>
-    
-    <li class="breadcrumb-item"><a href="../api.html" class="nav-link">API Reference</a></li>
-    
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">femlabpy.elements.triangles</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Chapter 6: Periodic Boundaries &amp; I/O</span></li>
   </ul>
 </nav>
 </div>
@@ -445,44 +430,36 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="module-femlabpy.elements.triangles">
-<span id="femlabpy-elements-triangles"></span><h1>femlabpy.elements.triangles<a class="headerlink" href="#module-femlabpy.elements.triangles" title="Link to this heading">#</a></h1>
-<p class="rubric">Functions</p>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ket3e</span></code>(Xe, Ge)</p></td>
-<td><p>Compute the element stiffness matrix for a 3-node triangular element (CST).</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ket3p</span></code>(Xe, Ge)</p></td>
-<td><p>Compute the conductivity matrix for a 3-node scalar potential triangle.</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">kt3e</span></code>(K, T, X, G)</p></td>
-<td><p>Assemble T3 (CST) element stiffness matrices into global stiffness matrix.</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">kt3p</span></code>(K, T, X, G)</p></td>
-<td><p>Assemble T3 conductivity matrices into a global scalar system.</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">met3e</span></code>(Xe, Ge, *[, lumped])</p></td>
-<td><p>Compute the element mass matrix for a 3-node triangular (CST) element.</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">mt3e</span></code>(M, T, X, G, *[, lumped])</p></td>
-<td><p>Assemble T3 element mass matrices into the global mass matrix.</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">qet3e</span></code>(Xe, Ge, Ue)</p></td>
-<td><p>Compute stresses and strains for a single T3 element.</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">qet3p</span></code>(Xe, Ge, Ue)</p></td>
-<td><p>Recover gradients and fluxes for one 3-node scalar potential triangle.</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">qt3e</span></code>(q, T, X, G, u)</p></td>
-<td><p>Compute element stresses/strains for all T3 elements and assemble internal forces.</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">qt3p</span></code>(q, T, X, G, u)</p></td>
-<td><p>Recover T3 scalar gradients and assemble equivalent nodal fluxes.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
+  <section class="tex2jax_ignore mathjax_ignore" id="chapter-6-periodic-boundaries-i-o">
+<h1>Chapter 6: Periodic Boundaries &amp; I/O<a class="headerlink" href="#chapter-6-periodic-boundaries-i-o" title="Link to this heading">#</a></h1>
+<p>Advanced finite element analyses often require specialized boundary condition enforcement and integration with industrial meshing tools.</p>
+<section id="periodic-boundary-conditions-homogenization">
+<h2>6.1 Periodic Boundary Conditions (Homogenization)<a class="headerlink" href="#periodic-boundary-conditions-homogenization" title="Link to this heading">#</a></h2>
+<p>When simulating the mechanical response of a composite material, we typically analyze a Representative Volume Element (RVE). To ensure that the micro-scale deformations represent a continuous macro-scale material, Periodic Boundary Conditions (PBCs) must be applied.</p>
+<p>PBCs enforce that the deformation on opposite faces of the RVE are identical, offset only by the applied macroscopic strain tensor <span class="math notranslate nohighlight">\(\bar{\mathbf{\epsilon}}\)</span>. For two corresponding nodes <span class="math notranslate nohighlight">\(A^+\)</span> (on the positive face) and <span class="math notranslate nohighlight">\(A^-\)</span> (on the negative face), the displacement mapping is:</p>
+<div class="math notranslate nohighlight">
+\[ \mathbf{u}^+ - \mathbf{u}^- = \bar{\mathbf{\epsilon}} \Delta \mathbf{x} \]</div>
+<p>where <span class="math notranslate nohighlight">\(\Delta \mathbf{x} = \mathbf{x}^+ - \mathbf{x}^-\)</span> is the physical distance vector between the paired nodes.</p>
+<section id="implementation-in-femlabpy">
+<h3>Implementation in femlabpy<a class="headerlink" href="#implementation-in-femlabpy" title="Link to this heading">#</a></h3>
+<ol class="arabic simple">
+<li><p><strong>Pairing Nodes:</strong> The <code class="docutils literal notranslate"><span class="pre">find_periodic_pairs</span></code> function scans two arrays of node indices and links nodes that have matching coordinates along the boundary planes (within a numerical tolerance).</p></li>
+<li><p><strong>Generating Constraints:</strong> The <code class="docutils literal notranslate"><span class="pre">periodic_constraints</span></code> function converts these node pairs into linear constraint equations, assembling the <span class="math notranslate nohighlight">\(\mathbf{G}\)</span> and <span class="math notranslate nohighlight">\(\mathbf{Q}\)</span> matrices for the Lagrange multiplier solver.</p></li>
+<li><p><strong>Homogenization Driver:</strong> The <code class="docutils literal notranslate"><span class="pre">homogenize</span></code> function automates the entire process. It applies three independent macroscopic strain states (pure X-tension, pure Y-tension, and pure shear) to the RVE, solves the constrained equations using <code class="docutils literal notranslate"><span class="pre">solve_lag_general</span></code>, and computes the volume-averaged stress tensor <span class="math notranslate nohighlight">\(\langle \sigma \rangle\)</span> for each state. The resultant vectors form the effective <span class="math notranslate nohighlight">\(3 \times 3\)</span> elasticity matrix <span class="math notranslate nohighlight">\(\mathbf{C}_{eff}\)</span>.</p></li>
+</ol>
+</section>
+</section>
+<section id="gmsh-i-o-integration">
+<h2>6.2 Gmsh I/O Integration<a class="headerlink" href="#gmsh-i-o-integration" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> interfaces seamlessly with the open-source mesh generator <a class="reference external" href="https://gmsh.info/">Gmsh</a>. The <code class="docutils literal notranslate"><span class="pre">io.gmsh</span></code> module reads <code class="docutils literal notranslate"><span class="pre">.msh</span></code> files (versions 2.2 and 4.1) natively without requiring complex external dependencies.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">load_gmsh2(filepath)</span></code> function parses the ASCII mesh block and returns a <code class="docutils literal notranslate"><span class="pre">GmshMesh</span></code> dataclass containing:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">positions</span></code>: An <span class="math notranslate nohighlight">\(N \times 3\)</span> array of spatial coordinates.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">triangles</span></code>: An <span class="math notranslate nohighlight">\(E \times 4\)</span> array of CST topologies.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">quads</span></code>: An <span class="math notranslate nohighlight">\(E \times 5\)</span> array of Q4 topologies.</p></li>
+</ul>
+<p>This native array extraction bridges the gap between complex 3D CAD modeling and the flat-array <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> drivers instantly.</p>
+</section>
 </section>
 
 
@@ -496,20 +473,20 @@
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="femlabpy.elements.quads.html"
+       href="ch05_dynamics.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">femlabpy.elements.quads</p>
+        <p class="prev-next-title">Chapter 5: Structural Dynamics</p>
       </div>
     </a>
     <a class="right-next"
-       href="femlabpy.elements.solids.html"
+       href="../api.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">femlabpy.elements.solids</p>
+        <p class="prev-next-title">API Reference</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -525,9 +502,25 @@
 
 
   <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#periodic-boundary-conditions-homogenization">6.1 Periodic Boundary Conditions (Homogenization)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#implementation-in-femlabpy">Implementation in femlabpy</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gmsh-i-o-integration">6.2 Gmsh I/O Integration</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
 
   <div class="tocsection sourcelink">
-    <a href="../_sources/generated/femlabpy.elements.triangles.rst.txt">
+    <a href="../_sources/manual/ch06_periodic_io.md.txt">
       <i class="fa-solid fa-file-lines"></i> Show Source
     </a>
   </div>
