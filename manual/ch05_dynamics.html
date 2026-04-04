@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Chapter 5: Structural Dynamics &#8212; femlabpy 0.6.0 documentation</title>
+    <title>Chapter 5: Structural Dynamics Theory &amp; Time Integration &#8212; femlabpy 0.6.0 documentation</title>
   
   
   
@@ -175,7 +175,7 @@
                     
 <li class=" current active">
   <a class="nav-link dropdown-item nav-internal" href="#">
-    Chapter 5: Structural Dynamics
+    Chapter 5: Structural Dynamics Theory & Time Integration
   </a>
 </li>
 
@@ -197,6 +197,13 @@
 <li class=" ">
   <a class="nav-link dropdown-item nav-internal" href="ch08_custom_elements.html">
     Chapter 8: Custom Element Development
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="ch09_dynamic_workflows.html">
+    Chapter 9: Advanced Dynamic Workflows
   </a>
 </li>
 
@@ -328,7 +335,7 @@
 
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="#">
-    Chapter 5: Structural Dynamics
+    Chapter 5: Structural Dynamics Theory & Time Integration
   </a>
 </li>
 
@@ -350,6 +357,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="ch08_custom_elements.html">
     Chapter 8: Custom Element Development
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="ch09_dynamic_workflows.html">
+    Chapter 9: Advanced Dynamic Workflows
   </a>
 </li>
 
@@ -441,7 +455,7 @@
         <i class="fa-solid fa-home"></i>
       </a>
     </li>
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Chapter 5: Structural Dynamics</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Chapter 5: Structural Dynamics Theory &amp; Time Integration</span></li>
   </ul>
 </nav>
 </div>
@@ -458,63 +472,106 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="chapter-5-structural-dynamics">
-<h1>Chapter 5: Structural Dynamics<a class="headerlink" href="#chapter-5-structural-dynamics" title="Link to this heading">#</a></h1>
-<p>Structural dynamics extends standard statics by incorporating inertial (mass) and damping forces into the equations of motion:
-$<span class="math notranslate nohighlight">\( \mathbf{M} \ddot{\mathbf{u}}(t) + \mathbf{C} \dot{\mathbf{u}}(t) + \mathbf{K} \mathbf{u}(t) = \mathbf{P}(t) \)</span>$</p>
+  <section class="tex2jax_ignore mathjax_ignore" id="chapter-5-structural-dynamics-theory-time-integration">
+<h1>Chapter 5: Structural Dynamics Theory &amp; Time Integration<a class="headerlink" href="#chapter-5-structural-dynamics-theory-time-integration" title="Link to this heading">#</a></h1>
+<p>Structural dynamics extends standard static analysis by incorporating inertial (mass) and damping forces into the global equations of motion. While statics solves <span class="math notranslate nohighlight">\(\mathbf{K} \mathbf{u} = \mathbf{P}\)</span>, dynamics considers the time-varying equilibrium:</p>
+<div class="math notranslate nohighlight">
+\[ \mathbf{M} \ddot{\mathbf{u}}(t) + \mathbf{C} \dot{\mathbf{u}}(t) + \mathbf{K} \mathbf{u}(t) = \mathbf{P}(t) \]</div>
+<p>where <span class="math notranslate nohighlight">\(\mathbf{M}\)</span> is the global mass matrix, <span class="math notranslate nohighlight">\(\mathbf{C}\)</span> is the viscous damping matrix, and <span class="math notranslate nohighlight">\(\ddot{\mathbf{u}}\)</span>, <span class="math notranslate nohighlight">\(\dot{\mathbf{u}}\)</span>, <span class="math notranslate nohighlight">\(\mathbf{u}\)</span> are the nodal acceleration, velocity, and displacement vectors, respectively.</p>
 <section id="mass-matrices">
 <h2>5.1 Mass Matrices<a class="headerlink" href="#mass-matrices" title="Link to this heading">#</a></h2>
-<p>The global mass matrix <span class="math notranslate nohighlight">\(\mathbf{M}\)</span> represents the inertial distribution. <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> provides two formulations:</p>
-<ol class="arabic simple">
-<li><p><strong>Consistent Mass Matrix:</strong> Derived using the same shape functions <span class="math notranslate nohighlight">\(\mathbf{N}\)</span> as the stiffness matrix.
-$<span class="math notranslate nohighlight">\( \mathbf{M}_e^c = \int_V \rho \mathbf{N}^T \mathbf{N} \, dV \)</span>$
-This creates a coupled, banded matrix that perfectly preserves the total kinetic energy representation.</p></li>
-<li><p><strong>Lumped Mass Matrix:</strong> A strictly diagonal matrix obtained by summing the rows of the consistent mass matrix (Row-Sum technique) or using specialized numerical integration. Diagonal mass matrices are computationally cheap and strictly required for explicit time-integration algorithms.</p></li>
-</ol>
+<p>The global mass matrix <span class="math notranslate nohighlight">\(\mathbf{M}\)</span> represents the inertial distribution of the structure. <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> provides two distinct formulations, each with specific computational advantages.</p>
+<section id="consistent-mass-matrix">
+<h3>5.1.1 Consistent Mass Matrix<a class="headerlink" href="#consistent-mass-matrix" title="Link to this heading">#</a></h3>
+<p>The consistent mass matrix is derived using the exact same shape functions <span class="math notranslate nohighlight">\(\mathbf{N}\)</span> used to formulate the stiffness matrix. This ensures that the kinetic energy of the element is represented consistently with the strain energy.</p>
+<div class="math notranslate nohighlight">
+\[ \mathbf{M}_e^c = \int_V \rho \mathbf{N}^T \mathbf{N} \, dV \]</div>
+<p>For an isoparametric quadrilateral element (Q4), this integral is evaluated using <span class="math notranslate nohighlight">\(2 \times 2\)</span> Gauss-Legendre quadrature:
+$<span class="math notranslate nohighlight">\( \mathbf{M}_e^c \approx \sum_{i=1}^{2} \sum_{j=1}^{2} w_i w_j \rho t \mathbf{N}^T(\xi_i, \eta_j) \mathbf{N}(\xi_i, \eta_j) |\mathbf{J}(\xi_i, \eta_j)| \)</span>$</p>
+<p><em>Advantages:</em> Highly accurate for modal analysis and implicit time integration. It perfectly preserves the off-diagonal coupling between degrees of freedom.</p>
 </section>
-<section id="modal-analysis">
-<h2>5.2 Modal Analysis<a class="headerlink" href="#modal-analysis" title="Link to this heading">#</a></h2>
-<p>Free, undamped vibration governed by <span class="math notranslate nohighlight">\(\mathbf{K} \mathbf{\phi} = \omega^2 \mathbf{M} \mathbf{\phi}\)</span> is solved via <code class="docutils literal notranslate"><span class="pre">solve_modal()</span></code>.</p>
+<section id="lumped-mass-matrix">
+<h3>5.1.2 Lumped Mass Matrix<a class="headerlink" href="#lumped-mass-matrix" title="Link to this heading">#</a></h3>
+<p>A lumped mass matrix <span class="math notranslate nohighlight">\(\mathbf{M}_e^l\)</span> is a strictly diagonal matrix. It assumes that the mass of the element is concentrated directly at the nodes, eliminating any inertial coupling between different DOFs.</p>
+<p>In <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code>, lumping is often achieved using the <strong>Row-Sum Technique</strong>, where the off-diagonal terms of the consistent mass matrix are summed and added to the diagonal:
+$<span class="math notranslate nohighlight">\( M_{ii}^l = \sum_{j=1}^{n} M_{ij}^c \)</span>$</p>
+<p><em>Advantages:</em> Diagonal mass matrices are computationally cheap to invert (<span class="math notranslate nohighlight">\(\mathbf{M}^{-1}\)</span> is simply <span class="math notranslate nohighlight">\(1/M_{ii}\)</span>). They are strictly required for explicit time-integration algorithms like the Central Difference method.</p>
+</section>
+</section>
+<section id="modal-analysis-theory">
+<h2>5.2 Modal Analysis Theory<a class="headerlink" href="#modal-analysis-theory" title="Link to this heading">#</a></h2>
+<p>Free, undamped vibration is governed by the homogeneous equation:
+$<span class="math notranslate nohighlight">\( \mathbf{M} \ddot{\mathbf{u}}(t) + \mathbf{K} \mathbf{u}(t) = \mathbf{0} \)</span>$</p>
+<p>Assuming a harmonic solution of the form <span class="math notranslate nohighlight">\(\mathbf{u}(t) = \mathbf{\phi} \sin(\omega t)\)</span>, we arrive at the generalized eigenvalue problem:
+$<span class="math notranslate nohighlight">\( \mathbf{K} \mathbf{\phi}_n = \omega_n^2 \mathbf{M} \mathbf{\phi}_n \)</span>$</p>
+<p><code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> abstracts this inside <code class="docutils literal notranslate"><span class="pre">solve_modal()</span></code>.</p>
 <ul class="simple">
-<li><p><strong>Natural Frequencies (<span class="math notranslate nohighlight">\(f_n\)</span>):</strong> Extracted from the eigenvalues <span class="math notranslate nohighlight">\(\omega_n = 2\pi f_n\)</span>.</p></li>
-<li><p><strong>Mode Shapes (<span class="math notranslate nohighlight">\(\phi_n\)</span>):</strong> The eigenvectors, mass-normalized such that <span class="math notranslate nohighlight">\(\phi_n^T \mathbf{M} \phi_n = 1\)</span>.</p></li>
+<li><p><strong>Natural Circular Frequencies (<span class="math notranslate nohighlight">\(\omega_n\)</span>):</strong> The square roots of the eigenvalues.</p></li>
+<li><p><strong>Natural Frequencies (<span class="math notranslate nohighlight">\(f_n\)</span>):</strong> <span class="math notranslate nohighlight">\(f_n = \frac{\omega_n}{2\pi}\)</span> (in Hertz).</p></li>
+<li><p><strong>Mode Shapes (<span class="math notranslate nohighlight">\(\mathbf{\phi}_n\)</span>):</strong> The eigenvectors, which are <strong>mass-normalized</strong> by the solver such that:
+$<span class="math notranslate nohighlight">\( \mathbf{\phi}_m^T \mathbf{M} \mathbf{\phi}_n = \delta_{mn} = \begin{cases} 1 &amp; \text{if } m = n \\ 0 &amp; \text{if } m \neq n \end{cases} \)</span>$</p></li>
 </ul>
-<section id="effective-modal-mass">
-<h3>Effective Modal Mass<a class="headerlink" href="#effective-modal-mass" title="Link to this heading">#</a></h3>
-<p>To understand how much of the total mass is activated by a specific mode <span class="math notranslate nohighlight">\(n\)</span> in a spatial direction <span class="math notranslate nohighlight">\(j\)</span>, we compute the participation factor <span class="math notranslate nohighlight">\(\Gamma_{nj}\)</span> and the effective modal mass <span class="math notranslate nohighlight">\(m_{eff}\)</span>:
-$<span class="math notranslate nohighlight">\( \Gamma_{nj} = \frac{\phi_n^T \mathbf{M} \mathbf{r}_j}{\phi_n^T \mathbf{M} \phi_n} \)</span><span class="math notranslate nohighlight">\(
-\)</span><span class="math notranslate nohighlight">\( m_{eff,nj} = \Gamma_{nj}^2 \times (\phi_n^T \mathbf{M} \phi_n) \)</span><span class="math notranslate nohighlight">\(
-where \)</span>\mathbf{r}_j<span class="math notranslate nohighlight">\( is the influence vector for direction \)</span>j$.</p>
+<section id="effective-modal-mass-and-participation-factors">
+<h3>Effective Modal Mass and Participation Factors<a class="headerlink" href="#effective-modal-mass-and-participation-factors" title="Link to this heading">#</a></h3>
+<p>To understand how much of the total structural mass is mobilized by a specific mode <span class="math notranslate nohighlight">\(n\)</span> in a spatial direction <span class="math notranslate nohighlight">\(j\)</span> (e.g., the X-direction), we compute the participation factor <span class="math notranslate nohighlight">\(\Gamma_{nj}\)</span>:
+$<span class="math notranslate nohighlight">\( \Gamma_{nj} = \frac{\mathbf{\phi}_n^T \mathbf{M} \mathbf{r}_j}{\mathbf{\phi}_n^T \mathbf{M} \mathbf{\phi}_n} \)</span>$</p>
+<p>where <span class="math notranslate nohighlight">\(\mathbf{r}_j\)</span> is the influence vector (a vector of 1s and 0s indicating which DOFs are active in direction <span class="math notranslate nohighlight">\(j\)</span>). If the mode shapes are mass-normalized, the denominator is exactly 1.</p>
+<p>The effective modal mass <span class="math notranslate nohighlight">\(m_{eff,nj}\)</span> is then:
+$<span class="math notranslate nohighlight">\( m_{eff,nj} = \Gamma_{nj}^2 \times (\mathbf{\phi}_n^T \mathbf{M} \mathbf{\phi}_n) = \Gamma_{nj}^2 \)</span>$</p>
+<p>This is crucial for ensuring that enough modes are extracted in Response Spectrum analysis (typically requiring <span class="math notranslate nohighlight">\(\ge 90\%\)</span> mass participation).</p>
 </section>
 </section>
 <section id="damping-models">
 <h2>5.3 Damping Models<a class="headerlink" href="#damping-models" title="Link to this heading">#</a></h2>
-<p>Damping <span class="math notranslate nohighlight">\(\mathbf{C}\)</span> is rarely derived explicitly from element geometry; instead, it is formulated at the global level.</p>
-<section id="rayleigh-damping">
-<h3>Rayleigh Damping<a class="headerlink" href="#rayleigh-damping" title="Link to this heading">#</a></h3>
-<p>The most common approach is proportional damping:
-$<span class="math notranslate nohighlight">\( \mathbf{C} = \alpha \mathbf{M} + \beta \mathbf{K} \)</span><span class="math notranslate nohighlight">\(
-Given two critical damping ratios \)</span>\zeta_1, \zeta_2<span class="math notranslate nohighlight">\( at circular frequencies \)</span>\omega_1, \omega_2<span class="math notranslate nohighlight">\(, the multipliers are found by solving:
-\)</span><span class="math notranslate nohighlight">\( \zeta_n = \frac{\alpha}{2\omega_n} + \frac{\beta \omega_n}{2} \)</span>$
-The <code class="docutils literal notranslate"><span class="pre">rayleigh_coefficients</span></code> and <code class="docutils literal notranslate"><span class="pre">rayleigh_damping</span></code> functions automate this.</p>
+<p>Damping <span class="math notranslate nohighlight">\(\mathbf{C}\)</span> represents energy dissipation (e.g., internal friction, micro-cracking). It is rarely derived explicitly from element geometry; instead, it is formulated at the global system level.</p>
+<section id="rayleigh-proportional-damping">
+<h3>5.3.1 Rayleigh (Proportional) Damping<a class="headerlink" href="#rayleigh-proportional-damping" title="Link to this heading">#</a></h3>
+<p>The most common approach in civil and mechanical engineering is Rayleigh damping, which constructs <span class="math notranslate nohighlight">\(\mathbf{C}\)</span> as a linear combination of the mass and stiffness matrices:
+$<span class="math notranslate nohighlight">\( \mathbf{C} = \alpha \mathbf{M} + \beta \mathbf{K} \)</span>$</p>
+<p>Given two target critical damping ratios <span class="math notranslate nohighlight">\(\zeta_1, \zeta_2\)</span> at specific circular natural frequencies <span class="math notranslate nohighlight">\(\omega_1, \omega_2\)</span>, the multipliers <span class="math notranslate nohighlight">\(\alpha\)</span> (mass-proportional, affecting low frequencies) and <span class="math notranslate nohighlight">\(\beta\)</span> (stiffness-proportional, affecting high frequencies) are found by solving the <span class="math notranslate nohighlight">\(2 \times 2\)</span> system:
+$<span class="math notranslate nohighlight">\( \begin{bmatrix} \frac{1}{2\omega_1} &amp; \frac{\omega_1}{2} \\ \frac{1}{2\omega_2} &amp; \frac{\omega_2}{2} \end{bmatrix} \begin{Bmatrix} \alpha \\ \beta \end{Bmatrix} = \begin{Bmatrix} \zeta_1 \\ \zeta_2 \end{Bmatrix} \)</span>$</p>
+<p>In Python:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">femlabpy.damping</span><span class="w"> </span><span class="kn">import</span> <span class="n">rayleigh_coefficients</span><span class="p">,</span> <span class="n">rayleigh_damping</span>
+
+<span class="c1"># Anchor 5% damping to modes 1 and 2</span>
+<span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span> <span class="o">=</span> <span class="n">rayleigh_coefficients</span><span class="p">(</span><span class="n">w1</span><span class="p">,</span> <span class="n">w2</span><span class="p">,</span> <span class="n">zeta1</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">zeta2</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span>
+<span class="n">C</span> <span class="o">=</span> <span class="n">rayleigh_damping</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">)</span>
+</pre></div>
+</div>
 </section>
 </section>
-<section id="time-integration">
-<h2>5.4 Time Integration<a class="headerlink" href="#time-integration" title="Link to this heading">#</a></h2>
-<p>To solve the differential equations under arbitrary loads <span class="math notranslate nohighlight">\(\mathbf{P}(t)\)</span>, we use step-by-step numerical integration.</p>
+<section id="time-integration-schemes">
+<h2>5.4 Time Integration Schemes<a class="headerlink" href="#time-integration-schemes" title="Link to this heading">#</a></h2>
+<p>To solve the differential equations under arbitrary transient loads <span class="math notranslate nohighlight">\(\mathbf{P}(t)\)</span>, we use step-by-step numerical integration. <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> provides three primary solvers.</p>
 <section id="newmark-beta-method-implicit">
-<h3>Newmark-<span class="math notranslate nohighlight">\(\beta\)</span> Method (Implicit)<a class="headerlink" href="#newmark-beta-method-implicit" title="Link to this heading">#</a></h3>
-<p>The unconditionally stable average acceleration method assumes acceleration is constant over a time step <span class="math notranslate nohighlight">\(\Delta t\)</span> (<span class="math notranslate nohighlight">\(\gamma=0.5, \beta=0.25\)</span>).
-The displacement and velocity updates are:
-$<span class="math notranslate nohighlight">\( \mathbf{u}_{t+\Delta t} = \mathbf{u}_t + \Delta t \dot{\mathbf{u}}_t + \Delta t^2 \left( (0.5 - \beta)\ddot{\mathbf{u}}_t + \beta \ddot{\mathbf{u}}_{t+\Delta t} \right) \)</span><span class="math notranslate nohighlight">\(
-\)</span><span class="math notranslate nohighlight">\( \dot{\mathbf{u}}_{t+\Delta t} = \dot{\mathbf{u}}_t + \Delta t \left( (1-\gamma)\ddot{\mathbf{u}}_t + \gamma \ddot{\mathbf{u}}_{t+\Delta t} \right) \)</span><span class="math notranslate nohighlight">\(
-At each step, an effective stiffness matrix \)</span>\mathbf{K}_{eff}<span class="math notranslate nohighlight">\( is factored and solved:
+<h3>5.4.1 Newmark-<span class="math notranslate nohighlight">\(\beta\)</span> Method (Implicit)<a class="headerlink" href="#newmark-beta-method-implicit" title="Link to this heading">#</a></h3>
+<p>The Newmark method approximates the displacement and velocity at time <span class="math notranslate nohighlight">\(t+\Delta t\)</span> using parameters <span class="math notranslate nohighlight">\(\gamma\)</span> and <span class="math notranslate nohighlight">\(\beta\)</span>:
+$<span class="math notranslate nohighlight">\( \mathbf{u}_{t+\Delta t} = \mathbf{u}_t + \Delta t \dot{\mathbf{u}}_t + \Delta t^2 \left[ (0.5 - \beta)\ddot{\mathbf{u}}_t + \beta \ddot{\mathbf{u}}_{t+\Delta t} \right] \)</span><span class="math notranslate nohighlight">\(
+\)</span><span class="math notranslate nohighlight">\( \dot{\mathbf{u}}_{t+\Delta t} = \dot{\mathbf{u}}_t + \Delta t \left[ (1-\gamma)\ddot{\mathbf{u}}_t + \gamma \ddot{\mathbf{u}}_{t+\Delta t} \right] \)</span>$</p>
+<p>This leads to an effective static linear system solved at each time step:
+$<span class="math notranslate nohighlight">\( \mathbf{K}_{eff} \mathbf{u}_{t+\Delta t} = \mathbf{P}_{eff, t+\Delta t} \)</span><span class="math notranslate nohighlight">\(
+where:
 \)</span><span class="math notranslate nohighlight">\( \mathbf{K}_{eff} = \mathbf{K} + a_0 \mathbf{M} + a_1 \mathbf{C} \)</span><span class="math notranslate nohighlight">\(
-where \)</span>a_0 = \frac{1}{\beta \Delta t^2}<span class="math notranslate nohighlight">\( and \)</span>a_1 = \frac{\gamma}{\beta \Delta t}$.</p>
+\)</span><span class="math notranslate nohighlight">\( \mathbf{P}_{eff} = \mathbf{P}_{t+\Delta t} + \mathbf{M}(a_0 \mathbf{u}_t + a_2 \dot{\mathbf{u}}_t + a_3 \ddot{\mathbf{u}}_t) + \mathbf{C}(a_1 \mathbf{u}_t + a_4 \dot{\mathbf{u}}_t + a_5 \ddot{\mathbf{u}}_t) \)</span>$</p>
+<p><em>Note: Using <span class="math notranslate nohighlight">\(\beta=0.25\)</span> and <span class="math notranslate nohighlight">\(\gamma=0.5\)</span> results in the Unconditionally Stable Average Acceleration method (Trapezoidal Rule), meaning the time step <span class="math notranslate nohighlight">\(\Delta t\)</span> is chosen for accuracy, not stability.</em></p>
+</section>
+<section id="hht-alpha-method-implicit">
+<h3>5.4.2 HHT-<span class="math notranslate nohighlight">\(\alpha\)</span> Method (Implicit)<a class="headerlink" href="#hht-alpha-method-implicit" title="Link to this heading">#</a></h3>
+<p>The Hilber-Hughes-Taylor (HHT-<span class="math notranslate nohighlight">\(\alpha\)</span>) method is an extension of Newmark that introduces numerical dissipation to damp out spurious high-frequency oscillations without degrading second-order accuracy.
+It modifies the equilibrium equation:
+$<span class="math notranslate nohighlight">\( \mathbf{M} \ddot{\mathbf{u}}_{t+\Delta t} + (1+\alpha)\mathbf{C}\dot{\mathbf{u}}_{t+\Delta t} - \alpha\mathbf{C}\dot{\mathbf{u}}_t + (1+\alpha)\mathbf{K}\mathbf{u}_{t+\Delta t} - \alpha\mathbf{K}\mathbf{u}_t = (1+\alpha)\mathbf{P}_{t+\Delta t} - \alpha\mathbf{P}_t \)</span><span class="math notranslate nohighlight">\(
+where \)</span>\alpha \in [-1/3, 0]<span class="math notranslate nohighlight">\(. Setting \)</span>\alpha=0$ recovers the standard Newmark method.</p>
 </section>
 <section id="central-difference-method-explicit">
-<h3>Central Difference Method (Explicit)<a class="headerlink" href="#central-difference-method-explicit" title="Link to this heading">#</a></h3>
-<p>For impact or wave propagation, the explicit central difference method evaluates equilibrium at time <span class="math notranslate nohighlight">\(t\)</span> without factoring a global matrix, provided <span class="math notranslate nohighlight">\(\mathbf{M}\)</span> is diagonal. However, it is conditionally stable; the time step must strictly obey <span class="math notranslate nohighlight">\(\Delta t \le \Delta t_{critical} = \frac{2}{\omega_{max}}\)</span>.</p>
+<h3>5.4.3 Central Difference Method (Explicit)<a class="headerlink" href="#central-difference-method-explicit" title="Link to this heading">#</a></h3>
+<p>For high-speed impact, blast, or wave propagation, the explicit central difference method is used. It evaluates equilibrium entirely at time <span class="math notranslate nohighlight">\(t\)</span>:
+$<span class="math notranslate nohighlight">\( \mathbf{M} \ddot{\mathbf{u}}_t + \mathbf{C} \dot{\mathbf{u}}_t + \mathbf{K} \mathbf{u}_t = \mathbf{P}_t \)</span><span class="math notranslate nohighlight">\(
+Using finite difference approximations:
+\)</span><span class="math notranslate nohighlight">\( \ddot{\mathbf{u}}_t = \frac{\mathbf{u}_{t+\Delta t} - 2\mathbf{u}_t + \mathbf{u}_{t-\Delta t}}{\Delta t^2} \)</span><span class="math notranslate nohighlight">\(
+Substituting this yields a system where \)</span>\mathbf{u}_{t+\Delta t}<span class="math notranslate nohighlight">\( can be solved trivially **without matrix inversion**, provided \)</span>\mathbf{M}<span class="math notranslate nohighlight">\( is a lumped (diagonal) matrix and \)</span>\mathbf{C}$ is zero or diagonal.</p>
+<p><em>Stability Limit:</em> Explicit methods are conditionally stable. The time step must strictly obey the Courant-Friedrichs-Lewy (CFL) condition:
+$<span class="math notranslate nohighlight">\( \Delta t \le \frac{2}{\omega_{max}} \)</span><span class="math notranslate nohighlight">\(
+where \)</span>\omega_{max}$ is the highest natural frequency of the mesh. <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> provides <code class="docutils literal notranslate"><span class="pre">critical_timestep(K,</span> <span class="pre">M)</span></code> to estimate this limit via power iteration.</p>
 </section>
 </section>
 </section>
@@ -566,18 +623,23 @@ where \)</span>a_0 = \frac{1}{\beta \Delta t^2}<span class="math notranslate noh
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mass-matrices">5.1 Mass Matrices</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#modal-analysis">5.2 Modal Analysis</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#effective-modal-mass">Effective Modal Mass</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mass-matrices">5.1 Mass Matrices</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#consistent-mass-matrix">5.1.1 Consistent Mass Matrix</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#lumped-mass-matrix">5.1.2 Lumped Mass Matrix</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#modal-analysis-theory">5.2 Modal Analysis Theory</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#effective-modal-mass-and-participation-factors">Effective Modal Mass and Participation Factors</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#damping-models">5.3 Damping Models</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#rayleigh-damping">Rayleigh Damping</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#rayleigh-proportional-damping">5.3.1 Rayleigh (Proportional) Damping</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#time-integration">5.4 Time Integration</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#newmark-beta-method-implicit">Newmark-<span class="math notranslate nohighlight">\(\beta\)</span> Method (Implicit)</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#central-difference-method-explicit">Central Difference Method (Explicit)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#time-integration-schemes">5.4 Time Integration Schemes</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#newmark-beta-method-implicit">5.4.1 Newmark-<span class="math notranslate nohighlight">\(\beta\)</span> Method (Implicit)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hht-alpha-method-implicit">5.4.2 HHT-<span class="math notranslate nohighlight">\(\alpha\)</span> Method (Implicit)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#central-difference-method-explicit">5.4.3 Central Difference Method (Explicit)</a></li>
 </ul>
 </li>
 </ul>

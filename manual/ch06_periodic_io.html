@@ -48,7 +48,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Chapter 7: Advanced Workflows &amp; Examples" href="ch07_advanced_examples.html" />
-    <link rel="prev" title="Chapter 5: Structural Dynamics" href="ch05_dynamics.html" />
+    <link rel="prev" title="Chapter 5: Structural Dynamics Theory &amp; Time Integration" href="ch05_dynamics.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -175,7 +175,7 @@
                     
 <li class=" ">
   <a class="nav-link dropdown-item nav-internal" href="ch05_dynamics.html">
-    Chapter 5: Structural Dynamics
+    Chapter 5: Structural Dynamics Theory & Time Integration
   </a>
 </li>
 
@@ -197,6 +197,13 @@
 <li class=" ">
   <a class="nav-link dropdown-item nav-internal" href="ch08_custom_elements.html">
     Chapter 8: Custom Element Development
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="ch09_dynamic_workflows.html">
+    Chapter 9: Advanced Dynamic Workflows
   </a>
 </li>
 
@@ -328,7 +335,7 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="ch05_dynamics.html">
-    Chapter 5: Structural Dynamics
+    Chapter 5: Structural Dynamics Theory & Time Integration
   </a>
 </li>
 
@@ -350,6 +357,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="ch08_custom_elements.html">
     Chapter 8: Custom Element Development
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="ch09_dynamic_workflows.html">
+    Chapter 9: Advanced Dynamic Workflows
   </a>
 </li>
 
@@ -467,7 +481,9 @@
 <p>PBCs enforce that the deformation on opposite faces of the RVE are identical, offset only by the applied macroscopic strain tensor <span class="math notranslate nohighlight">\(\bar{\mathbf{\epsilon}}\)</span>. For two corresponding nodes <span class="math notranslate nohighlight">\(A^+\)</span> (on the positive face) and <span class="math notranslate nohighlight">\(A^-\)</span> (on the negative face), the displacement mapping is:</p>
 <div class="math notranslate nohighlight">
 \[ \mathbf{u}^+ - \mathbf{u}^- = \bar{\mathbf{\epsilon}} \Delta \mathbf{x} \]</div>
-<p>where <span class="math notranslate nohighlight">\(\Delta \mathbf{x} = \mathbf{x}^+ - \mathbf{x}^-\)</span> is the physical distance vector between the paired nodes.</p>
+<p>where <span class="math notranslate nohighlight">\(\Delta \mathbf{x} = \mathbf{x}^+ - \mathbf{x}^-\)</span> is the physical distance vector between the paired nodes. This is mathematically imposed as a set of linear constraint equations:</p>
+<div class="math notranslate nohighlight">
+\[ \mathbf{G} \mathbf{u} = \mathbf{Q} \]</div>
 <section id="implementation-in-femlabpy">
 <h3>Implementation in femlabpy<a class="headerlink" href="#implementation-in-femlabpy" title="Link to this heading">#</a></h3>
 <ol class="arabic simple">
@@ -475,6 +491,74 @@
 <li><p><strong>Generating Constraints:</strong> The <code class="docutils literal notranslate"><span class="pre">periodic_constraints</span></code> function converts these node pairs into linear constraint equations, assembling the <span class="math notranslate nohighlight">\(\mathbf{G}\)</span> and <span class="math notranslate nohighlight">\(\mathbf{Q}\)</span> matrices for the Lagrange multiplier solver.</p></li>
 <li><p><strong>Homogenization Driver:</strong> The <code class="docutils literal notranslate"><span class="pre">homogenize</span></code> function automates the entire process. It applies three independent macroscopic strain states (pure X-tension, pure Y-tension, and pure shear) to the RVE, solves the constrained equations using <code class="docutils literal notranslate"><span class="pre">solve_lag_general</span></code>, and computes the volume-averaged stress tensor <span class="math notranslate nohighlight">\(\langle \sigma \rangle\)</span> for each state. The resultant vectors form the effective <span class="math notranslate nohighlight">\(3 \times 3\)</span> elasticity matrix <span class="math notranslate nohighlight">\(\mathbf{C}_{eff}\)</span>.</p></li>
 </ol>
+</section>
+<section id="complete-code-homogenizing-a-porous-unit-cell">
+<h3>Complete Code: Homogenizing a Porous Unit Cell<a class="headerlink" href="#complete-code-homogenizing-a-porous-unit-cell" title="Link to this heading">#</a></h3>
+<p>This script generates a <span class="math notranslate nohighlight">\(1 \times 1\)</span> square unit cell with a central hole, applies periodic boundary conditions to the Left/Right and Top/Bottom faces, and calculates the effective macroscopic stiffness matrix <span class="math notranslate nohighlight">\(\mathbf{C}_{eff}\)</span>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">gmsh</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">femlabpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">fp</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">femlabpy.periodic</span><span class="w"> </span><span class="kn">import</span> <span class="n">find_periodic_pairs</span><span class="p">,</span> <span class="n">homogenize</span>
+
+<span class="c1"># 1. Generate the RVE Mesh using Gmsh (A square with a hole)</span>
+<span class="n">gmsh</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
+<span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;unit_cell&quot;</span><span class="p">)</span>
+
+<span class="n">L</span> <span class="o">=</span> <span class="mf">1.0</span>  <span class="c1"># Side length</span>
+<span class="n">R</span> <span class="o">=</span> <span class="mf">0.2</span>  <span class="c1"># Hole radius</span>
+
+<span class="c1"># Create the square</span>
+<span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">occ</span><span class="o">.</span><span class="n">addRectangle</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="c1"># Create the hole</span>
+<span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">occ</span><span class="o">.</span><span class="n">addDisk</span><span class="p">(</span><span class="n">L</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">L</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="c1"># Cut the hole from the square</span>
+<span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">occ</span><span class="o">.</span><span class="n">cut</span><span class="p">([(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)],</span> <span class="p">[(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)])</span>
+<span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">occ</span><span class="o">.</span><span class="n">synchronize</span><span class="p">()</span>
+
+<span class="c1"># Force structured meshing on boundaries to ensure nodes align perfectly</span>
+<span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">setRecombine</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">gmsh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;rve.msh&quot;</span><span class="p">)</span>
+<span class="n">gmsh</span><span class="o">.</span><span class="n">finalize</span><span class="p">()</span>
+
+<span class="c1"># 2. Load Mesh into femlabpy</span>
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">load_gmsh2</span><span class="p">(</span><span class="s2">&quot;rve.msh&quot;</span><span class="p">)</span>
+<span class="n">T</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">quads</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">positions</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">2</span><span class="p">]</span>
+
+<span class="c1"># 3. Material Properties (Base Material)</span>
+<span class="n">E</span> <span class="o">=</span> <span class="mf">210e9</span>     <span class="c1"># Young&#39;s Modulus (Pa)</span>
+<span class="n">nu</span> <span class="o">=</span> <span class="mf">0.3</span>      <span class="c1"># Poisson&#39;s Ratio</span>
+<span class="n">t</span> <span class="o">=</span> <span class="mf">1.0</span>       <span class="c1"># Thickness</span>
+<span class="c1"># G = [E, nu, plane_stress(1)/strain(2), thickness]</span>
+<span class="n">G</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">E</span><span class="p">,</span> <span class="n">nu</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">t</span><span class="p">]])</span>
+
+<span class="c1"># 4. Identify Boundary Nodes</span>
+<span class="n">tol</span> <span class="o">=</span> <span class="mf">1e-5</span>
+<span class="n">left_nodes</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">tol</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+<span class="n">right_nodes</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">L</span> <span class="o">-</span> <span class="n">tol</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+<span class="n">bottom_nodes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">tol</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+<span class="n">top_nodes</span>    <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">L</span> <span class="o">-</span> <span class="n">tol</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+
+<span class="c1"># 5. Link Opposite Boundaries (Periodic Pairs)</span>
+<span class="c1"># This matches nodes by their Y-coordinate (for left/right) </span>
+<span class="c1"># and X-coordinate (for bottom/top)</span>
+<span class="n">lr_pairs</span> <span class="o">=</span> <span class="n">find_periodic_pairs</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">left_nodes</span><span class="p">,</span> <span class="n">right_nodes</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">)</span>
+<span class="n">bt_pairs</span> <span class="o">=</span> <span class="n">find_periodic_pairs</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">bottom_nodes</span><span class="p">,</span> <span class="n">top_nodes</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">)</span>
+<span class="n">all_pairs</span> <span class="o">=</span> <span class="n">lr_pairs</span> <span class="o">+</span> <span class="n">bt_pairs</span>
+
+<span class="c1"># 6. Execute Homogenization</span>
+<span class="c1"># The homogenize function automatically applies the 3 macro-strain cases,</span>
+<span class="c1"># solves the saddle-point systems via Lagrange multipliers, and </span>
+<span class="c1"># calculates the volume-averaged stresses.</span>
+<span class="n">C_eff</span> <span class="o">=</span> <span class="n">homogenize</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">all_pairs</span><span class="p">,</span> <span class="n">dof</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--- EFFECTIVE HOMOGENIZED STIFFNESS MATRIX (Pa) ---&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array2string</span><span class="p">(</span><span class="n">C_eff</span><span class="p">,</span> <span class="n">formatter</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;float_kind&#39;</span><span class="p">:</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">}))</span>
+</pre></div>
+</div>
+<p>When you print the matrix, you’ll see a <span class="math notranslate nohighlight">\(3 \times 3\)</span> orthotropic stiffness tensor representing the macroscopic behavior of the porous material!</p>
 </section>
 </section>
 <section id="gmsh-i-o-integration">
@@ -487,6 +571,10 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">quads</span></code>: An <span class="math notranslate nohighlight">\(E \times 5\)</span> array of Q4 topologies.</p></li>
 </ul>
 <p>This native array extraction bridges the gap between complex 3D CAD modeling and the flat-array <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> drivers instantly.</p>
+<section id="extracting-element-properties">
+<h3>Extracting Element Properties<a class="headerlink" href="#extracting-element-properties" title="Link to this heading">#</a></h3>
+<p>You can assign Physical Groups in Gmsh (e.g., <code class="docutils literal notranslate"><span class="pre">gmsh.model.addPhysicalGroup(2,</span> <span class="pre">[surf1],</span> <span class="pre">tag=1)</span></code>), and <code class="docutils literal notranslate"><span class="pre">load_gmsh2</span></code> will automatically map these tags to the last column of the topology matrix <code class="docutils literal notranslate"><span class="pre">T</span></code> (<code class="docutils literal notranslate"><span class="pre">prop_id</span></code>). This means you can mesh a multi-material composite in Gmsh and <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> will naturally pull the correct rows from the <code class="docutils literal notranslate"><span class="pre">G</span></code> matrix during assembly.</p>
+</section>
 </section>
 </section>
 
@@ -506,7 +594,7 @@
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Chapter 5: Structural Dynamics</p>
+        <p class="prev-next-title">Chapter 5: Structural Dynamics Theory &amp; Time Integration</p>
       </div>
     </a>
     <a class="right-next"
@@ -539,9 +627,13 @@
     <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#periodic-boundary-conditions-homogenization">6.1 Periodic Boundary Conditions (Homogenization)</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#implementation-in-femlabpy">Implementation in femlabpy</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#complete-code-homogenizing-a-porous-unit-cell">Complete Code: Homogenizing a Porous Unit Cell</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gmsh-i-o-integration">6.2 Gmsh I/O Integration</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gmsh-i-o-integration">6.2 Gmsh I/O Integration</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#extracting-element-properties">Extracting Element Properties</a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 
