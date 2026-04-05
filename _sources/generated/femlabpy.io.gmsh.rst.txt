@@ -3,17 +3,75 @@
 
 .. automodule:: femlabpy.io.gmsh
 
-   
-   .. rubric:: Functions
 
-   .. autosummary::
-   
-      load_gmsh
-      load_gmsh2
-   
-   .. rubric:: Classes
 
-   .. autosummary::
-   
-      ParsedElement
-   
+
+
+
+Functions
+---------
+
+.. autosummary::
+
+
+   TypedDict
+   import_module
+   load_gmsh
+   load_gmsh2
+
+Function Reference
+------------------
+
+
+.. autofunction:: femlabpy.io.gmsh.TypedDict
+
+
+.. autofunction:: femlabpy.io.gmsh.import_module
+
+
+.. autofunction:: femlabpy.io.gmsh.load_gmsh
+
+
+.. autofunction:: femlabpy.io.gmsh.load_gmsh2
+
+
+
+
+
+Classes
+-------
+
+.. autosummary::
+
+
+   GmshMesh
+   ParsedElement
+   Path
+   TemporaryDirectory
+
+Class Reference
+---------------
+
+
+.. autoclass:: femlabpy.io.gmsh.GmshMesh
+   :members:
+   :show-inheritance:
+
+
+.. autoclass:: femlabpy.io.gmsh.ParsedElement
+   :members:
+   :show-inheritance:
+
+
+.. autoclass:: femlabpy.io.gmsh.Path
+   :members:
+   :show-inheritance:
+
+
+.. autoclass:: femlabpy.io.gmsh.TemporaryDirectory
+   :members:
+   :show-inheritance:
+
+
+
+

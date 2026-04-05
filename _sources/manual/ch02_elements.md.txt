@@ -1,213 +1,183 @@
 # Chapter 2: Element Library
 
-The element library in `femlabpy` provides the mathematical mapping from the continuous differential equations of solid mechanics to the discrete algebraic space. This chapter details the shape functions, integration schemes, and strain-displacement matrices ($\mathbf{B}$) used for our core elements. As a student of computational mechanics, it is paramount that you understand not only the theory, but the precise programmatic execution of these formulations. This chapter goes deep into the Python implementation.
+The element library in `femlabpy` turns the continuous mechanics problem into local element matrices and vectors that can be assembled into a global system. The code follows a consistent pattern across all families:
 
-## 2.1 1D Bar Element (`bar`)
+- `Xe` holds one element's coordinates.
+- `Ge` holds the compact material row used by that kernel.
+- `T` holds the topology table for all elements.
+- `K`, `M`, and `q` are the global stiffness, mass, and internal-force arrays.
+- Functions starting with `k` return stiffness matrices, `m` return mass matrices, and `q` return internal forces, fluxes, stresses, or strains depending on the physics.
 
-The bar element supports axial tension and compression. In `femlabpy`, it is formulated to handle large deformations by utilizing the Green-Lagrange strain measure.
+The most useful thing to keep in mind while reading the code is that the comments and docstrings are not decorative. They describe the exact array flow used in the implementation: how nodal coordinates are reshaped, how Jacobians are built, how `B` matrices are formed, and how each element contribution is scattered into the global matrix.
 
-### Kinematics and Strain
-For large deformations, the axial strain $\epsilon$ is defined as:
-$$ \epsilon = \frac{du}{dx} + \frac{1}{2}\left(\frac{du}{dx}\right)^2 $$
+## 2.1 Common data layout
 
-The internal virtual work gives rise to two stiffness components: the standard linear elastic material stiffness $\mathbf{K}_m$ and the geometric stiffness $\mathbf{K}_g$, which accounts for the effect of the internal axial force $N$ on the transverse stiffness.
+The library uses a compact data layout that mirrors the original FemLab conventions but is written in NumPy style.
 
-$$ \mathbf{K}_e = \mathbf{K}_m + \mathbf{K}_g $$
-$$ \mathbf{K}_m = \frac{EA}{L} \begin{bmatrix} 1 & -1 \\ -1 & 1 \end{bmatrix}, \quad \mathbf{K}_g = \frac{N}{L} \begin{bmatrix} 1 & -1 \\ -1 & 1 \end{bmatrix} $$
+- Element coordinates are always given as `Xe`, usually with shape `(nnode, ndim)`.
+- Material rows are compact and element-specific. For example, a bar uses `[A, E, rho]`, a triangle may use `[E, nu]` or `[E, nu, type]`, and some quadrilateral kernels accept extra columns for thickness or history data.
+- Topology rows are 1-based, because the code keeps the legacy MATLAB/FemLab style at the interface and subtracts 1 only when indexing NumPy arrays.
+- Global vector ordering is nodal and block-based. In 2D vector problems the layout is `[u1, v1, u2, v2, ...]`. In scalar problems it is `[phi1, phi2, ...]`.
 
-## 2.2 Constant Strain Triangle (`t3`)
+The kernel comments repeatedly use the same symbols:
 
-The 3-node triangular element (CST) is the simplest 2D element. The displacement field is interpolated linearly using area coordinates $L_1, L_2, L_3$.
+- `J` or `Jt` is the Jacobian matrix.
+- `B` is the strain-displacement matrix for mechanics or the gradient matrix for scalar problems.
+- `D` or `C` is the constitutive matrix.
+- `qe`, `qeT4e`, `qeq4e`, and similar names are element internal-force or flux vectors.
+- `Se` and `Ee` usually store stress-like and strain-like quantities at integration points.
 
-$$ u(x,y) = N_1 u_1 + N_2 u_2 + N_3 u_3 $$
+This naming is deliberate. It makes the code easy to scan once you learn the pattern.
 
-Since the shape functions $N_i$ are linear, their spatial derivatives are constant over the element. Consequently, the strain-displacement matrix $\mathbf{B}$ is constant:
+## 2.2 Bar and truss elements
 
-$$ \mathbf{B} = \frac{1}{2A} \begin{bmatrix}
-y_{23} & 0 & y_{31} & 0 & y_{12} & 0 \\
-0 & x_{32} & 0 & x_{13} & 0 & x_{21} \\
-x_{32} & y_{23} & x_{13} & y_{31} & x_{21} & y_{12}
-\end{bmatrix} $$
+The bar family is the simplest place to see the library's design. The low-level routines are:
 
-where $x_{ij} = x_i - x_j$ and $y_{ij} = y_i - y_j$, and $A$ is the element area. The element stiffness matrix is derived exactly without numerical integration:
-$$ \mathbf{K}_e = \mathbf{B}^T \mathbf{D} \mathbf{B} A t $$
+- `kebar(Xe0, Xe1, Ge)` for the tangent stiffness of a geometrically nonlinear bar.
+- `qebar(Xe0, Xe1, Ge)` for the corresponding internal-force vector.
+- `kbar(K, T, X, G, u=None)` for global stiffness assembly.
+- `qbar(q, T, X, G, u=None)` for global internal-force assembly.
+- `mebar(Xe, Ge, dof=2, lumped=False)` for one element mass matrix.
+- `mbar(M, T, X, G, dof=2, lumped=False)` for global mass assembly.
 
-### Implementation of `kt3e`
-
-Let us examine how this is mapped into Python using `numpy`. The function `kt3e(ex, ey, D, t)` computes the element stiffness matrix for a T3 element.
-
-```python
-import numpy as np
-
-def kt3e(ex, ey, D, t):
-    # Calculate the cyclic coordinate differences
-    x1, x2, x3 = ex
-    y1, y2, y3 = ey
-    
-    y23 = y2 - y3
-    y31 = y3 - y1
-    y12 = y1 - y2
-    
-    x32 = x3 - x2
-    x13 = x1 - x3
-    x21 = x2 - x1
-    
-    # Calculate twice the area of the triangle using the determinant
-    detJ = x13 * y23 - x32 * y31
-    A = detJ / 2.0
-    
-    # Assemble the constant strain-displacement matrix B
-    B = np.array([
-        [y23,   0, y31,   0, y12,   0],
-        [  0, x32,   0, x13,   0, x21],
-        [x32, y23, x13, y31, x21, y12]
-    ]) / detJ  # Note division by 2A (detJ)
-    
-    # Compute the stiffness matrix: B^T * D * B * A * t
-    K = B.T @ D @ B * A * t
-    return K
-```
-*Professor's Note:* Notice how `detJ` elegantly represents twice the area. The `@` operator in Python performs matrix multiplication. Because $B$ is constant, we avoid any quadrature loop, making this element remarkably cheap to compute but prone to locking in bending and overly stiff behavior.
-
-## 2.3 Isoparametric Quadrilateral (`q4`)
-
-The 4-node quadrilateral element uses a bilinear isoparametric formulation. The element geometry and displacements are mapped from a natural coordinate system $(\xi, \eta) \in [-1, 1]$ to the physical system $(x, y)$.
-
-### Shape Functions
-The bilinear shape functions are:
-$$ N_i(\xi, \eta) = \frac{1}{4} (1 + \xi_i \xi) (1 + \eta_i \eta) $$
-
-### The Jacobian Matrix
-To compute spatial derivatives with respect to $x$ and $y$, we apply the chain rule via the Jacobian matrix $\mathbf{J}$:
-
-$$ \mathbf{J} = \begin{bmatrix}
-\frac{\partial x}{\partial \xi} & \frac{\partial y}{\partial \xi} \\
-\frac{\partial x}{\partial \eta} & \frac{\partial y}{\partial \eta}
-\end{bmatrix} = \sum_{i=1}^4 \begin{bmatrix}
-\frac{\partial N_i}{\partial \xi} x_i & \frac{\partial N_i}{\partial \xi} y_i \\
-\frac{\partial N_i}{\partial \eta} x_i & \frac{\partial N_i}{\partial \eta} y_i
-\end{bmatrix} $$
-
-The Cartesian shape function derivatives are then evaluated by inverting the Jacobian:
-$$ \begin{Bmatrix} \frac{\partial N_i}{\partial x} \\ \frac{\partial N_i}{\partial y} \end{Bmatrix} = \mathbf{J}^{-1} \begin{Bmatrix} \frac{\partial N_i}{\partial \xi} \\ \frac{\partial N_i}{\partial \eta} \end{Bmatrix} $$
-
-### Gauss Quadrature
-The stiffness matrix requires integrating over the element area. We use $2 \times 2$ Gauss-Legendre quadrature:
-
-$$ \mathbf{K}_e = \int_{-1}^{1} \int_{-1}^{1} \mathbf{B}^T \mathbf{D} \mathbf{B} |\mathbf{J}| t \, d\xi \, d\eta \approx \sum_{i=1}^{2} \sum_{j=1}^{2} w_i w_j \mathbf{B}^T(\xi_i, \eta_j) \mathbf{D} \mathbf{B}(\xi_i, \eta_j) |\mathbf{J}(\xi_i, \eta_j)| t $$
-
-where the integration points are $\xi_i, \eta_j \in \pm \frac{1}{\sqrt{3}}$ and weights $w_i = 1.0$.
-
-### Implementation of `kq4e`
-
-The python implementation `kq4e(ex, ey, D, t)` represents a fundamental concept in FEA: the element integration loop.
+The nonlinear bar kernel works with both the initial and current element geometry. That is why `kebar` and `qebar` take `Xe0` and `Xe1`. The code first computes the initial axis vector `a0`, the current axis vector `a1`, and the corresponding lengths `l0` and `l1`. The Green-Lagrange strain is then computed from the change in squared length:
 
 ```python
-def kq4e(ex, ey, D, t):
-    # Gauss points and weights for 2x2 quadrature
-    gauss_pts = [-1/np.sqrt(3), 1/np.sqrt(3)]
-    weights = [1.0, 1.0]
-    
-    # Initialize the 8x8 element stiffness matrix
-    K = np.zeros((8, 8))
-    
-    # Nodal natural coordinates corresponding to (xi, eta)
-    node_coords = np.array([
-        [-1, -1],
-        [ 1, -1],
-        [ 1,  1],
-        [-1,  1]
-    ])
-    
-    # Assemble the element coordinates matrix (4x2)
-    coords = np.column_stack((ex, ey))
-    
-    # 2x2 Gauss Quadrature loop
-    for i in range(2):
-        for j in range(2):
-            xi = gauss_pts[i]
-            eta = gauss_pts[j]
-            w = weights[i] * weights[j]
-            
-            # Derivatives of shape functions with respect to xi and eta
-            # dN_dxi: 2x4 matrix
-            dN_dxi = np.zeros((2, 4))
-            for k in range(4):
-                xi_k = node_coords[k, 0]
-                eta_k = node_coords[k, 1]
-                dN_dxi[0, k] = 0.25 * xi_k * (1 + eta_k * eta)
-                dN_dxi[1, k] = 0.25 * eta_k * (1 + xi_k * xi)
-                
-            # The Jacobian Matrix J (2x2) = dN_dxi * coords
-            J = dN_dxi @ coords
-            detJ = np.linalg.det(J)
-            
-            # Cartesian derivatives of shape functions dN_dx
-            # J * dN_dx = dN_dxi  =>  dN_dx = J^-1 * dN_dxi
-            dN_dx = np.linalg.solve(J, dN_dxi)
-            
-            # Construct the Strain-Displacement matrix B (3x8)
-            B = np.zeros((3, 8))
-            for k in range(4):
-                B[0, 2*k]   = dN_dx[0, k]
-                B[1, 2*k+1] = dN_dx[1, k]
-                B[2, 2*k]   = dN_dx[1, k]
-                B[2, 2*k+1] = dN_dx[0, k]
-                
-            # Accumulate the stiffness matrix at this Gauss point
-            K += B.T @ D @ B * detJ * w * t
-            
-    return K
+strain = 0.5 * (l1**2 - l0**2) / l0**2
 ```
-*Professor's Note:*
-1. **Jacobian Computation (`J = dN_dxi @ coords`):** This maps the parametric derivatives to the physical coordinate derivatives.
-2. **Jacobian Inversion (`np.linalg.solve(J, dN_dxi)`):** Instead of explicitly computing `J_inv = np.linalg.inv(J)` and multiplying, it is significantly more numerically stable and efficient to solve the linear system `J * dN_dx = dN_dxi`. This computes $\frac{\partial N_i}{\partial x}$ and $\frac{\partial N_i}{\partial y}$ for all nodes simultaneously.
-3. **Integration Weight (`detJ * w * t`):** The differential area $dx dy$ maps to $detJ d\xi d\eta$. Since thickness $t$ is constant, we multiply it directly along with the Gauss weight $w$.
 
-### Implementation of `qeq4e`
+That line is the key to the whole formulation. It is the large-deformation strain measure that makes the bar routines geometrically nonlinear.
 
-Computing the internal element forces, given a uniform distributed load $q$ on an edge, involves integrating the load against the element shape functions. This is known as calculating the equivalent nodal forces `qeq4e`.
+`qebar` returns three pieces of information: the element force vector, the axial stress, and the strain. The force vector is built from the current element axis, not the initial axis, which is why the code uses `a1` in the final block:
 
 ```python
-def qeq4e(ex, ey, t, edge, q):
-    # edge can be 1 (nodes 1-2), 2 (2-3), 3 (3-4), or 4 (4-1)
-    # We map the 1D edge to a parameter s in [-1, 1]
-    gauss_pts = [-1/np.sqrt(3), 1/np.sqrt(3)]
-    weights = [1.0, 1.0]
-    
-    f = np.zeros(8)
-    
-    # Map edges to node indices (0-based)
-    edges = [(0, 1), (1, 2), (2, 3), (3, 0)]
-    n1, n2 = edges[edge - 1]
-    
-    # Calculate edge length and Jacobian of the edge (L/2)
-    dx = ex[n2] - ex[n1]
-    dy = ey[n2] - ey[n1]
-    L = np.sqrt(dx**2 + dy**2)
-    detJ_edge = L / 2.0
-    
-    # 1D Gauss quadrature along the edge
-    for i in range(2):
-        s = gauss_pts[i]
-        w = weights[i]
-        
-        # 1D shape functions N1(s) = 0.5*(1-s), N2(s) = 0.5*(1+s)
-        N_edge = np.array([0.5 * (1 - s), 0.5 * (1 + s)])
-        
-        # In a generic formulation, these map to the 2D shape functions
-        # evaluated at the edge boundaries.
-        # Add contributions to the corresponding nodal force components (x and y)
-        f[2*n1]   += N_edge[0] * q[0] * detJ_edge * w * t
-        f[2*n1+1] += N_edge[0] * q[1] * detJ_edge * w * t
-        
-        f[2*n2]   += N_edge[1] * q[0] * detJ_edge * w * t
-        f[2*n2+1] += N_edge[1] * q[1] * detJ_edge * w * t
-        
-    return f
+qe = (A * stress / l0) * np.vstack([-a1, a1])
 ```
-*Professor's Note:* The beauty of the consistent nodal load vector is that it honors the shape function interpolation. Notice how a uniform load vector $q = [q_x, q_y]^T$ is not simply divided by two; it is integrated rigorously along the boundary path length $L$, mapped via the 1D boundary Jacobian `detJ_edge = L / 2`. 
 
-## 2.4 3D Elements (`t4`, `h8`)
+The global wrappers `kbar` and `qbar` are vectorized. They collect all element nodes from the topology table, evaluate every element in one pass, and then scatter the element contributions back into the global arrays. The `np.einsum` calls are there to avoid explicit Python loops when forming repeated outer products like `a1 @ a1.T`. The `np.add.at` calls perform the scatter-add safely even when multiple elements write into the same global degrees of freedom.
 
-The concepts extend naturally to three dimensions. The 8-node hexahedron (`h8`) utilizes trilinear shape functions $N_i(\xi, \eta, \zeta)$ and employs $2 \times 2 \times 2$ Gauss integration. The Jacobian becomes a $3 \times 3$ matrix, and the strain-displacement matrix $\mathbf{B}$ expands to compute the 6 components of the 3D strain tensor.
+The mass routines follow the same layout. `mebar` uses the compact material row `[A, E, rho]`, with `rho` defaulting to 1.0 when omitted. The `dof` argument controls the block size of the mass matrix, so the same kernel can represent 1D, 2D, or 3D bar-style nodes. If `lumped=True`, the total mass is split diagonally across the two nodes. Otherwise the consistent `[[2, 1], [1, 2]]` block is used.
+
+Practical reading tip: when the comments mention "material stiffness" and "geometric stiffness", they mean the two additive pieces of the tangent matrix in `kebar`. When they mention "current element vector", they mean the element axis after deformation, not the original geometry.
+
+## 2.3 Three-node triangles
+
+The three-node triangle is the most compact 2D solid element in the library. It appears in both mechanical and scalar-field form:
+
+- `ket3e`, `qet3e`, `kt3e`, `qt3e` for 2D elasticity.
+- `ket3p`, `qet3p`, `kt3p`, `qt3p` for scalar potential or diffusion problems.
+- `met3e`, `mt3e` for the triangle mass matrix.
+
+The mechanical T3 element is the constant strain triangle. The implementation computes the edge-difference helpers once, then uses them to build a constant `B` matrix. Because the strain is constant over the element, no quadrature loop is needed. The geometry helper `_triangle_geometry` returns the edge-difference array and the area. The element stiffness then follows the compact formula `Ke = area * B.T @ D @ B`.
+
+The comments in `ket3e` about `plane_strain` are important. The material row can optionally carry a type flag:
+
+- `1` or omitted means plane stress.
+- `2` means plane strain.
+
+The code checks that flag directly and selects the constitutive matrix accordingly. That is why the docstring for `Ge` is short but the implementation is explicit about `props[2]`.
+
+The internal-force kernel `qet3e` mirrors the stiffness kernel. It uses the same `B` matrix, multiplies it by the element displacement vector `Ue`, and then maps the strain to stress through `D`. The return value is a tuple of `(qe, stress, strain)`. The naming is consistent with the rest of the library, so `q` is the assembled force-like quantity, `S` is stress, and `E` is strain.
+
+The global assembly functions `kt3e` and `qt3e` show the standard batched pattern used throughout the repository:
+
+```python
+nodes = topology[:, :3].astype(int) - 1
+materials = as_float_array(G)[topology[:, -1].astype(int) - 1]
+```
+
+That pair of lines does two jobs. First, it removes the 1-based indexing inherited from the topology table. Second, it uses the material id stored in the last topology column to look up the correct row in `G`. After that, the code operates on batches of triangles using NumPy arrays of shape `(nel, 3, 2)`, `(nel, 3, 3)`, and `(nel, 6, 6)`.
+
+The scalar triangle kernels `ket3p`, `qet3p`, `kt3p`, and `qt3p` reuse the same geometry but replace mechanics with diffusion or conduction. Here the material row is simpler: `Ge = [k]` or `Ge = [k, b]`. The optional second value is a reaction term. The comments about `B` and `D` still apply, but now `B` is a gradient operator and `D` is a conductivity matrix rather than an elastic constitutive matrix.
+
+The mass functions `met3e` and `mt3e` deserve special attention because they show how the code stores thickness and density. The material row may carry extra columns:
+
+- `Ge[3]` is thickness when present.
+- `Ge[4]` is density when present.
+
+If those columns are missing, the kernel defaults to 1.0. That means the mass code is permissive, but it also means you should be careful about the exact material-row format when building examples.
+
+## 2.4 Quadrilateral elements
+
+The quadrilateral family is where the code becomes more explicit about integration points, history arrays, and vectorization. The public routines are:
+
+- `keq4e`, `qeq4e`, `kq4e`, `qq4e` for linear plane stress or plane strain elasticity.
+- `keq4p`, `qeq4p`, `kq4p`, `qq4p` for scalar conductivity problems.
+- `keq4eps`, `qeq4eps`, `kq4eps`, `qq4eps` for plane-stress elastoplasticity.
+- `keq4epe`, `qeq4epe`, `kq4epe`, `qq4epe` for plane-strain elastoplasticity.
+- `meq4e`, `mq4e` for mass matrices.
+
+The shared geometry helpers `_q4_dN`, `_q4_B`, `_q4_gauss_points`, and `_q4_gp_index` tell you almost everything about the implementation style. `_q4_dN` evaluates parent-space derivatives, `_q4_gauss_points` returns the standard `2 x 2` Gauss rule, and `_q4_B` expands gradients into the mechanical strain-displacement layout. The Jacobian is never inverted explicitly. Instead, the code solves
+
+```python
+dN_global = np.linalg.solve(Jt, dN)
+```
+
+which is more stable and avoids building an intermediate inverse matrix.
+
+`keq4e` is the cleanest example of the quadrilateral mechanics path. It loops over the four Gauss points, builds the element `B` matrix at each point, and accumulates `B.T @ D @ B * detJ * t`. The comments about thickness matter here because the element stiffness is scaled by `t` when thickness is present in the material row.
+
+`qeq4e` uses the same integration loop but returns the local force vector, plus stress and strain values at each Gauss point. The `gp = _q4_gp_index(i, j)` helper is there to flatten the `2 x 2` tensor-product grid into a stable row order. This is why the history arrays in the plasticity kernels can be stored as one row per element and one block per Gauss point.
+
+The scalar quadrilateral routines `keq4p`, `qeq4p`, `kq4p`, and `qq4p` follow the same structure but work on a single scalar unknown per node. The optional second material column is a reaction coefficient. When present, the code adds the `N.T @ (b * N)` contribution, which is the discrete form of the zero-order term.
+
+The mass matrix `meq4e` is worth reading carefully because it shows both the consistent and lumped options in one place. The consistent path integrates `rho * t * N.T @ N * detJ` over the Gauss points. The lumped path first computes row sums, then rescales the diagonal so the total mass is preserved. That is a practical implementation choice rather than a theoretical one, and the comments in the source are pointing to exactly that tradeoff.
+
+The plasticity kernels are the most stateful routines in the module.
+
+- `keq4eps` and `qeq4eps` store plane-stress history data in arrays with width 16.
+- `keq4epe` and `qeq4epe` store plane-strain history data in arrays with width 20.
+
+The helper `_ensure_state_width` pads or reshapes those arrays so each element has enough room for every Gauss point. That is why the code passes `Se[i].reshape(4, 4)` or `Se[i].reshape(4, 5)` depending on the formulation. The extra columns are not random. They hold the evolving state variables needed by the return-mapping logic.
+
+The `mtype` argument selects the yield model:
+
+- `1` means von Mises.
+- `2` means Drucker-Prager.
+
+In the plane-stress path, `stressvm` and `stressdp` perform the stress correction after the trial elastic step. In the plane-strain path, the code uses a B-bar style modification to reduce volumetric locking. The important thing for a reader is not the exact algebraic formula in the docstring, but the flow: trial stress, yield test, corrected stress, updated history, then assembled force or tangent matrix.
+
+Practical note on reading the code comments: when the source says "Gauss points" it means the four integration points used for the tensor-product rule. When it says "history tables", it means the per-element stored state that is passed back into the next nonlinear iteration.
+
+## 2.5 Three-dimensional solids
+
+The 3D solid family covers tetrahedra and hexahedra:
+
+- `keT4e`, `qeT4e`, `kT4e`, `qT4e`, `meT4e`, `mT4e` for the 4-node tetrahedron.
+- `keh8e`, `qeh8e`, `kh8e`, `qh8e`, `meh8e`, `mh8e` for the 8-node hexahedron.
+
+The tetrahedral kernels are the most direct to read. The derivative matrix `dN_ref` is constant, so the Jacobian `J = dN_ref @ Xe` is evaluated once per element. That is why the T4 element is efficient: the shape-function gradients are constant, so there is no quadrature loop. The `B` matrix has shape `6 x 12`, reflecting the six Voigt strain components and the three displacement components at four nodes.
+
+`keT4e` and `qeT4e` use the same `B` matrix and constitutive matrix `D`. `qeT4e` returns the element internal-force vector together with stress and strain vectors. `kT4e` and `qT4e` batch those operations across all tetrahedra by stacking the element coordinates into arrays of shape `(nel, 4, 3)`. The batch version uses `np.einsum` and broadcasted `np.linalg.solve` calls to keep the implementation fully vectorized.
+
+The tetrahedral mass routines `meT4e` and `mT4e` are analytical. The consistent mass matrix uses the standard `rho * V / 20` block form, while the lumped version puts `rho * V / 4` on the diagonal. The code computes the volume from the determinant of the Jacobian, so the comments about `J` and `det(J)` directly match the implementation.
+
+The hexahedral kernels are the 3D counterpart of the Q4 routines. They use `2 x 2 x 2` Gauss integration and a batched derivative helper `_hexa_dN_batch`. The flow is the same as in 2D, but the arrays are larger:
+
+- `dN` has shape `(8, 3, 8)` for the eight Gauss points.
+- `Jt` has shape `(8, 3, 3)` for one element, or `(nel, 8, 3, 3)` in the batched assembly path.
+- `B` has shape `(8, 6, 24)` for one element, because there are six strain components and 24 displacement degrees of freedom.
+
+`keh8e` and `qeh8e` are fully integrated element kernels. `kh8e` and `qh8e` perform global assembly. The code explicitly raises `NotImplementedError` for 20-node hexahedra, so the documented support is intentionally limited to the 8-node case.
+
+The hexahedral mass routines `meh8e` and `mh8e` show the same design as the 2D mass kernels: consistent integration first, then an optional lumped path. The lumped path uses diagonal scaling to preserve total mass. That point is easy to miss if you only look at the function name, so it is worth checking the source comments when using the routine in a new example.
+
+## 2.6 How to read the kernels
+
+If you are trying to follow the source line by line, the recurring comment patterns are usually enough:
+
+- "Compute shape function derivatives" means the code is building the parent-space gradient operator.
+- "Jacobian" means the mapping from parent coordinates to physical coordinates.
+- "Solve `J * dN_global = dN`" means the code is converting parent-space gradients into physical gradients without forming an explicit inverse.
+- "Assemble into global matrix" means the function is using `assmk`, `assmq`, `element_dof_indices`, or `np.add.at` to scatter local contributions.
+- "History array" means the kernel carries state from one nonlinear iteration to the next.
+
+The naming conventions are consistent across the module:
+
+- `k*` returns a stiffness-like matrix.
+- `q*` returns an element force, flux, stress, or strain result.
+- `m*` returns a mass matrix.
+- `e` means element-level.
+- `t3`, `q4`, `T4`, and `H8` identify the element family.
+
+Once you learn that pattern, the element module becomes much easier to navigate. The code is not hiding complexity; it is laying out the mechanics in a repetitive form so that the same assembly logic can be reused across all element types.

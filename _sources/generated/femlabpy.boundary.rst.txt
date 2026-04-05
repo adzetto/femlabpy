@@ -3,13 +3,39 @@
 
 .. automodule:: femlabpy.boundary
 
-   
-   .. rubric:: Functions
 
-   .. autosummary::
-   
-      rnorm
-      setbc
-      solve_lag
-      solve_lag_general
-   
+
+
+
+
+Functions
+---------
+
+.. autosummary::
+
+
+   rnorm
+   setbc
+   solve_lag
+   solve_lag_general
+
+Function Reference
+------------------
+
+
+.. autofunction:: femlabpy.boundary.rnorm
+
+
+.. autofunction:: femlabpy.boundary.setbc
+
+
+.. autofunction:: femlabpy.boundary.solve_lag
+
+
+.. autofunction:: femlabpy.boundary.solve_lag_general
+
+
+
+
+
+

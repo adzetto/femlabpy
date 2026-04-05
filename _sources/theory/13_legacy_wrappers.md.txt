@@ -11,63 +11,140 @@ kernelspec:
   name: python3
 ---
 
-# 13. Legacy Wrappers for MATLAB Compatibility
+# Chapter 13: Legacy Wrappers
 
-Welcome, class. Today we will discuss how our Python finite element framework, `femlabpy`, provides backward compatibility with legacy MATLAB scripts. 
+This chapter explains the compatibility layer in `matlab.py` and `compat.py`.
+The goal is not to hide the modern Python API. The goal is to let older FemLab
+scripts keep working while the underlying code uses the shared core modules.
 
-Historically, teaching codes in MATLAB often bundled the entire finite element solution process into a single, high-level function call. To ease the transition for those accustomed to this pedagogical style, `matlab.py` provides wrapper functions that emulate these monolithic "1-line solvers" while leveraging our modern, modular Python core architecture.
+## Why The Wrappers Exist
 
-## The 1-Line Solvers
+The original FemLab material was organized as single-call drivers such as
+`elastic`, `flowq4`, `nlbar`, `plastps`, and `plastpe`. The wrapper layer keeps
+that entry point available, but each wrapper delegates to the shared core
+routines rather than duplicating the implementation.
 
-In our MATLAB heritage, it was common to solve a 2D elasticity problem simply by passing the required matrices into a single function, yielding the displacements and elemental stresses. 
+That separation matters:
 
-In `femlabpy`, we replicate this behavior with the `elastic(T, X, G, C, P)` wrapper. Rather than containing the dense procedural logic itself, the Python version intelligently delegates the work to our modular routines: initialization, stiffness assembly, boundary condition application, solving the linear system, and recovering stresses/strains.
+- the wrappers preserve the old classroom interface,
+- the core modules stay reusable and testable,
+- the plotting and recovery logic remains centralized.
 
-### Inside the `elastic` Wrapper
+## Shared Helpers
 
-To demystify the magic, let us look at the exact Python code inside the `elastic` wrapper. Notice how it seamlessly orchestrates the core functions:
+### `_legacy_bundle`
 
-```python
-def elastic(T, X, G, C, P):
-    """Legacy MATLAB-style wrapper for 2D elasticity."""
-    # Initialize the displacement and force vectors
-    U, F = init(T, X)
-    
-    # Assemble the global stiffness matrix for 4-node quadrilaterals
-    K = kq4e(T, X, G, C)
-    
-    # Apply boundary conditions
-    K, F = setbc(K, F, P)
-    
-    # Solve the linear system [K]{U} = {F}
-    U, F = solve(K, F, U)
-    
-    # Recover element responses (strains and stresses)
-    E = qq4e(T, X, U, G, C)
-    
-    return U, E
-```
+`_legacy_bundle(T, X, G, C, P, dof=None)` converts the legacy input deck into a
+typed dictionary with normalized arrays. It resolves the degree-of-freedom count
+from `X` when needed and creates an empty load table when `P` is omitted.
 
-By decomposing the procedure this way, the core finite element routines (`init`, `kq4e`, `setbc`, `solve`, and `qq4e`) can be independently tested and optimized, while still presenting you with the familiar, simple interface.
+The wrappers use this helper so every legacy driver sees the same normalized
+shape and dtype rules.
 
-## MATLAB 1-Based vs. Python 0-Based Indexing
+### `_set_axis`
 
-A critical issue you will encounter when migrating data or translating conceptual models from MATLAB to Python is the difference in array indexing conventions.
+`_set_axis(ax, limits)` applies MATLAB-style axis vectors to Matplotlib axes.
+It supports both 2D and 3D limit arrays and is used only for compatibility with
+the old plotting scripts.
 
-*   **MATLAB uses 1-based indexing:** The first element of an array or matrix is at index `1`. Node IDs and element numbers in topology matrices (`T`) or boundary condition specifications (`P` or `C`) start at `1`.
-*   **Python (NumPy) uses 0-based indexing:** The first element of an array is at index `0`. 
+### `compat.setpath`
 
-**Implications for FEM Data:**
-When you pass legacy matrices directly into Python, the node indices will be off by one. For example, if an element connects to the first node in the mesh, MATLAB records this as node `1`. Python expects this to refer to index `0` of the coordinate array `X`.
+`compat.setpath()` returns the package and examples directories and can append
+the examples directory to `sys.path`.
 
-**Correction Strategy:**
-The `matlab.py` wrappers automatically handle this translation. However, if you are writing custom Python scripts or calling the core modular functions directly, you must manually shift your indices. 
+That mirrors the original MATLAB `setpath.m` helper closely enough for old
+scripts that expect the examples directory to be discoverable without manual
+path setup.
 
-For instance, correcting a topology matrix looks like this:
+## Benchmark Data Wrappers
 
-```python
-# Shifting a 1-based MATLAB topology matrix to 0-based for Python
-T_python = T_matlab - 1 
-```
+The simplest wrappers just return packaged benchmark decks:
 
-Always be meticulously aware of the indexing convention when moving between these two environments to avoid out-of-bounds errors or physically incorrect assemblies.
+- `canti()`
+- `flow()`
+- `bar01()`
+- `bar02()`
+- `bar03()`
+- `square()`
+- `hole()`
+
+These functions are data accessors, not solvers. They give you the original
+coordinates, topology, materials, loads, and constraints in the exact format
+expected by the legacy drivers.
+
+`square()` and `hole()` both accept `plane_strain` so the caller can choose the
+plane-stress or plane-strain benchmark variant.
+
+## Solver Wrappers
+
+### `elastic`
+
+`elastic(T, X, G, C, P, ...)` solves the linear Q4 elasticity workflow. It uses
+`init`, `kq4e`, `setload`, `setbc`, `qq4e`, and `reaction` under the hood.
+
+If `plot=True`, it also returns figures for the mesh, loads, constraints, and
+stress field. That makes it a faithful compatibility wrapper for the original
+single-call MATLAB driver.
+
+### `flowq4` and `flowt3`
+
+These wrappers solve the scalar potential benchmark using either Q4 or T3
+elements. Internally they both call `_flow_driver`, which chooses the correct
+element kernels:
+
+- `kq4p` and `qq4p` for quadrilaterals,
+- `kt3p` and `qt3p` for triangles.
+
+The return value contains the solved field, the recovered gradients, and an
+optional figure that matches the legacy classroom output.
+
+### `nlbar`
+
+`nlbar(...)` wraps `solve_nlbar`. It keeps the original load-step controls and
+optionally builds the load-displacement and deformed-geometry plots.
+
+### `plastps` and `plastpe`
+
+These wrappers call `_plast_driver`, which in turn uses `solve_plastic`.
+
+- `plastps` configures plane stress.
+- `plastpe` configures plane strain.
+
+Both wrappers preserve the old MATLAB-style plot controls and can return the
+equivalent plastic strain field in the deformed configuration.
+
+## What The Wrappers Return
+
+The wrappers return dictionaries rather than bare arrays. That is a deliberate
+departure from the original MATLAB style because it keeps the response data and
+the optional figures together in one object.
+
+The most common keys are:
+
+- `u`
+- `q`
+- `S`
+- `E`
+- `R`
+- `data`
+- `figures`
+
+That structure makes it easier to inspect results programmatically and keeps the
+legacy wrappers usable in notebooks and scripts.
+
+## Reading Order
+
+If you need to modify the compatibility layer, read these files in this order:
+
+1. `compat.py`
+2. `matlab.py`
+3. `core.py`
+4. `boundary.py`
+5. `loads.py`
+6. `elements/`
+7. `solvers.py`
+8. `plotting.py`
+9. `postprocess.py`
+
+That path matches the actual dependency chain used by the wrappers.
+

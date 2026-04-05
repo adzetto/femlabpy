@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>13. Legacy Wrappers for MATLAB Compatibility &#8212; femlabpy 0.6.0 documentation</title>
+    <title>Chapter 13: Legacy Wrappers &#8212; femlabpy 0.6.0 documentation</title>
   
   
   
@@ -31,6 +31,7 @@
 <link href="../_static/styles/pydata-sphinx-theme.css?digest=7f76b32a3354e82990f2" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=aa664f36" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../_static/scripts/fontawesome.js?digest=7f76b32a3354e82990f2"></script>
@@ -46,7 +47,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="API Reference" href="../api.html" />
-    <link rel="prev" title="Plotting and Post-Processing" href="12_plotting_postprocessing.html" />
+    <link rel="prev" title="Plotting and Postprocessing" href="12_plotting_postprocessing.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -131,118 +132,38 @@
     
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../tutorials.html">
-    Tutorials & Usage Manual
+    Tutorials
   </a>
 </li>
 
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../manual/index.html">
-    User Guide
+    Guide
   </a>
 </li>
 
 
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="index.html">
-    Theory & Reference Manual
+    Theory
   </a>
 </li>
 
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../api.html">
-    API Reference
+    API
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="01_core_assembly.html">
-    Global Matrix Assembly in Finite Element Analysis: A Rigorous Perspective
+  <a class="nav-link nav-internal" href="../matlab_python_mapping.html">
+    MATLAB Mapping
   </a>
 </li>
 
-            <li class="nav-item dropdown">
-                <button class="btn dropdown-toggle nav-item" type="button"
-                data-bs-toggle="dropdown" aria-expanded="false"
-                aria-controls="pst-nav-more-links">
-                    More
-                </button>
-                <ul id="pst-nav-more-links" class="dropdown-menu">
-                    
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="02_boundary_loads.html">
-    Chapter 2: Boundary Conditions and Loads
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="03_1d_bars.html">
-    Chapter 3: 1D Bar Elements (Linear & Nonlinear)
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="04_2d_triangles.html">
-    2D Triangular Elements (CST)
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="05_2d_quads.html">
-    Chapter 5: 2D Isoparametric Quadrilateral Elements
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="06_3d_solids.html">
-    3D Solid Elements: Tetrahedrons and Hexahedrons
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="07_plasticity.html">
-    Chapter 7: Constitutive Models & Plasticity
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="08_dynamics.html">
-    Structural Dynamics and Time Integration
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="09_modal_periodic.html">
-    Chapter 9: Eigenvalue Problems and Periodic Boundaries
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="10_io_mesh.html">
-    Mesh I/O, Data Types, and Helpers
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../api.html">
-    API Reference
-  </a>
-</li>
-
-                </ul>
-            </li>
-            
   </ul>
 </nav></div>
       
@@ -326,105 +247,35 @@
     
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../tutorials.html">
-    Tutorials & Usage Manual
+    Tutorials
   </a>
 </li>
 
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../manual/index.html">
-    User Guide
+    Guide
   </a>
 </li>
 
 
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="index.html">
-    Theory & Reference Manual
+    Theory
   </a>
 </li>
 
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../api.html">
-    API Reference
+    API
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="01_core_assembly.html">
-    Global Matrix Assembly in Finite Element Analysis: A Rigorous Perspective
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="02_boundary_loads.html">
-    Chapter 2: Boundary Conditions and Loads
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="03_1d_bars.html">
-    Chapter 3: 1D Bar Elements (Linear & Nonlinear)
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="04_2d_triangles.html">
-    2D Triangular Elements (CST)
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="05_2d_quads.html">
-    Chapter 5: 2D Isoparametric Quadrilateral Elements
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="06_3d_solids.html">
-    3D Solid Elements: Tetrahedrons and Hexahedrons
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="07_plasticity.html">
-    Chapter 7: Constitutive Models & Plasticity
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="08_dynamics.html">
-    Structural Dynamics and Time Integration
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="09_modal_periodic.html">
-    Chapter 9: Eigenvalue Problems and Periodic Boundaries
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="10_io_mesh.html">
-    Mesh I/O, Data Types, and Helpers
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../api.html">
-    API Reference
+  <a class="nav-link nav-internal" href="../matlab_python_mapping.html">
+    MATLAB Mapping
   </a>
 </li>
 
@@ -471,20 +322,19 @@
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="01_core_assembly.html">Global Matrix Assembly in Finite Element Analysis: A Rigorous Perspective</a></li>
-<li class="toctree-l1"><a class="reference internal" href="02_boundary_loads.html">Chapter 2: Boundary Conditions and Loads</a></li>
-<li class="toctree-l1"><a class="reference internal" href="03_1d_bars.html">Chapter 3: 1D Bar Elements (Linear &amp; Nonlinear)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="04_2d_triangles.html">2D Triangular Elements (CST)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="05_2d_quads.html">Chapter 5: 2D Isoparametric Quadrilateral Elements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="01_core_assembly.html">Core Assembly in Finite Element Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="02_boundary_loads.html">Boundary conditions and loads</a></li>
+<li class="toctree-l1"><a class="reference internal" href="03_1d_bars.html">1D bar elements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04_2d_triangles.html">2D Triangular Elements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05_2d_quads.html">2D Isoparametric Quadrilateral Elements</a></li>
 <li class="toctree-l1"><a class="reference internal" href="06_3d_solids.html">3D Solid Elements: Tetrahedrons and Hexahedrons</a></li>
-
-<li class="toctree-l1"><a class="reference internal" href="07_plasticity.html">Chapter 7: Constitutive Models &amp; Plasticity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="07_plasticity.html">Constitutive Models and Plasticity</a></li>
 <li class="toctree-l1"><a class="reference internal" href="08_dynamics.html">Structural Dynamics and Time Integration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="09_modal_periodic.html">Chapter 9: Eigenvalue Problems and Periodic Boundaries</a></li>
-<li class="toctree-l1"><a class="reference internal" href="10_io_mesh.html">Mesh I/O, Data Types, and Helpers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="09_modal_periodic.html">Modal analysis and periodic boundaries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="10_io_mesh.html">Mesh I/O and Gmsh Import</a></li>
 <li class="toctree-l1"><a class="reference internal" href="11_nonlinear_solvers.html">Chapter 11: Nonlinear Solvers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="12_plotting_postprocessing.html">Plotting and Post-Processing</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">13. Legacy Wrappers for MATLAB Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12_plotting_postprocessing.html">Plotting and Postprocessing</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Chapter 13: Legacy Wrappers</a></li>
 </ul>
 </div>
 </nav></div>
@@ -526,9 +376,9 @@
       </a>
     </li>
     
-    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Theory &amp; Reference Manual</a></li>
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Theory and Reference Manual</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">13. Legacy Wrappers for MATLAB Compatibility</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Chapter 13: Legacy Wrappers</span></li>
   </ul>
 </nav>
 </div>
@@ -545,57 +395,138 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="legacy-wrappers-for-matlab-compatibility">
-<h1>13. Legacy Wrappers for MATLAB Compatibility<a class="headerlink" href="#legacy-wrappers-for-matlab-compatibility" title="Link to this heading">#</a></h1>
-<p>Welcome, class. Today we will discuss how our Python finite element framework, <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code>, provides backward compatibility with legacy MATLAB scripts.</p>
-<p>Historically, teaching codes in MATLAB often bundled the entire finite element solution process into a single, high-level function call. To ease the transition for those accustomed to this pedagogical style, <code class="docutils literal notranslate"><span class="pre">matlab.py</span></code> provides wrapper functions that emulate these monolithic “1-line solvers” while leveraging our modern, modular Python core architecture.</p>
-<section id="the-1-line-solvers">
-<h2>The 1-Line Solvers<a class="headerlink" href="#the-1-line-solvers" title="Link to this heading">#</a></h2>
-<p>In our MATLAB heritage, it was common to solve a 2D elasticity problem simply by passing the required matrices into a single function, yielding the displacements and elemental stresses.</p>
-<p>In <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code>, we replicate this behavior with the <code class="docutils literal notranslate"><span class="pre">elastic(T,</span> <span class="pre">X,</span> <span class="pre">G,</span> <span class="pre">C,</span> <span class="pre">P)</span></code> wrapper. Rather than containing the dense procedural logic itself, the Python version intelligently delegates the work to our modular routines: initialization, stiffness assembly, boundary condition application, solving the linear system, and recovering stresses/strains.</p>
-<section id="inside-the-elastic-wrapper">
-<h3>Inside the <code class="docutils literal notranslate"><span class="pre">elastic</span></code> Wrapper<a class="headerlink" href="#inside-the-elastic-wrapper" title="Link to this heading">#</a></h3>
-<p>To demystify the magic, let us look at the exact Python code inside the <code class="docutils literal notranslate"><span class="pre">elastic</span></code> wrapper. Notice how it seamlessly orchestrates the core functions:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">elastic</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">P</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Legacy MATLAB-style wrapper for 2D elasticity.&quot;&quot;&quot;</span>
-    <span class="c1"># Initialize the displacement and force vectors</span>
-    <span class="n">U</span><span class="p">,</span> <span class="n">F</span> <span class="o">=</span> <span class="n">init</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">X</span><span class="p">)</span>
-    
-    <span class="c1"># Assemble the global stiffness matrix for 4-node quadrilaterals</span>
-    <span class="n">K</span> <span class="o">=</span> <span class="n">kq4e</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">C</span><span class="p">)</span>
-    
-    <span class="c1"># Apply boundary conditions</span>
-    <span class="n">K</span><span class="p">,</span> <span class="n">F</span> <span class="o">=</span> <span class="n">setbc</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">P</span><span class="p">)</span>
-    
-    <span class="c1"># Solve the linear system [K]{U} = {F}</span>
-    <span class="n">U</span><span class="p">,</span> <span class="n">F</span> <span class="o">=</span> <span class="n">solve</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">U</span><span class="p">)</span>
-    
-    <span class="c1"># Recover element responses (strains and stresses)</span>
-    <span class="n">E</span> <span class="o">=</span> <span class="n">qq4e</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">C</span><span class="p">)</span>
-    
-    <span class="k">return</span> <span class="n">U</span><span class="p">,</span> <span class="n">E</span>
-</pre></div>
-</div>
-<p>By decomposing the procedure this way, the core finite element routines (<code class="docutils literal notranslate"><span class="pre">init</span></code>, <code class="docutils literal notranslate"><span class="pre">kq4e</span></code>, <code class="docutils literal notranslate"><span class="pre">setbc</span></code>, <code class="docutils literal notranslate"><span class="pre">solve</span></code>, and <code class="docutils literal notranslate"><span class="pre">qq4e</span></code>) can be independently tested and optimized, while still presenting you with the familiar, simple interface.</p>
-</section>
-</section>
-<section id="matlab-1-based-vs-python-0-based-indexing">
-<h2>MATLAB 1-Based vs. Python 0-Based Indexing<a class="headerlink" href="#matlab-1-based-vs-python-0-based-indexing" title="Link to this heading">#</a></h2>
-<p>A critical issue you will encounter when migrating data or translating conceptual models from MATLAB to Python is the difference in array indexing conventions.</p>
+  <section class="tex2jax_ignore mathjax_ignore" id="chapter-13-legacy-wrappers">
+<h1>Chapter 13: Legacy Wrappers<a class="headerlink" href="#chapter-13-legacy-wrappers" title="Link to this heading">#</a></h1>
+<p>This chapter explains the compatibility layer in <code class="docutils literal notranslate"><span class="pre">matlab.py</span></code> and <code class="docutils literal notranslate"><span class="pre">compat.py</span></code>.
+The goal is not to hide the modern Python API. The goal is to let older FemLab
+scripts keep working while the underlying code uses the shared core modules.</p>
+<section id="why-the-wrappers-exist">
+<h2>Why The Wrappers Exist<a class="headerlink" href="#why-the-wrappers-exist" title="Link to this heading">#</a></h2>
+<p>The original FemLab material was organized as single-call drivers such as
+<code class="docutils literal notranslate"><span class="pre">elastic</span></code>, <code class="docutils literal notranslate"><span class="pre">flowq4</span></code>, <code class="docutils literal notranslate"><span class="pre">nlbar</span></code>, <code class="docutils literal notranslate"><span class="pre">plastps</span></code>, and <code class="docutils literal notranslate"><span class="pre">plastpe</span></code>. The wrapper layer keeps
+that entry point available, but each wrapper delegates to the shared core
+routines rather than duplicating the implementation.</p>
+<p>That separation matters:</p>
 <ul class="simple">
-<li><p><strong>MATLAB uses 1-based indexing:</strong> The first element of an array or matrix is at index <code class="docutils literal notranslate"><span class="pre">1</span></code>. Node IDs and element numbers in topology matrices (<code class="docutils literal notranslate"><span class="pre">T</span></code>) or boundary condition specifications (<code class="docutils literal notranslate"><span class="pre">P</span></code> or <code class="docutils literal notranslate"><span class="pre">C</span></code>) start at <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p></li>
-<li><p><strong>Python (NumPy) uses 0-based indexing:</strong> The first element of an array is at index <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p></li>
+<li><p>the wrappers preserve the old classroom interface,</p></li>
+<li><p>the core modules stay reusable and testable,</p></li>
+<li><p>the plotting and recovery logic remains centralized.</p></li>
 </ul>
-<p><strong>Implications for FEM Data:</strong>
-When you pass legacy matrices directly into Python, the node indices will be off by one. For example, if an element connects to the first node in the mesh, MATLAB records this as node <code class="docutils literal notranslate"><span class="pre">1</span></code>. Python expects this to refer to index <code class="docutils literal notranslate"><span class="pre">0</span></code> of the coordinate array <code class="docutils literal notranslate"><span class="pre">X</span></code>.</p>
-<p><strong>Correction Strategy:</strong>
-The <code class="docutils literal notranslate"><span class="pre">matlab.py</span></code> wrappers automatically handle this translation. However, if you are writing custom Python scripts or calling the core modular functions directly, you must manually shift your indices.</p>
-<p>For instance, correcting a topology matrix looks like this:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Shifting a 1-based MATLAB topology matrix to 0-based for Python</span>
-<span class="n">T_python</span> <span class="o">=</span> <span class="n">T_matlab</span> <span class="o">-</span> <span class="mi">1</span> 
-</pre></div>
-</div>
-<p>Always be meticulously aware of the indexing convention when moving between these two environments to avoid out-of-bounds errors or physically incorrect assemblies.</p>
+</section>
+<section id="shared-helpers">
+<h2>Shared Helpers<a class="headerlink" href="#shared-helpers" title="Link to this heading">#</a></h2>
+<section id="legacy-bundle">
+<h3><code class="docutils literal notranslate"><span class="pre">_legacy_bundle</span></code><a class="headerlink" href="#legacy-bundle" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">_legacy_bundle(T,</span> <span class="pre">X,</span> <span class="pre">G,</span> <span class="pre">C,</span> <span class="pre">P,</span> <span class="pre">dof=None)</span></code> converts the legacy input deck into a
+typed dictionary with normalized arrays. It resolves the degree-of-freedom count
+from <code class="docutils literal notranslate"><span class="pre">X</span></code> when needed and creates an empty load table when <code class="docutils literal notranslate"><span class="pre">P</span></code> is omitted.</p>
+<p>The wrappers use this helper so every legacy driver sees the same normalized
+shape and dtype rules.</p>
+</section>
+<section id="set-axis">
+<h3><code class="docutils literal notranslate"><span class="pre">_set_axis</span></code><a class="headerlink" href="#set-axis" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">_set_axis(ax,</span> <span class="pre">limits)</span></code> applies MATLAB-style axis vectors to Matplotlib axes.
+It supports both 2D and 3D limit arrays and is used only for compatibility with
+the old plotting scripts.</p>
+</section>
+<section id="compat-setpath">
+<h3><code class="docutils literal notranslate"><span class="pre">compat.setpath</span></code><a class="headerlink" href="#compat-setpath" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">compat.setpath()</span></code> returns the package and examples directories and can append
+the examples directory to <code class="docutils literal notranslate"><span class="pre">sys.path</span></code>.</p>
+<p>That mirrors the original MATLAB <code class="docutils literal notranslate"><span class="pre">setpath.m</span></code> helper closely enough for old
+scripts that expect the examples directory to be discoverable without manual
+path setup.</p>
+</section>
+</section>
+<section id="benchmark-data-wrappers">
+<h2>Benchmark Data Wrappers<a class="headerlink" href="#benchmark-data-wrappers" title="Link to this heading">#</a></h2>
+<p>The simplest wrappers just return packaged benchmark decks:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">canti()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">flow()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bar01()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bar02()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bar03()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">square()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">hole()</span></code></p></li>
+</ul>
+<p>These functions are data accessors, not solvers. They give you the original
+coordinates, topology, materials, loads, and constraints in the exact format
+expected by the legacy drivers.</p>
+<p><code class="docutils literal notranslate"><span class="pre">square()</span></code> and <code class="docutils literal notranslate"><span class="pre">hole()</span></code> both accept <code class="docutils literal notranslate"><span class="pre">plane_strain</span></code> so the caller can choose the
+plane-stress or plane-strain benchmark variant.</p>
+</section>
+<section id="solver-wrappers">
+<h2>Solver Wrappers<a class="headerlink" href="#solver-wrappers" title="Link to this heading">#</a></h2>
+<section id="elastic">
+<h3><code class="docutils literal notranslate"><span class="pre">elastic</span></code><a class="headerlink" href="#elastic" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">elastic(T,</span> <span class="pre">X,</span> <span class="pre">G,</span> <span class="pre">C,</span> <span class="pre">P,</span> <span class="pre">...)</span></code> solves the linear Q4 elasticity workflow. It uses
+<code class="docutils literal notranslate"><span class="pre">init</span></code>, <code class="docutils literal notranslate"><span class="pre">kq4e</span></code>, <code class="docutils literal notranslate"><span class="pre">setload</span></code>, <code class="docutils literal notranslate"><span class="pre">setbc</span></code>, <code class="docutils literal notranslate"><span class="pre">qq4e</span></code>, and <code class="docutils literal notranslate"><span class="pre">reaction</span></code> under the hood.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">plot=True</span></code>, it also returns figures for the mesh, loads, constraints, and
+stress field. That makes it a faithful compatibility wrapper for the original
+single-call MATLAB driver.</p>
+</section>
+<section id="flowq4-and-flowt3">
+<h3><code class="docutils literal notranslate"><span class="pre">flowq4</span></code> and <code class="docutils literal notranslate"><span class="pre">flowt3</span></code><a class="headerlink" href="#flowq4-and-flowt3" title="Link to this heading">#</a></h3>
+<p>These wrappers solve the scalar potential benchmark using either Q4 or T3
+elements. Internally they both call <code class="docutils literal notranslate"><span class="pre">_flow_driver</span></code>, which chooses the correct
+element kernels:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">kq4p</span></code> and <code class="docutils literal notranslate"><span class="pre">qq4p</span></code> for quadrilaterals,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">kt3p</span></code> and <code class="docutils literal notranslate"><span class="pre">qt3p</span></code> for triangles.</p></li>
+</ul>
+<p>The return value contains the solved field, the recovered gradients, and an
+optional figure that matches the legacy classroom output.</p>
+</section>
+<section id="nlbar">
+<h3><code class="docutils literal notranslate"><span class="pre">nlbar</span></code><a class="headerlink" href="#nlbar" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">nlbar(...)</span></code> wraps <code class="docutils literal notranslate"><span class="pre">solve_nlbar</span></code>. It keeps the original load-step controls and
+optionally builds the load-displacement and deformed-geometry plots.</p>
+</section>
+<section id="plastps-and-plastpe">
+<h3><code class="docutils literal notranslate"><span class="pre">plastps</span></code> and <code class="docutils literal notranslate"><span class="pre">plastpe</span></code><a class="headerlink" href="#plastps-and-plastpe" title="Link to this heading">#</a></h3>
+<p>These wrappers call <code class="docutils literal notranslate"><span class="pre">_plast_driver</span></code>, which in turn uses <code class="docutils literal notranslate"><span class="pre">solve_plastic</span></code>.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">plastps</span></code> configures plane stress.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">plastpe</span></code> configures plane strain.</p></li>
+</ul>
+<p>Both wrappers preserve the old MATLAB-style plot controls and can return the
+equivalent plastic strain field in the deformed configuration.</p>
+</section>
+</section>
+<section id="what-the-wrappers-return">
+<h2>What The Wrappers Return<a class="headerlink" href="#what-the-wrappers-return" title="Link to this heading">#</a></h2>
+<p>The wrappers return dictionaries rather than bare arrays. That is a deliberate
+departure from the original MATLAB style because it keeps the response data and
+the optional figures together in one object.</p>
+<p>The most common keys are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">u</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">q</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">S</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">E</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">R</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">data</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">figures</span></code></p></li>
+</ul>
+<p>That structure makes it easier to inspect results programmatically and keeps the
+legacy wrappers usable in notebooks and scripts.</p>
+</section>
+<section id="reading-order">
+<h2>Reading Order<a class="headerlink" href="#reading-order" title="Link to this heading">#</a></h2>
+<p>If you need to modify the compatibility layer, read these files in this order:</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">compat.py</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">matlab.py</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">core.py</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">boundary.py</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">loads.py</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">elements/</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">solvers.py</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">plotting.py</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">postprocess.py</span></code></p></li>
+</ol>
+<p>That path matches the actual dependency chain used by the wrappers.</p>
 </section>
 </section>
 
@@ -615,7 +546,7 @@ The <code class="docutils literal notranslate"><span class="pre">matlab.py</span
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Plotting and Post-Processing</p>
+        <p class="prev-next-title">Plotting and Postprocessing</p>
       </div>
     </a>
     <a class="right-next"
@@ -646,11 +577,23 @@ The <code class="docutils literal notranslate"><span class="pre">matlab.py</span
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-1-line-solvers">The 1-Line Solvers</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inside-the-elastic-wrapper">Inside the <code class="docutils literal notranslate"><span class="pre">elastic</span></code> Wrapper</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#why-the-wrappers-exist">Why The Wrappers Exist</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#shared-helpers">Shared Helpers</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#legacy-bundle"><code class="docutils literal notranslate"><span class="pre">_legacy_bundle</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#set-axis"><code class="docutils literal notranslate"><span class="pre">_set_axis</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#compat-setpath"><code class="docutils literal notranslate"><span class="pre">compat.setpath</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#matlab-1-based-vs-python-0-based-indexing">MATLAB 1-Based vs. Python 0-Based Indexing</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#benchmark-data-wrappers">Benchmark Data Wrappers</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#solver-wrappers">Solver Wrappers</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#elastic"><code class="docutils literal notranslate"><span class="pre">elastic</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#flowq4-and-flowt3"><code class="docutils literal notranslate"><span class="pre">flowq4</span></code> and <code class="docutils literal notranslate"><span class="pre">flowt3</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nlbar"><code class="docutils literal notranslate"><span class="pre">nlbar</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plastps-and-plastpe"><code class="docutils literal notranslate"><span class="pre">plastps</span></code> and <code class="docutils literal notranslate"><span class="pre">plastpe</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-the-wrappers-return">What The Wrappers Return</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reading-order">Reading Order</a></li>
 </ul>
   </nav></div>
 

@@ -3,31 +3,107 @@
 
 .. automodule:: femlabpy.dynamics
 
-   
-   .. rubric:: Functions
 
-   .. autosummary::
-   
-      compute_frf
-      constant_load
-      critical_timestep
-      harmonic_load
-      plot_energy
-      plot_frf
-      plot_time_history
-      pulse_load
-      ramp_load
-      seismic_load
-      solve_central_diff
-      solve_hht
-      solve_newmark
-      solve_newmark_nl
-      tabulated_load
-   
-   .. rubric:: Classes
 
-   .. autosummary::
-   
-      NewmarkParams
-      TimeHistory
-   
+
+
+
+Functions
+---------
+
+.. autosummary::
+
+
+   compute_frf
+   constant_load
+   critical_timestep
+   harmonic_load
+   plot_energy
+   plot_frf
+   plot_time_history
+   pulse_load
+   ramp_load
+   seismic_load
+   solve_central_diff
+   solve_hht
+   solve_newmark
+   solve_newmark_nl
+   tabulated_load
+
+Function Reference
+------------------
+
+
+.. autofunction:: femlabpy.dynamics.compute_frf
+
+
+.. autofunction:: femlabpy.dynamics.constant_load
+
+
+.. autofunction:: femlabpy.dynamics.critical_timestep
+
+
+.. autofunction:: femlabpy.dynamics.harmonic_load
+
+
+.. autofunction:: femlabpy.dynamics.plot_energy
+
+
+.. autofunction:: femlabpy.dynamics.plot_frf
+
+
+.. autofunction:: femlabpy.dynamics.plot_time_history
+
+
+.. autofunction:: femlabpy.dynamics.pulse_load
+
+
+.. autofunction:: femlabpy.dynamics.ramp_load
+
+
+.. autofunction:: femlabpy.dynamics.seismic_load
+
+
+.. autofunction:: femlabpy.dynamics.solve_central_diff
+
+
+.. autofunction:: femlabpy.dynamics.solve_hht
+
+
+.. autofunction:: femlabpy.dynamics.solve_newmark
+
+
+.. autofunction:: femlabpy.dynamics.solve_newmark_nl
+
+
+.. autofunction:: femlabpy.dynamics.tabulated_load
+
+
+
+
+
+Classes
+-------
+
+.. autosummary::
+
+
+   NewmarkParams
+   TimeHistory
+
+Class Reference
+---------------
+
+
+.. autoclass:: femlabpy.dynamics.NewmarkParams
+   :members:
+   :show-inheritance:
+
+
+.. autoclass:: femlabpy.dynamics.TimeHistory
+   :members:
+   :show-inheritance:
+
+
+
+

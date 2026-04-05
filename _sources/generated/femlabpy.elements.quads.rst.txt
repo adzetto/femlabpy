@@ -3,27 +3,95 @@
 
 .. automodule:: femlabpy.elements.quads
 
-   
-   .. rubric:: Functions
 
-   .. autosummary::
-   
-      keq4e
-      keq4epe
-      keq4eps
-      keq4p
-      kq4e
-      kq4epe
-      kq4eps
-      kq4p
-      meq4e
-      mq4e
-      qeq4e
-      qeq4epe
-      qeq4eps
-      qeq4p
-      qq4e
-      qq4epe
-      qq4eps
-      qq4p
-   
+
+
+
+
+Functions
+---------
+
+.. autosummary::
+
+
+   keq4e
+   keq4epe
+   keq4eps
+   keq4p
+   kq4e
+   kq4epe
+   kq4eps
+   kq4p
+   meq4e
+   mq4e
+   qeq4e
+   qeq4epe
+   qeq4eps
+   qeq4p
+   qq4e
+   qq4epe
+   qq4eps
+   qq4p
+
+Function Reference
+------------------
+
+
+.. autofunction:: femlabpy.elements.quads.keq4e
+
+
+.. autofunction:: femlabpy.elements.quads.keq4epe
+
+
+.. autofunction:: femlabpy.elements.quads.keq4eps
+
+
+.. autofunction:: femlabpy.elements.quads.keq4p
+
+
+.. autofunction:: femlabpy.elements.quads.kq4e
+
+
+.. autofunction:: femlabpy.elements.quads.kq4epe
+
+
+.. autofunction:: femlabpy.elements.quads.kq4eps
+
+
+.. autofunction:: femlabpy.elements.quads.kq4p
+
+
+.. autofunction:: femlabpy.elements.quads.meq4e
+
+
+.. autofunction:: femlabpy.elements.quads.mq4e
+
+
+.. autofunction:: femlabpy.elements.quads.qeq4e
+
+
+.. autofunction:: femlabpy.elements.quads.qeq4epe
+
+
+.. autofunction:: femlabpy.elements.quads.qeq4eps
+
+
+.. autofunction:: femlabpy.elements.quads.qeq4p
+
+
+.. autofunction:: femlabpy.elements.quads.qq4e
+
+
+.. autofunction:: femlabpy.elements.quads.qq4epe
+
+
+.. autofunction:: femlabpy.elements.quads.qq4eps
+
+
+.. autofunction:: femlabpy.elements.quads.qq4p
+
+
+
+
+
+

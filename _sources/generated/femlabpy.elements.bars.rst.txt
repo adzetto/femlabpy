@@ -3,15 +3,47 @@
 
 .. automodule:: femlabpy.elements.bars
 
-   
-   .. rubric:: Functions
 
-   .. autosummary::
-   
-      kbar
-      kebar
-      mbar
-      mebar
-      qbar
-      qebar
-   
+
+
+
+
+Functions
+---------
+
+.. autosummary::
+
+
+   kbar
+   kebar
+   mbar
+   mebar
+   qbar
+   qebar
+
+Function Reference
+------------------
+
+
+.. autofunction:: femlabpy.elements.bars.kbar
+
+
+.. autofunction:: femlabpy.elements.bars.kebar
+
+
+.. autofunction:: femlabpy.elements.bars.mbar
+
+
+.. autofunction:: femlabpy.elements.bars.mebar
+
+
+.. autofunction:: femlabpy.elements.bars.qbar
+
+
+.. autofunction:: femlabpy.elements.bars.qebar
+
+
+
+
+
+

@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Theory &amp; Reference Manual &#8212; femlabpy 0.6.0 documentation</title>
+    <title>Theory and Reference Manual &#8212; femlabpy 0.6.0 documentation</title>
   
   
   
@@ -31,6 +31,7 @@
 <link href="../_static/styles/pydata-sphinx-theme.css?digest=7f76b32a3354e82990f2" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=aa664f36" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../_static/scripts/fontawesome.js?digest=7f76b32a3354e82990f2"></script>
@@ -47,8 +48,8 @@
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Global Matrix Assembly in Finite Element Analysis: A Rigorous Perspective" href="01_core_assembly.html" />
-    <link rel="prev" title="Chapter 9: Advanced Dynamic Workflows" href="../manual/ch09_dynamic_workflows.html" />
+    <link rel="next" title="Core Assembly in Finite Element Analysis" href="01_core_assembly.html" />
+    <link rel="prev" title="Chapter 9: Dynamic Response Workflows" href="../manual/ch09_dynamic_workflows.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -133,118 +134,38 @@
     
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../tutorials.html">
-    Tutorials & Usage Manual
+    Tutorials
   </a>
 </li>
 
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../manual/index.html">
-    User Guide
+    Guide
   </a>
 </li>
 
 
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="#">
-    Theory & Reference Manual
+    Theory
   </a>
 </li>
 
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../api.html">
-    API Reference
+    API
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="01_core_assembly.html">
-    Global Matrix Assembly in Finite Element Analysis: A Rigorous Perspective
+  <a class="nav-link nav-internal" href="../matlab_python_mapping.html">
+    MATLAB Mapping
   </a>
 </li>
 
-            <li class="nav-item dropdown">
-                <button class="btn dropdown-toggle nav-item" type="button"
-                data-bs-toggle="dropdown" aria-expanded="false"
-                aria-controls="pst-nav-more-links">
-                    More
-                </button>
-                <ul id="pst-nav-more-links" class="dropdown-menu">
-                    
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="02_boundary_loads.html">
-    Chapter 2: Boundary Conditions and Loads
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="03_1d_bars.html">
-    Chapter 3: 1D Bar Elements (Linear & Nonlinear)
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="04_2d_triangles.html">
-    2D Triangular Elements (CST)
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="05_2d_quads.html">
-    Chapter 5: 2D Isoparametric Quadrilateral Elements
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="06_3d_solids.html">
-    3D Solid Elements: Tetrahedrons and Hexahedrons
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="07_plasticity.html">
-    Chapter 7: Constitutive Models & Plasticity
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="08_dynamics.html">
-    Structural Dynamics and Time Integration
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="09_modal_periodic.html">
-    Chapter 9: Eigenvalue Problems and Periodic Boundaries
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="10_io_mesh.html">
-    Mesh I/O, Data Types, and Helpers
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../api.html">
-    API Reference
-  </a>
-</li>
-
-                </ul>
-            </li>
-            
   </ul>
 </nav></div>
       
@@ -328,105 +249,35 @@
     
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../tutorials.html">
-    Tutorials & Usage Manual
+    Tutorials
   </a>
 </li>
 
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../manual/index.html">
-    User Guide
+    Guide
   </a>
 </li>
 
 
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="#">
-    Theory & Reference Manual
+    Theory
   </a>
 </li>
 
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../api.html">
-    API Reference
+    API
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="01_core_assembly.html">
-    Global Matrix Assembly in Finite Element Analysis: A Rigorous Perspective
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="02_boundary_loads.html">
-    Chapter 2: Boundary Conditions and Loads
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="03_1d_bars.html">
-    Chapter 3: 1D Bar Elements (Linear & Nonlinear)
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="04_2d_triangles.html">
-    2D Triangular Elements (CST)
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="05_2d_quads.html">
-    Chapter 5: 2D Isoparametric Quadrilateral Elements
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="06_3d_solids.html">
-    3D Solid Elements: Tetrahedrons and Hexahedrons
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="07_plasticity.html">
-    Chapter 7: Constitutive Models & Plasticity
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="08_dynamics.html">
-    Structural Dynamics and Time Integration
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="09_modal_periodic.html">
-    Chapter 9: Eigenvalue Problems and Periodic Boundaries
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="10_io_mesh.html">
-    Mesh I/O, Data Types, and Helpers
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../api.html">
-    API Reference
+  <a class="nav-link nav-internal" href="../matlab_python_mapping.html">
+    MATLAB Mapping
   </a>
 </li>
 
@@ -473,20 +324,19 @@
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="01_core_assembly.html">Global Matrix Assembly in Finite Element Analysis: A Rigorous Perspective</a></li>
-<li class="toctree-l1"><a class="reference internal" href="02_boundary_loads.html">Chapter 2: Boundary Conditions and Loads</a></li>
-<li class="toctree-l1"><a class="reference internal" href="03_1d_bars.html">Chapter 3: 1D Bar Elements (Linear &amp; Nonlinear)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="04_2d_triangles.html">2D Triangular Elements (CST)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="05_2d_quads.html">Chapter 5: 2D Isoparametric Quadrilateral Elements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="01_core_assembly.html">Core Assembly in Finite Element Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="02_boundary_loads.html">Boundary conditions and loads</a></li>
+<li class="toctree-l1"><a class="reference internal" href="03_1d_bars.html">1D bar elements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04_2d_triangles.html">2D Triangular Elements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05_2d_quads.html">2D Isoparametric Quadrilateral Elements</a></li>
 <li class="toctree-l1"><a class="reference internal" href="06_3d_solids.html">3D Solid Elements: Tetrahedrons and Hexahedrons</a></li>
-
-<li class="toctree-l1"><a class="reference internal" href="07_plasticity.html">Chapter 7: Constitutive Models &amp; Plasticity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="07_plasticity.html">Constitutive Models and Plasticity</a></li>
 <li class="toctree-l1"><a class="reference internal" href="08_dynamics.html">Structural Dynamics and Time Integration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="09_modal_periodic.html">Chapter 9: Eigenvalue Problems and Periodic Boundaries</a></li>
-<li class="toctree-l1"><a class="reference internal" href="10_io_mesh.html">Mesh I/O, Data Types, and Helpers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="09_modal_periodic.html">Modal analysis and periodic boundaries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="10_io_mesh.html">Mesh I/O and Gmsh Import</a></li>
 <li class="toctree-l1"><a class="reference internal" href="11_nonlinear_solvers.html">Chapter 11: Nonlinear Solvers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="12_plotting_postprocessing.html">Plotting and Post-Processing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="13_legacy_wrappers.html">13. Legacy Wrappers for MATLAB Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12_plotting_postprocessing.html">Plotting and Postprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13_legacy_wrappers.html">Chapter 13: Legacy Wrappers</a></li>
 </ul>
 </div>
 </nav></div>
@@ -527,7 +377,7 @@
         <i class="fa-solid fa-home"></i>
       </a>
     </li>
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Theory &amp; Reference Manual</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Theory and Reference Manual</span></li>
   </ul>
 </nav>
 </div>
@@ -544,117 +394,182 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="theory-reference-manual">
-<h1>Theory &amp; Reference Manual<a class="headerlink" href="#theory-reference-manual" title="Link to this heading">#</a></h1>
-<p>This section dives deep into the mathematical formulations, shape functions, numerical integration strategies, and algorithms that power <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code>. It is intended for researchers, graduate students, and developers looking to understand the mechanics behind the code.</p>
+  <section class="tex2jax_ignore mathjax_ignore" id="theory-and-reference-manual">
+<h1>Theory and Reference Manual<a class="headerlink" href="#theory-and-reference-manual" title="Link to this heading">#</a></h1>
+<div class="fp-home-intro docutils container">
+<div class="fp-kicker docutils container">
+<p>Implementation-aligned derivations</p>
+</div>
+<div class="fp-lead docutils container">
+<p>These chapters explain the mathematical structure behind the actual <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code>
+implementation. The goal is not to repeat generic FEM lecture notes, but to
+connect equations, indexing rules, and constitutive updates to the exact array
+operations used in the source tree.</p>
+</div>
+</div>
+<div class="fp-card-grid docutils container">
+<div class="fp-card docutils container">
+<p class="rubric" id="scope">Scope</p>
+<ul class="simple">
+<li><p>Core assembly and boundary-condition logic.</p></li>
+<li><p>Bar, triangle, quadrilateral, and solid element formulations.</p></li>
+<li><p>Plasticity, modal analysis, damping, dynamic time integration, and periodicity.</p></li>
+<li><p>Mesh I/O, plotting, and legacy wrapper behavior.</p></li>
+</ul>
+</div>
+<div class="fp-card docutils container">
+<p class="rubric" id="suggested-order">Suggested Order</p>
+<ol class="arabic simple">
+<li><p>Start with the assembly and boundary chapters.</p></li>
+<li><p>Continue into the element-family chapters for the formulations you use.</p></li>
+<li><p>Read the later chapters for dynamics, periodicity, nonlinear solvers, and I/O.</p></li>
+</ol>
+</div>
+</div>
+<section id="chapter-groups">
+<h2>Chapter Groups<a class="headerlink" href="#chapter-groups" title="Link to this heading">#</a></h2>
+<div class="fp-card-grid docutils container">
+<div class="fp-card docutils container">
+<p class="rubric" id="core-mechanics">Core Mechanics</p>
+<ul class="simple">
+<li><p><strong>01:</strong> Assembly logic and global indexing.</p></li>
+<li><p><strong>02:</strong> Boundary conditions and load treatment.</p></li>
+<li><p><strong>03:</strong> One-dimensional bar formulations.</p></li>
+</ul>
+</div>
+<div class="fp-card docutils container">
+<p class="rubric" id="element-families">Element Families</p>
+<ul class="simple">
+<li><p><strong>04:</strong> Three-node triangular elements.</p></li>
+<li><p><strong>05:</strong> Quadrilateral elements, including elastoplastic variants.</p></li>
+<li><p><strong>06:</strong> Tetrahedral and hexahedral solids.</p></li>
+<li><p><strong>07:</strong> Stress invariants and constitutive return mapping.</p></li>
+</ul>
+</div>
+<div class="fp-card docutils container">
+<p class="rubric" id="dynamics-periodicity-and-i-o">Dynamics, Periodicity, and I/O</p>
+<ul class="simple">
+<li><p><strong>08:</strong> Dynamics and time integration.</p></li>
+<li><p><strong>09:</strong> Modal reduction and periodic constraints.</p></li>
+<li><p><strong>10:</strong> Mesh import and normalized data structures.</p></li>
+<li><p><strong>11:</strong> Nonlinear legacy solver drivers.</p></li>
+<li><p><strong>12:</strong> Plotting and post-processing.</p></li>
+<li><p><strong>13:</strong> Legacy wrappers and compatibility behavior.</p></li>
+</ul>
+</div>
+</div>
+<div class="fp-section-note docutils container">
+<p>Section titles in this manual are kept as plain text on purpose. Mathematical
+symbols and derivations stay in the body text so the sidebar and section
+navigation remain clean and readable.</p>
+</div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="01_core_assembly.html">Global Matrix Assembly in Finite Element Analysis: A Rigorous Perspective</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="01_core_assembly.html#introduction-to-assembly">Introduction to Assembly</a></li>
-<li class="toctree-l2"><a class="reference internal" href="01_core_assembly.html#the-mathematics-of-l-e-t-k-e-l-e-in-extreme-detail">The Mathematics of <span class="math notranslate nohighlight">\(L_e^T K_e L_e\)</span> in Extreme Detail</a></li>
-<li class="toctree-l2"><a class="reference internal" href="01_core_assembly.html#python-implementation-exactly-how-numpy-ix-works">Python Implementation: Exactly How <code class="docutils literal notranslate"><span class="pre">numpy.ix_</span></code> Works</a></li>
-<li class="toctree-l2"><a class="reference internal" href="01_core_assembly.html#sparse-vs-dense-assembly-in-assmk">Sparse vs. Dense Assembly in <code class="docutils literal notranslate"><span class="pre">assmk</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="01_core_assembly.html#complete-example-3-element-manual-assembly">Complete Example: 3-Element Manual Assembly</a></li>
+<li class="toctree-l1"><a class="reference internal" href="01_core_assembly.html">Core Assembly in Finite Element Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="01_core_assembly.html#introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="01_core_assembly.html#assembly-identity-and-meaning">Assembly identity and meaning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="01_core_assembly.html#python-implementation-with-numpy-ix">Python implementation with <code class="docutils literal notranslate"><span class="pre">numpy.ix_</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="01_core_assembly.html#sparse-and-dense-assembly-in-assmk">Sparse and dense assembly in <code class="docutils literal notranslate"><span class="pre">assmk</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="01_core_assembly.html#complete-example-3-element-manual-assembly">Complete example: 3-element manual assembly</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="02_boundary_loads.html">Chapter 2: Boundary Conditions and Loads</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="02_boundary_loads.html#applying-external-loads">2.1 Applying External Loads</a></li>
-<li class="toctree-l2"><a class="reference internal" href="02_boundary_loads.html#dirichlet-boundary-conditions-the-penalty-and-direct-elimination-methods">2.2 Dirichlet Boundary Conditions: The Penalty and Direct Elimination Methods</a></li>
-<li class="toctree-l2"><a class="reference internal" href="02_boundary_loads.html#general-constraints-lagrange-multipliers">2.3 General Constraints: Lagrange Multipliers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="02_boundary_loads.html">Boundary conditions and loads</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="02_boundary_loads.html#applying-external-loads">2.1 Applying external loads</a></li>
+<li class="toctree-l2"><a class="reference internal" href="02_boundary_loads.html#dirichlet-boundary-conditions">2.2 Dirichlet boundary conditions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="02_boundary_loads.html#general-constraints">2.3 General constraints</a></li>
 <li class="toctree-l2"><a class="reference internal" href="02_boundary_loads.html#summary">Summary</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="03_1d_bars.html">Chapter 3: 1D Bar Elements (Linear &amp; Nonlinear)</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="03_1d_bars.html">1D bar elements</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="03_1d_bars.html#linear-1d-bar-formulation">3.1 Linear 1D Bar Formulation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="03_1d_bars.html#geometric-nonlinear-formulation">3.2 Geometric Nonlinear Formulation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="03_1d_bars.html#the-newton-raphson-iteration-scheme-example">3.4 The Newton-Raphson Iteration Scheme &amp; Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="03_1d_bars.html#geometric-nonlinear-formulation">3.2 Geometric nonlinear formulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="03_1d_bars.html#newton-raphson-iteration-and-example">3.4 Newton-Raphson iteration and example</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="04_2d_triangles.html">2D Triangular Elements (CST)</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="04_2d_triangles.html#area-coordinates-and-shape-functions">Area Coordinates and Shape Functions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="04_2d_triangles.html#solid-mechanics-deriving-the-3-times-6-b-matrix-step-by-step">Solid Mechanics: Deriving the <span class="math notranslate nohighlight">\(3 \times 6\)</span> <span class="math notranslate nohighlight">\(B\)</span> Matrix Step-by-Step</a></li>
-<li class="toctree-l2"><a class="reference internal" href="04_2d_triangles.html#element-stiffness-matrix-computation-in-ket3e">Element Stiffness Matrix Computation in <code class="docutils literal notranslate"><span class="pre">ket3e</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="04_2d_triangles.html#vectorized-assembly-kt3e-and-np-einsum">Vectorized Assembly (<code class="docutils literal notranslate"><span class="pre">kt3e</span></code> and <code class="docutils literal notranslate"><span class="pre">np.einsum</span></code>)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="04_2d_triangles.html#runnable-example-script">Runnable Example Script</a></li>
-<li class="toctree-l2"><a class="reference internal" href="04_2d_triangles.html#potential-flow-and-heat-transfer">Potential Flow and Heat Transfer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04_2d_triangles.html">2D Triangular Elements</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="04_2d_triangles.html#geometry-and-array-layout">Geometry and array layout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="04_2d_triangles.html#shape-functions-and-gradients">Shape functions and gradients</a></li>
+<li class="toctree-l2"><a class="reference internal" href="04_2d_triangles.html#strain-displacement-matrix">Strain-displacement matrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="04_2d_triangles.html#element-stiffness-in-ket3e">Element stiffness in <code class="docutils literal notranslate"><span class="pre">ket3e</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="04_2d_triangles.html#batched-assembly-in-kt3e">Batched assembly in <code class="docutils literal notranslate"><span class="pre">kt3e</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="04_2d_triangles.html#stress-and-flux-recovery">Stress and flux recovery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="04_2d_triangles.html#scalar-potential-version">Scalar potential version</a></li>
 <li class="toctree-l2"><a class="reference internal" href="04_2d_triangles.html#summary">Summary</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="05_2d_quads.html">Chapter 5: 2D Isoparametric Quadrilateral Elements</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="05_2d_quads.html#bilinear-shape-functions">1. Bilinear Shape Functions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="05_2d_quads.html#isoparametric-mapping-and-the-jacobian-matrix">2. Isoparametric Mapping and the Jacobian Matrix</a></li>
-<li class="toctree-l2"><a class="reference internal" href="05_2d_quads.html#the-strain-displacement-matrix-mathbf-b">3. The Strain-Displacement Matrix (<span class="math notranslate nohighlight">\(\mathbf{B}\)</span>)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="05_2d_quads.html#gauss-legendre-numerical-integration">4. Gauss-Legendre Numerical Integration</a></li>
-<li class="toctree-l2"><a class="reference internal" href="05_2d_quads.html#software-implementation-in-femlabpy">5. Software Implementation in <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="05_2d_quads.html#summary">6. Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05_2d_quads.html">2D Isoparametric Quadrilateral Elements</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="05_2d_quads.html#bilinear-shape-functions">Bilinear shape functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="05_2d_quads.html#isoparametric-mapping-and-the-jacobian">Isoparametric mapping and the Jacobian</a></li>
+<li class="toctree-l2"><a class="reference internal" href="05_2d_quads.html#strain-displacement-matrix">Strain-displacement matrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="05_2d_quads.html#gauss-legendre-integration">Gauss-Legendre integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="05_2d_quads.html#implementation-in-femlabpy">Implementation in femlabpy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="05_2d_quads.html#scalar-potential-version">Scalar potential version</a></li>
+<li class="toctree-l2"><a class="reference internal" href="05_2d_quads.html#summary">Summary</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="06_3d_solids.html">3D Solid Elements: Tetrahedrons and Hexahedrons</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="06_3d_solids.html#the-4-node-tetrahedron-element-t4">1. The 4-Node Tetrahedron Element (T4)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="06_3d_solids.html#the-4-node-tetrahedron-element">1. The 4-Node Tetrahedron Element</a></li>
+<li class="toctree-l2"><a class="reference internal" href="06_3d_solids.html#the-8-node-hexahedron-element">2. The 8-Node Hexahedron Element</a></li>
+<li class="toctree-l2"><a class="reference internal" href="06_3d_solids.html#practical-reading-guide">3. Practical reading guide</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="06_3d_solids.html#because-the-shape-functions-are-strictly-linear-their-local-derivatives-with-respect-to-the-natural-coordinates-yield-a-remarkably-simple-constant-matrix-frac-partial-mathbf-n-partial-boldsymbol-xi-begin-bmatrix-frac-partial-n-1-partial-xi-frac-partial-n-2-partial-xi-frac-partial-n-3-partial-xi-frac-partial-n-4-partial-xi-frac-partial-n-1-partial-eta-frac-partial-n-2-partial-eta-frac-partial-n-3-partial-eta-frac-partial-n-4-partial-eta-frac-partial-n-1-partial-zeta-frac-partial-n-2-partial-zeta-frac-partial-n-3-partial-zeta-frac-partial-n-4-partial-zeta-end-bmatrix">Because the shape functions are strictly linear, their local derivatives with respect to the natural coordinates yield a remarkably simple constant matrix:
-$$
-\frac{\partial \mathbf{N}}{\partial \boldsymbol{\xi}} =
-\begin{bmatrix}
-\frac{\partial N_1}{\partial \xi} &amp; \frac{\partial N_2}{\partial \xi} &amp; \frac{\partial N_3}{\partial \xi} &amp; \frac{\partial N_4}{\partial \xi} \
-\frac{\partial N_1}{\partial \eta} &amp; \frac{\partial N_2}{\partial \eta} &amp; \frac{\partial N_3}{\partial \eta} &amp; \frac{\partial N_4}{\partial \eta} \
-\frac{\partial N_1}{\partial \zeta} &amp; \frac{\partial N_2}{\partial \zeta} &amp; \frac{\partial N_3}{\partial \zeta} &amp; \frac{\partial N_4}{\partial \zeta}
-\end{bmatrix}</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="06_3d_solids.html#the-jacobian-and-construction-of-the-12x12-stiffness-matrix">1.2 The Jacobian and Construction of the 12x12 Stiffness Matrix</a></li>
-<li class="toctree-l2"><a class="reference internal" href="06_3d_solids.html#the-8-node-hexahedron-element-h8">2. The 8-Node Hexahedron Element (H8)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="06_3d_solids.html#implementation-in-python-the-professor-s-runnable-script">3. Implementation in Python: The Professor’s Runnable Script</a></li>
-<li class="toctree-l2"><a class="reference internal" href="06_3d_solids.html#summary">Summary</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="07_plasticity.html">Chapter 7: Constitutive Models &amp; Plasticity</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="07_plasticity.html#linear-elasticity">1. Linear Elasticity</a></li>
-<li class="toctree-l2"><a class="reference internal" href="07_plasticity.html#rate-independent-plasticity-von-mises-j-2-flow-theory">2. Rate-Independent Plasticity: von Mises (<span class="math notranslate nohighlight">\(J_2\)</span>) Flow Theory</a></li>
-<li class="toctree-l2"><a class="reference internal" href="07_plasticity.html#computational-plasticity-radial-return-mapping">3. Computational Plasticity: Radial Return Mapping</a></li>
-<li class="toctree-l2"><a class="reference internal" href="07_plasticity.html#algorithmic-consistent-tangent-modulus-mathbf-d-ep">4. Algorithmic Consistent Tangent Modulus (<span class="math notranslate nohighlight">\(\mathbf{D}^{ep}\)</span>)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="07_plasticity.html#the-drucker-prager-yield-criterion">5. The Drucker-Prager Yield Criterion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="07_plasticity.html">Constitutive Models and Plasticity</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="07_plasticity.html#elasticity-and-invariant-helpers">1. Elasticity and invariant helpers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="07_plasticity.html#plane-stress-von-mises-plasticity">2. Plane-stress von Mises plasticity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="07_plasticity.html#drucker-prager-plasticity">3. Drucker-Prager plasticity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="07_plasticity.html#consistent-tangent-in-the-solver-flow">4. Consistent tangent in the solver flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="07_plasticity.html#how-to-read-the-module">5. How to read the module</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="08_dynamics.html">Structural Dynamics and Time Integration</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="08_dynamics.html#mass-matrix-formulation">1. Mass Matrix Formulation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="08_dynamics.html#rayleigh-proportional-damping">2. Rayleigh Proportional Damping</a></li>
-<li class="toctree-l2"><a class="reference internal" href="08_dynamics.html#implicit-time-integration-the-newmark-beta-method">3. Implicit Time Integration: The Newmark-<span class="math notranslate nohighlight">\(\beta\)</span> Method</a></li>
-<li class="toctree-l2"><a class="reference internal" href="08_dynamics.html#hilber-hughes-taylor-hht-alpha-method">4. Hilber-Hughes-Taylor (HHT-<span class="math notranslate nohighlight">\(\alpha\)</span>) Method</a></li>
-<li class="toctree-l2"><a class="reference internal" href="08_dynamics.html#explicit-time-integration-central-difference-method">5. Explicit Time Integration: Central Difference Method</a></li>
+<li class="toctree-l2"><a class="reference internal" href="08_dynamics.html#mass-and-damping-models">1. Mass and damping models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="08_dynamics.html#load-histories">2. Load histories</a></li>
+<li class="toctree-l2"><a class="reference internal" href="08_dynamics.html#newmark-beta">3. Newmark beta</a></li>
+<li class="toctree-l2"><a class="reference internal" href="08_dynamics.html#central-difference-and-hht-alpha">4. Central difference and HHT alpha</a></li>
+<li class="toctree-l2"><a class="reference internal" href="08_dynamics.html#frequency-response-and-plots">5. Frequency response and plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="08_dynamics.html#practical-use">6. Practical use</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="09_modal_periodic.html">Chapter 9: Eigenvalue Problems and Periodic Boundaries</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="09_modal_periodic.html#free-vibration-modal-analysis">9.1 Free Vibration Modal Analysis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="09_modal_periodic.html#periodic-boundary-conditions-pbc">9.2 Periodic Boundary Conditions (PBC)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="09_modal_periodic.html#computational-homogenization">9.3 Computational Homogenization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="09_modal_periodic.html">Modal analysis and periodic boundaries</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="09_modal_periodic.html#modal-analysis">1. Modal analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="09_modal_periodic.html#periodic-boundaries">2. Periodic boundaries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="09_modal_periodic.html#volume-averages-and-homogenization">3. Volume averages and homogenization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="09_modal_periodic.html#practical-workflow">4. Practical workflow</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="10_io_mesh.html">Mesh I/O, Data Types, and Helpers</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="10_io_mesh.html#the-gmsh-file-format-msh">1. The Gmsh File Format (<code class="docutils literal notranslate"><span class="pre">.msh</span></code>)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="10_io_mesh.html#parsing-meshes-with-load-gmsh2">2. Parsing Meshes with <code class="docutils literal notranslate"><span class="pre">load_gmsh2</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="10_io_mesh.html#the-gmshmesh-data-structure">3. The <code class="docutils literal notranslate"><span class="pre">GmshMesh</span></code> Data Structure</a></li>
-<li class="toctree-l2"><a class="reference internal" href="10_io_mesh.html#end-to-end-example-generating-and-loading-a-mesh">4. End-to-End Example: Generating and Loading a Mesh</a></li>
-<li class="toctree-l2"><a class="reference internal" href="10_io_mesh.html#summary">5. Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="10_io_mesh.html">Mesh I/O and Gmsh Import</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="10_io_mesh.html#mesh-formats">Mesh Formats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10_io_mesh.html#loader-functions">Loader Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10_io_mesh.html#gmshmesh-structure">GmshMesh Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10_io_mesh.html#parsing-flow">Parsing Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10_io_mesh.html#practical-usage">Practical Usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10_io_mesh.html#reading-checklist">Reading Checklist</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="11_nonlinear_solvers.html">Chapter 11: Nonlinear Solvers</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="11_nonlinear_solvers.html#the-orthogonal-residual-method-solve-nlbar">11.1 The Orthogonal Residual Method (<code class="docutils literal notranslate"><span class="pre">solve_nlbar</span></code>)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="11_nonlinear_solvers.html#the-standard-newton-raphson-scheme-solve-plastic">11.2 The Standard Newton-Raphson Scheme (<code class="docutils literal notranslate"><span class="pre">solve_plastic</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11_nonlinear_solvers.html#orthogonal-residual-solver">Orthogonal Residual Solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11_nonlinear_solvers.html#elastoplastic-solver">Elastoplastic Solver</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="12_plotting_postprocessing.html">Plotting and Post-Processing</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="12_plotting_postprocessing.html#mesh-plotting-with-polycollection">Mesh Plotting with <code class="docutils literal notranslate"><span class="pre">PolyCollection</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="12_plotting_postprocessing.html#stress-extrapolation-in-plotq4">Stress Extrapolation in <code class="docutils literal notranslate"><span class="pre">plotq4</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="12_plotting_postprocessing.html#reaction-forces-calculation">Reaction Forces Calculation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12_plotting_postprocessing.html">Plotting and Postprocessing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="12_plotting_postprocessing.html#mesh-and-field-plotting">Mesh and Field Plotting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12_plotting_postprocessing.html#element-contours">Element Contours</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12_plotting_postprocessing.html#reactions">Reactions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12_plotting_postprocessing.html#typical-workflow">Typical Workflow</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="13_legacy_wrappers.html">13. Legacy Wrappers for MATLAB Compatibility</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="13_legacy_wrappers.html#the-1-line-solvers">The 1-Line Solvers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="13_legacy_wrappers.html#matlab-1-based-vs-python-0-based-indexing">MATLAB 1-Based vs. Python 0-Based Indexing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13_legacy_wrappers.html">Chapter 13: Legacy Wrappers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="13_legacy_wrappers.html#why-the-wrappers-exist">Why The Wrappers Exist</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13_legacy_wrappers.html#shared-helpers">Shared Helpers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13_legacy_wrappers.html#benchmark-data-wrappers">Benchmark Data Wrappers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13_legacy_wrappers.html#solver-wrappers">Solver Wrappers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13_legacy_wrappers.html#what-the-wrappers-return">What The Wrappers Return</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13_legacy_wrappers.html#reading-order">Reading Order</a></li>
 </ul>
 </li>
 </ul>
 </div>
+</section>
 </section>
 
 
@@ -673,7 +588,7 @@ $$
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Chapter 9: Advanced Dynamic Workflows</p>
+        <p class="prev-next-title">Chapter 9: Dynamic Response Workflows</p>
       </div>
     </a>
     <a class="right-next"
@@ -681,7 +596,7 @@ $$
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Global Matrix Assembly in Finite Element Analysis: A Rigorous Perspective</p>
+        <p class="prev-next-title">Core Assembly in Finite Element Analysis</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -695,6 +610,18 @@ $$
                 <dialog id="pst-secondary-sidebar-modal"></dialog>
                 <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#chapter-groups">Chapter Groups</a></li>
+</ul>
+  </nav></div>
 
   <div class="sidebar-secondary-item">
 

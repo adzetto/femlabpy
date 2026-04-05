@@ -3,21 +3,71 @@
 
 .. automodule:: femlabpy.elements.solids
 
-   
-   .. rubric:: Functions
 
-   .. autosummary::
-   
-      kT4e
-      keT4e
-      keh8e
-      kh8e
-      mT4e
-      meT4e
-      meh8e
-      mh8e
-      qT4e
-      qeT4e
-      qeh8e
-      qh8e
-   
+
+
+
+
+Functions
+---------
+
+.. autosummary::
+
+
+   keT4e
+   keh8e
+   kT4e
+   kh8e
+   meT4e
+   meh8e
+   mT4e
+   mh8e
+   qeT4e
+   qeh8e
+   qT4e
+   qh8e
+
+Function Reference
+------------------
+
+
+.. autofunction:: femlabpy.elements.solids.keT4e
+
+
+.. autofunction:: femlabpy.elements.solids.keh8e
+
+
+.. autofunction:: femlabpy.elements.solids.kT4e
+
+
+.. autofunction:: femlabpy.elements.solids.kh8e
+
+
+.. autofunction:: femlabpy.elements.solids.meT4e
+
+
+.. autofunction:: femlabpy.elements.solids.meh8e
+
+
+.. autofunction:: femlabpy.elements.solids.mT4e
+
+
+.. autofunction:: femlabpy.elements.solids.mh8e
+
+
+.. autofunction:: femlabpy.elements.solids.qeT4e
+
+
+.. autofunction:: femlabpy.elements.solids.qeh8e
+
+
+.. autofunction:: femlabpy.elements.solids.qT4e
+
+
+.. autofunction:: femlabpy.elements.solids.qh8e
+
+
+
+
+
+

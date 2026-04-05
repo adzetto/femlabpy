@@ -31,6 +31,7 @@
 <link href="../_static/styles/pydata-sphinx-theme.css?digest=7f76b32a3354e82990f2" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=aa664f36" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../_static/scripts/fontawesome.js?digest=7f76b32a3354e82990f2"></script>
@@ -41,14 +42,12 @@
     <script src="../_static/documentation_options.js?v=8fa8b3e9"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'manual/ch08_custom_elements';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Chapter 9: Advanced Dynamic Workflows" href="ch09_dynamic_workflows.html" />
-    <link rel="prev" title="Chapter 7: Advanced Workflows &amp; Examples" href="ch07_advanced_examples.html" />
+    <link rel="next" title="Chapter 9: Dynamic Response Workflows" href="ch09_dynamic_workflows.html" />
+    <link rel="prev" title="Chapter 7: Packaged Workflows and Examples" href="ch07_packaged_examples.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -133,118 +132,38 @@
     
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../tutorials.html">
-    Tutorials & Usage Manual
+    Tutorials
   </a>
 </li>
 
 
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="index.html">
-    User Guide
+    Guide
   </a>
 </li>
 
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../theory/index.html">
-    Theory & Reference Manual
+    Theory
   </a>
 </li>
 
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../api.html">
-    API Reference
+    API
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../theory/01_core_assembly.html">
-    Global Matrix Assembly in Finite Element Analysis: A Rigorous Perspective
+  <a class="nav-link nav-internal" href="../matlab_python_mapping.html">
+    MATLAB Mapping
   </a>
 </li>
 
-            <li class="nav-item dropdown">
-                <button class="btn dropdown-toggle nav-item" type="button"
-                data-bs-toggle="dropdown" aria-expanded="false"
-                aria-controls="pst-nav-more-links">
-                    More
-                </button>
-                <ul id="pst-nav-more-links" class="dropdown-menu">
-                    
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../theory/02_boundary_loads.html">
-    Chapter 2: Boundary Conditions and Loads
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../theory/03_1d_bars.html">
-    Chapter 3: 1D Bar Elements (Linear & Nonlinear)
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../theory/04_2d_triangles.html">
-    2D Triangular Elements (CST)
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../theory/05_2d_quads.html">
-    Chapter 5: 2D Isoparametric Quadrilateral Elements
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../theory/06_3d_solids.html">
-    3D Solid Elements: Tetrahedrons and Hexahedrons
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../theory/07_plasticity.html">
-    Chapter 7: Constitutive Models & Plasticity
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../theory/08_dynamics.html">
-    Structural Dynamics and Time Integration
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../theory/09_modal_periodic.html">
-    Chapter 9: Eigenvalue Problems and Periodic Boundaries
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../theory/10_io_mesh.html">
-    Mesh I/O, Data Types, and Helpers
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../api.html">
-    API Reference
-  </a>
-</li>
-
-                </ul>
-            </li>
-            
   </ul>
 </nav></div>
       
@@ -328,105 +247,35 @@
     
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../tutorials.html">
-    Tutorials & Usage Manual
+    Tutorials
   </a>
 </li>
 
 
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="index.html">
-    User Guide
+    Guide
   </a>
 </li>
 
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../theory/index.html">
-    Theory & Reference Manual
+    Theory
   </a>
 </li>
 
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../api.html">
-    API Reference
+    API
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../theory/01_core_assembly.html">
-    Global Matrix Assembly in Finite Element Analysis: A Rigorous Perspective
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../theory/02_boundary_loads.html">
-    Chapter 2: Boundary Conditions and Loads
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../theory/03_1d_bars.html">
-    Chapter 3: 1D Bar Elements (Linear & Nonlinear)
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../theory/04_2d_triangles.html">
-    2D Triangular Elements (CST)
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../theory/05_2d_quads.html">
-    Chapter 5: 2D Isoparametric Quadrilateral Elements
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../theory/06_3d_solids.html">
-    3D Solid Elements: Tetrahedrons and Hexahedrons
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../theory/07_plasticity.html">
-    Chapter 7: Constitutive Models & Plasticity
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../theory/08_dynamics.html">
-    Structural Dynamics and Time Integration
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../theory/09_modal_periodic.html">
-    Chapter 9: Eigenvalue Problems and Periodic Boundaries
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../theory/10_io_mesh.html">
-    Mesh I/O, Data Types, and Helpers
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../api.html">
-    API Reference
+  <a class="nav-link nav-internal" href="../matlab_python_mapping.html">
+    MATLAB Mapping
   </a>
 </li>
 
@@ -475,13 +324,13 @@
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="ch01_fundamentals.html">Chapter 1: Fundamentals &amp; Data Structures</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ch02_elements.html">Chapter 2: Element Library</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ch03_assembly_statics.html">Chapter 3: Assembly &amp; Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ch03_assembly_statics.html">Chapter 3: Assembly and Constraints</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ch04_materials.html">Chapter 4: Material Models</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ch05_dynamics.html">Chapter 5: Structural Dynamics Theory &amp; Time Integration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ch06_periodic_io.html">Chapter 6: Periodic Boundaries &amp; I/O</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ch07_advanced_examples.html">Chapter 7: Advanced Workflows &amp; Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ch05_dynamics.html">Structural Dynamics and Time Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ch06_periodic_io.html">Chapter 6: Periodic Boundaries and Gmsh I/O</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ch07_packaged_examples.html">Chapter 7: Packaged Workflows and Examples</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Chapter 8: Custom Element Development</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ch09_dynamic_workflows.html">Chapter 9: Advanced Dynamic Workflows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ch09_dynamic_workflows.html">Chapter 9: Dynamic Response Workflows</a></li>
 </ul>
 </div>
 </nav></div>
@@ -544,206 +393,214 @@
                   
   <section class="tex2jax_ignore mathjax_ignore" id="chapter-8-custom-element-development">
 <h1>Chapter 8: Custom Element Development<a class="headerlink" href="#chapter-8-custom-element-development" title="Link to this heading">#</a></h1>
-<p>The architecture of <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> makes it exceptionally straightforward to write and integrate your own finite elements. Unlike heavy, deeply-nested object-oriented frameworks, <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> requires exactly two mathematically pure functions per element type:</p>
-<ol class="arabic simple">
-<li><p><strong>Stiffness Routine (<code class="docutils literal notranslate"><span class="pre">ke...</span></code>)</strong>: A function that returns the <span class="math notranslate nohighlight">\(n \times n\)</span> elemental stiffness matrix.</p></li>
-<li><p><strong>Force Routine (<code class="docutils literal notranslate"><span class="pre">qe...</span></code>)</strong>: A function that returns the <span class="math notranslate nohighlight">\(n \times 1\)</span> elemental internal force vector.</p></li>
-</ol>
-<p>In this chapter, we will dive profoundly into the mechanics of element assembly. We will thoroughly explore how the <code class="docutils literal notranslate"><span class="pre">assmk</span></code> and <code class="docutils literal notranslate"><span class="pre">assmq</span></code> core functions operate, investigate the monumental performance implications of <code class="docutils literal notranslate"><span class="pre">is_sparse</span></code>, and walk step-by-step through the creation of a <strong>Custom 2D Heat Transfer Element</strong> and a <strong>2D Beam Element</strong>.</p>
-<hr class="docutils" />
-<section id="the-philosophy-of-element-assembly">
-<h2>8.1 The Philosophy of Element Assembly<a class="headerlink" href="#the-philosophy-of-element-assembly" title="Link to this heading">#</a></h2>
-<p>At the heart of the finite element method lies the assembly process—mapping local elemental contributions into the global system matrices. In <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code>, this heavy lifting is performed by two highly optimized workhorses: <code class="docutils literal notranslate"><span class="pre">assmk</span></code> (Assemble Matrix K) and <code class="docutils literal notranslate"><span class="pre">assmq</span></code> (Assemble Vector Q).</p>
-<section id="deep-dive-assmk-and-assmq">
-<h3>Deep Dive: <code class="docutils literal notranslate"><span class="pre">assmk</span></code> and <code class="docutils literal notranslate"><span class="pre">assmq</span></code><a class="headerlink" href="#deep-dive-assmk-and-assmq" title="Link to this heading">#</a></h3>
-<p>The purpose of <code class="docutils literal notranslate"><span class="pre">assmk(K,</span> <span class="pre">Ke,</span> <span class="pre">nodes,</span> <span class="pre">dof)</span></code> is to take an <span class="math notranslate nohighlight">\(n_{el} \times n_{el}\)</span> local stiffness matrix <code class="docutils literal notranslate"><span class="pre">Ke</span></code> and scatter-add it into the global <span class="math notranslate nohighlight">\(N_{total} \times N_{total}\)</span> matrix <code class="docutils literal notranslate"><span class="pre">K</span></code>.</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">K</span></code>: The global stiffness, mass, or damping matrix.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Ke</span></code>: The elemental matrix (e.g., <span class="math notranslate nohighlight">\(3 \times 3\)</span> for a 3-node scalar triangle, <span class="math notranslate nohighlight">\(6 \times 6\)</span> for a 2-node beam).</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">nodes</span></code>: A list or array of global node IDs connected to this element (1-based indexing in standard <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code>).</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">dof</span></code>: The number of degrees of freedom per node.</p></li>
-</ul>
-<p>When you pass <code class="docutils literal notranslate"><span class="pre">dof</span></code>, <code class="docutils literal notranslate"><span class="pre">assmk</span></code> automatically calculates the correct block-strides in the global matrix. For example, if <code class="docutils literal notranslate"><span class="pre">dof=2</span></code> (solid mechanics), node <code class="docutils literal notranslate"><span class="pre">5</span></code> corresponds to global rows/cols <code class="docutils literal notranslate"><span class="pre">8</span></code> and <code class="docutils literal notranslate"><span class="pre">9</span></code> (since <span class="math notranslate nohighlight">\((5-1) \times 2 = 8\)</span>). <code class="docutils literal notranslate"><span class="pre">assmk</span></code> seamlessly maps the local matrix indices to these global slots.</p>
-<p><code class="docutils literal notranslate"><span class="pre">assmq(Q,</span> <span class="pre">Qe,</span> <span class="pre">nodes,</span> <span class="pre">dof)</span></code> operates identically but for vectors, mapping an <span class="math notranslate nohighlight">\(n_{el} \times 1\)</span> local force vector <code class="docutils literal notranslate"><span class="pre">Qe</span></code> into the global load vector <code class="docutils literal notranslate"><span class="pre">Q</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> is built around small, explicit kernels instead of a deep class hierarchy. That makes custom element work practical: you write the element math once, then wire it into the same assembly and recovery flow used everywhere else in the library.</p>
+<p>The important part is not just the local matrix formula. A usable custom element has to match the repository conventions for topology rows, material tables, degrees of freedom, and recovery outputs. This chapter shows that flow from the helper functions up to the assembled global system.</p>
+<section id="the-element-contract">
+<h2>8.1 The element contract<a class="headerlink" href="#the-element-contract" title="Link to this heading">#</a></h2>
+<p>In this repository, every element family follows the same pattern:</p>
+<dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">ke...</span></code></dt><dd><p>Return a local stiffness matrix.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">q...</span></code></dt><dd><p>Return the local internal-force vector and, when useful, element output quantities such as stress and strain.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">m...</span></code></dt><dd><p>Return a local mass matrix for dynamic analysis.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">k...</span></code></dt><dd><p>Assemble all element stiffness matrices into the global matrix.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">q...</span></code></dt><dd><p>Assemble all element internal-force vectors into the global vector.</p>
+</dd>
+</dl>
+<p>That split is deliberate. The local routine should know only element geometry, materials, and interpolation. The assembly routine should know only how to loop through the topology table and scatter the element result into the global system.</p>
+<p>The helper functions in <code class="docutils literal notranslate"><span class="pre">src/femlabpy/_helpers.py</span></code> define the data model that makes this work:</p>
+<dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">topology_nodes</span></code></dt><dd><p>Removes the last entry of a legacy topology row and returns the connected node numbers.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">topology_property</span></code></dt><dd><p>Reads the final entry of the same topology row and treats it as the material or property id.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">material_row</span></code></dt><dd><p>Converts that one-based property id into the matching row from the material table.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">node_dof_indices</span></code></dt><dd><p>Expands one-based node numbers into flattened global DOF indices.</p>
+</dd>
+</dl>
+<p>If you keep those four conventions intact, your custom element can plug into the rest of the package without special-case glue.</p>
 </section>
-<section id="the-profound-impact-of-is-sparse">
-<h3>The Profound Impact of <code class="docutils literal notranslate"><span class="pre">is_sparse</span></code><a class="headerlink" href="#the-profound-impact-of-is-sparse" title="Link to this heading">#</a></h3>
-<p>In computational mechanics, memory and performance are dominated by the sparsity of the global matrix. <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> detects the matrix format dynamically using the <code class="docutils literal notranslate"><span class="pre">is_sparse</span></code> utility.</p>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>A <span class="math notranslate nohighlight">\(10,000\)</span> node 2D solid mechanics problem has <span class="math notranslate nohighlight">\(20,000\)</span> DOFs. A dense float64 matrix of this size requires <strong>3.2 Gigabytes</strong> of RAM. A sparse representation requires barely <strong>a few Megabytes</strong>.</p>
-</div>
-<p>How does <code class="docutils literal notranslate"><span class="pre">is_sparse</span></code> affect the custom element assembly loop?</p>
-<ol class="arabic simple">
-<li><p><strong>Dense Assembly (<code class="docutils literal notranslate"><span class="pre">is_sparse(K)</span> <span class="pre">==</span> <span class="pre">False</span></code>)</strong>:
-If <code class="docutils literal notranslate"><span class="pre">K</span></code> is a standard NumPy <code class="docutils literal notranslate"><span class="pre">ndarray</span></code>, <code class="docutils literal notranslate"><span class="pre">assmk</span></code> executes a direct slicing and accumulation operation. It calculates the global indices and adds <code class="docutils literal notranslate"><span class="pre">Ke</span></code> using <code class="docutils literal notranslate"><span class="pre">K[ix,</span> <span class="pre">iy]</span> <span class="pre">+=</span> <span class="pre">Ke</span></code>. This is exceedingly fast for small academic problems but scales at <span class="math notranslate nohighlight">\(O(N^2)\)</span> in memory.</p></li>
-<li><p><strong>Sparse Assembly (<code class="docutils literal notranslate"><span class="pre">is_sparse(K)</span> <span class="pre">==</span> <span class="pre">True</span></code>)</strong>:
-If <code class="docutils literal notranslate"><span class="pre">K</span></code> is a <code class="docutils literal notranslate"><span class="pre">scipy.sparse</span></code> matrix (typically LIL or COO format during assembly), direct slicing is incredibly slow. When <code class="docutils literal notranslate"><span class="pre">assmk</span></code> detects a sparse matrix via <code class="docutils literal notranslate"><span class="pre">is_sparse</span></code>, it switches paradigms. It does not slice. Instead, it extracts the target row and column indices for the elemental block and appends the non-zero entries of <code class="docutils literal notranslate"><span class="pre">Ke</span></code> along with their <code class="docutils literal notranslate"><span class="pre">(row,</span> <span class="pre">col)</span></code> coordinates to internal lists (COO format generation).</p></li>
-</ol>
-<p>By abstracting this inside <code class="docutils literal notranslate"><span class="pre">assmk</span></code>, your custom element driver loops remain perfectly clean, yet they scale seamlessly from 10 elements to 10,000,000 elements.</p>
-</section>
-</section>
-<hr class="docutils" />
-<section id="writing-a-custom-2d-heat-transfer-element-ket3p">
-<h2>8.2 Writing a Custom 2D Heat Transfer Element (<code class="docutils literal notranslate"><span class="pre">ket3p</span></code>)<a class="headerlink" href="#writing-a-custom-2d-heat-transfer-element-ket3p" title="Link to this heading">#</a></h2>
-<p>Let’s design a 3-node triangular element for 2D steady-state heat conduction (a “Potential” problem).</p>
-<section id="the-mathematical-formulation">
-<h3>The Mathematical Formulation<a class="headerlink" href="#the-mathematical-formulation" title="Link to this heading">#</a></h3>
-<p>The governing equation (Poisson’s equation) is:
-$<span class="math notranslate nohighlight">\( -\nabla \cdot (\mathbf{k} \nabla T) = Q \)</span>$</p>
-<p>Where <span class="math notranslate nohighlight">\(T\)</span> is temperature, <span class="math notranslate nohighlight">\(\mathbf{k}\)</span> is the thermal conductivity matrix, and <span class="math notranslate nohighlight">\(Q\)</span> is the heat generation. Using the Galerkin method, the weak form leads to the elemental stiffness matrix:</p>
-<div class="math notranslate nohighlight">
-\[ \mathbf{K}_e = \int_{\Omega_e} \nabla \mathbf{N}^T \mathbf{k} \nabla \mathbf{N} \, dA \]</div>
-<p>For a 3-node triangle, the shape functions <span class="math notranslate nohighlight">\(\mathbf{N} = [N_1, N_2, N_3]\)</span> depend on the natural coordinates <span class="math notranslate nohighlight">\((\xi, \eta)\)</span>. The gradient matrix <span class="math notranslate nohighlight">\(\mathbf{B}\)</span> contains the spatial derivatives of the shape functions:</p>
-<div class="math notranslate nohighlight">
-\[\begin{split} \mathbf{B} = \begin{bmatrix} \frac{\partial N_1}{\partial x} &amp; \frac{\partial N_2}{\partial x} &amp; \frac{\partial N_3}{\partial x} \\ \frac{\partial N_1}{\partial y} &amp; \frac{\partial N_2}{\partial y} &amp; \frac{\partial N_3}{\partial y} \end{bmatrix} \end{split}\]</div>
-</section>
-<section id="gauss-integration-theory-to-python">
-<h3>Gauss Integration: Theory to Python<a class="headerlink" href="#gauss-integration-theory-to-python" title="Link to this heading">#</a></h3>
-<p>To evaluate the integral over the element domain <span class="math notranslate nohighlight">\(\Omega_e\)</span>, we map the element to a reference master triangle and use numerical Gauss-Legendre quadrature.</p>
-<p>The mapping introduces the Jacobian matrix <span class="math notranslate nohighlight">\(\mathbf{J}\)</span>, which links the natural derivatives to the spatial derivatives. The integral transforms as:</p>
-<div class="math notranslate nohighlight">
-\[ \int_{\Omega_e} \mathbf{B}^T \mathbf{k} \mathbf{B} \, dA = \sum_{i=1}^{n_{int}} w_i \mathbf{B}(\xi_i, \eta_i)^T \mathbf{k} \mathbf{B}(\xi_i, \eta_i) \det(\mathbf{J}) \]</div>
-<p>For a linear triangle, the <span class="math notranslate nohighlight">\(\mathbf{B}\)</span> matrix and Jacobian are constant, so a single integration point (<span class="math notranslate nohighlight">\(n_{int}=1\)</span>, <span class="math notranslate nohighlight">\(w_1 = 1/2\)</span>) is exact! The beautiful part of computational mechanics is how this complex continuous math reduces to a single, elegant line of linear algebra in Python:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Ke</span> <span class="o">+=</span> <span class="n">B</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">D</span> <span class="o">@</span> <span class="n">B</span> <span class="o">*</span> <span class="n">detJ</span> <span class="o">*</span> <span class="n">weight</span>
+<section id="how-assembly-works-here">
+<h2>8.2 How assembly works here<a class="headerlink" href="#how-assembly-works-here" title="Link to this heading">#</a></h2>
+<p>The assembly helpers in <code class="docutils literal notranslate"><span class="pre">src/femlabpy/assembly.py</span></code> are intentionally small:</p>
+<dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">assmk(K,</span> <span class="pre">Ke,</span> <span class="pre">Te,</span> <span class="pre">dof)</span></code></dt><dd><p>Extract the node numbers from <code class="docutils literal notranslate"><span class="pre">Te</span></code>, build the global DOF indices, and add <code class="docutils literal notranslate"><span class="pre">Ke</span></code> into the global matrix <code class="docutils literal notranslate"><span class="pre">K</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">assmq(q,</span> <span class="pre">qe,</span> <span class="pre">Te,</span> <span class="pre">dof)</span></code></dt><dd><p>Do the same thing for a force vector.</p>
+</dd>
+</dl>
+<p>That means the assembly loop in a custom driver should stay boring. Boring is good here. The real work belongs in the local kernel.</p>
+<p>For a dense matrix, the pattern is straightforward:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">indices</span> <span class="o">=</span> <span class="n">node_dof_indices</span><span class="p">(</span><span class="n">topology_nodes</span><span class="p">(</span><span class="n">row</span><span class="p">),</span> <span class="n">dof</span><span class="p">)</span>
+<span class="n">K</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ix_</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="n">indices</span><span class="p">)]</span> <span class="o">+=</span> <span class="n">Ke</span>
 </pre></div>
 </div>
-<p><em>(where <code class="docutils literal notranslate"><span class="pre">D</span></code> is our conductivity matrix <span class="math notranslate nohighlight">\(\mathbf{k}\)</span>)</em>.</p>
+<p>For a sparse matrix, the same indexing path is used, but you should keep the matrix in an assignment-friendly sparse format during assembly and convert it later if needed.</p>
+<p>The practical implication is simple:</p>
+<ol class="arabic simple">
+<li><p>Build local matrices with NumPy.</p></li>
+<li><p>Assemble with <code class="docutils literal notranslate"><span class="pre">assmk</span></code> and <code class="docutils literal notranslate"><span class="pre">assmq</span></code>.</p></li>
+<li><p>Keep the topology format consistent with the rest of the library.</p></li>
+<li><p>Do not mix local kernel logic with global solve logic.</p></li>
+</ol>
 </section>
-<section id="python-implementation-of-ket3p">
-<h3>Python Implementation of <code class="docutils literal notranslate"><span class="pre">ket3p</span></code><a class="headerlink" href="#python-implementation-of-ket3p" title="Link to this heading">#</a></h3>
-<p>Here is the exact implementation of the local element routine.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-
-<span class="k">def</span><span class="w"> </span><span class="nf">ket3p</span><span class="p">(</span><span class="n">Xe</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">th</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the 3x3 conductivity (stiffness) matrix for a 2D Heat Transfer Triangle.</span>
-<span class="sd">    </span>
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    Xe : ndarray</span>
-<span class="sd">        3x2 array of node coordinates: [[x1, y1], [x2, y2], [x3, y3]]</span>
-<span class="sd">    D : ndarray</span>
-<span class="sd">        2x2 thermal conductivity matrix (k_xx, k_yy, etc.)</span>
-<span class="sd">    th : float</span>
-<span class="sd">        Thickness of the element</span>
-<span class="sd">        </span>
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    Ke : ndarray</span>
-<span class="sd">        3x3 elemental stiffness matrix</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># 1. Define Gauss integration point for linear triangle (1 point rule)</span>
-    <span class="n">r</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="mf">1.0</span><span class="o">/</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="o">/</span><span class="mf">3.0</span>
-    <span class="n">weight</span> <span class="o">=</span> <span class="mf">0.5</span>  <span class="c1"># Area of the reference triangle</span>
-    
-    <span class="c1"># 2. Derivatives of shape functions w.r.t natural coords (xi, eta)</span>
-    <span class="c1"># N1 = 1 - r - s; N2 = r; N3 = s</span>
-    <span class="n">dN</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
-        <span class="p">[</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
-        <span class="p">[</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span>
-    <span class="p">])</span>
-    
-    <span class="c1"># 3. Compute Jacobian</span>
-    <span class="n">J</span> <span class="o">=</span> <span class="n">dN</span> <span class="o">@</span> <span class="n">Xe</span>
-    <span class="n">detJ</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">det</span><span class="p">(</span><span class="n">J</span><span class="p">)</span>
-    
-    <span class="k">if</span> <span class="n">detJ</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Element Jacobian is zero or negative. Check node numbering.&quot;</span><span class="p">)</span>
-        
-    <span class="c1"># 4. Map natural derivatives to spatial derivatives (B matrix)</span>
-    <span class="n">invJ</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">J</span><span class="p">)</span>
-    <span class="n">B</span> <span class="o">=</span> <span class="n">invJ</span> <span class="o">@</span> <span class="n">dN</span>
-    
-    <span class="c1"># 5. Gauss Integration</span>
-    <span class="c1"># \int B^T * D * B * detJ * dA</span>
-    <span class="n">Ke</span> <span class="o">=</span> <span class="n">B</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">D</span> <span class="o">@</span> <span class="n">B</span> <span class="o">*</span> <span class="n">detJ</span> <span class="o">*</span> <span class="n">weight</span> <span class="o">*</span> <span class="n">th</span>
-    
+<section id="scalar-potential-elements">
+<h2>8.3 Scalar potential elements<a class="headerlink" href="#scalar-potential-elements" title="Link to this heading">#</a></h2>
+<p>The scalar potential family is the cleanest place to start because it uses <code class="docutils literal notranslate"><span class="pre">dof</span> <span class="pre">=</span> <span class="pre">1</span></code>. The repository already includes the full pattern in <code class="docutils literal notranslate"><span class="pre">src/femlabpy/elements/triangles.py</span></code> and <code class="docutils literal notranslate"><span class="pre">src/femlabpy/elements/quads.py</span></code>.</p>
+<p>The triangular scalar kernel is <code class="docutils literal notranslate"><span class="pre">ket3p</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">ket3p</span><span class="p">(</span><span class="n">Xe</span><span class="p">,</span> <span class="n">Ge</span><span class="p">):</span>
+    <span class="n">a</span><span class="p">,</span> <span class="n">area</span> <span class="o">=</span> <span class="n">_triangle_geometry</span><span class="p">(</span><span class="n">Xe</span><span class="p">)</span>
+    <span class="n">props</span> <span class="o">=</span> <span class="n">as_float_array</span><span class="p">(</span><span class="n">Ge</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">conductivity</span> <span class="o">=</span> <span class="n">props</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span> <span class="o">*</span> <span class="n">conductivity</span>
+    <span class="n">B</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">area</span><span class="p">))</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">([</span><span class="o">-</span><span class="n">a</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">a</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]])</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">Ke</span> <span class="o">=</span> <span class="n">area</span> <span class="o">*</span> <span class="n">B</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">D</span> <span class="o">@</span> <span class="n">B</span>
+    <span class="k">if</span> <span class="n">props</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">props</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">Ke</span> <span class="o">=</span> <span class="n">Ke</span> <span class="o">+</span> <span class="p">(</span><span class="n">b</span> <span class="o">*</span> <span class="n">area</span> <span class="o">/</span> <span class="mf">12.0</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+            <span class="p">[[</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">]]</span>
+        <span class="p">)</span>
     <span class="k">return</span> <span class="n">Ke</span>
 </pre></div>
 </div>
+<p>What matters in that routine:</p>
+<dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">Xe</span></code></dt><dd><p>The element coordinates. The kernel never asks where the element came from; it only needs the coordinates of the current triangle.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">Ge</span></code></dt><dd><p>A material row. For this element, the first value is conductivity and the optional second value is a reaction term.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">B</span></code></dt><dd><p>The gradient operator. It maps nodal potentials to spatial gradients.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">Ke</span></code></dt><dd><p>The conductivity matrix that will be scattered into the global system.</p>
+</dd>
+</dl>
+<p>The companion recovery kernel is <code class="docutils literal notranslate"><span class="pre">qet3p</span></code>, which returns the equivalent nodal flux vector plus the element gradient and flux:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">qe</span><span class="p">,</span> <span class="n">Se</span><span class="p">,</span> <span class="n">Ee</span> <span class="o">=</span> <span class="n">qet3p</span><span class="p">(</span><span class="n">Xe</span><span class="p">,</span> <span class="n">Ge</span><span class="p">,</span> <span class="n">Ue</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">qt3p</span></code> then loops over the topology table, calls <code class="docutils literal notranslate"><span class="pre">qet3p</span></code> for each element, and accumulates the global vector with <code class="docutils literal notranslate"><span class="pre">assmq</span></code>.</p>
+<p>The quadrilateral scalar path follows the same structure. <code class="docutils literal notranslate"><span class="pre">kq4p</span></code> uses the same topological and assembly conventions, but the local integration rule is a 2x2 Gauss scheme instead of the triangle’s closed-form expression. That difference stays inside the element kernel, not the public API. If you understand one family, the other family is the same workflow with different interpolation.</p>
 </section>
-<section id="the-assembly-driver-loop">
-<h3>The Assembly Driver Loop<a class="headerlink" href="#the-assembly-driver-loop" title="Link to this heading">#</a></h3>
-<p>To assemble a mesh of 50,000 thermal triangles, we write a driver function <code class="docutils literal notranslate"><span class="pre">kt3p</span></code>. Note how heavily we rely on <code class="docutils literal notranslate"><span class="pre">assmk</span></code>. For a scalar potential problem, <code class="docutils literal notranslate"><span class="pre">dof</span> <span class="pre">=</span> <span class="pre">1</span></code>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">femlabpy.assembly</span><span class="w"> </span><span class="kn">import</span> <span class="n">assmk</span>
+<section id="structural-elements">
+<h2>8.4 Structural elements<a class="headerlink" href="#structural-elements" title="Link to this heading">#</a></h2>
+<p>The structural triangle kernels use the same assembly model, but the local DOF layout changes to <code class="docutils literal notranslate"><span class="pre">dof</span> <span class="pre">=</span> <span class="pre">2</span></code>.</p>
+<dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">ket3e</span></code></dt><dd><p>Returns the 6x6 plane-stress or plane-strain stiffness matrix for a constant-strain triangle.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">qet3e</span></code></dt><dd><p>Returns the internal-force vector together with element stress and strain values.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">kt3e</span></code></dt><dd><p>Assembles all T3 element stiffness matrices into the global stiffness matrix.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">qt3e</span></code></dt><dd><p>Recomputes element stress and strain from the global displacement field and scatters the equivalent nodal forces.</p>
+</dd>
+</dl>
+<p>The ordering is:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[u1, v1, u2, v2, u3, v3]
+</pre></div>
+</div>
+<p>That ordering is what <code class="docutils literal notranslate"><span class="pre">element_dof_indices</span></code> and <code class="docutils literal notranslate"><span class="pre">assmk</span></code> expect. If your custom element uses a different ordering, every downstream routine will be wrong even if the local math is correct.</p>
+<p>The same pattern appears in the 3D solid family:</p>
+<dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">keT4e</span></code>, <code class="docutils literal notranslate"><span class="pre">qeT4e</span></code>, <code class="docutils literal notranslate"><span class="pre">kT4e</span></code>, <code class="docutils literal notranslate"><span class="pre">qT4e</span></code></dt><dd><p>Four-node tetrahedron element kernels and assembly wrappers.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">keh8e</span></code>, <code class="docutils literal notranslate"><span class="pre">qeh8e</span></code>, <code class="docutils literal notranslate"><span class="pre">kh8e</span></code>, <code class="docutils literal notranslate"><span class="pre">qh8e</span></code></dt><dd><p>Eight-node hexahedron element kernels and assembly wrappers.</p>
+</dd>
+</dl>
+<p>These modules are useful references because they show how the repository handles:</p>
+<ol class="arabic simple">
+<li><p>Vectorized batch assembly.</p></li>
+<li><p>Material selection through topology property ids.</p></li>
+<li><p>Stress and strain recovery stored per element.</p></li>
+<li><p>Sparse-aware accumulation without changing the public API.</p></li>
+</ol>
+</section>
+<section id="writing-a-new-kernel">
+<h2>8.5 Writing a new kernel<a class="headerlink" href="#writing-a-new-kernel" title="Link to this heading">#</a></h2>
+<p>When you add a new element, keep the implementation split in the same way as the existing code.</p>
+<ol class="arabic simple">
+<li><p>Write a local stiffness function <code class="docutils literal notranslate"><span class="pre">kefoo(Xe,</span> <span class="pre">Ge)</span></code> that takes only one element’s coordinates and material data.</p></li>
+<li><p>Write a recovery function <code class="docutils literal notranslate"><span class="pre">qfoo(Xe,</span> <span class="pre">Ge,</span> <span class="pre">Ue)</span></code> if the element has internal forces, stresses, or fluxes.</p></li>
+<li><p>Write a global assembly wrapper <code class="docutils literal notranslate"><span class="pre">kfoo(K,</span> <span class="pre">T,</span> <span class="pre">X,</span> <span class="pre">G)</span></code> that loops over <code class="docutils literal notranslate"><span class="pre">T</span></code>, extracts <code class="docutils literal notranslate"><span class="pre">Xe</span></code> with <code class="docutils literal notranslate"><span class="pre">topology_nodes</span></code>, resolves the material row with <code class="docutils literal notranslate"><span class="pre">material_row</span></code>, and calls <code class="docutils literal notranslate"><span class="pre">assmk</span></code>.</p></li>
+<li><p>Write the matching force wrapper <code class="docutils literal notranslate"><span class="pre">qfoo_global(q,</span> <span class="pre">T,</span> <span class="pre">X,</span> <span class="pre">G,</span> <span class="pre">u)</span></code> and call <code class="docutils literal notranslate"><span class="pre">assmq</span></code>.</p></li>
+<li><p>Add the symbols to <code class="docutils literal notranslate"><span class="pre">src/femlabpy/elements/__init__.py</span></code> and, if needed, to the package root exports.</p></li>
+</ol>
+<p>The following skeleton matches the style used in the repository:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">kefoo</span><span class="p">(</span><span class="n">Xe</span><span class="p">,</span> <span class="n">Ge</span><span class="p">):</span>
+    <span class="n">Xe</span> <span class="o">=</span> <span class="n">as_float_array</span><span class="p">(</span><span class="n">Xe</span><span class="p">)</span>
+    <span class="n">props</span> <span class="o">=</span> <span class="n">as_float_array</span><span class="p">(</span><span class="n">Ge</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="c1"># build local interpolation, gradients, constitutive matrix</span>
+    <span class="c1"># return the element matrix only</span>
+    <span class="k">return</span> <span class="n">Ke</span>
 
-<span class="k">def</span><span class="w"> </span><span class="nf">kt3p</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">G</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Global assembly driver for 2D Heat Transfer Triangles.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">nel</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">dof</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># 1 DOF per node (Temperature)</span>
-    
-    <span class="c1"># Loop over all elements in the mesh</span>
-    <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nel</span><span class="p">):</span>
-        <span class="c1"># 1-based node IDs from topology matrix</span>
-        <span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">,</span> <span class="n">n3</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">T</span><span class="p">[</span><span class="n">e</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">T</span><span class="p">[</span><span class="n">e</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">T</span><span class="p">[</span><span class="n">e</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
-        <span class="n">prop_id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">T</span><span class="p">[</span><span class="n">e</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span>
-        
-        <span class="c1"># Extract nodal coordinates</span>
-        <span class="n">Xe</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">X</span><span class="p">[</span><span class="n">n1</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">X</span><span class="p">[</span><span class="n">n2</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">X</span><span class="p">[</span><span class="n">n3</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
-        
-        <span class="c1"># Extract material properties (Conductivity and thickness)</span>
-        <span class="n">kx</span> <span class="o">=</span> <span class="n">G</span><span class="p">[</span><span class="n">prop_id</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
-        <span class="n">ky</span> <span class="o">=</span> <span class="n">G</span><span class="p">[</span><span class="n">prop_id</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
-        <span class="n">D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">kx</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">ky</span><span class="p">]])</span>
-        <span class="n">th</span> <span class="o">=</span> <span class="n">G</span><span class="p">[</span><span class="n">prop_id</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
-        
-        <span class="c1"># 1. Compute elemental matrix</span>
-        <span class="n">Ke</span> <span class="o">=</span> <span class="n">ket3p</span><span class="p">(</span><span class="n">Xe</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">th</span><span class="p">)</span>
-        
-        <span class="c1"># 2. Assemble into global matrix</span>
-        <span class="n">nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">,</span> <span class="n">n3</span><span class="p">]</span>
-        <span class="n">K</span> <span class="o">=</span> <span class="n">assmk</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">Ke</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">dof</span><span class="p">)</span>
-        
+
+<span class="k">def</span><span class="w"> </span><span class="nf">qfoo</span><span class="p">(</span><span class="n">Xe</span><span class="p">,</span> <span class="n">Ge</span><span class="p">,</span> <span class="n">Ue</span><span class="p">):</span>
+    <span class="n">Xe</span> <span class="o">=</span> <span class="n">as_float_array</span><span class="p">(</span><span class="n">Xe</span><span class="p">)</span>
+    <span class="n">Ue</span> <span class="o">=</span> <span class="n">as_float_array</span><span class="p">(</span><span class="n">Ue</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="c1"># compute local response</span>
+    <span class="k">return</span> <span class="n">qe</span><span class="p">,</span> <span class="n">Se</span><span class="p">,</span> <span class="n">Ee</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">kfoo</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">G</span><span class="p">):</span>
+    <span class="n">coords</span> <span class="o">=</span> <span class="n">as_float_array</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+    <span class="n">dof</span> <span class="o">=</span> <span class="mi">2</span>  <span class="c1"># change to 1 for scalar kernels</span>
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">as_float_array</span><span class="p">(</span><span class="n">T</span><span class="p">):</span>
+        <span class="n">nodes</span> <span class="o">=</span> <span class="n">topology_nodes</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+        <span class="n">prop</span> <span class="o">=</span> <span class="n">topology_property</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+        <span class="n">Ke</span> <span class="o">=</span> <span class="n">kefoo</span><span class="p">(</span><span class="n">coords</span><span class="p">[</span><span class="n">nodes</span> <span class="o">-</span> <span class="mi">1</span><span class="p">],</span> <span class="n">material_row</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">prop</span><span class="p">))</span>
+        <span class="n">K</span> <span class="o">=</span> <span class="n">assmk</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">Ke</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">dof</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">K</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">qfoo_global</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">u</span><span class="p">):</span>
+    <span class="n">coords</span> <span class="o">=</span> <span class="n">as_float_array</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+    <span class="n">dof</span> <span class="o">=</span> <span class="mi">2</span>  <span class="c1"># change to 1 for scalar kernels</span>
+    <span class="n">U</span> <span class="o">=</span> <span class="n">as_float_array</span><span class="p">(</span><span class="n">u</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">coords</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dof</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">as_float_array</span><span class="p">(</span><span class="n">T</span><span class="p">):</span>
+        <span class="n">nodes</span> <span class="o">=</span> <span class="n">topology_nodes</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+        <span class="n">prop</span> <span class="o">=</span> <span class="n">topology_property</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+        <span class="n">Ue</span> <span class="o">=</span> <span class="n">U</span><span class="p">[</span><span class="n">nodes</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">qe</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">qfoo</span><span class="p">(</span><span class="n">coords</span><span class="p">[</span><span class="n">nodes</span> <span class="o">-</span> <span class="mi">1</span><span class="p">],</span> <span class="n">material_row</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">prop</span><span class="p">),</span> <span class="n">Ue</span><span class="p">)</span>
+        <span class="n">q</span> <span class="o">=</span> <span class="n">assmq</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">qe</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">dof</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">q</span>
 </pre></div>
 </div>
-<p>This design separates the finite element math (<code class="docutils literal notranslate"><span class="pre">ket3p</span></code>) from the graph-theory mesh topology (<code class="docutils literal notranslate"><span class="pre">kt3p</span></code>), yielding code that is both beautiful to read and fiercely performant.</p>
+<p>Do not try to make the local kernel aware of the global matrix shape. That coupling makes the code harder to test and much harder to reuse.</p>
 </section>
+<section id="example-integration-checklist">
+<h2>8.6 Example integration checklist<a class="headerlink" href="#example-integration-checklist" title="Link to this heading">#</a></h2>
+<p>Before a new element is considered finished, check these items:</p>
+<ol class="arabic simple">
+<li><p>The local kernel returns the expected matrix shape.</p></li>
+<li><p>The recovery kernel returns arrays with predictable shapes and consistent ordering.</p></li>
+<li><p>The topology row format matches the rest of the package.</p></li>
+<li><p>The material table row format is documented and used consistently.</p></li>
+<li><p>Dense and sparse assembly both work on a small test problem.</p></li>
+<li><p>The element is exported from <code class="docutils literal notranslate"><span class="pre">src/femlabpy/elements/__init__.py</span></code>.</p></li>
+<li><p>The element is reachable from the package root if users are meant to import it directly.</p></li>
+<li><p>A short documentation example shows the full flow from <code class="docutils literal notranslate"><span class="pre">Xe</span></code> and <code class="docutils literal notranslate"><span class="pre">Ge</span></code> to assembled <code class="docutils literal notranslate"><span class="pre">K</span></code> and <code class="docutils literal notranslate"><span class="pre">q</span></code>.</p></li>
+</ol>
+<p>A regression test should use a tiny problem where you can compute the same result by hand. For a new scalar element, a single triangle or quadrilateral is enough. For a structural element, compare the new kernel against a known textbook case or one of the existing <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> elements with the same interpolation order.</p>
 </section>
-<hr class="docutils" />
-<section id="example-2d-euler-bernoulli-beam-element">
-<h2>8.3 Example: 2D Euler-Bernoulli Beam Element<a class="headerlink" href="#example-2d-euler-bernoulli-beam-element" title="Link to this heading">#</a></h2>
-<p>For completeness, let us observe a structural element. A 2D beam element has two nodes, with 3 DOFs per node (<span class="math notranslate nohighlight">\(u_x, u_y, \theta_z\)</span>).</p>
-<p>The stiffness matrix relies on the standard beam equations and requires an angle transformation <span class="math notranslate nohighlight">\(\mathbf{R}^T \mathbf{K}_{loc} \mathbf{R}\)</span>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">kebeam2d</span><span class="p">(</span><span class="n">Xe</span><span class="p">,</span> <span class="n">Ge</span><span class="p">):</span>
-    <span class="n">A</span><span class="p">,</span> <span class="n">I</span><span class="p">,</span> <span class="n">E</span> <span class="o">=</span> <span class="n">Ge</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Ge</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">Ge</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
-    
-    <span class="n">dx</span> <span class="o">=</span> <span class="n">Xe</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">Xe</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
-    <span class="n">dy</span> <span class="o">=</span> <span class="n">Xe</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">Xe</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
-    <span class="n">L</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">dx</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">dy</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
-    <span class="n">c</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="n">dx</span> <span class="o">/</span> <span class="n">L</span><span class="p">,</span> <span class="n">dy</span> <span class="o">/</span> <span class="n">L</span>
-    
-    <span class="n">k_axial</span> <span class="o">=</span> <span class="n">E</span> <span class="o">*</span> <span class="n">A</span> <span class="o">/</span> <span class="n">L</span>
-    <span class="n">k_shear</span> <span class="o">=</span> <span class="mi">12</span> <span class="o">*</span> <span class="n">E</span> <span class="o">*</span> <span class="n">I</span> <span class="o">/</span> <span class="n">L</span><span class="o">**</span><span class="mi">3</span>
-    <span class="n">k_mom1</span>  <span class="o">=</span> <span class="mi">6</span> <span class="o">*</span> <span class="n">E</span> <span class="o">*</span> <span class="n">I</span> <span class="o">/</span> <span class="n">L</span><span class="o">**</span><span class="mi">2</span>
-    <span class="n">k_mom2</span>  <span class="o">=</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">E</span> <span class="o">*</span> <span class="n">I</span> <span class="o">/</span> <span class="n">L</span>
-    <span class="n">k_mom3</span>  <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">E</span> <span class="o">*</span> <span class="n">I</span> <span class="o">/</span> <span class="n">L</span>
-    
-    <span class="n">K_loc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
-        <span class="p">[</span> <span class="n">k_axial</span><span class="p">,</span>  <span class="mi">0</span><span class="p">,</span>        <span class="mi">0</span><span class="p">,</span>       <span class="o">-</span><span class="n">k_axial</span><span class="p">,</span>  <span class="mi">0</span><span class="p">,</span>        <span class="mi">0</span>      <span class="p">],</span>
-        <span class="p">[</span> <span class="mi">0</span><span class="p">,</span>        <span class="n">k_shear</span><span class="p">,</span>  <span class="n">k_mom1</span><span class="p">,</span>   <span class="mi">0</span><span class="p">,</span>       <span class="o">-</span><span class="n">k_shear</span><span class="p">,</span>  <span class="n">k_mom1</span> <span class="p">],</span>
-        <span class="p">[</span> <span class="mi">0</span><span class="p">,</span>        <span class="n">k_mom1</span><span class="p">,</span>   <span class="n">k_mom2</span><span class="p">,</span>   <span class="mi">0</span><span class="p">,</span>       <span class="o">-</span><span class="n">k_mom1</span><span class="p">,</span>   <span class="n">k_mom3</span> <span class="p">],</span>
-        <span class="p">[</span><span class="o">-</span><span class="n">k_axial</span><span class="p">,</span>  <span class="mi">0</span><span class="p">,</span>        <span class="mi">0</span><span class="p">,</span>        <span class="n">k_axial</span><span class="p">,</span>  <span class="mi">0</span><span class="p">,</span>        <span class="mi">0</span>      <span class="p">],</span>
-        <span class="p">[</span> <span class="mi">0</span><span class="p">,</span>       <span class="o">-</span><span class="n">k_shear</span><span class="p">,</span> <span class="o">-</span><span class="n">k_mom1</span><span class="p">,</span>   <span class="mi">0</span><span class="p">,</span>        <span class="n">k_shear</span><span class="p">,</span> <span class="o">-</span><span class="n">k_mom1</span> <span class="p">],</span>
-        <span class="p">[</span> <span class="mi">0</span><span class="p">,</span>        <span class="n">k_mom1</span><span class="p">,</span>   <span class="n">k_mom3</span><span class="p">,</span>   <span class="mi">0</span><span class="p">,</span>       <span class="o">-</span><span class="n">k_mom1</span><span class="p">,</span>   <span class="n">k_mom2</span> <span class="p">]</span>
-    <span class="p">])</span>
-    
-    <span class="n">R</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
-        <span class="p">[</span> <span class="n">c</span><span class="p">,</span>  <span class="n">s</span><span class="p">,</span>  <span class="mi">0</span><span class="p">,</span>  <span class="mi">0</span><span class="p">,</span>  <span class="mi">0</span><span class="p">,</span>  <span class="mi">0</span><span class="p">],</span>
-        <span class="p">[</span><span class="o">-</span><span class="n">s</span><span class="p">,</span>  <span class="n">c</span><span class="p">,</span>  <span class="mi">0</span><span class="p">,</span>  <span class="mi">0</span><span class="p">,</span>  <span class="mi">0</span><span class="p">,</span>  <span class="mi">0</span><span class="p">],</span>
-        <span class="p">[</span> <span class="mi">0</span><span class="p">,</span>  <span class="mi">0</span><span class="p">,</span>  <span class="mi">1</span><span class="p">,</span>  <span class="mi">0</span><span class="p">,</span>  <span class="mi">0</span><span class="p">,</span>  <span class="mi">0</span><span class="p">],</span>
-        <span class="p">[</span> <span class="mi">0</span><span class="p">,</span>  <span class="mi">0</span><span class="p">,</span>  <span class="mi">0</span><span class="p">,</span>  <span class="n">c</span><span class="p">,</span>  <span class="n">s</span><span class="p">,</span>  <span class="mi">0</span><span class="p">],</span>
-        <span class="p">[</span> <span class="mi">0</span><span class="p">,</span>  <span class="mi">0</span><span class="p">,</span>  <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="n">s</span><span class="p">,</span>  <span class="n">c</span><span class="p">,</span>  <span class="mi">0</span><span class="p">],</span>
-        <span class="p">[</span> <span class="mi">0</span><span class="p">,</span>  <span class="mi">0</span><span class="p">,</span>  <span class="mi">0</span><span class="p">,</span>  <span class="mi">0</span><span class="p">,</span>  <span class="mi">0</span><span class="p">,</span>  <span class="mi">1</span><span class="p">]</span>
-    <span class="p">])</span>
-    
-    <span class="k">return</span> <span class="n">R</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">K_loc</span> <span class="o">@</span> <span class="n">R</span>
-</pre></div>
-</div>
-<p>The assembly driver <code class="docutils literal notranslate"><span class="pre">kbeam2d</span></code> operates exactly like <code class="docutils literal notranslate"><span class="pre">kt3p</span></code>, except we declare <code class="docutils literal notranslate"><span class="pre">dof</span> <span class="pre">=</span> <span class="pre">3</span></code>. The core philosophy remains undisturbed: build local, assemble global.</p>
+<section id="what-to-read-next">
+<h2>8.7 What to read next<a class="headerlink" href="#what-to-read-next" title="Link to this heading">#</a></h2>
+<p>If you are adding a new kernel family, read these files in this order:</p>
+<dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">src/femlabpy/_helpers.py</span></code></dt><dd><p>For the node, material, and index conventions.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">src/femlabpy/assembly.py</span></code></dt><dd><p>For the scatter-add pattern.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">src/femlabpy/elements/triangles.py</span></code></dt><dd><p>For the simplest full examples in both scalar and structural form.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">src/femlabpy/elements/quads.py</span></code></dt><dd><p>For the higher-order version of the same workflow.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">src/femlabpy/elements/solids.py</span></code></dt><dd><p>For vectorized batch assembly and 3D indexing.</p>
+</dd>
+</dl>
+<p>If you keep the math local and the assembly generic, a custom element stays small enough to understand and test.</p>
 </section>
 </section>
 
@@ -758,12 +615,12 @@ $<span class="math notranslate nohighlight">\( -\nabla \cdot (\mathbf{k} \nabla 
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="ch07_advanced_examples.html"
+       href="ch07_packaged_examples.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Chapter 7: Advanced Workflows &amp; Examples</p>
+        <p class="prev-next-title">Chapter 7: Packaged Workflows and Examples</p>
       </div>
     </a>
     <a class="right-next"
@@ -771,7 +628,7 @@ $<span class="math notranslate nohighlight">\( -\nabla \cdot (\mathbf{k} \nabla 
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Chapter 9: Advanced Dynamic Workflows</p>
+        <p class="prev-next-title">Chapter 9: Dynamic Response Workflows</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -794,19 +651,13 @@ $<span class="math notranslate nohighlight">\( -\nabla \cdot (\mathbf{k} \nabla 
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-philosophy-of-element-assembly">8.1 The Philosophy of Element Assembly</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#deep-dive-assmk-and-assmq">Deep Dive: <code class="docutils literal notranslate"><span class="pre">assmk</span></code> and <code class="docutils literal notranslate"><span class="pre">assmq</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-profound-impact-of-is-sparse">The Profound Impact of <code class="docutils literal notranslate"><span class="pre">is_sparse</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#writing-a-custom-2d-heat-transfer-element-ket3p">8.2 Writing a Custom 2D Heat Transfer Element (<code class="docutils literal notranslate"><span class="pre">ket3p</span></code>)</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-mathematical-formulation">The Mathematical Formulation</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gauss-integration-theory-to-python">Gauss Integration: Theory to Python</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#python-implementation-of-ket3p">Python Implementation of <code class="docutils literal notranslate"><span class="pre">ket3p</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-assembly-driver-loop">The Assembly Driver Loop</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-2d-euler-bernoulli-beam-element">8.3 Example: 2D Euler-Bernoulli Beam Element</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-element-contract">8.1 The element contract</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-assembly-works-here">8.2 How assembly works here</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#scalar-potential-elements">8.3 Scalar potential elements</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#structural-elements">8.4 Structural elements</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#writing-a-new-kernel">8.5 Writing a new kernel</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-integration-checklist">8.6 Example integration checklist</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-to-read-next">8.7 What to read next</a></li>
 </ul>
   </nav></div>
 

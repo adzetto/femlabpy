@@ -3,11 +3,31 @@
 
 .. automodule:: femlabpy.solvers
 
-   
-   .. rubric:: Functions
 
-   .. autosummary::
-   
-      solve_nlbar
-      solve_plastic
-   
+
+
+
+
+Functions
+---------
+
+.. autosummary::
+
+
+   solve_nlbar
+   solve_plastic
+
+Function Reference
+------------------
+
+
+.. autofunction:: femlabpy.solvers.solve_nlbar
+
+
+.. autofunction:: femlabpy.solvers.solve_plastic
+
+
+
+
+
+

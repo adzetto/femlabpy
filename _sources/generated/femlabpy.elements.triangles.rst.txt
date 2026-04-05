@@ -3,19 +3,63 @@
 
 .. automodule:: femlabpy.elements.triangles
 
-   
-   .. rubric:: Functions
 
-   .. autosummary::
-   
-      ket3e
-      ket3p
-      kt3e
-      kt3p
-      met3e
-      mt3e
-      qet3e
-      qet3p
-      qt3e
-      qt3p
-   
+
+
+
+
+Functions
+---------
+
+.. autosummary::
+
+
+   ket3e
+   ket3p
+   kt3e
+   kt3p
+   met3e
+   mt3e
+   qet3e
+   qet3p
+   qt3e
+   qt3p
+
+Function Reference
+------------------
+
+
+.. autofunction:: femlabpy.elements.triangles.ket3e
+
+
+.. autofunction:: femlabpy.elements.triangles.ket3p
+
+
+.. autofunction:: femlabpy.elements.triangles.kt3e
+
+
+.. autofunction:: femlabpy.elements.triangles.kt3p
+
+
+.. autofunction:: femlabpy.elements.triangles.met3e
+
+
+.. autofunction:: femlabpy.elements.triangles.mt3e
+
+
+.. autofunction:: femlabpy.elements.triangles.qet3e
+
+
+.. autofunction:: femlabpy.elements.triangles.qet3p
+
+
+.. autofunction:: femlabpy.elements.triangles.qt3e
+
+
+.. autofunction:: femlabpy.elements.triangles.qt3p
+
+
+
+
+
+

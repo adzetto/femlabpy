@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Chapter 6: Periodic Boundaries &amp; I/O &#8212; femlabpy 0.6.0 documentation</title>
+    <title>Chapter 6: Periodic Boundaries and Gmsh I/O &#8212; femlabpy 0.6.0 documentation</title>
   
   
   
@@ -31,6 +31,7 @@
 <link href="../_static/styles/pydata-sphinx-theme.css?digest=7f76b32a3354e82990f2" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=aa664f36" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../_static/scripts/fontawesome.js?digest=7f76b32a3354e82990f2"></script>
@@ -47,8 +48,8 @@
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Chapter 7: Advanced Workflows &amp; Examples" href="ch07_advanced_examples.html" />
-    <link rel="prev" title="Chapter 5: Structural Dynamics Theory &amp; Time Integration" href="ch05_dynamics.html" />
+    <link rel="next" title="Chapter 7: Packaged Workflows and Examples" href="ch07_packaged_examples.html" />
+    <link rel="prev" title="Structural Dynamics and Time Integration" href="ch05_dynamics.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -133,118 +134,38 @@
     
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../tutorials.html">
-    Tutorials & Usage Manual
+    Tutorials
   </a>
 </li>
 
 
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="index.html">
-    User Guide
+    Guide
   </a>
 </li>
 
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../theory/index.html">
-    Theory & Reference Manual
+    Theory
   </a>
 </li>
 
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../api.html">
-    API Reference
+    API
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../theory/01_core_assembly.html">
-    Global Matrix Assembly in Finite Element Analysis: A Rigorous Perspective
+  <a class="nav-link nav-internal" href="../matlab_python_mapping.html">
+    MATLAB Mapping
   </a>
 </li>
 
-            <li class="nav-item dropdown">
-                <button class="btn dropdown-toggle nav-item" type="button"
-                data-bs-toggle="dropdown" aria-expanded="false"
-                aria-controls="pst-nav-more-links">
-                    More
-                </button>
-                <ul id="pst-nav-more-links" class="dropdown-menu">
-                    
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../theory/02_boundary_loads.html">
-    Chapter 2: Boundary Conditions and Loads
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../theory/03_1d_bars.html">
-    Chapter 3: 1D Bar Elements (Linear & Nonlinear)
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../theory/04_2d_triangles.html">
-    2D Triangular Elements (CST)
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../theory/05_2d_quads.html">
-    Chapter 5: 2D Isoparametric Quadrilateral Elements
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../theory/06_3d_solids.html">
-    3D Solid Elements: Tetrahedrons and Hexahedrons
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../theory/07_plasticity.html">
-    Chapter 7: Constitutive Models & Plasticity
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../theory/08_dynamics.html">
-    Structural Dynamics and Time Integration
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../theory/09_modal_periodic.html">
-    Chapter 9: Eigenvalue Problems and Periodic Boundaries
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../theory/10_io_mesh.html">
-    Mesh I/O, Data Types, and Helpers
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../api.html">
-    API Reference
-  </a>
-</li>
-
-                </ul>
-            </li>
-            
   </ul>
 </nav></div>
       
@@ -328,105 +249,35 @@
     
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../tutorials.html">
-    Tutorials & Usage Manual
+    Tutorials
   </a>
 </li>
 
 
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="index.html">
-    User Guide
+    Guide
   </a>
 </li>
 
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../theory/index.html">
-    Theory & Reference Manual
+    Theory
   </a>
 </li>
 
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../api.html">
-    API Reference
+    API
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../theory/01_core_assembly.html">
-    Global Matrix Assembly in Finite Element Analysis: A Rigorous Perspective
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../theory/02_boundary_loads.html">
-    Chapter 2: Boundary Conditions and Loads
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../theory/03_1d_bars.html">
-    Chapter 3: 1D Bar Elements (Linear & Nonlinear)
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../theory/04_2d_triangles.html">
-    2D Triangular Elements (CST)
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../theory/05_2d_quads.html">
-    Chapter 5: 2D Isoparametric Quadrilateral Elements
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../theory/06_3d_solids.html">
-    3D Solid Elements: Tetrahedrons and Hexahedrons
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../theory/07_plasticity.html">
-    Chapter 7: Constitutive Models & Plasticity
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../theory/08_dynamics.html">
-    Structural Dynamics and Time Integration
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../theory/09_modal_periodic.html">
-    Chapter 9: Eigenvalue Problems and Periodic Boundaries
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../theory/10_io_mesh.html">
-    Mesh I/O, Data Types, and Helpers
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../api.html">
-    API Reference
+  <a class="nav-link nav-internal" href="../matlab_python_mapping.html">
+    MATLAB Mapping
   </a>
 </li>
 
@@ -475,13 +326,13 @@
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="ch01_fundamentals.html">Chapter 1: Fundamentals &amp; Data Structures</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ch02_elements.html">Chapter 2: Element Library</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ch03_assembly_statics.html">Chapter 3: Assembly &amp; Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ch03_assembly_statics.html">Chapter 3: Assembly and Constraints</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ch04_materials.html">Chapter 4: Material Models</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ch05_dynamics.html">Chapter 5: Structural Dynamics Theory &amp; Time Integration</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Chapter 6: Periodic Boundaries &amp; I/O</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ch07_advanced_examples.html">Chapter 7: Advanced Workflows &amp; Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ch05_dynamics.html">Structural Dynamics and Time Integration</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Chapter 6: Periodic Boundaries and Gmsh I/O</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ch07_packaged_examples.html">Chapter 7: Packaged Workflows and Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ch08_custom_elements.html">Chapter 8: Custom Element Development</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ch09_dynamic_workflows.html">Chapter 9: Advanced Dynamic Workflows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ch09_dynamic_workflows.html">Chapter 9: Dynamic Response Workflows</a></li>
 </ul>
 </div>
 </nav></div>
@@ -525,7 +376,7 @@
     
     <li class="breadcrumb-item"><a href="index.html" class="nav-link">User Guide</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Chapter 6: Periodic Boundaries &amp; I/O</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Chapter 6: Periodic Boundaries and Gmsh I/O</span></li>
   </ul>
 </nav>
 </div>
@@ -542,177 +393,215 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="chapter-6-periodic-boundaries-i-o">
-<h1>Chapter 6: Periodic Boundaries &amp; I/O<a class="headerlink" href="#chapter-6-periodic-boundaries-i-o" title="Link to this heading">#</a></h1>
-<p>Advanced finite element analyses often require specialized boundary condition enforcement and integration with industrial meshing tools. In composite material modeling and computational micromechanics, these techniques are essential for capturing accurate physical responses across different scales.</p>
-<section id="periodic-boundary-conditions-homogenization">
-<h2>6.1 Periodic Boundary Conditions (Homogenization)<a class="headerlink" href="#periodic-boundary-conditions-homogenization" title="Link to this heading">#</a></h2>
-<p>When simulating the mechanical response of a heterogeneous or composite material, we typically analyze a Representative Volume Element (RVE). An RVE is a small sub-volume that statistically represents the entire macroscopic material. To ensure that the micro-scale deformations within this unit cell seamlessly represent a continuous macro-scale material without boundary effects, Periodic Boundary Conditions (PBCs) must be applied.</p>
-<p>PBCs enforce that the deformation on opposite faces of the RVE are identical, offset only by the applied macroscopic strain tensor <span class="math notranslate nohighlight">\(\bar{\mathbf{\epsilon}}\)</span>. For two corresponding nodes <span class="math notranslate nohighlight">\(A^+\)</span> (on the positive face) and <span class="math notranslate nohighlight">\(A^-\)</span> (on the negative face), the displacement mapping is mathematically expressed as:</p>
-<div class="math notranslate nohighlight">
-\[ \mathbf{u}^+ - \mathbf{u}^- = \bar{\mathbf{\epsilon}} \Delta \mathbf{x} \]</div>
-<p>where <span class="math notranslate nohighlight">\(\Delta \mathbf{x} = \mathbf{x}^+ - \mathbf{x}^-\)</span> is the physical distance vector between the paired nodes in the undeformed configuration. This relationship ensures that when RVEs are tiled infinitely in space, the material does not overlap or open gaps at the boundaries.</p>
-<p>In a finite element framework, this is mathematically imposed as a set of linear constraint equations:</p>
-<div class="math notranslate nohighlight">
-\[ \mathbf{G} \mathbf{u} = \mathbf{Q} \]</div>
-<p>where <span class="math notranslate nohighlight">\(\mathbf{G}\)</span> is the constraint matrix mapping the degrees of freedom, and <span class="math notranslate nohighlight">\(\mathbf{Q}\)</span> is the constraint vector that introduces the macroscopic strain effect.</p>
-<section id="understanding-the-python-logic-in-femlabpy">
-<h3>Understanding the Python Logic in <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code><a class="headerlink" href="#understanding-the-python-logic-in-femlabpy" title="Link to this heading">#</a></h3>
-<p>The implementation of PBCs in <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> relies on a few critical functions that handle the geometry matching, constraint generation, and solution process.</p>
-<section id="node-pairing-logic-find-periodic-pairs">
-<h4>1. Node Pairing Logic: <code class="docutils literal notranslate"><span class="pre">find_periodic_pairs</span></code><a class="headerlink" href="#node-pairing-logic-find-periodic-pairs" title="Link to this heading">#</a></h4>
-<p>The first step is identifying which nodes on opposite boundaries correspond to each other. The <code class="docutils literal notranslate"><span class="pre">find_periodic_pairs(X,</span> <span class="pre">left_nodes,</span> <span class="pre">right_nodes,</span> <span class="pre">tol)</span></code> function accomplishes this.</p>
-<p><strong>How it works under the hood:</strong>
-The function uses coordinate matching to pair nodes. If we are matching the Left boundary (where <span class="math notranslate nohighlight">\(X=0\)</span>) to the Right boundary (where <span class="math notranslate nohighlight">\(X=L\)</span>), the corresponding nodes must have the exact same Y-coordinate (and Z-coordinate in 3D).</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Conceptual logic inside find_periodic_pairs</span>
-<span class="n">pairs</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="k">for</span> <span class="n">n_left</span> <span class="ow">in</span> <span class="n">left_nodes</span><span class="p">:</span>
-    <span class="n">y_left</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">n_left</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
-    <span class="k">for</span> <span class="n">n_right</span> <span class="ow">in</span> <span class="n">right_nodes</span><span class="p">:</span>
-        <span class="n">y_right</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">n_right</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
-        
-        <span class="c1"># We use np.isclose instead of exact equality &#39;==&#39; </span>
-        <span class="c1"># to avoid floating-point precision errors</span>
-        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">y_left</span><span class="p">,</span> <span class="n">y_right</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="n">tol</span><span class="p">):</span>
-            <span class="n">pairs</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">n_left</span><span class="p">,</span> <span class="n">n_right</span><span class="p">))</span>
-            <span class="k">break</span>
-</pre></div>
-</div>
-<p>The use of <code class="docutils literal notranslate"><span class="pre">numpy.isclose</span></code> is critical here. Meshing software (like Gmsh) outputs coordinates as floating-point numbers. Due to machine precision, a node on the right face might have a Y-coordinate of <code class="docutils literal notranslate"><span class="pre">0.5000000000000001</span></code> while the left face has <code class="docutils literal notranslate"><span class="pre">0.4999999999999999</span></code>. A strict equality check <code class="docutils literal notranslate"><span class="pre">y_left</span> <span class="pre">==</span> <span class="pre">y_right</span></code> would fail to match these nodes, breaking the periodic boundary. By using <code class="docutils literal notranslate"><span class="pre">np.isclose</span></code> with a defined absolute tolerance (e.g., <code class="docutils literal notranslate"><span class="pre">tol=1e-5</span></code>), the function robustly identifies pairs even with slight numerical noise.</p>
-</section>
-<section id="generating-constraints-periodic-constraints">
-<h4>2. Generating Constraints: <code class="docutils literal notranslate"><span class="pre">periodic_constraints</span></code><a class="headerlink" href="#generating-constraints-periodic-constraints" title="Link to this heading">#</a></h4>
-<p>Once the pairs are established, <code class="docutils literal notranslate"><span class="pre">periodic_constraints(X,</span> <span class="pre">all_pairs,</span> <span class="pre">macro_strain)</span></code> converts these node tuples into the global <span class="math notranslate nohighlight">\(\mathbf{G}\)</span> matrix and <span class="math notranslate nohighlight">\(\mathbf{Q}\)</span> vector. For every pair, it adds entries <span class="math notranslate nohighlight">\(+1\)</span> and <span class="math notranslate nohighlight">\(-1\)</span> in the appropriate columns of <span class="math notranslate nohighlight">\(\mathbf{G}\)</span> for the paired DOFs, and computes <span class="math notranslate nohighlight">\(\bar{\mathbf{\epsilon}} \Delta \mathbf{x}\)</span> to populate <span class="math notranslate nohighlight">\(\mathbf{Q}\)</span>.</p>
-</section>
-<section id="homogenization-driver-homogenize">
-<h4>3. Homogenization Driver: <code class="docutils literal notranslate"><span class="pre">homogenize</span></code><a class="headerlink" href="#homogenization-driver-homogenize" title="Link to this heading">#</a></h4>
-<p>The <code class="docutils literal notranslate"><span class="pre">homogenize</span></code> function wraps these steps. It computes the effective stiffness <span class="math notranslate nohighlight">\(\mathbf{C}_{eff}\)</span> by running three independent load cases (pure X-tension, pure Y-tension, and pure shear). For each case, it applies the strain, solves the saddle-point system via <code class="docutils literal notranslate"><span class="pre">solve_lag_general</span></code> (using Lagrange multipliers to enforce the <span class="math notranslate nohighlight">\(\mathbf{G}\)</span> constraints), extracts the resulting stress field, and computes the volume-averaged stress <span class="math notranslate nohighlight">\(\langle \sigma \rangle\)</span>.</p>
-</section>
-</section>
-<hr class="docutils" />
-<section id="complete-code-homogenizing-a-porous-unit-cell-micro-stress-extraction">
-<h3>Complete Code: Homogenizing a Porous Unit Cell &amp; Micro-Stress Extraction<a class="headerlink" href="#complete-code-homogenizing-a-porous-unit-cell-micro-stress-extraction" title="Link to this heading">#</a></h3>
-<p>This script generates a <span class="math notranslate nohighlight">\(1 \times 1\)</span> square unit cell with a central hole, applies PBCs to the Left/Right and Top/Bottom faces, calculates the effective macroscopic stiffness matrix <span class="math notranslate nohighlight">\(\mathbf{C}_{eff}\)</span>, and finally extracts and plots the micro-stress field over the RVE.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">gmsh</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">femlabpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">fp</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">femlabpy.periodic</span><span class="w"> </span><span class="kn">import</span> <span class="n">find_periodic_pairs</span><span class="p">,</span> <span class="n">homogenize</span>
-
-<span class="c1"># ==========================================</span>
-<span class="c1"># 1. Generate the RVE Mesh using Gmsh</span>
-<span class="c1"># ==========================================</span>
-<span class="n">gmsh</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
-<span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;unit_cell&quot;</span><span class="p">)</span>
-
-<span class="n">L</span> <span class="o">=</span> <span class="mf">1.0</span>  <span class="c1"># Side length</span>
-<span class="n">R</span> <span class="o">=</span> <span class="mf">0.2</span>  <span class="c1"># Hole radius</span>
-
-<span class="c1"># Create the square (tag 1) and hole (tag 2)</span>
-<span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">occ</span><span class="o">.</span><span class="n">addRectangle</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">occ</span><span class="o">.</span><span class="n">addDisk</span><span class="p">(</span><span class="n">L</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">L</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-<span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">occ</span><span class="o">.</span><span class="n">cut</span><span class="p">([(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)],</span> <span class="p">[(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)])</span>
-<span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">occ</span><span class="o">.</span><span class="n">synchronize</span><span class="p">()</span>
-
-<span class="c1"># Force structured meshing on boundaries to ensure perfectly aligned nodes</span>
-<span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">setRecombine</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-<span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
-<span class="n">gmsh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;rve.msh&quot;</span><span class="p">)</span>
-<span class="n">gmsh</span><span class="o">.</span><span class="n">finalize</span><span class="p">()</span>
-
-<span class="c1"># ==========================================</span>
-<span class="c1"># 2. Load Mesh into femlabpy</span>
-<span class="c1"># ==========================================</span>
-<span class="n">mesh</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">load_gmsh2</span><span class="p">(</span><span class="s2">&quot;rve.msh&quot;</span><span class="p">)</span>
-<span class="n">T</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">quads</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
-<span class="n">X</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">positions</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">2</span><span class="p">]</span>
-
-<span class="c1"># ==========================================</span>
-<span class="c1"># 3. Material Properties (Base Material)</span>
-<span class="c1"># ==========================================</span>
-<span class="n">E</span> <span class="o">=</span> <span class="mf">210e9</span>     <span class="c1"># Young&#39;s Modulus (Pa)</span>
-<span class="n">nu</span> <span class="o">=</span> <span class="mf">0.3</span>      <span class="c1"># Poisson&#39;s Ratio</span>
-<span class="n">t</span> <span class="o">=</span> <span class="mf">1.0</span>       <span class="c1"># Thickness</span>
-<span class="c1"># G format: [E, nu, plane_stress(1)/strain(2), thickness]</span>
-<span class="n">G</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">E</span><span class="p">,</span> <span class="n">nu</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">t</span><span class="p">]])</span>
-
-<span class="c1"># ==========================================</span>
-<span class="c1"># 4. Identify Boundary Nodes</span>
-<span class="c1"># ==========================================</span>
-<span class="n">tol</span> <span class="o">=</span> <span class="mf">1e-5</span>
-<span class="n">left_nodes</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">tol</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
-<span class="n">right_nodes</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">L</span> <span class="o">-</span> <span class="n">tol</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
-<span class="n">bottom_nodes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">tol</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
-<span class="n">top_nodes</span>    <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">L</span> <span class="o">-</span> <span class="n">tol</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
-
-<span class="c1"># ==========================================</span>
-<span class="c1"># 5. Link Opposite Boundaries (Periodic Pairs)</span>
-<span class="c1"># ==========================================</span>
-<span class="n">lr_pairs</span> <span class="o">=</span> <span class="n">find_periodic_pairs</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">left_nodes</span><span class="p">,</span> <span class="n">right_nodes</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">)</span>
-<span class="n">bt_pairs</span> <span class="o">=</span> <span class="n">find_periodic_pairs</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">bottom_nodes</span><span class="p">,</span> <span class="n">top_nodes</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">)</span>
-<span class="n">all_pairs</span> <span class="o">=</span> <span class="n">lr_pairs</span> <span class="o">+</span> <span class="n">bt_pairs</span>
-
-<span class="c1"># ==========================================</span>
-<span class="c1"># 6. Execute Homogenization</span>
-<span class="c1"># ==========================================</span>
-<span class="n">C_eff</span> <span class="o">=</span> <span class="n">homogenize</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">all_pairs</span><span class="p">,</span> <span class="n">dof</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--- EFFECTIVE HOMOGENIZED STIFFNESS MATRIX (Pa) ---&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array2string</span><span class="p">(</span><span class="n">C_eff</span><span class="p">,</span> <span class="n">formatter</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;float_kind&#39;</span><span class="p">:</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">}))</span>
-
-<span class="c1"># ==========================================</span>
-<span class="c1"># 7. Extracting &amp; Plotting the Micro-Stress Field</span>
-<span class="c1"># ==========================================</span>
-<span class="c1"># While C_eff gives the macro response, we often want to inspect the </span>
-<span class="c1"># internal stress distribution under a specific loading state.</span>
-
-<span class="c1"># Define a pure macroscopic X-tension strain state: [exx, eyy, exy]</span>
-<span class="n">macro_strain</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">])</span>
-
-<span class="c1"># Generate constraint matrices for this specific strain</span>
-<span class="n">G_mat</span><span class="p">,</span> <span class="n">Q_vec</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">periodic_constraints</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">all_pairs</span><span class="p">,</span> <span class="n">macro_strain</span><span class="p">)</span>
-
-<span class="c1"># Assemble global stiffness matrix</span>
-<span class="n">K</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">kasm</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">dof</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-
-<span class="c1"># Solve the constrained system using Lagrange multipliers</span>
-<span class="n">F_ext</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">K</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-<span class="n">U</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">solve_lag_general</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">F_ext</span><span class="p">,</span> <span class="n">G_mat</span><span class="p">,</span> <span class="n">Q_vec</span><span class="p">)</span>
-
-<span class="c1"># Extract element-level stresses using qq4e (Quadrilateral 4-node Stress/Strain)</span>
-<span class="n">stress</span><span class="p">,</span> <span class="n">strain</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">qq4e</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span> <span class="n">G</span><span class="p">)</span>
-
-<span class="c1"># Plot the sigma_xx component of the micro-stress field</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
-<span class="c1"># stress[:, 0] corresponds to the XX stress component</span>
-<span class="n">fp</span><span class="o">.</span><span class="n">plot_trimesh</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">stress</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Micro-Stress Field ($\sigma_</span><span class="si">{xx}</span><span class="s2">$) under X-Tension&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</pre></div>
-</div>
-<p>When you run this script, you not only get the homogenized macroscopic behavior of the porous unit cell, but you can visually inspect the stress concentrations around the central hole on the micro-scale!</p>
-</section>
-</section>
-<hr class="docutils" />
-<section id="gmsh-i-o-integration">
-<h2>6.2 Gmsh I/O Integration<a class="headerlink" href="#gmsh-i-o-integration" title="Link to this heading">#</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> interfaces seamlessly with the open-source mesh generator <a class="reference external" href="https://gmsh.info/">Gmsh</a>. The <code class="docutils literal notranslate"><span class="pre">io.gmsh</span></code> module reads <code class="docutils literal notranslate"><span class="pre">.msh</span></code> files (versions 2.2 and 4.1) natively without requiring complex external dependencies. This acts as the crucial bridge between complex CAD geometry and raw finite element array operations.</p>
-<section id="how-load-gmsh2-extracts-geometry-and-topology">
-<h3>How <code class="docutils literal notranslate"><span class="pre">load_gmsh2</span></code> Extracts Geometry and Topology<a class="headerlink" href="#how-load-gmsh2-extracts-geometry-and-topology" title="Link to this heading">#</a></h3>
-<p>The <code class="docutils literal notranslate"><span class="pre">load_gmsh2(filepath)</span></code> function is a dedicated parser for the ASCII <code class="docutils literal notranslate"><span class="pre">.msh</span></code> format.</p>
-<p><strong>1. Extracting Node Positions:</strong>
-The parser scans the file for the <code class="docutils literal notranslate"><span class="pre">$Nodes</span></code> block. Gmsh stores nodes with their global IDs and their X, Y, Z coordinates. <code class="docutils literal notranslate"><span class="pre">load_gmsh2</span></code> processes this block, strips out the IDs, and populates the <code class="docutils literal notranslate"><span class="pre">mesh.positions</span></code> array. This results in a dense <span class="math notranslate nohighlight">\(N \times 3\)</span> NumPy array, where the row index corresponds to the node ID minus one.</p>
-<p><strong>2. Extracting Elements and Mapping Tags:</strong>
-Next, it looks for the <code class="docutils literal notranslate"><span class="pre">$Elements</span></code> block. This is where element topologies (connectivity) and Physical Group tags reside.</p>
+  <section class="tex2jax_ignore mathjax_ignore" id="chapter-6-periodic-boundaries-and-gmsh-i-o">
+<h1>Chapter 6: Periodic Boundaries and Gmsh I/O<a class="headerlink" href="#chapter-6-periodic-boundaries-and-gmsh-i-o" title="Link to this heading">#</a></h1>
+<p>Periodic boundary conditions are the part of the workflow that turns a small unit cell into a usable representation of a repeating material. In <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code>, that means three separate jobs have to work together:</p>
+<ol class="arabic simple">
+<li><p>Pair the nodes on opposite faces of the mesh.</p></li>
+<li><p>Build constraint equations that express the macro strain.</p></li>
+<li><p>Read meshes from Gmsh in a way that preserves node order, element tags, and explicit topology tables.</p></li>
+</ol>
+<p>This chapter follows that flow from geometry checks to homogenization and mesh import.</p>
+<section id="periodic-boundary-conditions">
+<h2>6.1 Periodic boundary conditions<a class="headerlink" href="#periodic-boundary-conditions" title="Link to this heading">#</a></h2>
+<p>Periodic conditions are used when a representative volume element, or RVE, should deform like one tile in an infinite repeating pattern. The idea is simple: nodes on opposing boundaries must move in a compatible way, with the difference between the two sides driven by the imposed macro strain.</p>
+<p>In <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code>, the public API is axis-based. That matters because periodicity is not inferred from left and right boundary lists supplied by the caller. Instead, the library inspects the coordinates directly and pairs nodes along a chosen axis.</p>
+<section id="pairing-nodes">
+<h3>Pairing nodes<a class="headerlink" href="#pairing-nodes" title="Link to this heading">#</a></h3>
+<p>The main entry point is <code class="docutils literal notranslate"><span class="pre">find_periodic_pairs(X,</span> <span class="pre">axis,</span> <span class="pre">tol=1e-6)</span></code>.</p>
 <ul class="simple">
-<li><p>If you assigned a surface as a Physical Group in Gmsh (e.g., <code class="docutils literal notranslate"><span class="pre">gmsh.model.addPhysicalGroup(2,</span> <span class="pre">[surf1],</span> <span class="pre">tag=1)</span></code>), this <code class="docutils literal notranslate"><span class="pre">tag=1</span></code> is written into the element data.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">load_gmsh2</span></code> sorts the elements by type (triangles vs. quadrilaterals).</p></li>
-<li><p>Crucially, it appends the Gmsh Physical Tag as the <strong>last column</strong> of the output topology arrays.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">X</span></code> is the node coordinate array.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">axis</span></code> selects the periodic direction: <code class="docutils literal notranslate"><span class="pre">0</span></code> for x, <code class="docutils literal notranslate"><span class="pre">1</span></code> for y, <code class="docutils literal notranslate"><span class="pre">2</span></code> for z.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tol</span></code> is scaled by the domain size, which keeps the matching rule stable when the mesh is large or very small.</p></li>
 </ul>
-<p>This means that if you have an <span class="math notranslate nohighlight">\(E \times 4\)</span> array for <code class="docutils literal notranslate"><span class="pre">triangles</span></code> (CST elements), the first 3 columns are the node indices <span class="math notranslate nohighlight">\([n_1, n_2, n_3]\)</span>, and the 4th column is the <code class="docutils literal notranslate"><span class="pre">prop_id</span></code> (the physical tag from Gmsh). For <code class="docutils literal notranslate"><span class="pre">quads</span></code> (Q4 elements), it is an <span class="math notranslate nohighlight">\(E \times 5\)</span> array, with the 5th column holding the property ID.</p>
+<p>The function finds nodes on the minimum and maximum boundary of the chosen axis, compares their transverse coordinates, and returns 1-based node pairs. If the mesh is 2D, the returned array has two columns: <code class="docutils literal notranslate"><span class="pre">[left_node,</span> <span class="pre">right_node]</span></code>.</p>
+<p>That is the practical point to remember: the code does not need manually curated node lists. It needs a mesh that is actually aligned on opposite faces.</p>
+<p>If you want to check more than one periodic axis, use <code class="docutils literal notranslate"><span class="pre">find_all_periodic_pairs(X,</span> <span class="pre">periodic_axes,</span> <span class="pre">tol=1e-6)</span></code>. In 2D, the common pattern is to request axes <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">1]</span></code> and then stack the returned pair arrays before building the constraint matrix.</p>
 </section>
-<section id="multi-material-workflows">
-<h3>Multi-Material Workflows<a class="headerlink" href="#multi-material-workflows" title="Link to this heading">#</a></h3>
-<p>Because the physical tags are inherently mapped to the last column of the topology matrix <code class="docutils literal notranslate"><span class="pre">T</span></code>, configuring multi-material composites is incredibly simple. You can mesh a domain with multiple regions in Gmsh, assign them different Physical Groups (e.g., tag 1 for matrix, tag 2 for fiber). In <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code>, you simply define a material property matrix <code class="docutils literal notranslate"><span class="pre">G</span></code> with two rows. During assembly (like calling <code class="docutils literal notranslate"><span class="pre">fp.kasm(T,</span> <span class="pre">X,</span> <span class="pre">G)</span></code>), the solver automatically looks at that last column of <code class="docutils literal notranslate"><span class="pre">T</span></code> to fetch the corresponding material properties from <code class="docutils literal notranslate"><span class="pre">G</span></code> for each element!</p>
+<section id="mesh-checks-before-solving">
+<h3>Mesh checks before solving<a class="headerlink" href="#mesh-checks-before-solving" title="Link to this heading">#</a></h3>
+<p>Before assembling constraints, call <code class="docutils literal notranslate"><span class="pre">check_periodic_mesh(X,</span> <span class="pre">axis,</span> <span class="pre">tol=1e-6)</span></code>.</p>
+<p>The returned report tells you whether the opposite boundaries are structurally compatible:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">valid</span></code> indicates whether the mesh passed the periodic check.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">n_left</span></code> and <code class="docutils literal notranslate"><span class="pre">n_right</span></code> report how many nodes were found on each side.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">max_mismatch</span></code> gives the worst pairing mismatch seen during validation.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">message</span></code> explains the failure or confirms that pairing succeeded.</p></li>
+</ul>
+<p>Use this as a fast guardrail. A mismatch in node counts usually means the meshing strategy is not periodic enough for an RVE solve, even if the geometry itself looks symmetric.</p>
+</section>
+<section id="constraint-matrix-and-macro-strain">
+<h3>Constraint matrix and macro strain<a class="headerlink" href="#constraint-matrix-and-macro-strain" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">periodic_constraints(X,</span> <span class="pre">pairs,</span> <span class="pre">dof,</span> <span class="pre">eps_macro=None)</span></code> converts paired nodes into the linear constraint system used by the solver.</p>
+<p>The function builds two objects:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">G</span></code>, the constraint matrix.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Q</span></code>, the right-hand-side vector.</p></li>
+</ul>
+<p>For each pair and each degree of freedom, one row is created in <code class="docutils literal notranslate"><span class="pre">G</span></code>. The right node receives a <code class="docutils literal notranslate"><span class="pre">+1</span></code> and the left node receives a <code class="docutils literal notranslate"><span class="pre">-1</span></code>. If a macro strain is supplied, <code class="docutils literal notranslate"><span class="pre">Q</span></code> carries the displacement jump implied by that strain.</p>
+<p>For 2D problems, the Voigt order is <code class="docutils literal notranslate"><span class="pre">[exx,</span> <span class="pre">eyy,</span> <span class="pre">gxy]</span></code>. Inside the implementation, the engineering shear strain is converted to tensor form by splitting it equally across the off-diagonal terms. That keeps the constraint consistent with the strain tensor used in the rest of the library.</p>
+<p><code class="docutils literal notranslate"><span class="pre">apply_macro_strain(X,</span> <span class="pre">pairs,</span> <span class="pre">eps_macro,</span> <span class="pre">dof)</span></code> is just a convenience wrapper when you only want <code class="docutils literal notranslate"><span class="pre">Q</span></code>.</p>
+</section>
+<section id="stabilizing-the-rigid-mode">
+<h3>Stabilizing the rigid mode<a class="headerlink" href="#stabilizing-the-rigid-mode" title="Link to this heading">#</a></h3>
+<p>Purely periodic systems still have a rigid translation unless you pin one corner or add an equivalent reference constraint. <code class="docutils literal notranslate"><span class="pre">fix_corner(X,</span> <span class="pre">C_existing,</span> <span class="pre">dof)</span></code> handles that by finding the node closest to the minimum coordinate corner and adding zero-displacement rows for the active DOFs.</p>
+<p>That step is not cosmetic. Without it, the augmented system can remain singular even if the periodic equations are correct.</p>
+</section>
+<section id="solving-the-periodic-system">
+<h3>Solving the periodic system<a class="headerlink" href="#solving-the-periodic-system" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">solve_periodic(K,</span> <span class="pre">p,</span> <span class="pre">X,</span> <span class="pre">pairs,</span> <span class="pre">dof,</span> <span class="pre">eps_macro=None,</span> <span class="pre">return_lagrange=False)</span></code> wraps the constraint build and the augmented solve.</p>
+<p>The solver is built around the block system</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{bmatrix}
+\mathbf{K} &amp; \mathbf{G}^T \\
+\mathbf{G} &amp; \mathbf{0}
+\end{bmatrix}
+\begin{bmatrix}
+\mathbf{u} \\
+\boldsymbol{\lambda}
+\end{bmatrix}
+=
+\begin{bmatrix}
+\mathbf{p} \\
+\mathbf{Q}
+\end{bmatrix}
+\end{split}\]</div>
+<p>In practice, <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> uses this for both direct periodic solves and homogenization. The Lagrange multipliers are useful if you want boundary reactions or if you want to inspect how strongly the constraints are being enforced.</p>
+</section>
+<section id="homogenization-workflow">
+<h3>Homogenization workflow<a class="headerlink" href="#homogenization-workflow" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">homogenize(K,</span> <span class="pre">T,</span> <span class="pre">X,</span> <span class="pre">G_mat,</span> <span class="pre">pairs,</span> <span class="pre">dof,</span> <span class="pre">element_type=&quot;q4&quot;)</span></code> computes the effective stiffness matrix of the RVE.</p>
+<p>The function applies unit macro strain cases one by one, solves the constrained system, averages the resulting stress, and assembles the effective constitutive matrix column by column. For 2D, that matrix is <code class="docutils literal notranslate"><span class="pre">3</span> <span class="pre">x</span> <span class="pre">3</span></code>; for 3D, it is <code class="docutils literal notranslate"><span class="pre">6</span> <span class="pre">x</span> <span class="pre">6</span></code>.</p>
+<p>The implementation is deliberately straightforward:</p>
+<ul class="simple">
+<li><p>Build a unit macro strain vector.</p></li>
+<li><p>Solve the periodic system for that strain.</p></li>
+<li><p>Compute the volume-averaged stress.</p></li>
+<li><p>Insert the result into one column of <code class="docutils literal notranslate"><span class="pre">C_eff</span></code>.</p></li>
+</ul>
+<p>That is the right mental model for reading the code. The homogenizer is not doing anything mysterious. It is repeating one constrained solve per canonical strain state.</p>
+</section>
+<section id="practical-2d-workflow">
+<h3>Practical 2D workflow<a class="headerlink" href="#practical-2d-workflow" title="Link to this heading">#</a></h3>
+<p>The following pattern matches the current API and is the safest way to work with a periodic quadrilateral RVE:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">femlabpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">fp</span>
+
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">load_gmsh2</span><span class="p">(</span><span class="s2">&quot;rve.msh&quot;</span><span class="p">)</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">positions</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">T</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">quads</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+<span class="n">report_x</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">check_periodic_mesh</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">)</span>
+<span class="n">report_y</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">check_periodic_mesh</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">)</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">report_x</span><span class="p">[</span><span class="s2">&quot;valid&quot;</span><span class="p">]</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">report_y</span><span class="p">[</span><span class="s2">&quot;valid&quot;</span><span class="p">]:</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">report_x</span><span class="p">[</span><span class="s2">&quot;message&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">report_x</span><span class="p">[</span><span class="s2">&quot;valid&quot;</span><span class="p">]</span> <span class="k">else</span> <span class="n">report_y</span><span class="p">[</span><span class="s2">&quot;message&quot;</span><span class="p">])</span>
+
+<span class="n">pairs_x</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">find_periodic_pairs</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">)</span>
+<span class="n">pairs_y</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">find_periodic_pairs</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">)</span>
+<span class="n">pairs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">pairs_x</span><span class="p">,</span> <span class="n">pairs_y</span><span class="p">])</span>
+
+<span class="n">nn</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">nbNod</span>
+<span class="n">K</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">q</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">nn</span><span class="p">,</span> <span class="n">dof</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">G</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">210e9</span><span class="p">,</span> <span class="mf">0.30</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]])</span>
+<span class="n">K</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">kq4e</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">G</span><span class="p">)</span>
+
+<span class="n">eps_macro</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">])</span>
+<span class="n">u</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">solve_periodic</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">pairs</span><span class="p">,</span> <span class="n">dof</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">eps_macro</span><span class="o">=</span><span class="n">eps_macro</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The same node pairs are reused for both constraint generation and homogenization. Once the pairing is correct, the rest of the workflow is just matrix assembly and solving.</p>
+</section>
+</section>
+<section id="gmsh-import-workflow">
+<h2>6.2 Gmsh import workflow<a class="headerlink" href="#gmsh-import-workflow" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> uses <code class="docutils literal notranslate"><span class="pre">io.gmsh</span></code> to convert <code class="docutils literal notranslate"><span class="pre">.msh</span></code> files into a normalized <code class="docutils literal notranslate"><span class="pre">GmshMesh</span></code> object. That object carries both the Python-friendly fields used internally and the legacy names expected by older FemLab examples.</p>
+<section id="choosing-a-loader">
+<h3>Choosing a loader<a class="headerlink" href="#choosing-a-loader" title="Link to this heading">#</a></h3>
+<p>Two loaders are available:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">load_gmsh(filename)</span></code> follows the legacy semantics and materializes all explicit element arrays.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">load_gmsh2(filename,</span> <span class="pre">which=None)</span></code> is more flexible and lets you control which explicit topology arrays are created.</p></li>
+</ul>
+<p>Use <code class="docutils literal notranslate"><span class="pre">load_gmsh2</span></code> when you want to keep the mesh object smaller. If <code class="docutils literal notranslate"><span class="pre">which</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code>, all explicit arrays are loaded. If <code class="docutils literal notranslate"><span class="pre">which</span></code> is <code class="docutils literal notranslate"><span class="pre">-1</span></code> or an empty iterable, the explicit arrays are skipped.</p>
+</section>
+<section id="what-the-mesh-object-contains">
+<h3>What the mesh object contains<a class="headerlink" href="#what-the-mesh-object-contains" title="Link to this heading">#</a></h3>
+<p>The returned <code class="docutils literal notranslate"><span class="pre">GmshMesh</span></code> includes:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">positions</span></code>, the node coordinates.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">element_infos</span></code>, a compact per-element summary.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">element_tags</span></code> and <code class="docutils literal notranslate"><span class="pre">element_nodes</span></code>, the generalized tag and node tables.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">triangles</span></code>, <code class="docutils literal notranslate"><span class="pre">quads</span></code>, <code class="docutils literal notranslate"><span class="pre">tets</span></code>, <code class="docutils literal notranslate"><span class="pre">hexa</span></code>, and related explicit topology arrays.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bounds_min</span></code> and <code class="docutils literal notranslate"><span class="pre">bounds_max</span></code>, which are useful for quick domain checks.</p></li>
+</ul>
+<p>The object also keeps legacy aliases such as <code class="docutils literal notranslate"><span class="pre">POS</span></code>, <code class="docutils literal notranslate"><span class="pre">TRIANGLES</span></code>, <code class="docutils literal notranslate"><span class="pre">QUADS</span></code>, <code class="docutils literal notranslate"><span class="pre">nbTriangles</span></code>, and similar names. That makes it easier to reuse older scripts while still using the modern Python fields.</p>
+</section>
+<section id="physical-tags-and-topology-columns">
+<h3>Physical tags and topology columns<a class="headerlink" href="#physical-tags-and-topology-columns" title="Link to this heading">#</a></h3>
+<p>The loader preserves Gmsh physical groups. For explicit topology arrays, the last column stores the first tag for that element. In other words, a quadrilateral row looks like this:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[n1, n2, n3, n4, prop_id]
+</pre></div>
+</div>
+<p>That convention is what lets the assembly routines map each element to the correct material row without extra bookkeeping.</p>
+</section>
+<section id="version-handling">
+<h3>Version handling<a class="headerlink" href="#version-handling" title="Link to this heading">#</a></h3>
+<p>The loader accepts legacy ASCII meshes directly. For modern Gmsh 4.x meshes, the code can convert through the official Gmsh SDK when the optional mesh extra is installed. If that package is missing, the loader raises a clear error instead of silently misreading the file.</p>
+<p>That behavior is important. Periodic boundary workflows depend on exact node ordering and consistent element connectivity, so a partial parse would be worse than a hard failure.</p>
+</section>
+<section id="practical-import-example">
+<h3>Practical import example<a class="headerlink" href="#practical-import-example" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">femlabpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">fp</span>
+
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">load_gmsh2</span><span class="p">(</span><span class="s2">&quot;rve.msh&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">mesh</span><span class="o">.</span><span class="n">nbNod</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">mesh</span><span class="o">.</span><span class="n">nbElm</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">mesh</span><span class="o">.</span><span class="n">quads</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">mesh</span><span class="o">.</span><span class="n">bounds_min</span><span class="p">,</span> <span class="n">mesh</span><span class="o">.</span><span class="n">bounds_max</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If you only need a subset of explicit element tables, request them up front:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mesh</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">load_gmsh2</span><span class="p">(</span><span class="s2">&quot;rve.msh&quot;</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>That is useful when the mesh contains many element types but the analysis only uses quads and tets.</p>
+</section>
+<section id="gmsh-generation-tips-for-periodic-models">
+<h3>Gmsh generation tips for periodic models<a class="headerlink" href="#gmsh-generation-tips-for-periodic-models" title="Link to this heading">#</a></h3>
+<p>The loader can only preserve periodic compatibility if the mesh itself was built compatibly. For RVEs, the safest pattern in Gmsh is:</p>
+<ol class="arabic simple">
+<li><p>Build the geometry with opposite edges derived from the same parameterization.</p></li>
+<li><p>Use a structured or transfinite mesh where possible.</p></li>
+<li><p>Recombine when you want quads instead of triangles.</p></li>
+<li><p>Check both periodic axes with <code class="docutils literal notranslate"><span class="pre">check_periodic_mesh</span></code> before solving.</p></li>
+</ol>
+<p>If the boundary discretization is inconsistent, no amount of post-processing in Python will repair the pairing.</p>
+</section>
+<section id="end-to-end-example">
+<h3>End-to-end example<a class="headerlink" href="#end-to-end-example" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">femlabpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">fp</span>
+
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">load_gmsh2</span><span class="p">(</span><span class="s2">&quot;unit_cell.msh&quot;</span><span class="p">)</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">positions</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">T</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">quads</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+<span class="n">left_right</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">find_periodic_pairs</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">)</span>
+<span class="n">bottom_top</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">find_periodic_pairs</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">)</span>
+<span class="n">pairs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">left_right</span><span class="p">,</span> <span class="n">bottom_top</span><span class="p">])</span>
+
+<span class="n">K</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">q</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">mesh</span><span class="o">.</span><span class="n">nbNod</span><span class="p">,</span> <span class="n">dof</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">G</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">70e9</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]])</span>
+<span class="n">K</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">kq4e</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">G</span><span class="p">)</span>
+
+<span class="n">C_eff</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">homogenize</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">pairs</span><span class="p">,</span> <span class="n">dof</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">element_type</span><span class="o">=</span><span class="s2">&quot;q4&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">C_eff</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This is the cleanest mental model for the whole chapter: verify the mesh, pair the boundaries, build the constraints, solve once for each macro strain state, and let the averaging routines assemble the effective response.</p>
 </section>
 </section>
 </section>
@@ -733,15 +622,15 @@ Next, it looks for the <code class="docutils literal notranslate"><span class="p
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Chapter 5: Structural Dynamics Theory &amp; Time Integration</p>
+        <p class="prev-next-title">Structural Dynamics and Time Integration</p>
       </div>
     </a>
     <a class="right-next"
-       href="ch07_advanced_examples.html"
+       href="ch07_packaged_examples.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Chapter 7: Advanced Workflows &amp; Examples</p>
+        <p class="prev-next-title">Chapter 7: Packaged Workflows and Examples</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -764,19 +653,24 @@ Next, it looks for the <code class="docutils literal notranslate"><span class="p
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#periodic-boundary-conditions-homogenization">6.1 Periodic Boundary Conditions (Homogenization)</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#understanding-the-python-logic-in-femlabpy">Understanding the Python Logic in <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#node-pairing-logic-find-periodic-pairs">1. Node Pairing Logic: <code class="docutils literal notranslate"><span class="pre">find_periodic_pairs</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#generating-constraints-periodic-constraints">2. Generating Constraints: <code class="docutils literal notranslate"><span class="pre">periodic_constraints</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#homogenization-driver-homogenize">3. Homogenization Driver: <code class="docutils literal notranslate"><span class="pre">homogenize</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#periodic-boundary-conditions">6.1 Periodic boundary conditions</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pairing-nodes">Pairing nodes</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mesh-checks-before-solving">Mesh checks before solving</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#constraint-matrix-and-macro-strain">Constraint matrix and macro strain</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#stabilizing-the-rigid-mode">Stabilizing the rigid mode</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#solving-the-periodic-system">Solving the periodic system</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#homogenization-workflow">Homogenization workflow</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#practical-2d-workflow">Practical 2D workflow</a></li>
 </ul>
 </li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#complete-code-homogenizing-a-porous-unit-cell-micro-stress-extraction">Complete Code: Homogenizing a Porous Unit Cell &amp; Micro-Stress Extraction</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gmsh-i-o-integration">6.2 Gmsh I/O Integration</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-load-gmsh2-extracts-geometry-and-topology">How <code class="docutils literal notranslate"><span class="pre">load_gmsh2</span></code> Extracts Geometry and Topology</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#multi-material-workflows">Multi-Material Workflows</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gmsh-import-workflow">6.2 Gmsh import workflow</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#choosing-a-loader">Choosing a loader</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-the-mesh-object-contains">What the mesh object contains</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#physical-tags-and-topology-columns">Physical tags and topology columns</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#version-handling">Version handling</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#practical-import-example">Practical import example</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gmsh-generation-tips-for-periodic-models">Gmsh generation tips for periodic models</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#end-to-end-example">End-to-end example</a></li>
 </ul>
 </li>
 </ul>

@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Chapter 2: Boundary Conditions and Loads &#8212; femlabpy 0.6.0 documentation</title>
+    <title>Boundary conditions and loads &#8212; femlabpy 0.6.0 documentation</title>
   
   
   
@@ -31,6 +31,7 @@
 <link href="../_static/styles/pydata-sphinx-theme.css?digest=7f76b32a3354e82990f2" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=aa664f36" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../_static/scripts/fontawesome.js?digest=7f76b32a3354e82990f2"></script>
@@ -47,8 +48,8 @@
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Chapter 3: 1D Bar Elements (Linear &amp; Nonlinear)" href="03_1d_bars.html" />
-    <link rel="prev" title="Global Matrix Assembly in Finite Element Analysis: A Rigorous Perspective" href="01_core_assembly.html" />
+    <link rel="next" title="1D bar elements" href="03_1d_bars.html" />
+    <link rel="prev" title="Core Assembly in Finite Element Analysis" href="01_core_assembly.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -133,118 +134,38 @@
     
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../tutorials.html">
-    Tutorials & Usage Manual
+    Tutorials
   </a>
 </li>
 
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../manual/index.html">
-    User Guide
+    Guide
   </a>
 </li>
 
 
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="index.html">
-    Theory & Reference Manual
+    Theory
   </a>
 </li>
 
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../api.html">
-    API Reference
+    API
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="01_core_assembly.html">
-    Global Matrix Assembly in Finite Element Analysis: A Rigorous Perspective
+  <a class="nav-link nav-internal" href="../matlab_python_mapping.html">
+    MATLAB Mapping
   </a>
 </li>
 
-            <li class="nav-item dropdown">
-                <button class="btn dropdown-toggle nav-item" type="button"
-                data-bs-toggle="dropdown" aria-expanded="false"
-                aria-controls="pst-nav-more-links">
-                    More
-                </button>
-                <ul id="pst-nav-more-links" class="dropdown-menu">
-                    
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="#">
-    Chapter 2: Boundary Conditions and Loads
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="03_1d_bars.html">
-    Chapter 3: 1D Bar Elements (Linear & Nonlinear)
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="04_2d_triangles.html">
-    2D Triangular Elements (CST)
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="05_2d_quads.html">
-    Chapter 5: 2D Isoparametric Quadrilateral Elements
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="06_3d_solids.html">
-    3D Solid Elements: Tetrahedrons and Hexahedrons
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="07_plasticity.html">
-    Chapter 7: Constitutive Models & Plasticity
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="08_dynamics.html">
-    Structural Dynamics and Time Integration
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="09_modal_periodic.html">
-    Chapter 9: Eigenvalue Problems and Periodic Boundaries
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="10_io_mesh.html">
-    Mesh I/O, Data Types, and Helpers
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../api.html">
-    API Reference
-  </a>
-</li>
-
-                </ul>
-            </li>
-            
   </ul>
 </nav></div>
       
@@ -328,105 +249,35 @@
     
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../tutorials.html">
-    Tutorials & Usage Manual
+    Tutorials
   </a>
 </li>
 
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../manual/index.html">
-    User Guide
+    Guide
   </a>
 </li>
 
 
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="index.html">
-    Theory & Reference Manual
+    Theory
   </a>
 </li>
 
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../api.html">
-    API Reference
+    API
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="01_core_assembly.html">
-    Global Matrix Assembly in Finite Element Analysis: A Rigorous Perspective
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="#">
-    Chapter 2: Boundary Conditions and Loads
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="03_1d_bars.html">
-    Chapter 3: 1D Bar Elements (Linear & Nonlinear)
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="04_2d_triangles.html">
-    2D Triangular Elements (CST)
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="05_2d_quads.html">
-    Chapter 5: 2D Isoparametric Quadrilateral Elements
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="06_3d_solids.html">
-    3D Solid Elements: Tetrahedrons and Hexahedrons
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="07_plasticity.html">
-    Chapter 7: Constitutive Models & Plasticity
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="08_dynamics.html">
-    Structural Dynamics and Time Integration
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="09_modal_periodic.html">
-    Chapter 9: Eigenvalue Problems and Periodic Boundaries
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="10_io_mesh.html">
-    Mesh I/O, Data Types, and Helpers
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../api.html">
-    API Reference
+  <a class="nav-link nav-internal" href="../matlab_python_mapping.html">
+    MATLAB Mapping
   </a>
 </li>
 
@@ -473,20 +324,19 @@
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="01_core_assembly.html">Global Matrix Assembly in Finite Element Analysis: A Rigorous Perspective</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Chapter 2: Boundary Conditions and Loads</a></li>
-<li class="toctree-l1"><a class="reference internal" href="03_1d_bars.html">Chapter 3: 1D Bar Elements (Linear &amp; Nonlinear)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="04_2d_triangles.html">2D Triangular Elements (CST)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="05_2d_quads.html">Chapter 5: 2D Isoparametric Quadrilateral Elements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="01_core_assembly.html">Core Assembly in Finite Element Analysis</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Boundary conditions and loads</a></li>
+<li class="toctree-l1"><a class="reference internal" href="03_1d_bars.html">1D bar elements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04_2d_triangles.html">2D Triangular Elements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05_2d_quads.html">2D Isoparametric Quadrilateral Elements</a></li>
 <li class="toctree-l1"><a class="reference internal" href="06_3d_solids.html">3D Solid Elements: Tetrahedrons and Hexahedrons</a></li>
-
-<li class="toctree-l1"><a class="reference internal" href="07_plasticity.html">Chapter 7: Constitutive Models &amp; Plasticity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="07_plasticity.html">Constitutive Models and Plasticity</a></li>
 <li class="toctree-l1"><a class="reference internal" href="08_dynamics.html">Structural Dynamics and Time Integration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="09_modal_periodic.html">Chapter 9: Eigenvalue Problems and Periodic Boundaries</a></li>
-<li class="toctree-l1"><a class="reference internal" href="10_io_mesh.html">Mesh I/O, Data Types, and Helpers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="09_modal_periodic.html">Modal analysis and periodic boundaries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="10_io_mesh.html">Mesh I/O and Gmsh Import</a></li>
 <li class="toctree-l1"><a class="reference internal" href="11_nonlinear_solvers.html">Chapter 11: Nonlinear Solvers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="12_plotting_postprocessing.html">Plotting and Post-Processing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="13_legacy_wrappers.html">13. Legacy Wrappers for MATLAB Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12_plotting_postprocessing.html">Plotting and Postprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13_legacy_wrappers.html">Chapter 13: Legacy Wrappers</a></li>
 </ul>
 </div>
 </nav></div>
@@ -528,9 +378,9 @@
       </a>
     </li>
     
-    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Theory &amp; Reference Manual</a></li>
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Theory and Reference Manual</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Chapter 2: Boundary Conditions and Loads</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Boundary conditions and loads</span></li>
   </ul>
 </nav>
 </div>
@@ -547,58 +397,60 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="chapter-2-boundary-conditions-and-loads">
-<h1>Chapter 2: Boundary Conditions and Loads<a class="headerlink" href="#chapter-2-boundary-conditions-and-loads" title="Link to this heading">#</a></h1>
-<p>In computational mechanics, the formulation of a finite element problem ultimately leads to a system of algebraic equations, typically expressed in the form of a global system:</p>
+  <section class="tex2jax_ignore mathjax_ignore" id="boundary-conditions-and-loads">
+<h1>Boundary conditions and loads<a class="headerlink" href="#boundary-conditions-and-loads" title="Link to this heading">#</a></h1>
+<p>In <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code>, a finite element model eventually becomes a global linear system with known and unknown degrees of freedom. The solver needs two things before that system can be used directly: the external load vector and the boundary-condition handling that removes or constrains rigid body motion.</p>
 <div class="math notranslate nohighlight">
 \[ \mathbf{K} \mathbf{u} = \mathbf{P} \]</div>
-<p>where <span class="math notranslate nohighlight">\(\mathbf{K}\)</span> is the global stiffness matrix, <span class="math notranslate nohighlight">\(\mathbf{u}\)</span> is the vector of unknown nodal displacements, and <span class="math notranslate nohighlight">\(\mathbf{P}\)</span> is the global load vector. However, before this system can be solved, the equations are singular; they represent a body floating freely in space with rigid body modes. To render the system nonsingular and to reflect the physical reality of the problem, we must impose constraints (Boundary Conditions) and apply external forces (Loads).</p>
-<p>This chapter discusses the mathematical theory and the computational implementation of boundary conditions and loads within the <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> framework, specifically focusing on <code class="docutils literal notranslate"><span class="pre">src/femlabpy/boundary.py</span></code> and <code class="docutils literal notranslate"><span class="pre">src/femlabpy/loads.py</span></code>.</p>
+<p>where <span class="math notranslate nohighlight">\(\mathbf{K}\)</span> is the global stiffness matrix, <span class="math notranslate nohighlight">\(\mathbf{u}\)</span> is the vector of nodal unknowns, and <span class="math notranslate nohighlight">\(\mathbf{P}\)</span> is the global load vector. Before the system is solved, the unconstrained equations are usually singular, so the code must first apply loads and then enforce constraints in a way that matches the stored DOF layout.</p>
+<p>This chapter follows the actual implementation in <code class="docutils literal notranslate"><span class="pre">loads.py</span></code> and <code class="docutils literal notranslate"><span class="pre">boundary.py</span></code>. The important point is that the public helpers do not hide the array shape: they expect the same column conventions used everywhere else in the codebase, and the theory here explains why.</p>
 <hr class="docutils" />
 <section id="applying-external-loads">
-<h2>2.1 Applying External Loads<a class="headerlink" href="#applying-external-loads" title="Link to this heading">#</a></h2>
-<p>The global load vector <span class="math notranslate nohighlight">\(\mathbf{P}\)</span> accumulates all external forces applied to the structure. These forces can originate from nodal point loads, surface tractions (distributed loads), or body forces (like gravity).</p>
-<p>In standard finite element assembly, the contributions from elements are transformed into equivalent nodal loads and added into the global vector. When dealing with point loads explicitly applied to specific degrees of freedom (DOFs), we directly manipulate the entries of <span class="math notranslate nohighlight">\(\mathbf{P}\)</span>.</p>
-<section id="setting-and-adding-loads">
-<h3>2.1.1 Setting and Adding Loads<a class="headerlink" href="#setting-and-adding-loads" title="Link to this heading">#</a></h3>
-<p>The <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> library provides two primary functions in <code class="docutils literal notranslate"><span class="pre">loads.py</span></code> for manipulating the global load vector: <code class="docutils literal notranslate"><span class="pre">setload</span></code> and <code class="docutils literal notranslate"><span class="pre">addload</span></code>.</p>
-<ul class="simple">
-<li><p><strong><code class="docutils literal notranslate"><span class="pre">setload(P,</span> <span class="pre">dofs,</span> <span class="pre">values)</span></code></strong>: Explicitly overrides the current value at the specified DOFs with new values.</p></li>
-<li><p><strong><code class="docutils literal notranslate"><span class="pre">addload(P,</span> <span class="pre">dofs,</span> <span class="pre">values)</span></code></strong>: Adds new load values to the existing values in the load vector.</p></li>
-</ul>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Example: Applying loads in femlabpy</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<h2>2.1 Applying external loads<a class="headerlink" href="#applying-external-loads" title="Link to this heading">#</a></h2>
+<p>The global load vector <span class="math notranslate nohighlight">\(\mathbf{P}\)</span> accumulates all external forces applied to the structure. In this repository the most common case is a nodal load table where each row begins with a 1-based node index and the remaining columns are the force components in DOF order.</p>
+<p>The helpers in <code class="docutils literal notranslate"><span class="pre">src/femlabpy/loads.py</span></code> do two different things:</p>
+<p><code class="docutils literal notranslate"><span class="pre">setload(p,</span> <span class="pre">P)</span></code> replaces the current values at the listed DOFs.
+<code class="docutils literal notranslate"><span class="pre">addload(p,</span> <span class="pre">P)</span></code> accumulates additional values at the same DOFs.</p>
+<p>That distinction matters in assembly workflows. Use <code class="docutils literal notranslate"><span class="pre">setload</span></code> when the input table is the full load definition for the problem. Use <code class="docutils literal notranslate"><span class="pre">addload</span></code> when several tables or source terms need to be combined into one vector.</p>
+<section id="load-table-layout">
+<h3>Load table layout<a class="headerlink" href="#load-table-layout" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">femlabpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">init</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">femlabpy.loads</span><span class="w"> </span><span class="kn">import</span> <span class="n">setload</span><span class="p">,</span> <span class="n">addload</span>
 
-<span class="n">P</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
-<span class="n">setload</span><span class="p">(</span><span class="n">P</span><span class="p">,</span> <span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mf">50.0</span><span class="p">])</span>
-<span class="n">addload</span><span class="p">(</span><span class="n">P</span><span class="p">,</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="p">[</span><span class="mf">10.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">25.0</span><span class="p">])</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Global Load Vector:&quot;</span><span class="p">,</span> <span class="n">P</span><span class="p">)</span>
+<span class="n">_</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">init</span><span class="p">(</span><span class="n">nn</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">dof</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="c1"># [node, Fx, Fy]</span>
+<span class="n">P</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+    <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">100.0</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mf">50.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+<span class="p">])</span>
+
+<span class="n">p</span> <span class="o">=</span> <span class="n">setload</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">P</span><span class="p">)</span>
+<span class="n">p</span> <span class="o">=</span> <span class="n">addload</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">3</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">25.0</span><span class="p">]]))</span>
 </pre></div>
 </div>
 </section>
 </section>
 <hr class="docutils" />
-<section id="dirichlet-boundary-conditions-the-penalty-and-direct-elimination-methods">
-<h2>2.2 Dirichlet Boundary Conditions: The Penalty and Direct Elimination Methods<a class="headerlink" href="#dirichlet-boundary-conditions-the-penalty-and-direct-elimination-methods" title="Link to this heading">#</a></h2>
-<p>Dirichlet boundary conditions, also known as essential boundary conditions, specify the known values of the primary field variable (e.g., displacements) at certain boundaries:</p>
+<section id="dirichlet-boundary-conditions">
+<h2>2.2 Dirichlet boundary conditions<a class="headerlink" href="#dirichlet-boundary-conditions" title="Link to this heading">#</a></h2>
+<p>Dirichlet boundary conditions specify known values of the primary field variable at certain nodes or components:</p>
 <div class="math notranslate nohighlight">
 \[ u_i = \bar{u}_i \quad \forall i \in \mathcal{C} \]</div>
-<p>Enforcing this directly in the system <span class="math notranslate nohighlight">\(\mathbf{K} \mathbf{u} = \mathbf{P}\)</span> requires modifying the equations. Two highly prominent alternatives are the Penalty Method (Large Spring) and the Direct Elimination Method (with a scaled diagonal). <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> utilizes a hybrid approach in its <code class="docutils literal notranslate"><span class="pre">setbc</span></code> function.</p>
-<section id="mathematics-of-the-large-spring-method-in-extreme-detail">
-<h3>2.2.1 Mathematics of the Large Spring Method in Extreme Detail<a class="headerlink" href="#mathematics-of-the-large-spring-method-in-extreme-detail" title="Link to this heading">#</a></h3>
-<p>The penalty method, fundamentally, attaches an extremely stiff spring to the constrained DOF and applies an enormous force such that the spring extends exactly by the desired displacement <span class="math notranslate nohighlight">\(\bar{u}_i\)</span>.</p>
-<p>Often in textbooks, a penalty parameter <span class="math notranslate nohighlight">\(\alpha\)</span> is defined to be significantly larger than the stiffness of the system, e.g., <span class="math notranslate nohighlight">\(\alpha = 10^6 \times \max(\mathbf{K})\)</span>.</p>
+<p>The code uses a direct-elimination strategy with a scaled diagonal entry. That is close to the textbook “large spring” idea, but the implementation is more careful: before a constrained row is overwritten, its coupling terms are moved to the right-hand side so non-zero prescribed values are handled correctly.</p>
+<p>The active helper is <code class="docutils literal notranslate"><span class="pre">setbc(K,</span> <span class="pre">p,</span> <span class="pre">C,</span> <span class="pre">dof)</span></code>. The constraint table <code class="docutils literal notranslate"><span class="pre">C</span></code> follows the same legacy layout used throughout the repository:</p>
+<p><code class="docutils literal notranslate"><span class="pre">[node,</span> <span class="pre">value]</span></code> for scalar problems.
+<code class="docutils literal notranslate"><span class="pre">[node,</span> <span class="pre">local_dof,</span> <span class="pre">value]</span></code> for vector problems.</p>
+<section id="how-setbc-works">
+<h3>How <code class="docutils literal notranslate"><span class="pre">setbc</span></code> works<a class="headerlink" href="#how-setbc-works" title="Link to this heading">#</a></h3>
+<p>The implementation in <code class="docutils literal notranslate"><span class="pre">src/femlabpy/boundary.py</span></code> does four things in order:</p>
 <ol class="arabic simple">
-<li><p><strong>Modify Stiffness:</strong> Add <span class="math notranslate nohighlight">\(\alpha\)</span> to the diagonal entry of <span class="math notranslate nohighlight">\(\mathbf{K}\)</span>: <span class="math notranslate nohighlight">\(K_{ii} \leftarrow K_{ii} + \alpha\)</span></p></li>
-<li><p><strong>Modify Load:</strong> Set the corresponding load vector entry to <span class="math notranslate nohighlight">\(P_i \leftarrow \alpha \times \bar{u}_i\)</span>.</p></li>
+<li><p>It computes a diagonal scale <code class="docutils literal notranslate"><span class="pre">ks</span></code> from the current stiffness matrix.</p></li>
+<li><p>It converts the 1-based node/component pairs into global DOF indices.</p></li>
+<li><p>It subtracts the coupling contribution of each constrained DOF from the global load vector.</p></li>
+<li><p>It zeros the row and column, then places <code class="docutils literal notranslate"><span class="pre">ks</span></code> on the diagonal and <code class="docutils literal notranslate"><span class="pre">ks</span> <span class="pre">*</span> <span class="pre">value</span></code> in the load vector.</p></li>
 </ol>
-<p>Since <span class="math notranslate nohighlight">\(\alpha\)</span> is overwhelmingly large, the <span class="math notranslate nohighlight">\(i\)</span>-th equation effectively becomes <span class="math notranslate nohighlight">\(\alpha u_i = \alpha \bar{u}_i \implies u_i \approx \bar{u}_i\)</span>.</p>
-<p>However, <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> uses a rigorous direct elimination variant matching the legacy Scilab FemLab implementation. Instead of adding a penalty to the existing stiffness, the entire row and column for DOF <span class="math notranslate nohighlight">\(i\)</span> are zeroed out, and a specific “spring stiffness” <span class="math notranslate nohighlight">\(k_s\)</span> is assigned to the diagonal, accompanied by transferring coupling forces. The scaling used in <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> is <span class="math notranslate nohighlight">\(0.1 \times \max(|K_{ii}|)\)</span>.</p>
-</section>
-<section id="exact-python-code-for-setbc">
-<h3>2.2.2 Exact Python Code for <code class="docutils literal notranslate"><span class="pre">setbc</span></code><a class="headerlink" href="#exact-python-code-for-setbc" title="Link to this heading">#</a></h3>
-<p>The <code class="docutils literal notranslate"><span class="pre">setbc</span></code> function in <code class="docutils literal notranslate"><span class="pre">src/femlabpy/boundary.py</span></code> implements this flawlessly. Here is the exact Python code responsible for zeroing the rows/columns, updating the RHS, and placing the diagonal stiffness:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="n">ks</span> <span class="o">=</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="n">max_abs_diagonal</span><span class="p">(</span><span class="n">K</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">ks</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
         <span class="n">ks</span> <span class="o">=</span> <span class="mf">1.0</span>
@@ -623,22 +475,22 @@
         <span class="n">p</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">ks</span> <span class="o">*</span> <span class="n">val</span>
 </pre></div>
 </div>
-<p>This procedure ensures mathematical exactness. Before the row/column is zeroed, the off-diagonal terms <span class="math notranslate nohighlight">\(K_{ij}\)</span> are multiplied by the prescribed displacement <code class="docutils literal notranslate"><span class="pre">val</span></code> and moved to the load vector <code class="docutils literal notranslate"><span class="pre">p</span></code>. Then, the <span class="math notranslate nohighlight">\(j\)</span>-th equation is entirely replaced with <span class="math notranslate nohighlight">\(k_s u_j = k_s \bar{u}_j\)</span>.</p>
+<p>This procedure keeps the constrained value exactly visible in the modified system and avoids leaving stale coupling terms in the matrix.</p>
 </section>
 </section>
 <hr class="docutils" />
-<section id="general-constraints-lagrange-multipliers">
-<h2>2.3 General Constraints: Lagrange Multipliers<a class="headerlink" href="#general-constraints-lagrange-multipliers" title="Link to this heading">#</a></h2>
-<p>While Dirichlet conditions fix individual DOFs, engineering problems often involve multi-point constraints (MPCs), where a linear combination of DOFs must satisfy a condition:</p>
+<section id="general-constraints">
+<h2>2.3 General constraints<a class="headerlink" href="#general-constraints" title="Link to this heading">#</a></h2>
+<p>Some problems need multi-point constraints instead of single-node fixities. In that case the condition has the form:</p>
 <div class="math notranslate nohighlight">
 \[ \mathbf{G} \mathbf{u} = \mathbf{Q} \]</div>
-<p>where <span class="math notranslate nohighlight">\(\mathbf{G}\)</span> is an <span class="math notranslate nohighlight">\(m \times n\)</span> constraint matrix and <span class="math notranslate nohighlight">\(\mathbf{Q}\)</span> is an <span class="math notranslate nohighlight">\(m \times 1\)</span> vector. We use the method of <strong>Lagrange Multipliers</strong>.</p>
-<section id="building-the-saddle-point-matrix-via-np-block">
-<h3>2.3.1 Building the Saddle-Point Matrix via <code class="docutils literal notranslate"><span class="pre">np.block</span></code><a class="headerlink" href="#building-the-saddle-point-matrix-via-np-block" title="Link to this heading">#</a></h3>
-<p>We introduce a vector of Lagrange multipliers, <span class="math notranslate nohighlight">\(\boldsymbol{\lambda}\)</span>. The total potential energy functional is augmented to include the constraint, leading to the saddle-point equations:</p>
+<p>where <span class="math notranslate nohighlight">\(\mathbf{G}\)</span> is the constraint matrix and <span class="math notranslate nohighlight">\(\mathbf{Q}\)</span> is the constraint right-hand side. <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> handles this with Lagrange multipliers through <code class="docutils literal notranslate"><span class="pre">solve_lag_general</span></code>.</p>
+<section id="building-the-saddle-point-system">
+<h3>Building the saddle-point system<a class="headerlink" href="#building-the-saddle-point-system" title="Link to this heading">#</a></h3>
+<p>The augmented system couples the unknown displacements and the multipliers:</p>
 <div class="math notranslate nohighlight">
 \[\begin{split} \begin{bmatrix} \mathbf{K} &amp; \mathbf{G}^T \\ \mathbf{G} &amp; \mathbf{0} \end{bmatrix} \begin{bmatrix} \mathbf{u} \\ \boldsymbol{\lambda} \end{bmatrix} = \begin{bmatrix} \mathbf{P} \\ \mathbf{Q} \end{bmatrix} \end{split}\]</div>
-<p>In <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code>, <code class="docutils literal notranslate"><span class="pre">solve_lag_general</span></code> handles the construction of this augmented block matrix. A scaling factor is applied to <span class="math notranslate nohighlight">\(\mathbf{G}\)</span> and <span class="math notranslate nohighlight">\(\mathbf{Q}\)</span> to maintain numerical compatibility, then <code class="docutils literal notranslate"><span class="pre">numpy.block</span></code> is utilized to effortlessly stitch the submatrices together for dense arrays:</p>
+<p>In <code class="docutils literal notranslate"><span class="pre">solve_lag_general</span></code>, the constraint rows are scaled to stay numerically compatible with the stiffness matrix. The function then builds the block matrix with <code class="docutils literal notranslate"><span class="pre">numpy.block</span></code> for dense systems, or <code class="docutils literal notranslate"><span class="pre">scipy.sparse.bmat</span></code> for sparse systems.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="n">Gbar</span> <span class="o">=</span> <span class="n">scale</span> <span class="o">*</span> <span class="n">constraint_matrix</span>
     <span class="n">Qbar</span> <span class="o">=</span> <span class="n">scale</span> <span class="o">*</span> <span class="n">constraint_rhs</span>
     
@@ -657,51 +509,45 @@
     <span class="p">)</span>
 </pre></div>
 </div>
-<p>This resulting <code class="docutils literal notranslate"><span class="pre">Kbar</span></code> is the indefinite augmented stiffness matrix, and the augmented load vector <code class="docutils literal notranslate"><span class="pre">pbar</span></code> is obtained via <code class="docutils literal notranslate"><span class="pre">np.vstack</span></code>.</p>
+<p>The returned solution contains the physical displacement vector. If requested, the recovered multipliers are rescaled back to the original constraint units.</p>
 </section>
-<section id="example-2-node-spring-system">
-<h3>2.3.2 Example: 2-Node Spring System<a class="headerlink" href="#example-2-node-spring-system" title="Link to this heading">#</a></h3>
-<p>Here is a 50-line runnable Python script demonstrating <code class="docutils literal notranslate"><span class="pre">solve_lag_general</span></code> applied to a simple 2-node spring system where the two nodes are constrained to move exactly together (i.e., <span class="math notranslate nohighlight">\(u_1 - u_2 = 0\)</span>).</p>
+<section id="example-two-spring-system">
+<h3>Example: two-spring system<a class="headerlink" href="#example-two-spring-system" title="Link to this heading">#</a></h3>
+<p>This example shows the same structure as the implementation: one equilibrium solve, one constraint equation, and one multiplier that reports the transmitted constraint force.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="c1"># A standalone mock-up of the solve_lag_general logic for demonstration</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">solve_lag_general</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">Q</span><span class="p">):</span>
     <span class="n">scale</span> <span class="o">=</span> <span class="mf">1.0e-2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">K</span><span class="p">)))</span>
     <span class="n">Gbar</span> <span class="o">=</span> <span class="n">scale</span> <span class="o">*</span> <span class="n">G</span>
     <span class="n">Qbar</span> <span class="o">=</span> <span class="n">scale</span> <span class="o">*</span> <span class="n">Q</span>
     
-    <span class="c1"># 1. Build Saddle-Point Matrix</span>
+    <span class="c1"># Build the saddle-point matrix</span>
     <span class="n">Kbar</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">block</span><span class="p">([</span>
         <span class="p">[</span><span class="n">K</span><span class="p">,</span> <span class="n">Gbar</span><span class="o">.</span><span class="n">T</span><span class="p">],</span>
         <span class="p">[</span><span class="n">Gbar</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">G</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">G</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))]</span>
     <span class="p">])</span>
     
-    <span class="c1"># 2. Build Augmented RHS</span>
+    <span class="c1"># Build the augmented right-hand side</span>
     <span class="n">pbar</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">p</span><span class="p">,</span> <span class="n">Qbar</span><span class="p">])</span>
     
-    <span class="c1"># 3. Solve System</span>
+    <span class="c1"># Solve the augmented system</span>
     <span class="n">augmented</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">Kbar</span><span class="p">,</span> <span class="n">pbar</span><span class="p">)</span>
     <span class="n">u</span> <span class="o">=</span> <span class="n">augmented</span><span class="p">[:</span><span class="n">K</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
     <span class="n">lagrange</span> <span class="o">=</span> <span class="n">augmented</span><span class="p">[</span><span class="n">K</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:]</span> <span class="o">*</span> <span class="n">scale</span>
     <span class="k">return</span> <span class="n">u</span><span class="p">,</span> <span class="n">lagrange</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
-    <span class="c1"># 2-node system: Spring 1 connects ground to Node 1, Spring 2 connects Node 1 to Node 2</span>
-    <span class="c1"># k1 = 1000, k2 = 500</span>
     <span class="n">K</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
         <span class="p">[</span><span class="mf">1500.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">500.0</span><span class="p">],</span>
         <span class="p">[</span><span class="o">-</span><span class="mf">500.0</span><span class="p">,</span>  <span class="mf">500.0</span><span class="p">]</span>
     <span class="p">])</span>
     
-    <span class="c1"># Load applied to Node 2</span>
     <span class="n">p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.0</span><span class="p">],</span> 
                   <span class="p">[</span><span class="mf">100.0</span><span class="p">]])</span>
-                  
-    <span class="c1"># Constraint: u_1 - u_2 = 0</span>
+
     <span class="n">G</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">]])</span>
     <span class="n">Q</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.0</span><span class="p">]])</span>
-    
-    <span class="c1"># Solve using Lagrange Multipliers</span>
+
     <span class="n">u</span><span class="p">,</span> <span class="n">lagrange</span> <span class="o">=</span> <span class="n">solve_lag_general</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">Q</span><span class="p">)</span>
     
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Displacements:&quot;</span><span class="p">)</span>
@@ -714,13 +560,13 @@
     <span class="n">main</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>When run, both <span class="math notranslate nohighlight">\(u_1\)</span> and <span class="math notranslate nohighlight">\(u_2\)</span> evaluate to <span class="math notranslate nohighlight">\(0.1\)</span> because the two nodes are constrained to displace by the same amount, making the equivalent stiffness acting on the 100 load equal to <span class="math notranslate nohighlight">\(1000\)</span>, thus <span class="math notranslate nohighlight">\(100 / 1000 = 0.1\)</span>. The Lagrange multiplier returns the constraint force transmitted between the nodes.</p>
+<p>The key outcome is that the constraint is enforced without guessing a penalty stiffness. That makes the method useful whenever the exact multiplier value matters, such as in periodic constraints or multi-point tie conditions.</p>
 </section>
 </section>
 <hr class="docutils" />
 <section id="summary">
 <h2>Summary<a class="headerlink" href="#summary" title="Link to this heading">#</a></h2>
-<p>Proper handling of boundary conditions dictates the stability and correctness of finite element solutions. <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> combines the computationally efficient direct elimination with a scaled diagonal for Dirichlet conditions, and the rigorous Lagrange Multiplier formulation for complex multi-point constraints utilizing <code class="docutils literal notranslate"><span class="pre">np.block</span></code> for saddle-point matrix assembly.</p>
+<p><code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> uses direct elimination for standard fixed DOFs and Lagrange multipliers for general linear constraints. The two paths share the same global indexing rules, so the boundary-condition code stays consistent with the rest of the assembly pipeline.</p>
 </section>
 </section>
 
@@ -740,7 +586,7 @@
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Global Matrix Assembly in Finite Element Analysis: A Rigorous Perspective</p>
+        <p class="prev-next-title">Core Assembly in Finite Element Analysis</p>
       </div>
     </a>
     <a class="right-next"
@@ -748,7 +594,7 @@
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Chapter 3: 1D Bar Elements (Linear &amp; Nonlinear)</p>
+        <p class="prev-next-title">1D bar elements</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -771,18 +617,17 @@
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#applying-external-loads">2.1 Applying External Loads</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-and-adding-loads">2.1.1 Setting and Adding Loads</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#applying-external-loads">2.1 Applying external loads</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#load-table-layout">Load table layout</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dirichlet-boundary-conditions-the-penalty-and-direct-elimination-methods">2.2 Dirichlet Boundary Conditions: The Penalty and Direct Elimination Methods</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mathematics-of-the-large-spring-method-in-extreme-detail">2.2.1 Mathematics of the Large Spring Method in Extreme Detail</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#exact-python-code-for-setbc">2.2.2 Exact Python Code for <code class="docutils literal notranslate"><span class="pre">setbc</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dirichlet-boundary-conditions">2.2 Dirichlet boundary conditions</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-setbc-works">How <code class="docutils literal notranslate"><span class="pre">setbc</span></code> works</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#general-constraints-lagrange-multipliers">2.3 General Constraints: Lagrange Multipliers</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#building-the-saddle-point-matrix-via-np-block">2.3.1 Building the Saddle-Point Matrix via <code class="docutils literal notranslate"><span class="pre">np.block</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-2-node-spring-system">2.3.2 Example: 2-Node Spring System</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#general-constraints">2.3 General constraints</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#building-the-saddle-point-system">Building the saddle-point system</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-two-spring-system">Example: two-spring system</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">Summary</a></li>

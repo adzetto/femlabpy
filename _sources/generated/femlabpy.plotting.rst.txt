@@ -3,15 +3,47 @@
 
 .. automodule:: femlabpy.plotting
 
-   
-   .. rubric:: Functions
 
-   .. autosummary::
-   
-      plotbc
-      plotelem
-      plotforces
-      plotq4
-      plott3
-      plotu
-   
+
+
+
+
+Functions
+---------
+
+.. autosummary::
+
+
+   plotbc
+   plotelem
+   plotforces
+   plotq4
+   plott3
+   plotu
+
+Function Reference
+------------------
+
+
+.. autofunction:: femlabpy.plotting.plotbc
+
+
+.. autofunction:: femlabpy.plotting.plotelem
+
+
+.. autofunction:: femlabpy.plotting.plotforces
+
+
+.. autofunction:: femlabpy.plotting.plotq4
+
+
+.. autofunction:: femlabpy.plotting.plott3
+
+
+.. autofunction:: femlabpy.plotting.plotu
+
+
+
+
+
+

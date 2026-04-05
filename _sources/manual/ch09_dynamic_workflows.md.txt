@@ -1,222 +1,245 @@
-# Chapter 9: Advanced Dynamic Workflows
+# Chapter 9: Dynamic Response Workflows
 
-This chapter explores deeper, specialized workflows for structural dynamics, providing highly detailed line-by-line Python code breakdowns for extracting building periods, plotting mode shapes, generating Frequency Response Functions (FRF), and performing comprehensive Time History Analyses (THA) under seismic loading.
+This chapter focuses on the parts of `femlabpy` that are easiest to misuse if you treat them as black boxes: modal output, frequency response, seismic loading, time-history arrays, and the plotting helpers that sit on top of them. The examples below follow the actual implementation in `src/femlabpy/dynamics.py`, `src/femlabpy/modal.py`, `src/femlabpy/damping.py`, `src/femlabpy/plotting.py`, and `src/femlabpy/postprocess.py`.
 
-## 9.1 Modal Analysis: Finding Periods and Plotting Mode Shapes
+## 9.1 Modal analysis workflow
 
-The structural period $T$ (in seconds) is the time it takes for a building to complete one full cycle of free vibration in a particular mode shape. The period is simply the inverse of the natural frequency: $T = 1 / f_n$.
+Modal analysis in `femlabpy` solves the generalized eigenvalue problem
 
-`femlabpy` abstracts the eigenvalue extraction process in the `solve_modal` function. Behind the scenes, it condenses out the fixed Boundary Conditions (using the exact `C` array) and calls `scipy.linalg.eigh` (for dense matrices) or `scipy.sparse.linalg.eigsh` (for sparse matrices using Shift-and-Invert Lanczos iterations).
+$$
+\mathbf{K} \phi = \omega^2 \mathbf{M} \phi
+$$
 
-### Deep Dive: How `solve_modal` Condenses Matrices using `np.ix_`
+after constrained degrees of freedom have been removed from the system. The public result is a `ModalResult` object with these fields:
 
-In structural dynamics, degrees of freedom (DOFs) that are fully restrained (fixed supports) have exactly zero displacement. Therefore, their corresponding rows and columns in the Stiffness ($K$) and Mass ($M$) matrices do not participate in the generalized eigenvalue problem $(K - \omega^2 M) \Phi = 0$. 
+- `eigenvalues`: the raw eigenvalues, which are the squared circular frequencies.
+- `omega`: circular frequencies in rad/s.
+- `freq_hz`: frequencies in Hz.
+- `period`: periods in seconds.
+- `mode_shapes`: full-size mode shape vectors, padded back to the global DOF space with zeros at constrained DOFs.
+- `participation`: modal participation factors per direction.
+- `effective_mass`: effective modal masses per direction.
 
-To prevent singular matrices and compute the true dynamic modes of the *unrestrained* structure, `solve_modal` drops these constrained rows and columns. It does this by:
-1. Identifying all global DOFs.
-2. Extracting the constrained DOFs from the `C_bc` array.
-3. Finding the "free" DOFs using `np.setdiff1d(all_dofs, constrained_dofs)`.
-4. Using NumPy's multi-dimensional meshgrid indexer, `np.ix_`, to extract the sub-matrices.
+That output matters because the mode shapes returned by `solve_modal()` are already mapped back to the full system. You do not need to rebuild the constrained DOFs yourself unless you want a reduced representation for a custom postprocessor.
+
+### How `solve_modal` reduces the system
+
+The implementation in `src/femlabpy/modal.py` first converts the boundary-condition table into a boolean mask of free DOFs, then extracts the free-free blocks of `K` and `M` with `np.ix_`. This is why `np.ix_` matters here: it is doing row and column selection at the same time, so the solver only sees the dynamic part of the model.
 
 ```python
-# Internal mechanic of solve_modal
-free_dofs = np.setdiff1d(np.arange(total_dof), constrained_dofs)
+free_dofs = np.setdiff1d(np.arange(ndof), constrained_dofs)
 K_free = K[np.ix_(free_dofs, free_dofs)]
 M_free = M[np.ix_(free_dofs, free_dofs)]
 ```
-By utilizing `np.ix_(free_dofs, free_dofs)`, NumPy efficiently grabs the intersection of the "free" rows and "free" columns without needing a slow `for` loop. The eigenvalue solver then evaluates `K_free` and `M_free`. After solving, the eigenvectors are padded with zeros at the constrained DOFs to map back to the global system.
 
-### Complete Code: 10-Story Shear Building Modal Analysis
+For small systems the code uses dense `scipy.linalg.eigh`; for larger systems it switches to `scipy.sparse.linalg.eigsh`. After the solve, the eigenvectors are mass-normalized and expanded back into the full DOF space.
 
-Assume we have a simple column or building mesh. We want to find its fundamental periods and visualize its first 3 bending modes.
+### What the modal output means in practice
+
+The most useful fields are `freq_hz`, `period`, and `effective_mass`. `freq_hz` is what you normally report in a table. `period` is the same result expressed as `1 / f`. `effective_mass` tells you how much mass each mode mobilizes in each direction, which is the value you use when deciding whether enough modes were extracted for response-spectrum or time-history work.
+
+`femlabpy.modal.plot_modes()` is the companion plotting helper. It takes the full mode-shape matrix, reshapes each mode by node and DOF, and overlays the deformed mesh on the original one.
+
+### Example: cantilever modal study
 
 ```{code-block} python
 import numpy as np
 import matplotlib.pyplot as plt
+
 import femlabpy as fp
-from femlabpy.modal import solve_modal
+from femlabpy.modal import solve_modal, plot_modes
 
-# 1. Geometry and Mesh Generation (10m high column, 1m wide)
-L, H = 1.0, 10.0
-nx, ny = 2, 20
-nn = (nx + 1) * (ny + 1)
-dof = 2
+# Build a small 2D cantilever model.
+data = fp.canti()
+T = data["T"]
+X = data["X"]
+G = data["G"]
+C = data["C"]
+dof = int(data["dof"])
+nn = X.shape[0]
+ndof = nn * dof
 
-# Generate a basic structured Q4 mesh grid manually or via Gmsh
-# (For brevity, we assume X and T are generated here)
-# X = ... (shape: nn x 2)
-# T = ... (shape: nel x 5)
-
-# 2. Material (Concrete: E=30GPa, nu=0.2, t=1.0m, rho=2500kg/m3)
-G = np.array([[30e9, 0.2, 1.0, 1.0, 2500.0]])
-
-# 3. Assemble Stiffness and Mass Matrices
-K, p = fp.init(nn, dof)
-M = fp.init(nn, dof)[0]
-
+K = np.zeros((ndof, ndof), dtype=float)
+M = np.zeros((ndof, ndof), dtype=float)
 K = fp.kq4e(K, T, X, G)
-M = fp.mq4e(M, T, X, G, lumped=False) # Consistent mass matrix
+M = fp.mq4e(M, T, X, G, lumped=False)
 
-# 4. Boundary Conditions (Fixed Base at y=0)
-fixed_nodes = np.where(np.abs(X[:, 1]) < 1e-6)[0] + 1
-C = []
-for n in fixed_nodes:
-    C.append([n, 1, 0.0]) # Fix Ux
-    C.append([n, 2, 0.0]) # Fix Uy
-C = np.array(C)
+result = solve_modal(K, M, n_modes=5, C_bc=C, dof=dof)
 
-# 5. Execute Modal Solver
-# Requesting the first 5 modes
-result = solve_modal(K, M, n_modes=5, C_bc=C, dof=2)
+print("mode  freq_hz  period  effective_mass_x")
+for i in range(len(result.freq_hz)):
+    print(
+        f"{i + 1:>4}  {result.freq_hz[i]:>8.3f}  {result.period[i]:>7.4f}  "
+        f"{result.effective_mass[i, 0]:>16.3f}"
+    )
 
-print("--- MODAL ANALYSIS RESULTS ---")
-for i in range(5):
-    print(f"Mode {i+1}:")
-    print(f"  Frequency = {result.freq_hz[i]:.3f} Hz")
-    print(f"  Period    = {result.period[i]:.4f} s")
-    print(f"  Eff. Mass (X) = {result.effective_mass[i, 0]:.1f} kg")
-
-# 6. Plotting Mode Shapes
-scale_factor = 2.0
-fig, axes = plt.subplots(1, 3, figsize=(12, 6))
-for i in range(3):
-    ax = axes[i]
-    phi_i = result.mode_shapes[:, i].reshape(-1, 2)
-    X_def = X + phi_i * scale_factor
-    for elem in T:
-        n_idx = elem[:4] - 1
-        poly = np.append(n_idx, n_idx[0])
-        ax.plot(X[poly, 0], X[poly, 1], 'k-', alpha=0.1)
-        ax.plot(X_def[poly, 0], X_def[poly, 1], 'b-', linewidth=1.5)
-    ax.set_title(f"Mode {i+1}: {result.freq_hz[i]:.2f} Hz\n(T = {result.period[i]:.2f} s)")
-    ax.axis('equal')
-    ax.axis('off')
-
-plt.tight_layout()
+fig = plot_modes(T, X, result.mode_shapes, dof, mode_indices=[0, 1, 2], scale=0.25)
 plt.show()
 ```
 
-## 9.2 Frequency Response Functions (FRF)
+The two lines that matter most are the mass assembly and the modal solve. Everything else in this example is just there to show how the result object is used after the solve.
 
-The **Frequency Response Function**, $H(\omega)$, measures how the structure responds to a harmonic excitation $P \sin(\omega t)$ at varying frequencies $\omega$. Resonance occurs when the excitation frequency matches one of the natural frequencies, causing a spike in the FRF magnitude.
+## 9.2 Frequency response workflow
 
-$$ H(\omega) = \left( -\omega^2 \mathbf{M} + i\omega \mathbf{C} + \mathbf{K} \right)^{-1} $$
+`compute_frf()` evaluates the complex dynamic stiffness
 
-`femlabpy` provides `compute_frf` and `plot_frf` to automate the calculation of the complex Dynamic Stiffness matrix and extract the steady-state transfer function between an input DOF and an output DOF.
+$$
+\mathbf{Z}(\omega) = \mathbf{K} - \omega^2 \mathbf{M} + i \omega \mathbf{C}
+$$
 
-## 9.3 Full Time-History Seismic Analysis
+at a set of frequencies and solves one linear system per frequency. The function returns two arrays:
 
-When given an earthquake record (e.g., an `.AT2` file containing acceleration samples), a standard Response Spectrum analysis is often insufficient for non-linear assessments. A complete Time-History Analysis (THA) is required.
+- `freq_hz`: the sampled frequency axis in Hz.
+- `H`: the complex transfer function between the selected input and output DOFs.
 
-In THA, the ground acceleration $\ddot{u}_g(t)$ is transformed into an effective dynamic point load applied to every mass in the structure:
+This is a scalar FRF, not a full matrix. The input and output DOF indices are global and 0-based.
 
-$$ \mathbf{P}_{eff}(t) = -\mathbf{M} \mathbf{r} \ddot{u}_g(t) $$
+`plot_frf()` then converts `H` into magnitude and phase plots. If `mark_peaks=True`, the helper uses `scipy.signal.find_peaks` to mark likely resonance peaks on the magnitude plot.
 
-where $\mathbf{r}$ is the influence vector (1 for DOFs in the shaking direction, 0 otherwise).
-
-### Deep Dive: How `seismic_load` Handles Interpolation and Sparse Matrices
-
-The `seismic_load` function inside `femlabpy` is a factory function. It takes your earthquake record array, your mass matrix, and your spatial influence vector, and returns a Python *callable* function `p(t)` that the Newmark-Beta solver can invoke at any arbitrary time $t$. 
-
-1. **Pre-computing the Load Vector Profile:** To avoid multiplying the massive Mass matrix $\mathbf{M}$ at every single time step, `seismic_load` pre-computes the product $-\mathbf{M} \mathbf{r}$ once. If $\mathbf{M}$ is a `scipy.sparse` matrix (like CSR or CSC), it leverages sparse matrix-vector multiplication (`M.dot(r)`), ensuring memory and computational efficiency.
-2. **The `p(t)` Callable:** The returned function `def p(t):` encapsulates the state.
-3. **`np.interp` for Sub-stepping:** The Newmark-Beta solver might adapt its time step internally, evaluating forces at times $t$ that do not fall exactly on the earthquake record's discrete points (`dt_record`). To handle this, `p(t)` uses `np.interp(t, time_array, ag_ms2)`. This linearly interpolates the ground acceleration at any exact float time $t$ by finding the two nearest discrete points in the record, effectively producing a continuous acceleration curve.
-
-### Step-by-Step Earthquake Integration
+### Example: one input, one output
 
 ```{code-block} python
 import numpy as np
 import matplotlib.pyplot as plt
-from femlabpy.dynamics import seismic_load, solve_newmark
 
-# 1. Load an Earthquake Record
+from femlabpy.dynamics import compute_frf, plot_frf
+
+# Assume K, M, and C are already assembled and boundary conditions are applied.
+freq_hz, H = compute_frf(
+    M,
+    C,
+    K,
+    input_dof=0,
+    output_dof=0,
+    freq_range=(0.1, 50.0),
+    n_points=800,
+)
+
+fig = plot_frf(freq_hz, H, log_scale=True, mark_peaks=True)
+plt.show()
+```
+
+If you only need the resonance locations, the sampled magnitude is usually enough. If you need a transfer function for later analysis, keep `H` and postprocess it yourself.
+
+## 9.3 Seismic loading workflow
+
+`seismic_load()` is a load-function factory. It does not solve the dynamic problem by itself. Instead, it precomputes the effective base-excitation vector
+
+$$
+\mathbf{p}(t) = -\mathbf{M} \mathbf{r} a_g(t)
+$$
+
+and returns a callable `p(t)` that interpolates the recorded ground acceleration at any requested time.
+
+What matters in the code is that the function accepts either a dense or sparse mass matrix, multiplies it by the influence vector once, and then uses `np.interp` for the ground-motion history. That keeps the time integrator simple: the solver only needs to call `p_func(t_next)` at each step.
+
+### Example: ground-motion input
+
+```{code-block} python
+import numpy as np
+import matplotlib.pyplot as plt
+
+from femlabpy.dynamics import seismic_load, solve_newmark, plot_time_history, plot_energy
+
 dt_record = 0.01
 n_points = 1000
-time_array = np.arange(n_points) * dt_record
-ag_g = 0.5 * np.sin(2.0 * np.pi * 2.5 * time_array) * np.exp(-0.2 * time_array)
-ag_ms2 = ag_g * 9.80665
+t_record = np.arange(n_points) * dt_record
+ag_g = 0.5 * np.sin(2.0 * np.pi * 2.5 * t_record) * np.exp(-0.2 * t_record)
+ag = ag_g * 9.80665
 
-# 2. Build the Influence Vector for Horizontal (X) Shaking
-inf_vec = np.zeros(nn * dof)
-inf_vec[0::2] = 1.0  # 1.0 for all Ux DOFs, 0.0 for Uy DOFs
+# Reuse the same assembled model and boundary-condition table from the modal example.
+C_damp = np.zeros_like(K)
 
-# 3. Create the Time-Varying Load Function
-# Returns a callable p(t) utilizing np.interp internally
-p_func = seismic_load(M, inf_vec, ag_ms2, dt_record)
+# Influence vector: 1 for x-direction DOFs, 0 for all others.
+influence = np.zeros(ndof, dtype=float)
+influence[0::2] = 1.0
 
-# 4. Set Initial Conditions
-u0 = np.zeros((nn * dof, 1))
-v0 = np.zeros((nn * dof, 1))
+p_func = seismic_load(M, influence, ag, dt_record)
 
-# 5. Solve using the Implicit Newmark-Beta Integrator
+u0 = np.zeros((ndof, 1))
+v0 = np.zeros((ndof, 1))
+
 history = solve_newmark(
-    M, C_damp, K, p_func, u0, v0, 
-    dt=dt_record, 
-    nsteps=n_points, 
-    beta=0.25, gamma=0.5, 
-    C_bc=C,
-    compute_energy=True  # Enables calculating strain/kinetic histories
+    M,
+    C_damp,
+    K,
+    p_func,
+    u0,
+    v0,
+    dt=dt_record,
+    nsteps=n_points,
+    C_bc=data["C"],
+    dof=dof,
+    compute_energy=True,
 )
 ```
 
-### Understanding the `result.u` History Array
+`solve_newmark()` returns a `TimeHistory` object. Its arrays are stored time-first:
 
-The variable `history.u` returned by `solve_newmark` is a 2-dimensional NumPy array. It captures the spatial degrees of freedom across all time steps.
+- `history.t` has shape `(nsteps + 1,)`.
+- `history.u`, `history.v`, and `history.a` have shape `(nsteps + 1, ndof)`.
+- Row `0` is the initial state.
+- Column `j` is the history of global DOF `j`.
 
-*   **Structure:** It has the shape `(N_steps, N_dof)`. The rows represent the passage of time (from $t=0$ to $t_{end}$), and the columns represent the individual Degrees of Freedom (Ux and Uy for all nodes).
-*   **Slicing for Plotting:** To extract the history of a single node, we use 2D array slicing: `history.u[:, target_dof]`. The `:` means "give me all rows (all time steps)", and `target_dof` isolates the specific column.
+That means a single DOF history is extracted as `history.u[:, target_dof]`, not by reshaping the array.
+
+### Example: extracting one roof DOF
 
 ```{code-block} python
-# 6. Extract and Plot the Roof Displacement History
-roof_dof_x = (np.argmax(X[:, 1])) * dof + 0
-
-# Line-by-line slice: Grab all time steps (rows) for the single roof DOF column
+roof_node = np.argmax(X[:, 1])
+roof_dof_x = roof_node * dof
 u_roof = history.u[:, roof_dof_x]
 
 plt.figure(figsize=(10, 4))
-plt.plot(history.t, u_roof * 1000, 'b-', linewidth=1.5) # Convert m to mm
-plt.title("Roof Relative Displacement History (X-Direction)")
+plt.plot(history.t, u_roof * 1000.0, color="tab:blue", linewidth=1.5)
 plt.xlabel("Time (s)")
 plt.ylabel("Displacement (mm)")
+plt.title("Roof displacement history")
 plt.grid(True, alpha=0.3)
-plt.axhline(0, color='black', linewidth=0.8)
-plt.fill_between(history.t, u_roof * 1000, 0, color='blue', alpha=0.1)
 plt.show()
 ```
 
-## 9.4 Global Energy Balance Extraction
+`plot_time_history()` is the library helper for the same task. It accepts one DOF index or a list of indices and plots displacement, velocity, or acceleration directly from the `TimeHistory` object.
 
-To ensure numerical stability during the Time-History Analysis, engineers often plot the energy balance over time. The energy input into the system by the earthquake must equate to the sum of the system's kinetic energy, strain energy, and damped dissipation energy.
+## 9.4 Energy and postprocessing workflow
 
-By passing `compute_energy=True` to `solve_newmark`, the solver computes these metrics line-by-line at every time step:
-*   **Kinetic Energy:** $E_k = \frac{1}{2} \mathbf{\dot{u}}^T \mathbf{M} \mathbf{\dot{u}}$
-*   **Strain Energy:** $E_s = \frac{1}{2} \mathbf{u}^T \mathbf{K} \mathbf{u}$
-*   **Damped Energy:** Accumulated numerical integral of $\mathbf{\dot{u}}^T \mathbf{C} \mathbf{\dot{u}}$
+When `compute_energy=True`, the solvers populate `history.energy` with a dictionary. In the current implementation the keys are:
 
-You can directly access these arrays off the `history` object and visualize them:
+- `kinetic`
+- `strain`
+- `total`
+
+`plot_energy()` expects exactly that dictionary. If the solver was not run with energy tracking enabled, the helper raises a `ValueError` instead of guessing.
+
+### Example: energy plot
 
 ```{code-block} python
-# 7. Verification: Energy Conservation Plot
-plt.figure(figsize=(10, 5))
-
-plt.plot(history.t, history.kinetic_energy, label="Kinetic Energy", color='r', alpha=0.8)
-plt.plot(history.t, history.strain_energy, label="Strain Energy", color='g', alpha=0.8)
-plt.plot(history.t, history.damping_energy, label="Damped Dissipation", color='c', alpha=0.8)
-
-# Compute the total internal energy sum
-total_internal = history.kinetic_energy + history.strain_energy + history.damping_energy
-
-plt.plot(history.t, total_internal, 'k--', label="Total Internal Energy", linewidth=2)
-plt.plot(history.t, history.external_work, 'm:', label="Input External Work", linewidth=2)
-
-plt.title("Seismic Energy Balance Verification")
-plt.xlabel("Time (s)")
-plt.ylabel("Energy (Joules)")
-plt.legend(loc='upper right')
-plt.grid(True, alpha=0.3)
+fig, ax = plt.subplots(figsize=(10, 4))
+plot_energy(history, ax=ax)
 plt.show()
 ```
 
-When plotted, the Total Internal Energy curve should lay perfectly over the Input External Work curve. Any divergence indicates numerical instability or a time step (`dt`) that is too large.
+The implementation is intentionally simple. It does not attempt to reconstruct external work or damping work histories. If you need those, you should compute them explicitly from your loading history and state vectors.
 
-These advanced workflows prove that `femlabpy` is not just a static matrix assembler, but a fully-fledged structural dynamics engine.
+### Example: using the built-in time-history plotter
+
+```{code-block} python
+fig, ax = plt.subplots(figsize=(10, 4))
+plot_time_history(history, [roof_dof_x], quantity="displacement", ax=ax)
+plt.show()
+```
+
+This helper is useful when you want the standard library behavior and do not want to write array slicing and axis labeling by hand.
+
+## 9.5 Recommended workflow
+
+A practical dynamic workflow in `femlabpy` usually looks like this:
+
+1. Assemble `K`, `M`, and optionally `C`.
+2. Run `solve_modal()` to check periods, mode shapes, and modal mass participation.
+3. Use `compute_frf()` when you need steady-state response versus frequency.
+4. Build a `p_func` with `constant_load()`, `harmonic_load()`, `tabulated_load()`, or `seismic_load()`.
+5. Run `solve_newmark()`, `solve_hht()`, `solve_central_diff()`, or `solve_newmark_nl()` depending on the problem.
+6. Postprocess with `plot_time_history()`, `plot_energy()`, and `plot_frf()`.
+
+That sequence keeps the solver, the history arrays, and the postprocessing helpers aligned with the actual data structures used by the package.

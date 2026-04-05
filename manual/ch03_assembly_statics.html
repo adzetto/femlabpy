@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Chapter 3: Assembly &amp; Constraints &#8212; femlabpy 0.6.0 documentation</title>
+    <title>Chapter 3: Assembly and Constraints &#8212; femlabpy 0.6.0 documentation</title>
   
   
   
@@ -31,6 +31,7 @@
 <link href="../_static/styles/pydata-sphinx-theme.css?digest=7f76b32a3354e82990f2" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=aa664f36" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../_static/scripts/fontawesome.js?digest=7f76b32a3354e82990f2"></script>
@@ -133,118 +134,38 @@
     
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../tutorials.html">
-    Tutorials & Usage Manual
+    Tutorials
   </a>
 </li>
 
 
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="index.html">
-    User Guide
+    Guide
   </a>
 </li>
 
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../theory/index.html">
-    Theory & Reference Manual
+    Theory
   </a>
 </li>
 
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../api.html">
-    API Reference
+    API
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../theory/01_core_assembly.html">
-    Global Matrix Assembly in Finite Element Analysis: A Rigorous Perspective
+  <a class="nav-link nav-internal" href="../matlab_python_mapping.html">
+    MATLAB Mapping
   </a>
 </li>
 
-            <li class="nav-item dropdown">
-                <button class="btn dropdown-toggle nav-item" type="button"
-                data-bs-toggle="dropdown" aria-expanded="false"
-                aria-controls="pst-nav-more-links">
-                    More
-                </button>
-                <ul id="pst-nav-more-links" class="dropdown-menu">
-                    
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../theory/02_boundary_loads.html">
-    Chapter 2: Boundary Conditions and Loads
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../theory/03_1d_bars.html">
-    Chapter 3: 1D Bar Elements (Linear & Nonlinear)
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../theory/04_2d_triangles.html">
-    2D Triangular Elements (CST)
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../theory/05_2d_quads.html">
-    Chapter 5: 2D Isoparametric Quadrilateral Elements
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../theory/06_3d_solids.html">
-    3D Solid Elements: Tetrahedrons and Hexahedrons
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../theory/07_plasticity.html">
-    Chapter 7: Constitutive Models & Plasticity
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../theory/08_dynamics.html">
-    Structural Dynamics and Time Integration
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../theory/09_modal_periodic.html">
-    Chapter 9: Eigenvalue Problems and Periodic Boundaries
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../theory/10_io_mesh.html">
-    Mesh I/O, Data Types, and Helpers
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../api.html">
-    API Reference
-  </a>
-</li>
-
-                </ul>
-            </li>
-            
   </ul>
 </nav></div>
       
@@ -328,105 +249,35 @@
     
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../tutorials.html">
-    Tutorials & Usage Manual
+    Tutorials
   </a>
 </li>
 
 
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="index.html">
-    User Guide
+    Guide
   </a>
 </li>
 
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../theory/index.html">
-    Theory & Reference Manual
+    Theory
   </a>
 </li>
 
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../api.html">
-    API Reference
+    API
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../theory/01_core_assembly.html">
-    Global Matrix Assembly in Finite Element Analysis: A Rigorous Perspective
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../theory/02_boundary_loads.html">
-    Chapter 2: Boundary Conditions and Loads
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../theory/03_1d_bars.html">
-    Chapter 3: 1D Bar Elements (Linear & Nonlinear)
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../theory/04_2d_triangles.html">
-    2D Triangular Elements (CST)
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../theory/05_2d_quads.html">
-    Chapter 5: 2D Isoparametric Quadrilateral Elements
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../theory/06_3d_solids.html">
-    3D Solid Elements: Tetrahedrons and Hexahedrons
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../theory/07_plasticity.html">
-    Chapter 7: Constitutive Models & Plasticity
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../theory/08_dynamics.html">
-    Structural Dynamics and Time Integration
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../theory/09_modal_periodic.html">
-    Chapter 9: Eigenvalue Problems and Periodic Boundaries
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../theory/10_io_mesh.html">
-    Mesh I/O, Data Types, and Helpers
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../api.html">
-    API Reference
+  <a class="nav-link nav-internal" href="../matlab_python_mapping.html">
+    MATLAB Mapping
   </a>
 </li>
 
@@ -475,13 +326,13 @@
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="ch01_fundamentals.html">Chapter 1: Fundamentals &amp; Data Structures</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ch02_elements.html">Chapter 2: Element Library</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Chapter 3: Assembly &amp; Constraints</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Chapter 3: Assembly and Constraints</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ch04_materials.html">Chapter 4: Material Models</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ch05_dynamics.html">Chapter 5: Structural Dynamics Theory &amp; Time Integration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ch06_periodic_io.html">Chapter 6: Periodic Boundaries &amp; I/O</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ch07_advanced_examples.html">Chapter 7: Advanced Workflows &amp; Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ch05_dynamics.html">Structural Dynamics and Time Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ch06_periodic_io.html">Chapter 6: Periodic Boundaries and Gmsh I/O</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ch07_packaged_examples.html">Chapter 7: Packaged Workflows and Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ch08_custom_elements.html">Chapter 8: Custom Element Development</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ch09_dynamic_workflows.html">Chapter 9: Advanced Dynamic Workflows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ch09_dynamic_workflows.html">Chapter 9: Dynamic Response Workflows</a></li>
 </ul>
 </div>
 </nav></div>
@@ -525,7 +376,7 @@
     
     <li class="breadcrumb-item"><a href="index.html" class="nav-link">User Guide</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Chapter 3: Assembly &amp; Constraints</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Chapter 3: Assembly and Constraints</span></li>
   </ul>
 </nav>
 </div>
@@ -542,318 +393,237 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="chapter-3-assembly-constraints">
-<h1>Chapter 3: Assembly &amp; Constraints<a class="headerlink" href="#chapter-3-assembly-constraints" title="Link to this heading">#</a></h1>
-<p>This chapter details the numerical procedures used to assemble global systems of equations and enforce kinematic constraints.</p>
-<section id="global-assembly-algorithm">
-<h2>3.1 Global Assembly Algorithm<a class="headerlink" href="#global-assembly-algorithm" title="Link to this heading">#</a></h2>
-<p>In the finite element method, the global stiffness matrix <span class="math notranslate nohighlight">\(\mathbf{K}\)</span> is constructed by summing the contributions of individual element stiffness matrices <span class="math notranslate nohighlight">\(\mathbf{K}_e\)</span>. Mathematically, this is expressed using Boolean connectivity matrices <span class="math notranslate nohighlight">\(\mathbf{L}_e\)</span>:</p>
+  <section class="tex2jax_ignore mathjax_ignore" id="chapter-3-assembly-and-constraints">
+<h1>Chapter 3: Assembly and Constraints<a class="headerlink" href="#chapter-3-assembly-and-constraints" title="Link to this heading">#</a></h1>
+<p>This chapter explains how <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> turns element-level matrices and vectors into a global system, then applies loads and constraints before solving. The key idea is simple: each element works in its own local numbering, but the solver always operates on one global set of degrees of freedom.</p>
+<section id="global-assembly">
+<h2>3.1 Global Assembly<a class="headerlink" href="#global-assembly" title="Link to this heading">#</a></h2>
+<p>Finite element assembly is a scatter operation. Each element produces a local stiffness matrix <code class="docutils literal notranslate"><span class="pre">Ke</span></code> and, when needed, a local internal-force vector <code class="docutils literal notranslate"><span class="pre">qe</span></code>. Those local quantities must be mapped into the correct rows and columns of the global arrays.</p>
+<p>In the classical matrix form, the assembled stiffness matrix can be written as:</p>
 <div class="math notranslate nohighlight">
-\[ \mathbf{K} = \sum_{e=1}^{nel} \mathbf{L}_e^T \mathbf{K}_e \mathbf{L}_e \]</div>
-<p>In <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code>, this assembly is achieved through the driver functions (e.g., <code class="docutils literal notranslate"><span class="pre">kq4e</span></code>, <code class="docutils literal notranslate"><span class="pre">kt3e</span></code>) which internally rely on indexing mechanisms. For example, for a 4-node quad element with 2 DOFs per node, the global DOF indices for the element are computed as:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">global_dofs</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">element_nodes</span><span class="p">:</span>
-    <span class="n">global_dofs</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="mi">2</span><span class="o">*</span><span class="n">n</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="c1"># Assuming 1-based indexing adjusted for 0-based</span>
+\[ K = \sum_e L_e^T K_e L_e \]</div>
+<p>In the actual Python implementation, <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> does not build explicit Boolean matrices for every element. Instead, it computes global degree-of-freedom indices directly and uses NumPy indexing to place the local blocks.</p>
+<section id="how-the-indices-are-formed">
+<h3>3.1.1 How the indices are formed<a class="headerlink" href="#how-the-indices-are-formed" title="Link to this heading">#</a></h3>
+<p>The numbering convention is:</p>
+<ul class="simple">
+<li><p>Node numbers in the legacy FemLab tables are one-based.</p></li>
+<li><p>Python arrays are zero-based.</p></li>
+<li><p>Each node owns <code class="docutils literal notranslate"><span class="pre">dof</span></code> consecutive global degrees of freedom.</p></li>
+</ul>
+<p>The helper <code class="docutils literal notranslate"><span class="pre">node_dof_indices</span></code> in <code class="docutils literal notranslate"><span class="pre">src/femlabpy/_helpers.py</span></code> expands a list of node numbers into flat global DOF indices. For a 2D problem with <code class="docutils literal notranslate"><span class="pre">dof</span> <span class="pre">=</span> <span class="pre">2</span></code>, node <code class="docutils literal notranslate"><span class="pre">n</span></code> maps to indices:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
 </pre></div>
 </div>
-<p>The <span class="math notranslate nohighlight">\(8 \times 8\)</span> element matrix <span class="math notranslate nohighlight">\(\mathbf{K}_e\)</span> is then added into the <span class="math notranslate nohighlight">\(N_{dof} \times N_{dof}\)</span> global matrix at the intersection of <code class="docutils literal notranslate"><span class="pre">global_dofs</span></code> rows and columns. Similarly, internal element force vectors <span class="math notranslate nohighlight">\(\mathbf{q}_e\)</span> are assembled into the global internal force vector <span class="math notranslate nohighlight">\(\mathbf{q}\)</span>.</p>
-<section id="manual-element-iteration-and-assmk-assembly">
-<h3>3.1.1 Manual Element Iteration and <code class="docutils literal notranslate"><span class="pre">assmk</span></code> Assembly<a class="headerlink" href="#manual-element-iteration-and-assmk-assembly" title="Link to this heading">#</a></h3>
-<p>While <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> abstracts many underlying operations, advanced users may want to build custom element loops. Let’s look at exactly how a user might manually iterate through elements and call an assembly routine like <code class="docutils literal notranslate"><span class="pre">assmk</span></code>.</p>
-<p>In a conventional FE code, you loop over all elements, retrieve their local topology (node numbers), form the local element stiffness matrix <span class="math notranslate nohighlight">\(\mathbf{K}_e\)</span>, and then scatter it into the global <span class="math notranslate nohighlight">\(\mathbf{K}\)</span>. <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> typically provides a utility <code class="docutils literal notranslate"><span class="pre">assmk</span></code> which performs this scattering.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-
-<span class="c1"># Assume K_global is already allocated</span>
-<span class="c1"># edof_matrix is a 2D array where each row represents an element</span>
-<span class="c1"># and the columns are the global degrees of freedom for that element.</span>
-
-<span class="k">def</span><span class="w"> </span><span class="nf">manual_assembly</span><span class="p">(</span><span class="n">K_global</span><span class="p">,</span> <span class="n">elements</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">,</span> <span class="n">edof_matrix</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Manually iterate over elements and assemble the global stiffness matrix.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">elements</span><span class="p">)):</span>
-        <span class="c1"># 1. Fetch element properties and nodes</span>
-        <span class="n">edof</span> <span class="o">=</span> <span class="n">edof_matrix</span><span class="p">[</span><span class="n">e</span><span class="p">,</span> <span class="p">:]</span>  <span class="c1"># Global DOFs for this element</span>
-        
-        <span class="c1"># 2. Compute local element stiffness (example placeholder)</span>
-        <span class="c1"># ke = my_custom_element_stiffness(coordinates, edof)</span>
-        <span class="n">ke</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">edof</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">edof</span><span class="p">)))</span> <span class="c1"># Placeholder for K_e</span>
-        
-        <span class="c1"># 3. Assemble into the global matrix</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">edof</span><span class="p">)):</span>
-            <span class="n">row</span> <span class="o">=</span> <span class="n">edof</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">edof</span><span class="p">)):</span>
-                <span class="n">col</span> <span class="o">=</span> <span class="n">edof</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
-                <span class="n">K_global</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">]</span> <span class="o">+=</span> <span class="n">ke</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
-                
-    <span class="k">return</span> <span class="n">K_global</span>
+<p>So a 4-node quadrilateral in 2D becomes an 8-entry index list. Those eight indices are then used to extract or update the corresponding <code class="docutils literal notranslate"><span class="pre">8</span> <span class="pre">x</span> <span class="pre">8</span></code> submatrix.</p>
+<p>This is the pattern used throughout the library:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">indices</span> <span class="o">=</span> <span class="n">node_dof_indices</span><span class="p">(</span><span class="n">topology_nodes</span><span class="p">(</span><span class="n">Te</span><span class="p">),</span> <span class="n">dof</span><span class="p">)</span>
+<span class="n">K</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ix_</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="n">indices</span><span class="p">)]</span> <span class="o">+=</span> <span class="n">Ke</span>
+<span class="n">q</span><span class="p">[</span><span class="n">indices</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="n">qe</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
 </pre></div>
 </div>
+<p>The <code class="docutils literal notranslate"><span class="pre">np.ix_</span></code> call is important. It converts a flat list of DOF indices into a two-dimensional open mesh so NumPy selects the full row/column block instead of pairing indices one by one.</p>
 </section>
-<section id="dense-vs-sparse-assembly-scipy-sparse-lil-matrix">
-<h3>3.1.2 Dense vs. Sparse Assembly (<code class="docutils literal notranslate"><span class="pre">scipy.sparse.lil_matrix</span></code>)<a class="headerlink" href="#dense-vs-sparse-assembly-scipy-sparse-lil-matrix" title="Link to this heading">#</a></h3>
-<p>For small academic problems, creating a dense <code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> for the global stiffness matrix <span class="math notranslate nohighlight">\(\mathbf{K}\)</span> is computationally acceptable. However, for industrial-scale models with thousands of DOFs, <span class="math notranslate nohighlight">\(\mathbf{K}\)</span> is mostly composed of zeros. This sparsity must be exploited to avoid memory exhaustion and to drastically speed up matrix inversion/factorization.</p>
-<p>We can define a parameter <code class="docutils literal notranslate"><span class="pre">is_sparse</span></code> to decide between a dense matrix or a <code class="docutils literal notranslate"><span class="pre">scipy.sparse</span></code> matrix. The <code class="docutils literal notranslate"><span class="pre">scipy.sparse.lil_matrix</span></code> (List of Lists) format is highly recommended for building sparse matrices because it allows for fast insertion of individual elements.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">scipy.sparse</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sp</span>
+<section id="what-assmk-and-assmq-do">
+<h3>3.1.2 What <code class="docutils literal notranslate"><span class="pre">assmk</span></code> and <code class="docutils literal notranslate"><span class="pre">assmq</span></code> do<a class="headerlink" href="#what-assmk-and-assmq-do" title="Link to this heading">#</a></h3>
+<p>The low-level assembly helpers are intentionally small:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">assmk(K,</span> <span class="pre">Ke,</span> <span class="pre">Te,</span> <span class="pre">dof)</span></code> inserts one element stiffness matrix into the global stiffness matrix.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">assmq(q,</span> <span class="pre">qe,</span> <span class="pre">Te,</span> <span class="pre">dof)</span></code> adds one element internal-force vector into the global internal-force vector.</p></li>
+</ul>
+<p>The implementation in <code class="docutils literal notranslate"><span class="pre">src/femlabpy/assembly.py</span></code> does exactly two things:</p>
+<ol class="arabic simple">
+<li><p>Extract the node numbers from the topology row <code class="docutils literal notranslate"><span class="pre">Te</span></code>.</p></li>
+<li><p>Convert those node numbers into global DOF indices and accumulate the local values at those positions.</p></li>
+</ol>
+<p>That design keeps the element kernels simple. The element routine computes the local matrix or vector, and the assembly helper handles only the global scatter step.</p>
+</section>
+<section id="dense-and-sparse-assembly">
+<h3>3.1.3 Dense and sparse assembly<a class="headerlink" href="#dense-and-sparse-assembly" title="Link to this heading">#</a></h3>
+<p>For small problems, a dense <code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> is acceptable. For realistic models, the global matrix is mostly zeros and should be stored sparsely.</p>
+<p><code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> uses <code class="docutils literal notranslate"><span class="pre">scipy.sparse.lil_matrix</span></code> when a matrix is being built incrementally. LIL is a good construction format because repeated single-block insertions are cheap. After assembly, the matrix should be converted to <code class="docutils literal notranslate"><span class="pre">csr</span></code> or <code class="docutils literal notranslate"><span class="pre">csc</span></code> before solving.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scipy.sparse</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sp</span>
 
-<span class="k">def</span><span class="w"> </span><span class="nf">create_global_matrix</span><span class="p">(</span><span class="n">ndof</span><span class="p">,</span> <span class="n">is_sparse</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Initialize the global stiffness matrix based on the is_sparse flag.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">is_sparse</span><span class="p">:</span>
-        <span class="c1"># lil_matrix is efficient for incremental construction</span>
-        <span class="k">return</span> <span class="n">sp</span><span class="o">.</span><span class="n">lil_matrix</span><span class="p">((</span><span class="n">ndof</span><span class="p">,</span> <span class="n">ndof</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="c1"># Standard dense matrix</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">ndof</span><span class="p">,</span> <span class="n">ndof</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_global_matrix</span><span class="p">(</span><span class="n">ndof</span><span class="p">,</span> <span class="n">use_sparse</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">use_sparse</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">sp</span><span class="o">.</span><span class="n">lil_matrix</span><span class="p">((</span><span class="n">ndof</span><span class="p">,</span> <span class="n">ndof</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">ndof</span><span class="p">,</span> <span class="n">ndof</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
 
-<span class="c1"># Assembly using the is_sparse check</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">assmk_advanced</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">ke</span><span class="p">,</span> <span class="n">edof</span><span class="p">,</span> <span class="n">is_sparse</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Assemble element matrix `ke` into global `K` using `edof`.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># For sparse lil_matrix or dense numpy array, slicing/advanced indexing </span>
-    <span class="c1"># might differ slightly in performance, but conceptually it remains:</span>
-    <span class="k">if</span> <span class="n">is_sparse</span><span class="p">:</span>
-        <span class="c1"># We can use np.ix_ to create an open mesh from multiple boolean masks</span>
-        <span class="c1"># or integer arrays.</span>
-        <span class="n">ix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ix_</span><span class="p">(</span><span class="n">edof</span><span class="p">,</span> <span class="n">edof</span><span class="p">)</span>
-        <span class="n">K</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span> <span class="o">=</span> <span class="n">K</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span> <span class="o">+</span> <span class="n">ke</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="c1"># Dense assembly</span>
-        <span class="n">ix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ix_</span><span class="p">(</span><span class="n">edof</span><span class="p">,</span> <span class="n">edof</span><span class="p">)</span>
-        <span class="n">K</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span> <span class="o">+=</span> <span class="n">ke</span>
-        
+<span class="k">def</span><span class="w"> </span><span class="nf">add_element_matrix</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">Ke</span><span class="p">,</span> <span class="n">edof</span><span class="p">):</span>
+    <span class="n">ix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ix_</span><span class="p">(</span><span class="n">edof</span><span class="p">,</span> <span class="n">edof</span><span class="p">)</span>
+    <span class="n">K</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span> <span class="o">+=</span> <span class="n">Ke</span>
     <span class="k">return</span> <span class="n">K</span>
 </pre></div>
 </div>
-<p>Once assembly is complete, a <code class="docutils literal notranslate"><span class="pre">lil_matrix</span></code> should be converted to a Compressed Sparse Column (<code class="docutils literal notranslate"><span class="pre">csc_matrix</span></code>) or Compressed Sparse Row (<code class="docutils literal notranslate"><span class="pre">csr_matrix</span></code>) format before solving the linear system using solvers like <code class="docutils literal notranslate"><span class="pre">scipy.sparse.linalg.spsolve</span></code>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Convert to CSR for fast math operations and solving</span>
-<span class="n">K_csr</span> <span class="o">=</span> <span class="n">K_global</span><span class="o">.</span><span class="n">tocsr</span><span class="p">()</span>
+<p>The subtle point is that sparse and dense code can share the same indexing logic. Only the container type changes.</p>
+</section>
+<section id="a-small-assembly-example">
+<h3>3.1.4 A small assembly example<a class="headerlink" href="#a-small-assembly-example" title="Link to this heading">#</a></h3>
+<p>This example mirrors the indexing pattern used in the library:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="c1"># Two elements, one DOF per node</span>
+<span class="n">K</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+
+<span class="n">ke1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">],</span>
+                <span class="p">[</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]])</span>
+<span class="n">ke2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">2.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">],</span>
+                <span class="p">[</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">]])</span>
+
+<span class="n">edof1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="n">edof2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+
+<span class="n">K</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ix_</span><span class="p">(</span><span class="n">edof1</span><span class="p">,</span> <span class="n">edof1</span><span class="p">)]</span> <span class="o">+=</span> <span class="n">ke1</span>
+<span class="n">K</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ix_</span><span class="p">(</span><span class="n">edof2</span><span class="p">,</span> <span class="n">edof2</span><span class="p">)]</span> <span class="o">+=</span> <span class="n">ke2</span>
 </pre></div>
 </div>
+<p>The second element shares node 1 with the first element, so its contribution is added to the same global row and column. That overlap is the whole point of assembly.</p>
 </section>
 </section>
 <section id="dirichlet-boundary-conditions">
 <h2>3.2 Dirichlet Boundary Conditions<a class="headerlink" href="#dirichlet-boundary-conditions" title="Link to this heading">#</a></h2>
-<p>To solve the equilibrium equations <span class="math notranslate nohighlight">\(\mathbf{K} \mathbf{u} = \mathbf{p}\)</span>, the global stiffness matrix must be rendered non-singular by preventing rigid body motions. This is achieved by prescribing known displacements (Dirichlet boundary conditions).</p>
-<p><code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> utilizes a direct modification approach (often conceptually similar to the penalty method) to enforce <span class="math notranslate nohighlight">\(u_i = \bar{u}_i\)</span>. The <code class="docutils literal notranslate"><span class="pre">setbc</span></code> function applies this using a massive artificial stiffness:</p>
+<p>Dirichlet boundary conditions prescribe displacements. In structural problems, they are used to fix supports, remove rigid-body modes, or enforce known motions.</p>
+<p>The implementation in <code class="docutils literal notranslate"><span class="pre">src/femlabpy/boundary.py</span></code> uses direct elimination with a replacement diagonal value <code class="docutils literal notranslate"><span class="pre">ks</span></code>. This is not a pure penalty method in the textbook sense. It also transfers the coupling terms from the constrained column into the right-hand side before zeroing the row and column, so nonzero prescribed displacements are handled correctly.</p>
+<section id="how-setbc-works">
+<h3>3.2.1 How <code class="docutils literal notranslate"><span class="pre">setbc</span></code> works<a class="headerlink" href="#how-setbc-works" title="Link to this heading">#</a></h3>
+<p>The function <code class="docutils literal notranslate"><span class="pre">setbc(K,</span> <span class="pre">p,</span> <span class="pre">C,</span> <span class="pre">dof)</span></code> expects a legacy constraint table:</p>
+<ul class="simple">
+<li><p>For <code class="docutils literal notranslate"><span class="pre">dof</span> <span class="pre">=</span> <span class="pre">1</span></code>, each row is <code class="docutils literal notranslate"><span class="pre">[node,</span> <span class="pre">value]</span></code>.</p></li>
+<li><p>For <code class="docutils literal notranslate"><span class="pre">dof</span> <span class="pre">&gt;</span> <span class="pre">1</span></code>, each row is <code class="docutils literal notranslate"><span class="pre">[node,</span> <span class="pre">local_dof,</span> <span class="pre">value]</span></code>.</p></li>
+</ul>
+<p>The code does the following for each constrained DOF:</p>
 <ol class="arabic simple">
-<li><p>A very large stiffness value <span class="math notranslate nohighlight">\(k_{bc}\)</span> is determined based on the maximum diagonal entry of <span class="math notranslate nohighlight">\(\mathbf{K}\)</span>:
-$<span class="math notranslate nohighlight">\( k_{bc} = 10^6 \times \max(\text{diag}(\mathbf{K})) \)</span>$</p></li>
-<li><p>For each constrained degree of freedom <span class="math notranslate nohighlight">\(i\)</span>, the corresponding row and column in <span class="math notranslate nohighlight">\(\mathbf{K}\)</span> are zeroed out.</p></li>
-<li><p>The diagonal entry <span class="math notranslate nohighlight">\(\mathbf{K}_{ii}\)</span> is replaced with <span class="math notranslate nohighlight">\(k_{bc}\)</span>.</p></li>
-<li><p>The load vector entry <span class="math notranslate nohighlight">\(\mathbf{p}_i\)</span> is modified to <span class="math notranslate nohighlight">\(k_{bc} \times \bar{u}_i\)</span>.</p></li>
+<li><p>Compute the global DOF index from the node number and local DOF.</p></li>
+<li><p>Compute <code class="docutils literal notranslate"><span class="pre">ks</span> <span class="pre">=</span> <span class="pre">0.1</span> <span class="pre">*</span> <span class="pre">max_abs_diagonal(K)</span></code>.</p></li>
+<li><p>Subtract the column contribution from the load vector when the prescribed value is nonzero.</p></li>
+<li><p>Zero the corresponding row and column.</p></li>
+<li><p>Put <code class="docutils literal notranslate"><span class="pre">ks</span></code> on the diagonal and set the load entry to <code class="docutils literal notranslate"><span class="pre">ks</span> <span class="pre">*</span> <span class="pre">value</span></code>.</p></li>
 </ol>
-<div class="math notranslate nohighlight">
-\[\begin{split}
-\mathbf{K} = \begin{bmatrix}
-\ddots &amp; 0 &amp; \dots \\
-0 &amp; k_{bc} &amp; 0 \\
-\vdots &amp; 0 &amp; \ddots
-\end{bmatrix},
-\quad
-\mathbf{p} = \begin{bmatrix}
-\vdots \\
-k_{bc} \bar{u}_i \\
-\vdots
-\end{bmatrix}
-\end{split}\]</div>
-<p>When the system is solved, the equation for row <span class="math notranslate nohighlight">\(i\)</span> yields <span class="math notranslate nohighlight">\(k_{bc} u_i = k_{bc} \bar{u}_i\)</span>, strictly enforcing the constraint.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">enforce_dirichlet</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">constrained_dofs</span><span class="p">,</span> <span class="n">prescribed_values</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Enforce Dirichlet boundary conditions using the penalty approach.</span>
-<span class="sd">    Works for both dense and sparse (LIL) matrices.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># Find the maximum diagonal element</span>
-    <span class="n">max_diag</span> <span class="o">=</span> <span class="n">K</span><span class="o">.</span><span class="n">diagonal</span><span class="p">()</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
-    <span class="n">k_bc</span> <span class="o">=</span> <span class="mf">1e6</span> <span class="o">*</span> <span class="n">max_diag</span>
-
-    <span class="k">for</span> <span class="n">dof</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">constrained_dofs</span><span class="p">,</span> <span class="n">prescribed_values</span><span class="p">):</span>
-        <span class="c1"># Zero out the row and column</span>
-        <span class="n">K</span><span class="p">[</span><span class="n">dof</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="mf">0.0</span>
-        <span class="n">K</span><span class="p">[:,</span> <span class="n">dof</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
-        
-        <span class="c1"># Set diagonal to penalty parameter</span>
-        <span class="n">K</span><span class="p">[</span><span class="n">dof</span><span class="p">,</span> <span class="n">dof</span><span class="p">]</span> <span class="o">=</span> <span class="n">k_bc</span>
-        
-        <span class="c1"># Modify the force vector</span>
-        <span class="n">p</span><span class="p">[</span><span class="n">dof</span><span class="p">]</span> <span class="o">=</span> <span class="n">k_bc</span> <span class="o">*</span> <span class="n">val</span>
-        
+<p>That means the constrained equation becomes <code class="docutils literal notranslate"><span class="pre">ks</span> <span class="pre">*</span> <span class="pre">u_i</span> <span class="pre">=</span> <span class="pre">ks</span> <span class="pre">*</span> <span class="pre">value</span></code>, so the solution is forced to the prescribed displacement while the rest of the system sees the corrected coupling forces.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">enforce_dirichlet</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">dof_index</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">ks</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">value</span> <span class="o">!=</span> <span class="mf">0.0</span><span class="p">:</span>
+        <span class="n">p</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-=</span> <span class="n">K</span><span class="p">[:,</span> <span class="n">dof_index</span><span class="p">]</span> <span class="o">*</span> <span class="n">value</span>
+    <span class="n">K</span><span class="p">[</span><span class="n">dof_index</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">K</span><span class="p">[:,</span> <span class="n">dof_index</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">K</span><span class="p">[</span><span class="n">dof_index</span><span class="p">,</span> <span class="n">dof_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">ks</span>
+    <span class="n">p</span><span class="p">[</span><span class="n">dof_index</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">ks</span> <span class="o">*</span> <span class="n">value</span>
     <span class="k">return</span> <span class="n">K</span><span class="p">,</span> <span class="n">p</span>
 </pre></div>
 </div>
 </section>
-<section id="general-linear-constraints-lagrange-multipliers">
-<h2>3.3 General Linear Constraints (Lagrange Multipliers)<a class="headerlink" href="#general-linear-constraints-lagrange-multipliers" title="Link to this heading">#</a></h2>
-<p>For advanced constraints where multiple DOFs are coupled linearly (e.g., rigid links or periodic boundaries), <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> employs the method of Lagrange multipliers. The constraint equation is defined as:</p>
+<section id="why-this-matters">
+<h3>3.2.2 Why this matters<a class="headerlink" href="#why-this-matters" title="Link to this heading">#</a></h3>
+<p>Without boundary enforcement, the global stiffness matrix is often singular because rigid-body modes are still free. Applying <code class="docutils literal notranslate"><span class="pre">setbc</span></code> removes those unconstrained motions from the numerical problem while preserving the effect of a nonzero support displacement.</p>
+<p>The same mechanism is used whether the problem is scalar or vector-valued. Only the mapping from node number to global DOF changes.</p>
+</section>
+</section>
+<section id="general-linear-constraints">
+<h2>3.3 General Linear Constraints<a class="headerlink" href="#general-linear-constraints" title="Link to this heading">#</a></h2>
+<p>Some constraints are not simple fixed displacements. Periodic boundary conditions, rigid links, and tying relations are all linear constraints of the form:</p>
 <div class="math notranslate nohighlight">
-\[ \mathbf{G} \mathbf{u} = \mathbf{Q} \]</div>
-<p>The potential energy functional is augmented with Lagrange multipliers <span class="math notranslate nohighlight">\(\lambda\)</span>, representing the constraint forces. This leads to an expanded saddle-point system:</p>
+\[ G u = Q \]</div>
+<p>Here <code class="docutils literal notranslate"><span class="pre">G</span></code> is the constraint matrix and <code class="docutils literal notranslate"><span class="pre">Q</span></code> is the constraint right-hand side. The solver in <code class="docutils literal notranslate"><span class="pre">src/femlabpy/boundary.py</span></code> forms the augmented saddle-point system:</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}
 \begin{bmatrix}
-\mathbf{K} &amp; \mathbf{G}^T \\
-\mathbf{G} &amp; \mathbf{0}
+K &amp; G^T \\
+G &amp; 0
 \end{bmatrix}
 \begin{Bmatrix}
-\mathbf{u} \\
+u \\
 \lambda
 \end{Bmatrix}
 =
 \begin{Bmatrix}
-\mathbf{p} \\
-\mathbf{Q}
+p \\
+Q
 \end{Bmatrix}
 \end{split}\]</div>
-<p>The <code class="docutils literal notranslate"><span class="pre">solve_lag_general</span></code> function solves this indefinite system directly, yielding both the constrained displacements <span class="math notranslate nohighlight">\(\mathbf{u}\)</span> and the precise constraint forces <span class="math notranslate nohighlight">\(\lambda\)</span>.</p>
-<section id="python-implementation-of-saddle-point-assembly">
-<h3>3.3.1 Python Implementation of Saddle-Point Assembly<a class="headerlink" href="#python-implementation-of-saddle-point-assembly" title="Link to this heading">#</a></h3>
-<p>In Python, building this augmented matrix can be elegantly handled using NumPy’s block matrix construction functions. Specifically, <code class="docutils literal notranslate"><span class="pre">np.block</span></code> allows you to assemble large matrices by explicitly stating their layout in a nested list.</p>
-<p>Let’s examine how a function like <code class="docutils literal notranslate"><span class="pre">solve_lag_general</span></code> might construct and solve this system:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-
-<span class="k">def</span><span class="w"> </span><span class="nf">solve_lag_general</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">Q</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Solve the augmented system [K  G.T; G  0] * [u; lambda] = [p; Q].</span>
-<span class="sd">    </span>
-<span class="sd">    Parameters:</span>
-<span class="sd">    - K: Global stiffness matrix (N x N)</span>
-<span class="sd">    - p: Load vector (N)</span>
-<span class="sd">    - G: Constraint matrix (M x N)</span>
-<span class="sd">    - Q: Constraint right-hand side (M)</span>
-<span class="sd">    </span>
-<span class="sd">    Returns:</span>
-<span class="sd">    - u: Displacements</span>
-<span class="sd">    - lam: Lagrange multipliers (constraint forces)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">N</span> <span class="o">=</span> <span class="n">K</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">M</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    
-    <span class="c1"># 1. Create the zero block for the bottom right</span>
-    <span class="n">zero_block</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">M</span><span class="p">,</span> <span class="n">M</span><span class="p">))</span>
-    
-    <span class="c1"># 2. Assemble the block matrix for the augmented stiffness</span>
-    <span class="c1"># Using np.block provides a visually clear way to concatenate arrays</span>
-    <span class="n">K_aug</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">block</span><span class="p">([</span>
-        <span class="p">[</span><span class="n">K</span><span class="p">,</span> <span class="n">G</span><span class="o">.</span><span class="n">T</span><span class="p">],</span>
-        <span class="p">[</span><span class="n">G</span><span class="p">,</span> <span class="n">zero_block</span><span class="p">]</span>
-    <span class="p">])</span>
-    
-    <span class="c1"># 3. Assemble the augmented force vector</span>
-    <span class="n">p_aug</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">p</span><span class="p">,</span> <span class="n">Q</span><span class="p">])</span>
-    
-    <span class="c1"># 4. Solve the expanded system</span>
-    <span class="c1"># Since the saddle point matrix is indefinite, standard Cholesky </span>
-    <span class="c1"># factorization fails. We rely on a general solver like np.linalg.solve.</span>
-    <span class="n">sol</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">K_aug</span><span class="p">,</span> <span class="n">p_aug</span><span class="p">)</span>
-    
-    <span class="c1"># 5. Extract results</span>
-    <span class="n">u</span> <span class="o">=</span> <span class="n">sol</span><span class="p">[:</span><span class="n">N</span><span class="p">]</span>      <span class="c1"># First N entries are displacements</span>
-    <span class="n">lam</span> <span class="o">=</span> <span class="n">sol</span><span class="p">[</span><span class="n">N</span><span class="p">:]</span>    <span class="c1"># Last M entries are Lagrange multipliers</span>
-    
-    <span class="k">return</span> <span class="n">u</span><span class="p">,</span> <span class="n">lam</span>
-</pre></div>
-</div>
-<p><code class="docutils literal notranslate"><span class="pre">np.block</span></code> dynamically calculates the required shapes and allocates memory for the massive <code class="docutils literal notranslate"><span class="pre">K_aug</span></code> block matrix. This approach shines when managing dense matrices. If working entirely in a sparse ecosystem, <code class="docutils literal notranslate"><span class="pre">scipy.sparse.bmat</span></code> acts as the direct sparse equivalent to <code class="docutils literal notranslate"><span class="pre">np.block</span></code>.</p>
+<p>The unknown <code class="docutils literal notranslate"><span class="pre">lambda</span></code> contains the constraint forces.</p>
+<section id="what-solve-lag-general-adds">
+<h3>3.3.1 What <code class="docutils literal notranslate"><span class="pre">solve_lag_general</span></code> adds<a class="headerlink" href="#what-solve-lag-general-adds" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">solve_lag_general(K,</span> <span class="pre">p,</span> <span class="pre">G,</span> <span class="pre">Q)</span></code> is the general solver behind the higher-level constrained routines. It does three practical things before solving:</p>
+<ol class="arabic simple">
+<li><p>It scales the constraint rows by a factor derived from the largest diagonal entry of <code class="docutils literal notranslate"><span class="pre">K</span></code>.</p></li>
+<li><p>It assembles the augmented matrix with either <code class="docutils literal notranslate"><span class="pre">np.block</span></code> for dense systems or <code class="docutils literal notranslate"><span class="pre">scipy.sparse.bmat</span></code> for sparse systems.</p></li>
+<li><p>It solves the enlarged linear system and optionally returns the physical Lagrange multipliers.</p></li>
+</ol>
+<p>That scaling step is easy to miss, but it matters. Constraint rows can be numerically tiny compared with stiffness rows, and the scaling keeps the block system better conditioned.</p>
+</section>
+<section id="practical-interpretation">
+<h3>3.3.2 Practical interpretation<a class="headerlink" href="#practical-interpretation" title="Link to this heading">#</a></h3>
+<p>If <code class="docutils literal notranslate"><span class="pre">G</span> <span class="pre">u</span> <span class="pre">=</span> <span class="pre">Q</span></code> encodes a rigid tie, the solver enforces the tie exactly. If <code class="docutils literal notranslate"><span class="pre">G</span></code> encodes periodic boundary relations, the same machinery can be used to relate opposing boundaries without manually eliminating DOFs.</p>
+<p>In other words, the direct elimination route is for fixed supports, and the augmented route is for linear coupling between unknowns.</p>
 </section>
 </section>
-<section id="full-runnable-example-1d-spring-assembly">
-<h2>3.4 Full Runnable Example: 1D Spring Assembly<a class="headerlink" href="#full-runnable-example-1d-spring-assembly" title="Link to this heading">#</a></h2>
-<p>To tie all these concepts together, here is a complete, runnable Python script that simulates a 3-node, 2-element 1D spring system. We will manually assemble the system, apply boundary conditions via Lagrange multipliers (tying node 1 to a wall and coupling nodes 2 and 3), and solve.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">scipy.sparse</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sp</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">scipy.sparse.linalg</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">spla</span>
-
-<span class="c1"># --- Problem Definition ---</span>
-<span class="c1"># Nodes:    (0) --- [k1] --- (1) --- [k2] --- (2)</span>
-<span class="c1"># We want to constrain Node 0 to have 0 displacement (Wall).</span>
-<span class="c1"># We apply a force F at Node 1.</span>
-<span class="c1"># We also want to link Node 1 and Node 2 such that u1 = u2 (rigid link).</span>
-
-<span class="k">def</span><span class="w"> </span><span class="nf">run_spring_simulation</span><span class="p">():</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Starting 1D Spring Assembly Simulation...&quot;</span><span class="p">)</span>
-    
-    <span class="c1"># --- System Parameters ---</span>
-    <span class="n">ndof</span> <span class="o">=</span> <span class="mi">3</span>                 <span class="c1"># Three nodes, 1 DOF per node</span>
-    <span class="n">k1</span><span class="p">,</span> <span class="n">k2</span> <span class="o">=</span> <span class="mf">1000.0</span><span class="p">,</span> <span class="mf">500.0</span>   <span class="c1"># Spring stiffness values</span>
-    <span class="n">F</span> <span class="o">=</span> <span class="mf">150.0</span>                <span class="c1"># Force applied at node 1</span>
-    
-    <span class="c1"># 1. Initialization</span>
-    <span class="n">is_sparse</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="k">if</span> <span class="n">is_sparse</span><span class="p">:</span>
-        <span class="n">K</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">lil_matrix</span><span class="p">((</span><span class="n">ndof</span><span class="p">,</span> <span class="n">ndof</span><span class="p">))</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">K</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">ndof</span><span class="p">,</span> <span class="n">ndof</span><span class="p">))</span>
-        
-    <span class="n">p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">ndof</span><span class="p">)</span>
-    <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">F</span>  <span class="c1"># Apply force to DOF 1</span>
-    
-    <span class="c1"># 2. Element Definitions</span>
-    <span class="c1"># Element 1: connects DOF 0 and DOF 1</span>
-    <span class="n">ke1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span> <span class="n">k1</span><span class="p">,</span> <span class="o">-</span><span class="n">k1</span><span class="p">],</span>
-                    <span class="p">[</span><span class="o">-</span><span class="n">k1</span><span class="p">,</span>  <span class="n">k1</span><span class="p">]])</span>
-    <span class="n">edof1</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
-    
-    <span class="c1"># Element 2: connects DOF 1 and DOF 2</span>
-    <span class="n">ke2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span> <span class="n">k2</span><span class="p">,</span> <span class="o">-</span><span class="n">k2</span><span class="p">],</span>
-                    <span class="p">[</span><span class="o">-</span><span class="n">k2</span><span class="p">,</span>  <span class="n">k2</span><span class="p">]])</span>
-    <span class="n">edof2</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
-    
-    <span class="c1"># 3. Manual Assembly</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Assembling global matrix...&quot;</span><span class="p">)</span>
-    <span class="n">ix1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ix_</span><span class="p">(</span><span class="n">edof1</span><span class="p">,</span> <span class="n">edof1</span><span class="p">)</span>
-    <span class="n">K</span><span class="p">[</span><span class="n">ix1</span><span class="p">]</span> <span class="o">=</span> <span class="n">K</span><span class="p">[</span><span class="n">ix1</span><span class="p">]</span> <span class="o">+</span> <span class="n">ke1</span>
-    
-    <span class="n">ix2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ix_</span><span class="p">(</span><span class="n">edof2</span><span class="p">,</span> <span class="n">edof2</span><span class="p">)</span>
-    <span class="n">K</span><span class="p">[</span><span class="n">ix2</span><span class="p">]</span> <span class="o">=</span> <span class="n">K</span><span class="p">[</span><span class="n">ix2</span><span class="p">]</span> <span class="o">+</span> <span class="n">ke2</span>
-    
-    <span class="c1"># Convert LIL to dense to use with our dense np.block solver below</span>
-    <span class="n">K_dense</span> <span class="o">=</span> <span class="n">K</span><span class="o">.</span><span class="n">toarray</span><span class="p">()</span> <span class="k">if</span> <span class="n">is_sparse</span> <span class="k">else</span> <span class="n">K</span>
-    
-    <span class="c1"># 4. Applying Constraints via Lagrange Multipliers</span>
-    <span class="c1"># Constraint 1: u0 = 0</span>
-    <span class="c1"># Constraint 2: u1 - u2 = 0</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Applying constraints (u0 = 0, u1 = u2)...&quot;</span><span class="p">)</span>
-    
-    <span class="n">G</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
-        <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span>  <span class="mf">0.0</span><span class="p">,</span>  <span class="mf">0.0</span><span class="p">],</span>  <span class="c1"># 1*u0 + 0*u1 + 0*u2 = 0</span>
-        <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span>  <span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">]</span>   <span class="c1"># 0*u0 + 1*u1 - 1*u2 = 0</span>
-    <span class="p">])</span>
-    
-    <span class="n">Q</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">])</span> <span class="c1"># RHS of constraints</span>
-    
-    <span class="c1"># 5. Solve using np.block technique</span>
-    <span class="n">M</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">zero_block</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">M</span><span class="p">,</span> <span class="n">M</span><span class="p">))</span>
-    
-    <span class="n">K_aug</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">block</span><span class="p">([</span>
-        <span class="p">[</span><span class="n">K_dense</span><span class="p">,</span> <span class="n">G</span><span class="o">.</span><span class="n">T</span><span class="p">],</span>
-        <span class="p">[</span><span class="n">G</span><span class="p">,</span> <span class="n">zero_block</span><span class="p">]</span>
-    <span class="p">])</span>
-    
-    <span class="n">p_aug</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">p</span><span class="p">,</span> <span class="n">Q</span><span class="p">])</span>
-    
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Augmented System Matrix [K_aug]:&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">K_aug</span><span class="p">)</span>
-    
-    <span class="c1"># 6. Solution Extraction</span>
-    <span class="n">sol</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">K_aug</span><span class="p">,</span> <span class="n">p_aug</span><span class="p">)</span>
-    <span class="n">u</span> <span class="o">=</span> <span class="n">sol</span><span class="p">[:</span><span class="n">ndof</span><span class="p">]</span>
-    <span class="n">lam</span> <span class="o">=</span> <span class="n">sol</span><span class="p">[</span><span class="n">ndof</span><span class="p">:]</span>
-    
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Results:&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Displacements (u): </span><span class="si">{</span><span class="n">u</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Lagrange Multipliers (forces): </span><span class="si">{</span><span class="n">lam</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    
-    <span class="c1"># Optional Verification</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Constraint verification (G*u - Q): </span><span class="si">{</span><span class="n">G</span><span class="w"> </span><span class="o">@</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">Q</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-    <span class="n">run_spring_simulation</span><span class="p">()</span>
+<section id="loads-and-reactions">
+<h2>3.4 Loads and Reactions<a class="headerlink" href="#loads-and-reactions" title="Link to this heading">#</a></h2>
+<p>Loads are stored in a global vector <code class="docutils literal notranslate"><span class="pre">p</span></code>, but the input tables in <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> are node-based. The helper functions in <code class="docutils literal notranslate"><span class="pre">src/femlabpy/loads.py</span></code> convert those node tables into DOF-level updates.</p>
+<section id="setload">
+<h3>3.4.1 <code class="docutils literal notranslate"><span class="pre">setload</span></code><a class="headerlink" href="#setload" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">setload(p,</span> <span class="pre">P)</span></code> replaces the load values at the listed nodes. This is the right choice when the table fully defines the applied load pattern.</p>
+<p>The code computes the flattened DOF indices from the node numbers and writes the listed values directly into the global vector.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">indices</span> <span class="o">=</span> <span class="p">((</span><span class="n">loads</span><span class="p">[:,</span> <span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">dof</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">dof</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">p</span><span class="p">[</span><span class="n">indices</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">loads</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:</span><span class="mi">1</span> <span class="o">+</span> <span class="n">dof</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>This full script demonstrates matrix allocation, sparse-aware element insertion <code class="docutils literal notranslate"><span class="pre">ix_()</span></code>, saddle-point construction utilizing <code class="docutils literal notranslate"><span class="pre">np.block</span></code>, and the solver step, encapsulating all concepts presented in this chapter.</p>
+<p>This is a one-to-one mapping: whatever appears in <code class="docutils literal notranslate"><span class="pre">P</span></code> becomes the new value at those DOFs.</p>
+</section>
+<section id="addload">
+<h3>3.4.2 <code class="docutils literal notranslate"><span class="pre">addload</span></code><a class="headerlink" href="#addload" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">addload(p,</span> <span class="pre">P)</span></code> accumulates loads instead of replacing them. That matters when several independent load cases contribute to the same node or when loads are assembled in stages.</p>
+<p>The implementation uses <code class="docutils literal notranslate"><span class="pre">np.add.at</span></code>, which is the safe choice when the same global DOF appears more than once in the list.</p>
+</section>
+<section id="reactions">
+<h3>3.4.3 Reactions<a class="headerlink" href="#reactions" title="Link to this heading">#</a></h3>
+<p>After solving, support reactions are extracted from the global internal-force vector using <code class="docutils literal notranslate"><span class="pre">reaction(q,</span> <span class="pre">C,</span> <span class="pre">dof)</span></code> in <code class="docutils literal notranslate"><span class="pre">src/femlabpy/postprocess.py</span></code>.</p>
+<p>The function maps the constrained entries back to the original boundary-condition table and returns a compact reaction list. In the vector-valued case, the output columns are <code class="docutils literal notranslate"><span class="pre">[node,</span> <span class="pre">local_dof,</span> <span class="pre">reaction]</span></code>.</p>
+<p>That means the solution process is:</p>
+<ol class="arabic simple">
+<li><p>Assemble <code class="docutils literal notranslate"><span class="pre">K</span></code> and <code class="docutils literal notranslate"><span class="pre">p</span></code>.</p></li>
+<li><p>Apply boundary conditions.</p></li>
+<li><p>Solve for <code class="docutils literal notranslate"><span class="pre">u</span></code>.</p></li>
+<li><p>Recover reactions from the internal-force vector at constrained DOFs.</p></li>
+</ol>
+</section>
+</section>
+<section id="full-example">
+<h2>3.5 Full example<a class="headerlink" href="#full-example" title="Link to this heading">#</a></h2>
+<p>This minimal example shows the same mechanics used by the library: element scatter, support enforcement, and reaction recovery.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="c1"># One-dimensional, three-node system</span>
+<span class="n">K</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+<span class="n">p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+
+<span class="c1"># Element matrices</span>
+<span class="n">ke1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]])</span>
+<span class="n">ke2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">2.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">]])</span>
+
+<span class="c1"># Assemble</span>
+<span class="n">K</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ix_</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])]</span> <span class="o">+=</span> <span class="n">ke1</span>
+<span class="n">K</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ix_</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])]</span> <span class="o">+=</span> <span class="n">ke2</span>
+
+<span class="c1"># Apply a nodal load at DOF 2</span>
+<span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">100.0</span>
+
+<span class="c1"># Keep the assembled system before boundary conditions for reaction recovery</span>
+<span class="n">K_before_bc</span> <span class="o">=</span> <span class="n">K</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">p_before_bc</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+<span class="c1"># Constrain DOF 0 to zero</span>
+<span class="n">ks</span> <span class="o">=</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">K</span><span class="p">)))</span>
+<span class="n">K</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="mf">0.0</span>
+<span class="n">K</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+<span class="n">K</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">ks</span>
+<span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+<span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+<span class="n">reaction_at_support</span> <span class="o">=</span> <span class="p">(</span><span class="n">K_before_bc</span> <span class="o">@</span> <span class="n">u</span> <span class="o">-</span> <span class="n">p_before_bc</span><span class="p">)[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The important part is not the toy numbers. It is the sequence: assemble, apply loads, constrain, solve, then recover the reactions from the solved state.</p>
 </section>
 </section>
 
@@ -904,17 +674,30 @@ k_{bc} \bar{u}_i \\
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#global-assembly-algorithm">3.1 Global Assembly Algorithm</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#manual-element-iteration-and-assmk-assembly">3.1.1 Manual Element Iteration and <code class="docutils literal notranslate"><span class="pre">assmk</span></code> Assembly</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dense-vs-sparse-assembly-scipy-sparse-lil-matrix">3.1.2 Dense vs. Sparse Assembly (<code class="docutils literal notranslate"><span class="pre">scipy.sparse.lil_matrix</span></code>)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#global-assembly">3.1 Global Assembly</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-the-indices-are-formed">3.1.1 How the indices are formed</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-assmk-and-assmq-do">3.1.2 What <code class="docutils literal notranslate"><span class="pre">assmk</span></code> and <code class="docutils literal notranslate"><span class="pre">assmq</span></code> do</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dense-and-sparse-assembly">3.1.3 Dense and sparse assembly</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-small-assembly-example">3.1.4 A small assembly example</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dirichlet-boundary-conditions">3.2 Dirichlet Boundary Conditions</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#general-linear-constraints-lagrange-multipliers">3.3 General Linear Constraints (Lagrange Multipliers)</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#python-implementation-of-saddle-point-assembly">3.3.1 Python Implementation of Saddle-Point Assembly</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dirichlet-boundary-conditions">3.2 Dirichlet Boundary Conditions</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-setbc-works">3.2.1 How <code class="docutils literal notranslate"><span class="pre">setbc</span></code> works</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#why-this-matters">3.2.2 Why this matters</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#full-runnable-example-1d-spring-assembly">3.4 Full Runnable Example: 1D Spring Assembly</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#general-linear-constraints">3.3 General Linear Constraints</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-solve-lag-general-adds">3.3.1 What <code class="docutils literal notranslate"><span class="pre">solve_lag_general</span></code> adds</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#practical-interpretation">3.3.2 Practical interpretation</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#loads-and-reactions">3.4 Loads and Reactions</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#setload">3.4.1 <code class="docutils literal notranslate"><span class="pre">setload</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#addload">3.4.2 <code class="docutils literal notranslate"><span class="pre">addload</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#reactions">3.4.3 Reactions</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#full-example">3.5 Full example</a></li>
 </ul>
   </nav></div>
 

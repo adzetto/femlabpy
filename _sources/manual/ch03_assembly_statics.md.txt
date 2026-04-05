@@ -1,331 +1,257 @@
-# Chapter 3: Assembly & Constraints
+# Chapter 3: Assembly and Constraints
 
-This chapter details the numerical procedures used to assemble global systems of equations and enforce kinematic constraints.
+This chapter explains how `femlabpy` turns element-level matrices and vectors into a global system, then applies loads and constraints before solving. The key idea is simple: each element works in its own local numbering, but the solver always operates on one global set of degrees of freedom.
 
-## 3.1 Global Assembly Algorithm
+## 3.1 Global Assembly
 
-In the finite element method, the global stiffness matrix $\mathbf{K}$ is constructed by summing the contributions of individual element stiffness matrices $\mathbf{K}_e$. Mathematically, this is expressed using Boolean connectivity matrices $\mathbf{L}_e$:
+Finite element assembly is a scatter operation. Each element produces a local stiffness matrix `Ke` and, when needed, a local internal-force vector `qe`. Those local quantities must be mapped into the correct rows and columns of the global arrays.
 
-$$ \mathbf{K} = \sum_{e=1}^{nel} \mathbf{L}_e^T \mathbf{K}_e \mathbf{L}_e $$
+In the classical matrix form, the assembled stiffness matrix can be written as:
 
-In `femlabpy`, this assembly is achieved through the driver functions (e.g., `kq4e`, `kt3e`) which internally rely on indexing mechanisms. For example, for a 4-node quad element with 2 DOFs per node, the global DOF indices for the element are computed as:
+$$ K = \sum_e L_e^T K_e L_e $$
+
+In the actual Python implementation, `femlabpy` does not build explicit Boolean matrices for every element. Instead, it computes global degree-of-freedom indices directly and uses NumPy indexing to place the local blocks.
+
+### 3.1.1 How the indices are formed
+
+The numbering convention is:
+
+- Node numbers in the legacy FemLab tables are one-based.
+- Python arrays are zero-based.
+- Each node owns `dof` consecutive global degrees of freedom.
+
+The helper `node_dof_indices` in `src/femlabpy/_helpers.py` expands a list of node numbers into flat global DOF indices. For a 2D problem with `dof = 2`, node `n` maps to indices:
 
 ```python
-global_dofs = []
-for n in element_nodes:
-    global_dofs.extend([2*n-2, 2*n-1]) # Assuming 1-based indexing adjusted for 0-based
+[2*(n-1), 2*(n-1) + 1]
 ```
 
-The $8 \times 8$ element matrix $\mathbf{K}_e$ is then added into the $N_{dof} \times N_{dof}$ global matrix at the intersection of `global_dofs` rows and columns. Similarly, internal element force vectors $\mathbf{q}_e$ are assembled into the global internal force vector $\mathbf{q}$.
+So a 4-node quadrilateral in 2D becomes an 8-entry index list. Those eight indices are then used to extract or update the corresponding `8 x 8` submatrix.
 
-### 3.1.1 Manual Element Iteration and `assmk` Assembly
+This is the pattern used throughout the library:
 
-While `femlabpy` abstracts many underlying operations, advanced users may want to build custom element loops. Let's look at exactly how a user might manually iterate through elements and call an assembly routine like `assmk`.
+```python
+indices = node_dof_indices(topology_nodes(Te), dof)
+K[np.ix_(indices, indices)] += Ke
+q[indices, 0] += qe[:, 0]
+```
 
-In a conventional FE code, you loop over all elements, retrieve their local topology (node numbers), form the local element stiffness matrix $\mathbf{K}_e$, and then scatter it into the global $\mathbf{K}$. `femlabpy` typically provides a utility `assmk` which performs this scattering. 
+The `np.ix_` call is important. It converts a flat list of DOF indices into a two-dimensional open mesh so NumPy selects the full row/column block instead of pairing indices one by one.
+
+### 3.1.2 What `assmk` and `assmq` do
+
+The low-level assembly helpers are intentionally small:
+
+- `assmk(K, Ke, Te, dof)` inserts one element stiffness matrix into the global stiffness matrix.
+- `assmq(q, qe, Te, dof)` adds one element internal-force vector into the global internal-force vector.
+
+The implementation in `src/femlabpy/assembly.py` does exactly two things:
+
+1. Extract the node numbers from the topology row `Te`.
+2. Convert those node numbers into global DOF indices and accumulate the local values at those positions.
+
+That design keeps the element kernels simple. The element routine computes the local matrix or vector, and the assembly helper handles only the global scatter step.
+
+### 3.1.3 Dense and sparse assembly
+
+For small problems, a dense `numpy.ndarray` is acceptable. For realistic models, the global matrix is mostly zeros and should be stored sparsely.
+
+`femlabpy` uses `scipy.sparse.lil_matrix` when a matrix is being built incrementally. LIL is a good construction format because repeated single-block insertions are cheap. After assembly, the matrix should be converted to `csr` or `csc` before solving.
+
+```python
+import numpy as np
+import scipy.sparse as sp
+
+def create_global_matrix(ndof, use_sparse=True):
+    if use_sparse:
+        return sp.lil_matrix((ndof, ndof), dtype=float)
+    return np.zeros((ndof, ndof), dtype=float)
+
+def add_element_matrix(K, Ke, edof):
+    ix = np.ix_(edof, edof)
+    K[ix] += Ke
+    return K
+```
+
+The subtle point is that sparse and dense code can share the same indexing logic. Only the container type changes.
+
+### 3.1.4 A small assembly example
+
+This example mirrors the indexing pattern used in the library:
 
 ```python
 import numpy as np
 
-# Assume K_global is already allocated
-# edof_matrix is a 2D array where each row represents an element
-# and the columns are the global degrees of freedom for that element.
+# Two elements, one DOF per node
+K = np.zeros((3, 3))
 
-def manual_assembly(K_global, elements, coordinates, edof_matrix):
-    """
-    Manually iterate over elements and assemble the global stiffness matrix.
-    """
-    for e in range(len(elements)):
-        # 1. Fetch element properties and nodes
-        edof = edof_matrix[e, :]  # Global DOFs for this element
-        
-        # 2. Compute local element stiffness (example placeholder)
-        # ke = my_custom_element_stiffness(coordinates, edof)
-        ke = np.ones((len(edof), len(edof))) # Placeholder for K_e
-        
-        # 3. Assemble into the global matrix
-        for i in range(len(edof)):
-            row = edof[i]
-            for j in range(len(edof)):
-                col = edof[j]
-                K_global[row, col] += ke[i, j]
-                
-    return K_global
+ke1 = np.array([[1.0, -1.0],
+                [-1.0, 1.0]])
+ke2 = np.array([[2.0, -2.0],
+                [-2.0, 2.0]])
+
+edof1 = np.array([0, 1])
+edof2 = np.array([1, 2])
+
+K[np.ix_(edof1, edof1)] += ke1
+K[np.ix_(edof2, edof2)] += ke2
 ```
 
-### 3.1.2 Dense vs. Sparse Assembly (`scipy.sparse.lil_matrix`)
-
-For small academic problems, creating a dense `numpy.ndarray` for the global stiffness matrix $\mathbf{K}$ is computationally acceptable. However, for industrial-scale models with thousands of DOFs, $\mathbf{K}$ is mostly composed of zeros. This sparsity must be exploited to avoid memory exhaustion and to drastically speed up matrix inversion/factorization. 
-
-We can define a parameter `is_sparse` to decide between a dense matrix or a `scipy.sparse` matrix. The `scipy.sparse.lil_matrix` (List of Lists) format is highly recommended for building sparse matrices because it allows for fast insertion of individual elements.
-
-```python
-import scipy.sparse as sp
-
-def create_global_matrix(ndof, is_sparse=True):
-    """
-    Initialize the global stiffness matrix based on the is_sparse flag.
-    """
-    if is_sparse:
-        # lil_matrix is efficient for incremental construction
-        return sp.lil_matrix((ndof, ndof), dtype=np.float64)
-    else:
-        # Standard dense matrix
-        return np.zeros((ndof, ndof), dtype=np.float64)
-
-# Assembly using the is_sparse check
-def assmk_advanced(K, ke, edof, is_sparse):
-    """
-    Assemble element matrix `ke` into global `K` using `edof`.
-    """
-    # For sparse lil_matrix or dense numpy array, slicing/advanced indexing 
-    # might differ slightly in performance, but conceptually it remains:
-    if is_sparse:
-        # We can use np.ix_ to create an open mesh from multiple boolean masks
-        # or integer arrays.
-        ix = np.ix_(edof, edof)
-        K[ix] = K[ix] + ke
-    else:
-        # Dense assembly
-        ix = np.ix_(edof, edof)
-        K[ix] += ke
-        
-    return K
-```
-
-Once assembly is complete, a `lil_matrix` should be converted to a Compressed Sparse Column (`csc_matrix`) or Compressed Sparse Row (`csr_matrix`) format before solving the linear system using solvers like `scipy.sparse.linalg.spsolve`.
-
-```python
-# Convert to CSR for fast math operations and solving
-K_csr = K_global.tocsr()
-```
+The second element shares node 1 with the first element, so its contribution is added to the same global row and column. That overlap is the whole point of assembly.
 
 ## 3.2 Dirichlet Boundary Conditions
 
-To solve the equilibrium equations $\mathbf{K} \mathbf{u} = \mathbf{p}$, the global stiffness matrix must be rendered non-singular by preventing rigid body motions. This is achieved by prescribing known displacements (Dirichlet boundary conditions).
+Dirichlet boundary conditions prescribe displacements. In structural problems, they are used to fix supports, remove rigid-body modes, or enforce known motions.
 
-`femlabpy` utilizes a direct modification approach (often conceptually similar to the penalty method) to enforce $u_i = \bar{u}_i$. The `setbc` function applies this using a massive artificial stiffness:
+The implementation in `src/femlabpy/boundary.py` uses direct elimination with a replacement diagonal value `ks`. This is not a pure penalty method in the textbook sense. It also transfers the coupling terms from the constrained column into the right-hand side before zeroing the row and column, so nonzero prescribed displacements are handled correctly.
 
-1. A very large stiffness value $k_{bc}$ is determined based on the maximum diagonal entry of $\mathbf{K}$:
-   $$ k_{bc} = 10^6 \times \max(\text{diag}(\mathbf{K})) $$
-2. For each constrained degree of freedom $i$, the corresponding row and column in $\mathbf{K}$ are zeroed out.
-3. The diagonal entry $\mathbf{K}_{ii}$ is replaced with $k_{bc}$.
-4. The load vector entry $\mathbf{p}_i$ is modified to $k_{bc} \times \bar{u}_i$.
+### 3.2.1 How `setbc` works
 
-$$
-\mathbf{K} = \begin{bmatrix}
-\ddots & 0 & \dots \\
-0 & k_{bc} & 0 \\
-\vdots & 0 & \ddots
-\end{bmatrix},
-\quad
-\mathbf{p} = \begin{bmatrix}
-\vdots \\
-k_{bc} \bar{u}_i \\
-\vdots
-\end{bmatrix}
-$$
+The function `setbc(K, p, C, dof)` expects a legacy constraint table:
 
-When the system is solved, the equation for row $i$ yields $k_{bc} u_i = k_{bc} \bar{u}_i$, strictly enforcing the constraint.
+- For `dof = 1`, each row is `[node, value]`.
+- For `dof > 1`, each row is `[node, local_dof, value]`.
+
+The code does the following for each constrained DOF:
+
+1. Compute the global DOF index from the node number and local DOF.
+2. Compute `ks = 0.1 * max_abs_diagonal(K)`.
+3. Subtract the column contribution from the load vector when the prescribed value is nonzero.
+4. Zero the corresponding row and column.
+5. Put `ks` on the diagonal and set the load entry to `ks * value`.
+
+That means the constrained equation becomes `ks * u_i = ks * value`, so the solution is forced to the prescribed displacement while the rest of the system sees the corrected coupling forces.
 
 ```python
-def enforce_dirichlet(K, p, constrained_dofs, prescribed_values):
-    """
-    Enforce Dirichlet boundary conditions using the penalty approach.
-    Works for both dense and sparse (LIL) matrices.
-    """
-    # Find the maximum diagonal element
-    max_diag = K.diagonal().max()
-    k_bc = 1e6 * max_diag
-
-    for dof, val in zip(constrained_dofs, prescribed_values):
-        # Zero out the row and column
-        K[dof, :] = 0.0
-        K[:, dof] = 0.0
-        
-        # Set diagonal to penalty parameter
-        K[dof, dof] = k_bc
-        
-        # Modify the force vector
-        p[dof] = k_bc * val
-        
+def enforce_dirichlet(K, p, dof_index, value, ks):
+    if value != 0.0:
+        p[:, 0] -= K[:, dof_index] * value
+    K[dof_index, :] = 0.0
+    K[:, dof_index] = 0.0
+    K[dof_index, dof_index] = ks
+    p[dof_index, 0] = ks * value
     return K, p
 ```
 
-## 3.3 General Linear Constraints (Lagrange Multipliers)
+### 3.2.2 Why this matters
 
-For advanced constraints where multiple DOFs are coupled linearly (e.g., rigid links or periodic boundaries), `femlabpy` employs the method of Lagrange multipliers. The constraint equation is defined as:
+Without boundary enforcement, the global stiffness matrix is often singular because rigid-body modes are still free. Applying `setbc` removes those unconstrained motions from the numerical problem while preserving the effect of a nonzero support displacement.
 
-$$ \mathbf{G} \mathbf{u} = \mathbf{Q} $$
+The same mechanism is used whether the problem is scalar or vector-valued. Only the mapping from node number to global DOF changes.
 
-The potential energy functional is augmented with Lagrange multipliers $\lambda$, representing the constraint forces. This leads to an expanded saddle-point system:
+## 3.3 General Linear Constraints
+
+Some constraints are not simple fixed displacements. Periodic boundary conditions, rigid links, and tying relations are all linear constraints of the form:
+
+$$ G u = Q $$
+
+Here `G` is the constraint matrix and `Q` is the constraint right-hand side. The solver in `src/femlabpy/boundary.py` forms the augmented saddle-point system:
 
 $$
 \begin{bmatrix}
-\mathbf{K} & \mathbf{G}^T \\
-\mathbf{G} & \mathbf{0}
+K & G^T \\
+G & 0
 \end{bmatrix}
 \begin{Bmatrix}
-\mathbf{u} \\
+u \\
 \lambda
 \end{Bmatrix}
 =
 \begin{Bmatrix}
-\mathbf{p} \\
-\mathbf{Q}
+p \\
+Q
 \end{Bmatrix}
 $$
 
-The `solve_lag_general` function solves this indefinite system directly, yielding both the constrained displacements $\mathbf{u}$ and the precise constraint forces $\lambda$.
+The unknown `lambda` contains the constraint forces.
 
-### 3.3.1 Python Implementation of Saddle-Point Assembly
+### 3.3.1 What `solve_lag_general` adds
 
-In Python, building this augmented matrix can be elegantly handled using NumPy's block matrix construction functions. Specifically, `np.block` allows you to assemble large matrices by explicitly stating their layout in a nested list.
+`solve_lag_general(K, p, G, Q)` is the general solver behind the higher-level constrained routines. It does three practical things before solving:
 
-Let's examine how a function like `solve_lag_general` might construct and solve this system:
+1. It scales the constraint rows by a factor derived from the largest diagonal entry of `K`.
+2. It assembles the augmented matrix with either `np.block` for dense systems or `scipy.sparse.bmat` for sparse systems.
+3. It solves the enlarged linear system and optionally returns the physical Lagrange multipliers.
+
+That scaling step is easy to miss, but it matters. Constraint rows can be numerically tiny compared with stiffness rows, and the scaling keeps the block system better conditioned.
+
+### 3.3.2 Practical interpretation
+
+If `G u = Q` encodes a rigid tie, the solver enforces the tie exactly. If `G` encodes periodic boundary relations, the same machinery can be used to relate opposing boundaries without manually eliminating DOFs.
+
+In other words, the direct elimination route is for fixed supports, and the augmented route is for linear coupling between unknowns.
+
+## 3.4 Loads and Reactions
+
+Loads are stored in a global vector `p`, but the input tables in `femlabpy` are node-based. The helper functions in `src/femlabpy/loads.py` convert those node tables into DOF-level updates.
+
+### 3.4.1 `setload`
+
+`setload(p, P)` replaces the load values at the listed nodes. This is the right choice when the table fully defines the applied load pattern.
+
+The code computes the flattened DOF indices from the node numbers and writes the listed values directly into the global vector.
+
+```python
+indices = ((loads[:, [0]].astype(int) - 1) * dof + np.arange(dof)).reshape(-1)
+p[indices, 0] = loads[:, 1:1 + dof].reshape(-1)
+```
+
+This is a one-to-one mapping: whatever appears in `P` becomes the new value at those DOFs.
+
+### 3.4.2 `addload`
+
+`addload(p, P)` accumulates loads instead of replacing them. That matters when several independent load cases contribute to the same node or when loads are assembled in stages.
+
+The implementation uses `np.add.at`, which is the safe choice when the same global DOF appears more than once in the list.
+
+### 3.4.3 Reactions
+
+After solving, support reactions are extracted from the global internal-force vector using `reaction(q, C, dof)` in `src/femlabpy/postprocess.py`.
+
+The function maps the constrained entries back to the original boundary-condition table and returns a compact reaction list. In the vector-valued case, the output columns are `[node, local_dof, reaction]`.
+
+That means the solution process is:
+
+1. Assemble `K` and `p`.
+2. Apply boundary conditions.
+3. Solve for `u`.
+4. Recover reactions from the internal-force vector at constrained DOFs.
+
+## 3.5 Full example
+
+This minimal example shows the same mechanics used by the library: element scatter, support enforcement, and reaction recovery.
 
 ```python
 import numpy as np
 
-def solve_lag_general(K, p, G, Q):
-    """
-    Solve the augmented system [K  G.T; G  0] * [u; lambda] = [p; Q].
-    
-    Parameters:
-    - K: Global stiffness matrix (N x N)
-    - p: Load vector (N)
-    - G: Constraint matrix (M x N)
-    - Q: Constraint right-hand side (M)
-    
-    Returns:
-    - u: Displacements
-    - lam: Lagrange multipliers (constraint forces)
-    """
-    N = K.shape[0]
-    M = G.shape[0]
-    
-    # 1. Create the zero block for the bottom right
-    zero_block = np.zeros((M, M))
-    
-    # 2. Assemble the block matrix for the augmented stiffness
-    # Using np.block provides a visually clear way to concatenate arrays
-    K_aug = np.block([
-        [K, G.T],
-        [G, zero_block]
-    ])
-    
-    # 3. Assemble the augmented force vector
-    p_aug = np.concatenate([p, Q])
-    
-    # 4. Solve the expanded system
-    # Since the saddle point matrix is indefinite, standard Cholesky 
-    # factorization fails. We rely on a general solver like np.linalg.solve.
-    sol = np.linalg.solve(K_aug, p_aug)
-    
-    # 5. Extract results
-    u = sol[:N]      # First N entries are displacements
-    lam = sol[N:]    # Last M entries are Lagrange multipliers
-    
-    return u, lam
+# One-dimensional, three-node system
+K = np.zeros((3, 3), dtype=float)
+p = np.zeros((3, 1), dtype=float)
+
+# Element matrices
+ke1 = np.array([[1.0, -1.0], [-1.0, 1.0]])
+ke2 = np.array([[2.0, -2.0], [-2.0, 2.0]])
+
+# Assemble
+K[np.ix_([0, 1], [0, 1])] += ke1
+K[np.ix_([1, 2], [1, 2])] += ke2
+
+# Apply a nodal load at DOF 2
+p[1, 0] = 100.0
+
+# Keep the assembled system before boundary conditions for reaction recovery
+K_before_bc = K.copy()
+p_before_bc = p.copy()
+
+# Constrain DOF 0 to zero
+ks = 0.1 * np.max(np.abs(np.diag(K)))
+K[0, :] = 0.0
+K[:, 0] = 0.0
+K[0, 0] = ks
+p[0, 0] = 0.0
+
+u = np.linalg.solve(K, p)
+reaction_at_support = (K_before_bc @ u - p_before_bc)[0, 0]
 ```
 
-`np.block` dynamically calculates the required shapes and allocates memory for the massive `K_aug` block matrix. This approach shines when managing dense matrices. If working entirely in a sparse ecosystem, `scipy.sparse.bmat` acts as the direct sparse equivalent to `np.block`.
-
-## 3.4 Full Runnable Example: 1D Spring Assembly
-
-To tie all these concepts together, here is a complete, runnable Python script that simulates a 3-node, 2-element 1D spring system. We will manually assemble the system, apply boundary conditions via Lagrange multipliers (tying node 1 to a wall and coupling nodes 2 and 3), and solve.
-
-```python
-import numpy as np
-import scipy.sparse as sp
-import scipy.sparse.linalg as spla
-
-# --- Problem Definition ---
-# Nodes:    (0) --- [k1] --- (1) --- [k2] --- (2)
-# We want to constrain Node 0 to have 0 displacement (Wall).
-# We apply a force F at Node 1.
-# We also want to link Node 1 and Node 2 such that u1 = u2 (rigid link).
-
-def run_spring_simulation():
-    print("Starting 1D Spring Assembly Simulation...")
-    
-    # --- System Parameters ---
-    ndof = 3                 # Three nodes, 1 DOF per node
-    k1, k2 = 1000.0, 500.0   # Spring stiffness values
-    F = 150.0                # Force applied at node 1
-    
-    # 1. Initialization
-    is_sparse = True
-    if is_sparse:
-        K = sp.lil_matrix((ndof, ndof))
-    else:
-        K = np.zeros((ndof, ndof))
-        
-    p = np.zeros(ndof)
-    p[1] = F  # Apply force to DOF 1
-    
-    # 2. Element Definitions
-    # Element 1: connects DOF 0 and DOF 1
-    ke1 = np.array([[ k1, -k1],
-                    [-k1,  k1]])
-    edof1 = [0, 1]
-    
-    # Element 2: connects DOF 1 and DOF 2
-    ke2 = np.array([[ k2, -k2],
-                    [-k2,  k2]])
-    edof2 = [1, 2]
-    
-    # 3. Manual Assembly
-    print("Assembling global matrix...")
-    ix1 = np.ix_(edof1, edof1)
-    K[ix1] = K[ix1] + ke1
-    
-    ix2 = np.ix_(edof2, edof2)
-    K[ix2] = K[ix2] + ke2
-    
-    # Convert LIL to dense to use with our dense np.block solver below
-    K_dense = K.toarray() if is_sparse else K
-    
-    # 4. Applying Constraints via Lagrange Multipliers
-    # Constraint 1: u0 = 0
-    # Constraint 2: u1 - u2 = 0
-    print("Applying constraints (u0 = 0, u1 = u2)...")
-    
-    G = np.array([
-        [1.0,  0.0,  0.0],  # 1*u0 + 0*u1 + 0*u2 = 0
-        [0.0,  1.0, -1.0]   # 0*u0 + 1*u1 - 1*u2 = 0
-    ])
-    
-    Q = np.array([0.0, 0.0]) # RHS of constraints
-    
-    # 5. Solve using np.block technique
-    M = G.shape[0]
-    zero_block = np.zeros((M, M))
-    
-    K_aug = np.block([
-        [K_dense, G.T],
-        [G, zero_block]
-    ])
-    
-    p_aug = np.concatenate([p, Q])
-    
-    print("\nAugmented System Matrix [K_aug]:")
-    print(K_aug)
-    
-    # 6. Solution Extraction
-    sol = np.linalg.solve(K_aug, p_aug)
-    u = sol[:ndof]
-    lam = sol[ndof:]
-    
-    print("\nResults:")
-    print(f"Displacements (u): {u}")
-    print(f"Lagrange Multipliers (forces): {lam}")
-    
-    # Optional Verification
-    print(f"Constraint verification (G*u - Q): {G @ u - Q}")
-
-if __name__ == "__main__":
-    run_spring_simulation()
-```
-
-This full script demonstrates matrix allocation, sparse-aware element insertion `ix_()`, saddle-point construction utilizing `np.block`, and the solver step, encapsulating all concepts presented in this chapter.
+The important part is not the toy numbers. It is the sequence: assemble, apply loads, constrain, solve, then recover the reactions from the solved state.

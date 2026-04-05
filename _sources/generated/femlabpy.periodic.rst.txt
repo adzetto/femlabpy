@@ -3,19 +3,63 @@
 
 .. automodule:: femlabpy.periodic
 
-   
-   .. rubric:: Functions
 
-   .. autosummary::
-   
-      apply_macro_strain
-      check_periodic_mesh
-      find_all_periodic_pairs
-      find_periodic_pairs
-      fix_corner
-      homogenize
-      periodic_constraints
-      solve_periodic
-      volume_average_strain
-      volume_average_stress
-   
+
+
+
+
+Functions
+---------
+
+.. autosummary::
+
+
+   apply_macro_strain
+   check_periodic_mesh
+   find_all_periodic_pairs
+   find_periodic_pairs
+   fix_corner
+   homogenize
+   periodic_constraints
+   solve_periodic
+   volume_average_strain
+   volume_average_stress
+
+Function Reference
+------------------
+
+
+.. autofunction:: femlabpy.periodic.apply_macro_strain
+
+
+.. autofunction:: femlabpy.periodic.check_periodic_mesh
+
+
+.. autofunction:: femlabpy.periodic.find_all_periodic_pairs
+
+
+.. autofunction:: femlabpy.periodic.find_periodic_pairs
+
+
+.. autofunction:: femlabpy.periodic.fix_corner
+
+
+.. autofunction:: femlabpy.periodic.homogenize
+
+
+.. autofunction:: femlabpy.periodic.periodic_constraints
+
+
+.. autofunction:: femlabpy.periodic.solve_periodic
+
+
+.. autofunction:: femlabpy.periodic.volume_average_strain
+
+
+.. autofunction:: femlabpy.periodic.volume_average_stress
+
+
+
+
+
+

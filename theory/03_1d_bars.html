@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Chapter 3: 1D Bar Elements (Linear &amp; Nonlinear) &#8212; femlabpy 0.6.0 documentation</title>
+    <title>1D bar elements &#8212; femlabpy 0.6.0 documentation</title>
   
   
   
@@ -31,6 +31,7 @@
 <link href="../_static/styles/pydata-sphinx-theme.css?digest=7f76b32a3354e82990f2" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=aa664f36" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../_static/scripts/fontawesome.js?digest=7f76b32a3354e82990f2"></script>
@@ -47,8 +48,8 @@
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="2D Triangular Elements (CST)" href="04_2d_triangles.html" />
-    <link rel="prev" title="Chapter 2: Boundary Conditions and Loads" href="02_boundary_loads.html" />
+    <link rel="next" title="2D Triangular Elements" href="04_2d_triangles.html" />
+    <link rel="prev" title="Boundary conditions and loads" href="02_boundary_loads.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -133,118 +134,38 @@
     
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../tutorials.html">
-    Tutorials & Usage Manual
+    Tutorials
   </a>
 </li>
 
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../manual/index.html">
-    User Guide
+    Guide
   </a>
 </li>
 
 
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="index.html">
-    Theory & Reference Manual
+    Theory
   </a>
 </li>
 
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../api.html">
-    API Reference
+    API
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="01_core_assembly.html">
-    Global Matrix Assembly in Finite Element Analysis: A Rigorous Perspective
+  <a class="nav-link nav-internal" href="../matlab_python_mapping.html">
+    MATLAB Mapping
   </a>
 </li>
 
-            <li class="nav-item dropdown">
-                <button class="btn dropdown-toggle nav-item" type="button"
-                data-bs-toggle="dropdown" aria-expanded="false"
-                aria-controls="pst-nav-more-links">
-                    More
-                </button>
-                <ul id="pst-nav-more-links" class="dropdown-menu">
-                    
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="02_boundary_loads.html">
-    Chapter 2: Boundary Conditions and Loads
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="#">
-    Chapter 3: 1D Bar Elements (Linear & Nonlinear)
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="04_2d_triangles.html">
-    2D Triangular Elements (CST)
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="05_2d_quads.html">
-    Chapter 5: 2D Isoparametric Quadrilateral Elements
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="06_3d_solids.html">
-    3D Solid Elements: Tetrahedrons and Hexahedrons
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="07_plasticity.html">
-    Chapter 7: Constitutive Models & Plasticity
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="08_dynamics.html">
-    Structural Dynamics and Time Integration
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="09_modal_periodic.html">
-    Chapter 9: Eigenvalue Problems and Periodic Boundaries
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="10_io_mesh.html">
-    Mesh I/O, Data Types, and Helpers
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../api.html">
-    API Reference
-  </a>
-</li>
-
-                </ul>
-            </li>
-            
   </ul>
 </nav></div>
       
@@ -328,105 +249,35 @@
     
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../tutorials.html">
-    Tutorials & Usage Manual
+    Tutorials
   </a>
 </li>
 
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../manual/index.html">
-    User Guide
+    Guide
   </a>
 </li>
 
 
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="index.html">
-    Theory & Reference Manual
+    Theory
   </a>
 </li>
 
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../api.html">
-    API Reference
+    API
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="01_core_assembly.html">
-    Global Matrix Assembly in Finite Element Analysis: A Rigorous Perspective
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="02_boundary_loads.html">
-    Chapter 2: Boundary Conditions and Loads
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="#">
-    Chapter 3: 1D Bar Elements (Linear & Nonlinear)
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="04_2d_triangles.html">
-    2D Triangular Elements (CST)
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="05_2d_quads.html">
-    Chapter 5: 2D Isoparametric Quadrilateral Elements
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="06_3d_solids.html">
-    3D Solid Elements: Tetrahedrons and Hexahedrons
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="07_plasticity.html">
-    Chapter 7: Constitutive Models & Plasticity
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="08_dynamics.html">
-    Structural Dynamics and Time Integration
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="09_modal_periodic.html">
-    Chapter 9: Eigenvalue Problems and Periodic Boundaries
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="10_io_mesh.html">
-    Mesh I/O, Data Types, and Helpers
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../api.html">
-    API Reference
+  <a class="nav-link nav-internal" href="../matlab_python_mapping.html">
+    MATLAB Mapping
   </a>
 </li>
 
@@ -473,20 +324,19 @@
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="01_core_assembly.html">Global Matrix Assembly in Finite Element Analysis: A Rigorous Perspective</a></li>
-<li class="toctree-l1"><a class="reference internal" href="02_boundary_loads.html">Chapter 2: Boundary Conditions and Loads</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Chapter 3: 1D Bar Elements (Linear &amp; Nonlinear)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="04_2d_triangles.html">2D Triangular Elements (CST)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="05_2d_quads.html">Chapter 5: 2D Isoparametric Quadrilateral Elements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="01_core_assembly.html">Core Assembly in Finite Element Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="02_boundary_loads.html">Boundary conditions and loads</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">1D bar elements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04_2d_triangles.html">2D Triangular Elements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05_2d_quads.html">2D Isoparametric Quadrilateral Elements</a></li>
 <li class="toctree-l1"><a class="reference internal" href="06_3d_solids.html">3D Solid Elements: Tetrahedrons and Hexahedrons</a></li>
-
-<li class="toctree-l1"><a class="reference internal" href="07_plasticity.html">Chapter 7: Constitutive Models &amp; Plasticity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="07_plasticity.html">Constitutive Models and Plasticity</a></li>
 <li class="toctree-l1"><a class="reference internal" href="08_dynamics.html">Structural Dynamics and Time Integration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="09_modal_periodic.html">Chapter 9: Eigenvalue Problems and Periodic Boundaries</a></li>
-<li class="toctree-l1"><a class="reference internal" href="10_io_mesh.html">Mesh I/O, Data Types, and Helpers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="09_modal_periodic.html">Modal analysis and periodic boundaries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="10_io_mesh.html">Mesh I/O and Gmsh Import</a></li>
 <li class="toctree-l1"><a class="reference internal" href="11_nonlinear_solvers.html">Chapter 11: Nonlinear Solvers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="12_plotting_postprocessing.html">Plotting and Post-Processing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="13_legacy_wrappers.html">13. Legacy Wrappers for MATLAB Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12_plotting_postprocessing.html">Plotting and Postprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13_legacy_wrappers.html">Chapter 13: Legacy Wrappers</a></li>
 </ul>
 </div>
 </nav></div>
@@ -528,9 +378,9 @@
       </a>
     </li>
     
-    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Theory &amp; Reference Manual</a></li>
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Theory and Reference Manual</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Chapter 3: 1D Bar Elements (Linear &amp; Nonlinear)</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">1D bar elements</span></li>
   </ul>
 </nav>
 </div>
@@ -547,15 +397,15 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="chapter-3-1d-bar-elements-linear-nonlinear">
-<h1>Chapter 3: 1D Bar Elements (Linear &amp; Nonlinear)<a class="headerlink" href="#chapter-3-1d-bar-elements-linear-nonlinear" title="Link to this heading">#</a></h1>
-<p>This chapter introduces the formulation of 1D bar elements (trusses), which are fundamental building blocks in computational mechanics. We will start with the basic linear assumption and extend the theory to encompass large deformations using the Green-Lagrange strain.</p>
-<p>By the end of this chapter, you will understand the underlying physics and mathematics, and see exactly how the tangent stiffness matrices and internal force vectors are implemented in Python.</p>
+  <section class="tex2jax_ignore mathjax_ignore" id="d-bar-elements">
+<h1>1D bar elements<a class="headerlink" href="#d-bar-elements" title="Link to this heading">#</a></h1>
+<p>This chapter covers the 1D bar and truss routines used by <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code>. The code paths are split the same way as the implementation: <code class="docutils literal notranslate"><span class="pre">kebar</span></code> and <code class="docutils literal notranslate"><span class="pre">qebar</span></code> handle the geometrically nonlinear bar response, <code class="docutils literal notranslate"><span class="pre">kbar</span></code> and <code class="docutils literal notranslate"><span class="pre">qbar</span></code> assemble element contributions into the global system, and <code class="docutils literal notranslate"><span class="pre">mebar</span></code> and <code class="docutils literal notranslate"><span class="pre">mbar</span></code> build the element and global mass matrices.</p>
+<p>The goal here is not to repeat a textbook derivation. It is to show how the strain measure, internal force, tangent stiffness, and mass matrix are carried through the Python functions that the rest of the library actually calls.</p>
 <section id="linear-1d-bar-formulation">
 <h2>3.1 Linear 1D Bar Formulation<a class="headerlink" href="#linear-1d-bar-formulation" title="Link to this heading">#</a></h2>
 <p>The simplest finite element is the 2-node linear bar element. A bar can only transmit axial loads—meaning it has no bending or shear stiffness.</p>
 <section id="kinematics-and-strain">
-<h3>3.1.1 Kinematics and Strain<a class="headerlink" href="#kinematics-and-strain" title="Link to this heading">#</a></h3>
+<h3>Kinematics and strain<a class="headerlink" href="#kinematics-and-strain" title="Link to this heading">#</a></h3>
 <p>Consider a 1D bar of initial length <span class="math notranslate nohighlight">\(L\)</span>, cross-sectional area <span class="math notranslate nohighlight">\(A\)</span>, and Young’s modulus <span class="math notranslate nohighlight">\(E\)</span>. Let the bar be aligned along the local <span class="math notranslate nohighlight">\(x\)</span>-axis. The bar is defined by two nodes, <span class="math notranslate nohighlight">\(1\)</span> and <span class="math notranslate nohighlight">\(2\)</span>, with displacements <span class="math notranslate nohighlight">\(u_1\)</span> and <span class="math notranslate nohighlight">\(u_2\)</span>.</p>
 <p>The axial strain <span class="math notranslate nohighlight">\(\varepsilon\)</span> under the assumption of small deformations is simply the change in length divided by the original length:</p>
 <div class="math notranslate nohighlight">
@@ -565,8 +415,8 @@
 \[\begin{split} \varepsilon = \mathbf{B} \mathbf{d}^e = \begin{bmatrix} -\frac{1}{L} &amp; \frac{1}{L} \end{bmatrix} \begin{bmatrix} u_1 \\ u_2 \end{bmatrix} \end{split}\]</div>
 <p>where <span class="math notranslate nohighlight">\(\mathbf{B}\)</span> is the strain-displacement matrix.</p>
 </section>
-<section id="the-linear-stiffness-matrix">
-<h3>3.1.2 The Linear Stiffness Matrix<a class="headerlink" href="#the-linear-stiffness-matrix" title="Link to this heading">#</a></h3>
+<section id="linear-stiffness-matrix">
+<h3>Linear stiffness matrix<a class="headerlink" href="#linear-stiffness-matrix" title="Link to this heading">#</a></h3>
 <p>The principle of virtual work or minimizing the total potential energy yields the element stiffness matrix <span class="math notranslate nohighlight">\(\mathbf{K}^e\)</span>:</p>
 <div class="math notranslate nohighlight">
 \[ \mathbf{K}^e = \int_V \mathbf{B}^T E \mathbf{B} \, dV \]</div>
@@ -577,11 +427,11 @@
 </section>
 </section>
 <section id="geometric-nonlinear-formulation">
-<h2>3.2 Geometric Nonlinear Formulation<a class="headerlink" href="#geometric-nonlinear-formulation" title="Link to this heading">#</a></h2>
+<h2>3.2 Geometric nonlinear formulation<a class="headerlink" href="#geometric-nonlinear-formulation" title="Link to this heading">#</a></h2>
 <p>When displacements and rotations become large, the linear assumption (<span class="math notranslate nohighlight">\(\varepsilon = \Delta L / L\)</span>) is no longer valid. Even if the material remains linear-elastic, large rigid body rotations introduce significant geometric nonlinearity.</p>
 <p>To capture large deformations, we must use an objective measure of strain, such as the Green-Lagrange strain.</p>
-<section id="green-lagrange-strain-epsilon">
-<h3>3.2.1 Green-Lagrange Strain (<span class="math notranslate nohighlight">\(\epsilon\)</span>)<a class="headerlink" href="#green-lagrange-strain-epsilon" title="Link to this heading">#</a></h3>
+<section id="green-lagrange-strain">
+<h3>Green-Lagrange strain<a class="headerlink" href="#green-lagrange-strain" title="Link to this heading">#</a></h3>
 <p>For 1D problems where displacement is given by <span class="math notranslate nohighlight">\(u(x)\)</span>, the true Green-Lagrange strain measures the stretch and includes higher-order deformation terms:</p>
 <div class="math notranslate nohighlight">
 \[ \epsilon = \frac{du}{dx} + \frac{1}{2}\left(\frac{du}{dx}\right)^2 \]</div>
@@ -590,8 +440,8 @@
 \[ \epsilon = \frac{l_1^2 - l_0^2}{2 l_0^2} \]</div>
 <p>This strain measure is invariant under rigid body translations and rotations because it strictly depends on the squared lengths.</p>
 </section>
-<section id="internal-force-response-mathbf-q-e">
-<h3>3.2.2 Internal Force Response (<span class="math notranslate nohighlight">\(\mathbf{q}^e\)</span>)<a class="headerlink" href="#internal-force-response-mathbf-q-e" title="Link to this heading">#</a></h3>
+<section id="internal-force-response">
+<h3>Internal force response<a class="headerlink" href="#internal-force-response" title="Link to this heading">#</a></h3>
 <p>The internal force vector is derived from the variation of the internal strain energy <span class="math notranslate nohighlight">\(U = \int_V \frac{1}{2} E \epsilon^2 dV\)</span>. The variation of the Green-Lagrange strain <span class="math notranslate nohighlight">\(\delta \epsilon\)</span> is related to virtual displacements <span class="math notranslate nohighlight">\(\delta \mathbf{u}\)</span>:</p>
 <div class="math notranslate nohighlight">
 \[ \delta \epsilon = \frac{1}{l_0^2} \mathbf{a}_1 \cdot \delta \mathbf{a}_1 = \frac{1}{l_0^2} \mathbf{a}_1^T (\delta \mathbf{u}_2 - \delta \mathbf{u}_1) \]</div>
@@ -600,7 +450,7 @@
 \[\begin{split} \mathbf{q}^e = \frac{N}{l_0} \begin{bmatrix} -\mathbf{a}_1 \\ \mathbf{a}_1 \end{bmatrix} \end{split}\]</div>
 <section id="implementation-qebar">
 <h4>Implementation: <code class="docutils literal notranslate"><span class="pre">qebar</span></code><a class="headerlink" href="#implementation-qebar" title="Link to this heading">#</a></h4>
-<p>Here is the exact NumPy implementation for evaluating the internal force of a nonlinear bar.</p>
+<p><code class="docutils literal notranslate"><span class="pre">qebar</span></code> returns the element force vector together with the scalar stress and strain values used by the nonlinear solvers and postprocessing code.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">qebar</span><span class="p">(</span><span class="n">Xe0</span><span class="p">,</span> <span class="n">Xe1</span><span class="p">,</span> <span class="n">Ge</span><span class="p">):</span>
@@ -628,22 +478,22 @@
 </div>
 </section>
 </section>
-<section id="tangent-stiffness-matrix-mathbf-k-e-tan">
-<h3>3.2.3 Tangent Stiffness Matrix (<span class="math notranslate nohighlight">\(\mathbf{K}^e_{tan}\)</span>)<a class="headerlink" href="#tangent-stiffness-matrix-mathbf-k-e-tan" title="Link to this heading">#</a></h3>
+<section id="tangent-stiffness-matrix">
+<h3>Tangent stiffness matrix<a class="headerlink" href="#tangent-stiffness-matrix" title="Link to this heading">#</a></h3>
 <p>For nonlinear solvers like the Newton-Raphson method, we require the tangent stiffness matrix, which is the derivative of the internal force vector with respect to the nodal displacements:</p>
 <div class="math notranslate nohighlight">
 \[ \mathbf{K}_{tan}^e = \frac{\partial \mathbf{q}^e}{\partial \mathbf{d}^e} \]</div>
 <p>Taking the derivative of the internal force vector with respect to displacement gives two distinct terms via the product rule, corresponding to <span class="math notranslate nohighlight">\(K_m\)</span> and <span class="math notranslate nohighlight">\(K_g\)</span>:</p>
 <div class="math notranslate nohighlight">
 \[ \mathbf{K}_{tan}^e = \mathbf{K}_m + \mathbf{K}_g \]</div>
-<section id="material-stiffness-matrix-mathbf-k-m">
-<h4>1. Material Stiffness Matrix (<span class="math notranslate nohighlight">\(\mathbf{K}_m\)</span>)<a class="headerlink" href="#material-stiffness-matrix-mathbf-k-m" title="Link to this heading">#</a></h4>
+<section id="material-stiffness">
+<h4>Material stiffness<a class="headerlink" href="#material-stiffness" title="Link to this heading">#</a></h4>
 <p>The material stiffness arises from taking the variation of the normal force <span class="math notranslate nohighlight">\(N\)</span> itself (which depends on the strain variation). It projects the axial stiffness into the current spatial configuration:</p>
 <div class="math notranslate nohighlight">
 \[\begin{split} \mathbf{K}_m = \frac{E A}{l_0^3} \begin{bmatrix} \mathbf{a}_1 \mathbf{a}_1^T &amp; -\mathbf{a}_1 \mathbf{a}_1^T \\ -\mathbf{a}_1 \mathbf{a}_1^T &amp; \mathbf{a}_1 \mathbf{a}_1^T \end{bmatrix} \end{split}\]</div>
 </section>
-<section id="geometric-stiffness-matrix-mathbf-k-g">
-<h4>2. Geometric Stiffness Matrix (<span class="math notranslate nohighlight">\(\mathbf{K}_g\)</span>)<a class="headerlink" href="#geometric-stiffness-matrix-mathbf-k-g" title="Link to this heading">#</a></h4>
+<section id="geometric-stiffness">
+<h4>Geometric stiffness<a class="headerlink" href="#geometric-stiffness" title="Link to this heading">#</a></h4>
 <p>The geometric stiffness part comes from the derivative of the spatial vector <span class="math notranslate nohighlight">\(\mathbf{a}_1\)</span> while treating the axial force <span class="math notranslate nohighlight">\(N\)</span> as constant. It represents how the current tension/compression modifies the structural stiffness, regardless of material changes.</p>
 <p>In a purely 1D local context, this evaluates strictly as:
 $<span class="math notranslate nohighlight">\( K_g = \frac{N}{L} \begin{bmatrix} 1 &amp; -1 \\ -1 &amp; 1 \end{bmatrix} \)</span>$</p>
@@ -652,7 +502,7 @@ $<span class="math notranslate nohighlight">\( \mathbf{K}_g = \frac{N}{l_0} \beg
 </section>
 <section id="implementation-kebar">
 <h4>Implementation: <code class="docutils literal notranslate"><span class="pre">kebar</span></code><a class="headerlink" href="#implementation-kebar" title="Link to this heading">#</a></h4>
-<p>Here is the exact NumPy implementation for generating the local nonlinear tangent stiffness matrix. Note how <span class="math notranslate nohighlight">\(K_g\)</span> uses the Identity matrix to expand the local 1D <span class="math notranslate nohighlight">\(K_g\)</span> equation across dimensions.</p>
+<p><code class="docutils literal notranslate"><span class="pre">kebar</span></code> builds the tangent matrix from the same current and reference coordinates used in <code class="docutils literal notranslate"><span class="pre">qebar</span></code>, so the solver sees a consistent force-stiffness pair at every Newton iteration.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">kebar</span><span class="p">(</span><span class="n">Xe0</span><span class="p">,</span> <span class="n">Xe1</span><span class="p">,</span> <span class="n">Ge</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the tangent stiffness matrix of a geometrically nonlinear bar element.&quot;&quot;&quot;</span>
     <span class="n">initial</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Xe0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
@@ -692,8 +542,8 @@ $<span class="math notranslate nohighlight">\( \mathbf{K}_g = \frac{N}{l_0} \beg
 </section>
 </section>
 </section>
-<section id="the-newton-raphson-iteration-scheme-example">
-<h2>3.4 The Newton-Raphson Iteration Scheme &amp; Example<a class="headerlink" href="#the-newton-raphson-iteration-scheme-example" title="Link to this heading">#</a></h2>
+<section id="newton-raphson-iteration-and-example">
+<h2>3.4 Newton-Raphson iteration and example<a class="headerlink" href="#newton-raphson-iteration-and-example" title="Link to this heading">#</a></h2>
 <p>To solve a nonlinear equilibrium path <span class="math notranslate nohighlight">\(\mathbf{q}(\mathbf{d}) = \mathbf{f}_{ext}\)</span>, the Newton-Raphson scheme iteratively finds the displacement increment <span class="math notranslate nohighlight">\(\Delta \mathbf{d}\)</span>.</p>
 <p>Below is a complete, runnable Python script solving a 2-bar snap-through truss model using a manual Newton-Raphson loop.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -829,7 +679,7 @@ $<span class="math notranslate nohighlight">\( \mathbf{K}_g = \frac{N}{l_0} \beg
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Chapter 2: Boundary Conditions and Loads</p>
+        <p class="prev-next-title">Boundary conditions and loads</p>
       </div>
     </a>
     <a class="right-next"
@@ -837,7 +687,7 @@ $<span class="math notranslate nohighlight">\( \mathbf{K}_g = \frac{N}{l_0} \beg
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">2D Triangular Elements (CST)</p>
+        <p class="prev-next-title">2D Triangular Elements</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -861,25 +711,25 @@ $<span class="math notranslate nohighlight">\( \mathbf{K}_g = \frac{N}{l_0} \beg
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#linear-1d-bar-formulation">3.1 Linear 1D Bar Formulation</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#kinematics-and-strain">3.1.1 Kinematics and Strain</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-linear-stiffness-matrix">3.1.2 The Linear Stiffness Matrix</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#kinematics-and-strain">Kinematics and strain</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#linear-stiffness-matrix">Linear stiffness matrix</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#geometric-nonlinear-formulation">3.2 Geometric Nonlinear Formulation</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#green-lagrange-strain-epsilon">3.2.1 Green-Lagrange Strain (<span class="math notranslate nohighlight">\(\epsilon\)</span>)</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#internal-force-response-mathbf-q-e">3.2.2 Internal Force Response (<span class="math notranslate nohighlight">\(\mathbf{q}^e\)</span>)</a><ul class="nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#geometric-nonlinear-formulation">3.2 Geometric nonlinear formulation</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#green-lagrange-strain">Green-Lagrange strain</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#internal-force-response">Internal force response</a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#implementation-qebar">Implementation: <code class="docutils literal notranslate"><span class="pre">qebar</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tangent-stiffness-matrix-mathbf-k-e-tan">3.2.3 Tangent Stiffness Matrix (<span class="math notranslate nohighlight">\(\mathbf{K}^e_{tan}\)</span>)</a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#material-stiffness-matrix-mathbf-k-m">1. Material Stiffness Matrix (<span class="math notranslate nohighlight">\(\mathbf{K}_m\)</span>)</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#geometric-stiffness-matrix-mathbf-k-g">2. Geometric Stiffness Matrix (<span class="math notranslate nohighlight">\(\mathbf{K}_g\)</span>)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tangent-stiffness-matrix">Tangent stiffness matrix</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#material-stiffness">Material stiffness</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#geometric-stiffness">Geometric stiffness</a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#implementation-kebar">Implementation: <code class="docutils literal notranslate"><span class="pre">kebar</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-newton-raphson-iteration-scheme-example">3.4 The Newton-Raphson Iteration Scheme &amp; Example</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#newton-raphson-iteration-and-example">3.4 Newton-Raphson iteration and example</a></li>
 </ul>
   </nav></div>
 

@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Mesh I/O, Data Types, and Helpers &#8212; femlabpy 0.6.0 documentation</title>
+    <title>Mesh I/O and Gmsh Import &#8212; femlabpy 0.6.0 documentation</title>
   
   
   
@@ -31,6 +31,7 @@
 <link href="../_static/styles/pydata-sphinx-theme.css?digest=7f76b32a3354e82990f2" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=aa664f36" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../_static/scripts/fontawesome.js?digest=7f76b32a3354e82990f2"></script>
@@ -41,14 +42,12 @@
     <script src="../_static/documentation_options.js?v=8fa8b3e9"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'theory/10_io_mesh';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Chapter 11: Nonlinear Solvers" href="11_nonlinear_solvers.html" />
-    <link rel="prev" title="Chapter 9: Eigenvalue Problems and Periodic Boundaries" href="09_modal_periodic.html" />
+    <link rel="prev" title="Modal analysis and periodic boundaries" href="09_modal_periodic.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -133,118 +132,38 @@
     
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../tutorials.html">
-    Tutorials & Usage Manual
+    Tutorials
   </a>
 </li>
 
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../manual/index.html">
-    User Guide
+    Guide
   </a>
 </li>
 
 
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="index.html">
-    Theory & Reference Manual
+    Theory
   </a>
 </li>
 
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../api.html">
-    API Reference
+    API
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="01_core_assembly.html">
-    Global Matrix Assembly in Finite Element Analysis: A Rigorous Perspective
+  <a class="nav-link nav-internal" href="../matlab_python_mapping.html">
+    MATLAB Mapping
   </a>
 </li>
 
-            <li class="nav-item dropdown">
-                <button class="btn dropdown-toggle nav-item" type="button"
-                data-bs-toggle="dropdown" aria-expanded="false"
-                aria-controls="pst-nav-more-links">
-                    More
-                </button>
-                <ul id="pst-nav-more-links" class="dropdown-menu">
-                    
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="02_boundary_loads.html">
-    Chapter 2: Boundary Conditions and Loads
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="03_1d_bars.html">
-    Chapter 3: 1D Bar Elements (Linear & Nonlinear)
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="04_2d_triangles.html">
-    2D Triangular Elements (CST)
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="05_2d_quads.html">
-    Chapter 5: 2D Isoparametric Quadrilateral Elements
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="06_3d_solids.html">
-    3D Solid Elements: Tetrahedrons and Hexahedrons
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="07_plasticity.html">
-    Chapter 7: Constitutive Models & Plasticity
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="08_dynamics.html">
-    Structural Dynamics and Time Integration
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="09_modal_periodic.html">
-    Chapter 9: Eigenvalue Problems and Periodic Boundaries
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="#">
-    Mesh I/O, Data Types, and Helpers
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../api.html">
-    API Reference
-  </a>
-</li>
-
-                </ul>
-            </li>
-            
   </ul>
 </nav></div>
       
@@ -328,105 +247,35 @@
     
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../tutorials.html">
-    Tutorials & Usage Manual
+    Tutorials
   </a>
 </li>
 
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../manual/index.html">
-    User Guide
+    Guide
   </a>
 </li>
 
 
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="index.html">
-    Theory & Reference Manual
+    Theory
   </a>
 </li>
 
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../api.html">
-    API Reference
+    API
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="01_core_assembly.html">
-    Global Matrix Assembly in Finite Element Analysis: A Rigorous Perspective
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="02_boundary_loads.html">
-    Chapter 2: Boundary Conditions and Loads
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="03_1d_bars.html">
-    Chapter 3: 1D Bar Elements (Linear & Nonlinear)
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="04_2d_triangles.html">
-    2D Triangular Elements (CST)
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="05_2d_quads.html">
-    Chapter 5: 2D Isoparametric Quadrilateral Elements
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="06_3d_solids.html">
-    3D Solid Elements: Tetrahedrons and Hexahedrons
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="07_plasticity.html">
-    Chapter 7: Constitutive Models & Plasticity
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="08_dynamics.html">
-    Structural Dynamics and Time Integration
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="09_modal_periodic.html">
-    Chapter 9: Eigenvalue Problems and Periodic Boundaries
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="#">
-    Mesh I/O, Data Types, and Helpers
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../api.html">
-    API Reference
+  <a class="nav-link nav-internal" href="../matlab_python_mapping.html">
+    MATLAB Mapping
   </a>
 </li>
 
@@ -473,20 +322,19 @@
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="01_core_assembly.html">Global Matrix Assembly in Finite Element Analysis: A Rigorous Perspective</a></li>
-<li class="toctree-l1"><a class="reference internal" href="02_boundary_loads.html">Chapter 2: Boundary Conditions and Loads</a></li>
-<li class="toctree-l1"><a class="reference internal" href="03_1d_bars.html">Chapter 3: 1D Bar Elements (Linear &amp; Nonlinear)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="04_2d_triangles.html">2D Triangular Elements (CST)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="05_2d_quads.html">Chapter 5: 2D Isoparametric Quadrilateral Elements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="01_core_assembly.html">Core Assembly in Finite Element Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="02_boundary_loads.html">Boundary conditions and loads</a></li>
+<li class="toctree-l1"><a class="reference internal" href="03_1d_bars.html">1D bar elements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04_2d_triangles.html">2D Triangular Elements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05_2d_quads.html">2D Isoparametric Quadrilateral Elements</a></li>
 <li class="toctree-l1"><a class="reference internal" href="06_3d_solids.html">3D Solid Elements: Tetrahedrons and Hexahedrons</a></li>
-
-<li class="toctree-l1"><a class="reference internal" href="07_plasticity.html">Chapter 7: Constitutive Models &amp; Plasticity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="07_plasticity.html">Constitutive Models and Plasticity</a></li>
 <li class="toctree-l1"><a class="reference internal" href="08_dynamics.html">Structural Dynamics and Time Integration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="09_modal_periodic.html">Chapter 9: Eigenvalue Problems and Periodic Boundaries</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Mesh I/O, Data Types, and Helpers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="09_modal_periodic.html">Modal analysis and periodic boundaries</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Mesh I/O and Gmsh Import</a></li>
 <li class="toctree-l1"><a class="reference internal" href="11_nonlinear_solvers.html">Chapter 11: Nonlinear Solvers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="12_plotting_postprocessing.html">Plotting and Post-Processing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="13_legacy_wrappers.html">13. Legacy Wrappers for MATLAB Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12_plotting_postprocessing.html">Plotting and Postprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13_legacy_wrappers.html">Chapter 13: Legacy Wrappers</a></li>
 </ul>
 </div>
 </nav></div>
@@ -528,9 +376,9 @@
       </a>
     </li>
     
-    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Theory &amp; Reference Manual</a></li>
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Theory and Reference Manual</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Mesh I/O, Data Types, and Helpers</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Mesh I/O and Gmsh Import</span></li>
   </ul>
 </nav>
 </div>
@@ -547,184 +395,166 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="mesh-i-o-data-types-and-helpers">
-<h1>Mesh I/O, Data Types, and Helpers<a class="headerlink" href="#mesh-i-o-data-types-and-helpers" title="Link to this heading">#</a></h1>
-<p>In computational mechanics, finite element analysis (FEA) heavily relies on robust and efficient representation of mesh data and sparse linear algebra operations. The <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> framework is designed to bridge the gap between traditional, legacy MATLAB implementations and modern, Pythonic object-oriented paradigms.</p>
-<p>This chapter provides a comprehensive overview of how mesh topologies are imported, the data structures used to store them, and the underlying mathematical and programmatic helpers that facilitate the assembly and solution of the resulting finite element systems.</p>
-<hr class="docutils" />
-<section id="the-gmsh-file-format-msh">
-<h2>1. The Gmsh File Format (<code class="docutils literal notranslate"><span class="pre">.msh</span></code>)<a class="headerlink" href="#the-gmsh-file-format-msh" title="Link to this heading">#</a></h2>
-<p>The open-source mesh generator <strong>Gmsh</strong> is the standard source of finite element meshes for <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code>. Over time, Gmsh has evolved its <code class="docutils literal notranslate"><span class="pre">.msh</span></code> file format. <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> must accommodate both the legacy 2.2 format and the modern 4.1 format.</p>
-<section id="the-legacy-v2-2-format">
-<h3>1.1 The Legacy v2.2 Format<a class="headerlink" href="#the-legacy-v2-2-format" title="Link to this heading">#</a></h3>
-<p>The Gmsh v2.2 format is characterized by its simple ASCII block structure, which is easily parsed by line-by-line readers. The file is divided into distinct sections such as <code class="docutils literal notranslate"><span class="pre">$MeshFormat</span></code>, <code class="docutils literal notranslate"><span class="pre">$PhysicalNames</span></code>, <code class="docutils literal notranslate"><span class="pre">$Nodes</span></code>, and <code class="docutils literal notranslate"><span class="pre">$Elements</span></code>.</p>
-<p>A typical v2.2 node section looks like this:</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$Nodes
-number_of_nodes
-node_number x-coord y-coord z-coord
-...
-$EndNodes
-</pre></div>
-</div>
-<p>The coordinate vector for a node <span class="math notranslate nohighlight">\(i\)</span> is denoted as <span class="math notranslate nohighlight">\(\mathbf{x}_i \in \mathbb{R}^3\)</span>.</p>
-<p>The element section defines the topological connectivity:</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$Elements
-number_of_elements
-element_number element_type number_of_tags &lt;tags&gt; node_number_list
-...
-$EndElements
-</pre></div>
-</div>
-<p>Here, the <code class="docutils literal notranslate"><span class="pre">element_type</span></code> corresponds to standardized integer IDs (e.g., <code class="docutils literal notranslate"><span class="pre">1</span></code> for lines, <code class="docutils literal notranslate"><span class="pre">2</span></code> for triangles, <code class="docutils literal notranslate"><span class="pre">3</span></code> for quadrilaterals, <code class="docutils literal notranslate"><span class="pre">4</span></code> for tetrahedrons). The <code class="docutils literal notranslate"><span class="pre">tags</span></code> usually encapsulate the physical and elementary regions, representing the material property IDs or boundary condition labels.</p>
+  <section class="tex2jax_ignore mathjax_ignore" id="mesh-i-o-and-gmsh-import">
+<h1>Mesh I/O and Gmsh Import<a class="headerlink" href="#mesh-i-o-and-gmsh-import" title="Link to this heading">#</a></h1>
+<p>This chapter explains how <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> turns a <code class="docutils literal notranslate"><span class="pre">.msh</span></code> file into the array
+structures used by the rest of the library. The important part is not the file
+format itself. The important part is how node coordinates, element topology, and
+physical tags become NumPy arrays that the element kernels can consume directly.</p>
+<section id="mesh-formats">
+<h2>Mesh Formats<a class="headerlink" href="#mesh-formats" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> supports the older Gmsh 2.2 ASCII layout and the newer 4.x family.
+The implementation prefers a single normalized parsing path instead of two
+different loaders.</p>
+<section id="legacy-ascii-meshes">
+<h3>Legacy ASCII meshes<a class="headerlink" href="#legacy-ascii-meshes" title="Link to this heading">#</a></h3>
+<p>Legacy 2.2 meshes are simple to parse because nodes and elements are stored in
+plain text blocks. The parser reads the <code class="docutils literal notranslate"><span class="pre">$Nodes</span></code> block into a coordinate array
+with shape <code class="docutils literal notranslate"><span class="pre">(nn,</span> <span class="pre">3)</span></code> and the <code class="docutils literal notranslate"><span class="pre">$Elements</span></code> block into normalized element records.</p>
+<p>The key convention is that Gmsh writes one-based node ids, while the Python
+arrays inside <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> are zero-based. The loader resolves that mismatch as
+part of parsing, so later assembly code can use direct NumPy indexing.</p>
 </section>
-<section id="the-modern-v4-1-format">
-<h3>1.2 The Modern v4.1 Format<a class="headerlink" href="#the-modern-v4-1-format" title="Link to this heading">#</a></h3>
-<p>The modern Gmsh v4.1 format introduces block-based data storage, which significantly improves read/write performance for extremely large meshes. However, the block-based layout is incompatible with simple line-by-line procedural parsers written for v2.2.</p>
-<p>To natively support v4.1 without rewriting the entire legacy logic, <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> employs a strategic workaround: if the Python <code class="docutils literal notranslate"><span class="pre">gmsh</span></code> SDK is installed, <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> loads the v4.1 mesh into the SDK’s internal memory and temporarily re-emits it as a v2.2 legacy ASCII file. This guarantees backward compatibility and unified parsing behavior.</p>
-</section>
-</section>
-<hr class="docutils" />
-<section id="parsing-meshes-with-load-gmsh2">
-<h2>2. Parsing Meshes with <code class="docutils literal notranslate"><span class="pre">load_gmsh2</span></code><a class="headerlink" href="#parsing-meshes-with-load-gmsh2" title="Link to this heading">#</a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">load_gmsh2</span></code> parser in <code class="docutils literal notranslate"><span class="pre">femlabpy.io.gmsh</span></code> is responsible for translating the ASCII <code class="docutils literal notranslate"><span class="pre">.msh</span></code> text structure into structured numpy arrays. The parser systematically iterates over the <code class="docutils literal notranslate"><span class="pre">$Nodes</span></code> and <code class="docutils literal notranslate"><span class="pre">$Elements</span></code> blocks.</p>
-<section id="extracting-coordinates">
-<h3>2.1 Extracting Coordinates<a class="headerlink" href="#extracting-coordinates" title="Link to this heading">#</a></h3>
-<p>In the <code class="docutils literal notranslate"><span class="pre">$Nodes</span></code> block, the parser extracts <span class="math notranslate nohighlight">\(N \times 3\)</span> coordinates by reading each line, converting the last three values into floats, and appending them to an array. The node IDs are used to ensure the array is correctly ordered.</p>
-<p>Here is the exact Python code that extracts <span class="math notranslate nohighlight">\(N \times 3\)</span> coordinates:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-    <span class="n">lines</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
-
-<span class="c1"># ... find $Nodes index</span>
-<span class="n">n_nodes</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="n">nodes_idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
-<span class="n">positions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_nodes</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
-
-<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_nodes</span><span class="p">):</span>
-    <span class="n">parts</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="n">nodes_idx</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
-    <span class="n">node_id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span> <span class="c1"># 0-indexed</span>
-    <span class="n">positions</span><span class="p">[</span><span class="n">node_id</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-    <span class="n">positions</span><span class="p">[</span><span class="n">node_id</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
-    <span class="n">positions</span><span class="p">[</span><span class="n">node_id</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
-</pre></div>
-</div>
-</section>
-<section id="physical-groups-and-topology-arrays">
-<h3>2.2 Physical Groups and Topology Arrays<a class="headerlink" href="#physical-groups-and-topology-arrays" title="Link to this heading">#</a></h3>
-<p>A critical step in FEA preprocessing is associating specific regions of the mesh with physical properties (e.g., Young’s modulus, mass density). In Gmsh, these are defined via “Physical Groups”.</p>
-<p>When <code class="docutils literal notranslate"><span class="pre">load_gmsh2</span></code> processes an element row, it extracts the tags. In the v2.2 format, the first tag in the <code class="docutils literal notranslate"><span class="pre">&lt;tags&gt;</span></code> list corresponds to the Physical Group ID.</p>
-<p>Here is the exact Python code that extracts the nodes and maps Physical Groups to the <code class="docutils literal notranslate"><span class="pre">prop_id</span></code> column in the <code class="docutils literal notranslate"><span class="pre">T</span></code> array:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># During the element parsing loop for a specific element type (e.g. triangles)</span>
-<span class="n">T_list</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_elements</span><span class="p">):</span>
-    <span class="n">parts</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="n">elements_idx</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
-    <span class="n">elem_type</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-    <span class="n">num_tags</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
-    
-    <span class="k">if</span> <span class="n">elem_type</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>  <span class="c1"># Triangle</span>
-        <span class="n">phys_grp_id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>  <span class="c1"># First tag is Physical Group</span>
-        <span class="n">node_start</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">+</span> <span class="n">num_tags</span>
-        <span class="n">n1</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="n">node_start</span><span class="p">])</span>
-        <span class="n">n2</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="n">node_start</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
-        <span class="n">n3</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="n">node_start</span> <span class="o">+</span> <span class="mi">2</span><span class="p">])</span>
-        <span class="c1"># Append node IDs and the prop_id (Physical Group)</span>
-        <span class="n">T_list</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">,</span> <span class="n">n3</span><span class="p">,</span> <span class="n">phys_grp_id</span><span class="p">])</span>
-
-<span class="n">T_triangles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">T_list</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>This <code class="docutils literal notranslate"><span class="pre">prop_id</span></code> directly maps to the material property IDs in the topology array <code class="docutils literal notranslate"><span class="pre">T</span></code>. For example, in a simple 2D triangle element, <code class="docutils literal notranslate"><span class="pre">T</span></code> is a row matrix where the first 3 columns are the node numbers, and the last column is the material property ID:
-$<span class="math notranslate nohighlight">\( T_e = [n_1, n_2, n_3, \text{prop\_id}] \)</span>$</p>
+<section id="modern-gmsh-meshes">
+<h3>Modern Gmsh meshes<a class="headerlink" href="#modern-gmsh-meshes" title="Link to this heading">#</a></h3>
+<p>Modern 4.x meshes use block-based storage. <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> handles those files by
+using the optional official <code class="docutils literal notranslate"><span class="pre">gmsh</span></code> SDK when it is installed, then re-emitting
+the mesh into the legacy ASCII layout expected by the parser. That keeps the
+rest of the code path identical.</p>
+<p>The practical effect is simple:</p>
+<ol class="arabic simple">
+<li><p>if the file is already compatible, it is parsed directly;</p></li>
+<li><p>if the file is a modern mesh and the SDK is available, it is converted to a
+legacy ASCII view first;</p></li>
+<li><p>if the SDK is missing, the loader fails early instead of guessing.</p></li>
+</ol>
 </section>
 </section>
-<hr class="docutils" />
-<section id="the-gmshmesh-data-structure">
-<h2>3. The <code class="docutils literal notranslate"><span class="pre">GmshMesh</span></code> Data Structure<a class="headerlink" href="#the-gmshmesh-data-structure" title="Link to this heading">#</a></h2>
-<p>To manage the parsed data, <code class="docutils literal notranslate"><span class="pre">femlabpy.types</span></code> implements the <code class="docutils literal notranslate"><span class="pre">GmshMesh</span></code> dataclass. This structure bridges the gap between modern Python attributes and the legacy MATLAB variables.</p>
-<section id="dataclass-definition">
-<h3>3.1 Dataclass Definition<a class="headerlink" href="#dataclass-definition" title="Link to this heading">#</a></h3>
-<p>The <code class="docutils literal notranslate"><span class="pre">GmshMesh</span></code> dataclass acts as a robust container for all the node coordinates and explicit topology matrices extracted from the <code class="docutils literal notranslate"><span class="pre">.msh</span></code> file.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-
-<span class="nd">@dataclass</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">GmshMesh</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Dataclass holding finite element mesh arrays.&quot;&quot;&quot;</span>
-    <span class="n">positions</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>          <span class="c1"># Shape: (N, 3), node coordinates</span>
-    <span class="n">element_infos</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>      <span class="c1"># General element information</span>
-    <span class="n">element_tags</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>       <span class="c1"># Tag values</span>
-    <span class="n">element_nodes</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>      <span class="c1"># Connectivity</span>
-    
-    <span class="c1"># Specific element topologies with prop_id</span>
-    <span class="n">points</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span>      <span class="c1"># 1-node</span>
-    <span class="n">lines</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span>       <span class="c1"># 2-node</span>
-    <span class="n">triangles</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span>   <span class="c1"># 3-node</span>
-    <span class="n">quads</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span>       <span class="c1"># 4-node</span>
-    <span class="n">tets</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span>        <span class="c1"># 4-node 3D</span>
-    <span class="n">hexa</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span>        <span class="c1"># 8-node 3D</span>
-</pre></div>
-</div>
+<section id="loader-functions">
+<h2>Loader Functions<a class="headerlink" href="#loader-functions" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">femlabpy.io.gmsh</span></code> exposes two public loaders.</p>
+<section id="load-gmsh">
+<h3><code class="docutils literal notranslate"><span class="pre">load_gmsh</span></code><a class="headerlink" href="#load-gmsh" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">load_gmsh(filename)</span></code> reproduces the legacy <code class="docutils literal notranslate"><span class="pre">load_gmsh.m</span></code> semantics. It loads
+all explicit element tables for the supported element families and returns a
+fully populated <code class="docutils literal notranslate"><span class="pre">GmshMesh</span></code> object.</p>
+<p>Use this when you want the closest behavior to the original MATLAB loader and do
+not mind carrying all explicit arrays.</p>
+</section>
+<section id="load-gmsh2">
+<h3><code class="docutils literal notranslate"><span class="pre">load_gmsh2</span></code><a class="headerlink" href="#load-gmsh2" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">load_gmsh2(filename,</span> <span class="pre">which=None)</span></code> is the more flexible loader. It returns the
+same <code class="docutils literal notranslate"><span class="pre">GmshMesh</span></code> container, but it lets you choose which explicit element tables
+should be materialized.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">which=None</span></code> loads all explicit arrays.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">which=-1</span></code> or an empty iterable skips the explicit arrays.</p></li>
+<li><p>a list such as <code class="docutils literal notranslate"><span class="pre">[2,</span> <span class="pre">3,</span> <span class="pre">4]</span></code> loads only the requested element types.</p></li>
+</ul>
+<p>This matters when you only need one topology table, because the mesh object can
+stay much smaller.</p>
+</section>
+<section id="what-the-loader-returns">
+<h3>What the loader returns<a class="headerlink" href="#what-the-loader-returns" title="Link to this heading">#</a></h3>
+<p>Both loaders return a <code class="docutils literal notranslate"><span class="pre">GmshMesh</span></code> object. The object keeps the normalized Python
+fields used internally by <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> and the legacy aliases used by the old
+FemLab scripts.</p>
+<p>The most important fields are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">positions</span></code>: node coordinates, always stored as <code class="docutils literal notranslate"><span class="pre">(nn,</span> <span class="pre">3)</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">element_infos</span></code>: a compact summary of each parsed element.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">element_tags</span></code>: the element tag table.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">element_nodes</span></code>: the element connectivity table.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">nb_type</span></code>: counts per Gmsh element type.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bounds_min</span></code> and <code class="docutils literal notranslate"><span class="pre">bounds_max</span></code>: axis-aligned bounds of the mesh.</p></li>
+</ul>
+<p>The explicit topology arrays are the ones most users care about:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">triangles</span></code>, <code class="docutils literal notranslate"><span class="pre">quads</span></code>, <code class="docutils literal notranslate"><span class="pre">tets</span></code>, <code class="docutils literal notranslate"><span class="pre">hexa</span></code>, and the higher-order variants.</p></li>
+<li><p>each row stores the node ids for one element and the first element tag in the
+last column.</p></li>
+</ul>
+</section>
+</section>
+<section id="gmshmesh-structure">
+<h2>GmshMesh Structure<a class="headerlink" href="#gmshmesh-structure" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">GmshMesh</span></code> is the normalization layer between the mesh file and the FEM code.
+It is defined in <code class="docutils literal notranslate"><span class="pre">src/femlabpy/types.py</span></code> and is intentionally opinionated.</p>
+<section id="python-fields">
+<h3>Python fields<a class="headerlink" href="#python-fields" title="Link to this heading">#</a></h3>
+<p>The lowercase fields are the stable API:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">positions</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">element_infos</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">element_tags</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">element_nodes</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">nb_type</span></code></p></li>
+<li><p>the explicit topology arrays such as <code class="docutils literal notranslate"><span class="pre">triangles</span></code> and <code class="docutils literal notranslate"><span class="pre">quads</span></code></p></li>
+</ul>
+<p>The class also stores <code class="docutils literal notranslate"><span class="pre">legacy_element_infos</span></code>, <code class="docutils literal notranslate"><span class="pre">legacy_element_tags</span></code>,
+<code class="docutils literal notranslate"><span class="pre">loader_name</span></code>, <code class="docutils literal notranslate"><span class="pre">explicit_types</span></code>, and <code class="docutils literal notranslate"><span class="pre">nodes_per_type_of_element</span></code>. Those fields
+help preserve the behavior of the original classroom loaders.</p>
 </section>
 <section id="legacy-aliases">
-<h3>3.2 Legacy Aliases<a class="headerlink" href="#legacy-aliases" title="Link to this heading">#</a></h3>
-<p>To maintain backward compatibility with scripts that expect legacy MATLAB variable names, <code class="docutils literal notranslate"><span class="pre">GmshMesh</span></code> implements custom property accessors. Thus, accessing <code class="docutils literal notranslate"><span class="pre">mesh.POS</span></code> returns <code class="docutils literal notranslate"><span class="pre">mesh.positions</span></code>, and <code class="docutils literal notranslate"><span class="pre">mesh.TRIANGLES</span></code> returns the specific connectivity array <code class="docutils literal notranslate"><span class="pre">mesh.triangles</span></code>.</p>
+<h3>Legacy aliases<a class="headerlink" href="#legacy-aliases" title="Link to this heading">#</a></h3>
+<p>The class implements <code class="docutils literal notranslate"><span class="pre">__getattr__</span></code> so older scripts can still use names such as
+<code class="docutils literal notranslate"><span class="pre">POS</span></code>, <code class="docutils literal notranslate"><span class="pre">TRIANGLES</span></code>, <code class="docutils literal notranslate"><span class="pre">QUADS</span></code>, <code class="docutils literal notranslate"><span class="pre">nbTriangles</span></code>, <code class="docutils literal notranslate"><span class="pre">MIN</span></code>, and <code class="docutils literal notranslate"><span class="pre">MAX</span></code>.</p>
+<p>That is not cosmetic. It lets the wrapper layer and the tutorial code keep the
+old FemLab naming while the internals stay consistent with Python conventions.</p>
 </section>
 </section>
-<hr class="docutils" />
-<section id="end-to-end-example-generating-and-loading-a-mesh">
-<h2>4. End-to-End Example: Generating and Loading a Mesh<a class="headerlink" href="#end-to-end-example-generating-and-loading-a-mesh" title="Link to this heading">#</a></h2>
-<p>The following runnable script demonstrates how to generate a mesh programmatically using the <code class="docutils literal notranslate"><span class="pre">gmsh</span></code> Python SDK, save it in the v2.2 legacy format, and load it using <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">gmsh</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="c1"># Assume femlabpy is in path</span>
-<span class="c1"># from femlabpy.io.gmsh import load_gmsh2</span>
+<section id="parsing-flow">
+<h2>Parsing Flow<a class="headerlink" href="#parsing-flow" title="Link to this heading">#</a></h2>
+<p>The private helpers in <code class="docutils literal notranslate"><span class="pre">io/gmsh.py</span></code> are worth understanding even if you never
+call them directly.</p>
+<section id="file-version-detection">
+<h3>File version detection<a class="headerlink" href="#file-version-detection" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">_mesh_format_version()</span></code> reads the <code class="docutils literal notranslate"><span class="pre">$MeshFormat</span></code> header and returns the declared
+version when possible.</p>
+</section>
+<section id="legacy-view-creation">
+<h3>Legacy view creation<a class="headerlink" href="#legacy-view-creation" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">_legacy_view_path()</span></code> either returns the original file path or creates a
+temporary 2.2-style ASCII view through the <code class="docutils literal notranslate"><span class="pre">gmsh</span></code> SDK. That is the compatibility
+bridge for modern meshes.</p>
+</section>
+<section id="normalized-parsing">
+<h3>Normalized parsing<a class="headerlink" href="#normalized-parsing" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">_parse_gmsh_file()</span></code> converts the mesh into node arrays, bounds, and parsed
+element dictionaries. <code class="docutils literal notranslate"><span class="pre">_build_normalized_mesh()</span></code> then turns those parsed records
+into the final <code class="docutils literal notranslate"><span class="pre">GmshMesh</span></code> object.</p>
+<p>The important point is that the parser keeps the connectivity and
+the physical tags separate. That allows the explicit topology arrays to carry the
+first physical tag in the last column, while the more general tables still keep
+the full metadata.</p>
+</section>
+</section>
+<section id="practical-usage">
+<h2>Practical Usage<a class="headerlink" href="#practical-usage" title="Link to this heading">#</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">femlabpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">fp</span>
 
-<span class="k">def</span><span class="w"> </span><span class="nf">generate_and_load_mesh</span><span class="p">():</span>
-    <span class="c1"># 1. Initialize Gmsh</span>
-    <span class="n">gmsh</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
-    <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;Rectangle&quot;</span><span class="p">)</span>
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">load_gmsh2</span><span class="p">(</span><span class="s2">&quot;model.msh&quot;</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
 
-    <span class="c1"># 2. Define Geometry</span>
-    <span class="n">L</span><span class="p">,</span> <span class="n">H</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.5</span>
-    <span class="n">lc</span> <span class="o">=</span> <span class="mf">0.1</span> <span class="c1"># Characteristic length</span>
-    <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">geo</span><span class="o">.</span><span class="n">addPoint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">lc</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">geo</span><span class="o">.</span><span class="n">addPoint</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">lc</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-    <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">geo</span><span class="o">.</span><span class="n">addPoint</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">lc</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
-    <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">geo</span><span class="o">.</span><span class="n">addPoint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">lc</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
-
-    <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">geo</span><span class="o">.</span><span class="n">addLine</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">geo</span><span class="o">.</span><span class="n">addLine</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-    <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">geo</span><span class="o">.</span><span class="n">addLine</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
-    <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">geo</span><span class="o">.</span><span class="n">addLine</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
-
-    <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">geo</span><span class="o">.</span><span class="n">addCurveLoop</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">geo</span><span class="o">.</span><span class="n">addPlaneSurface</span><span class="p">([</span><span class="mi">1</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
-
-    <span class="c1"># 3. Define Physical Groups (Material properties/BCs)</span>
-    <span class="c1"># The physical group ID becomes the prop_id in the T array</span>
-    <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">geo</span><span class="o">.</span><span class="n">addPhysicalGroup</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">100</span><span class="p">)</span> <span class="c1"># Surface elements, tag=100</span>
-    <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">geo</span><span class="o">.</span><span class="n">synchronize</span><span class="p">()</span>
-
-    <span class="c1"># 4. Generate and save mesh as v2.2</span>
-    <span class="n">gmsh</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
-    <span class="n">gmsh</span><span class="o">.</span><span class="n">option</span><span class="o">.</span><span class="n">setNumber</span><span class="p">(</span><span class="s2">&quot;Mesh.MshFileVersion&quot;</span><span class="p">,</span> <span class="mf">2.2</span><span class="p">)</span>
-    <span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;test_mesh.msh&quot;</span>
-    <span class="n">gmsh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
-    <span class="n">gmsh</span><span class="o">.</span><span class="n">finalize</span><span class="p">()</span>
-
-    <span class="c1"># 5. Load with femlabpy (Simulated output for demonstration)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mesh generated and saved to </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="c1"># mesh = load_gmsh2(filename)</span>
-    <span class="c1"># print(&quot;Node coordinates shape:&quot;, mesh.positions.shape)</span>
-    <span class="c1"># print(&quot;Triangles shape (nodes + prop_id):&quot;, mesh.triangles.shape)</span>
-
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-    <span class="n">generate_and_load_mesh</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">mesh</span><span class="o">.</span><span class="n">nbNod</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">mesh</span><span class="o">.</span><span class="n">nbElm</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">mesh</span><span class="o">.</span><span class="n">triangles</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">mesh</span><span class="o">.</span><span class="n">quads</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">mesh</span><span class="o">.</span><span class="n">bounds_min</span><span class="p">,</span> <span class="n">mesh</span><span class="o">.</span><span class="n">bounds_max</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>For code that needs to inspect the physical group associated with an element
+row, use <code class="docutils literal notranslate"><span class="pre">mesh.property_numbers(...)</span></code> or read <code class="docutils literal notranslate"><span class="pre">mesh.element_tags</span></code> directly.</p>
 </section>
-<hr class="docutils" />
-<section id="summary">
-<h2>5. Summary<a class="headerlink" href="#summary" title="Link to this heading">#</a></h2>
-<p>The infrastructure laid out in <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> encapsulates the raw strings of a <code class="docutils literal notranslate"><span class="pre">.msh</span></code> file into highly optimized, algebraically-ready array structures. By leveraging <code class="docutils literal notranslate"><span class="pre">GmshMesh</span></code> and its targeted parsers to map Physical Groups to <code class="docutils literal notranslate"><span class="pre">prop_id</span></code> columns, engineers can seamlessly transition from mesh generation to stiffness matrix assembly in a few lines of Python.</p>
+<section id="reading-checklist">
+<h2>Reading Checklist<a class="headerlink" href="#reading-checklist" title="Link to this heading">#</a></h2>
+<p>If you are editing the loader, keep these rules in mind:</p>
+<ol class="arabic simple">
+<li><p>preserve one-based ids at the file boundary;</p></li>
+<li><p>convert to zero-based NumPy indexing as soon as the data enters the mesh
+object;</p></li>
+<li><p>keep the physical tag in the last column of the explicit topology arrays;</p></li>
+<li><p>do not silently reinterpret malformed meshes.</p></li>
+</ol>
 </section>
 </section>
 
@@ -744,7 +574,7 @@ $<span class="math notranslate nohighlight">\( T_e = [n_1, n_2, n_3, \text{prop\
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Chapter 9: Eigenvalue Problems and Periodic Boundaries</p>
+        <p class="prev-next-title">Modal analysis and periodic boundaries</p>
       </div>
     </a>
     <a class="right-next"
@@ -775,23 +605,30 @@ $<span class="math notranslate nohighlight">\( T_e = [n_1, n_2, n_3, \text{prop\
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-gmsh-file-format-msh">1. The Gmsh File Format (<code class="docutils literal notranslate"><span class="pre">.msh</span></code>)</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-legacy-v2-2-format">1.1 The Legacy v2.2 Format</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-modern-v4-1-format">1.2 The Modern v4.1 Format</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mesh-formats">Mesh Formats</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#legacy-ascii-meshes">Legacy ASCII meshes</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#modern-gmsh-meshes">Modern Gmsh meshes</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#parsing-meshes-with-load-gmsh2">2. Parsing Meshes with <code class="docutils literal notranslate"><span class="pre">load_gmsh2</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#extracting-coordinates">2.1 Extracting Coordinates</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#physical-groups-and-topology-arrays">2.2 Physical Groups and Topology Arrays</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#loader-functions">Loader Functions</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#load-gmsh"><code class="docutils literal notranslate"><span class="pre">load_gmsh</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#load-gmsh2"><code class="docutils literal notranslate"><span class="pre">load_gmsh2</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-the-loader-returns">What the loader returns</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-gmshmesh-data-structure">3. The <code class="docutils literal notranslate"><span class="pre">GmshMesh</span></code> Data Structure</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dataclass-definition">3.1 Dataclass Definition</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#legacy-aliases">3.2 Legacy Aliases</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gmshmesh-structure">GmshMesh Structure</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#python-fields">Python fields</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#legacy-aliases">Legacy aliases</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#end-to-end-example-generating-and-loading-a-mesh">4. End-to-End Example: Generating and Loading a Mesh</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">5. Summary</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#parsing-flow">Parsing Flow</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#file-version-detection">File version detection</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#legacy-view-creation">Legacy view creation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#normalized-parsing">Normalized parsing</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#practical-usage">Practical Usage</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reading-checklist">Reading Checklist</a></li>
 </ul>
   </nav></div>
 

@@ -3,11 +3,31 @@
 
 .. automodule:: femlabpy.loads
 
-   
-   .. rubric:: Functions
 
-   .. autosummary::
-   
-      addload
-      setload
-   
+
+
+
+
+Functions
+---------
+
+.. autosummary::
+
+
+   addload
+   setload
+
+Function Reference
+------------------
+
+
+.. autofunction:: femlabpy.loads.addload
+
+
+.. autofunction:: femlabpy.loads.setload
+
+
+
+
+
+

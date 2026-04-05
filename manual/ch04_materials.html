@@ -31,6 +31,7 @@
 <link href="../_static/styles/pydata-sphinx-theme.css?digest=7f76b32a3354e82990f2" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=aa664f36" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../_static/scripts/fontawesome.js?digest=7f76b32a3354e82990f2"></script>
@@ -47,8 +48,8 @@
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Chapter 5: Structural Dynamics Theory &amp; Time Integration" href="ch05_dynamics.html" />
-    <link rel="prev" title="Chapter 3: Assembly &amp; Constraints" href="ch03_assembly_statics.html" />
+    <link rel="next" title="Structural Dynamics and Time Integration" href="ch05_dynamics.html" />
+    <link rel="prev" title="Chapter 3: Assembly and Constraints" href="ch03_assembly_statics.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -133,118 +134,38 @@
     
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../tutorials.html">
-    Tutorials & Usage Manual
+    Tutorials
   </a>
 </li>
 
 
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="index.html">
-    User Guide
+    Guide
   </a>
 </li>
 
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../theory/index.html">
-    Theory & Reference Manual
+    Theory
   </a>
 </li>
 
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../api.html">
-    API Reference
+    API
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../theory/01_core_assembly.html">
-    Global Matrix Assembly in Finite Element Analysis: A Rigorous Perspective
+  <a class="nav-link nav-internal" href="../matlab_python_mapping.html">
+    MATLAB Mapping
   </a>
 </li>
 
-            <li class="nav-item dropdown">
-                <button class="btn dropdown-toggle nav-item" type="button"
-                data-bs-toggle="dropdown" aria-expanded="false"
-                aria-controls="pst-nav-more-links">
-                    More
-                </button>
-                <ul id="pst-nav-more-links" class="dropdown-menu">
-                    
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../theory/02_boundary_loads.html">
-    Chapter 2: Boundary Conditions and Loads
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../theory/03_1d_bars.html">
-    Chapter 3: 1D Bar Elements (Linear & Nonlinear)
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../theory/04_2d_triangles.html">
-    2D Triangular Elements (CST)
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../theory/05_2d_quads.html">
-    Chapter 5: 2D Isoparametric Quadrilateral Elements
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../theory/06_3d_solids.html">
-    3D Solid Elements: Tetrahedrons and Hexahedrons
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../theory/07_plasticity.html">
-    Chapter 7: Constitutive Models & Plasticity
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../theory/08_dynamics.html">
-    Structural Dynamics and Time Integration
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../theory/09_modal_periodic.html">
-    Chapter 9: Eigenvalue Problems and Periodic Boundaries
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../theory/10_io_mesh.html">
-    Mesh I/O, Data Types, and Helpers
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../api.html">
-    API Reference
-  </a>
-</li>
-
-                </ul>
-            </li>
-            
   </ul>
 </nav></div>
       
@@ -328,105 +249,35 @@
     
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../tutorials.html">
-    Tutorials & Usage Manual
+    Tutorials
   </a>
 </li>
 
 
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="index.html">
-    User Guide
+    Guide
   </a>
 </li>
 
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../theory/index.html">
-    Theory & Reference Manual
+    Theory
   </a>
 </li>
 
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../api.html">
-    API Reference
+    API
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../theory/01_core_assembly.html">
-    Global Matrix Assembly in Finite Element Analysis: A Rigorous Perspective
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../theory/02_boundary_loads.html">
-    Chapter 2: Boundary Conditions and Loads
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../theory/03_1d_bars.html">
-    Chapter 3: 1D Bar Elements (Linear & Nonlinear)
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../theory/04_2d_triangles.html">
-    2D Triangular Elements (CST)
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../theory/05_2d_quads.html">
-    Chapter 5: 2D Isoparametric Quadrilateral Elements
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../theory/06_3d_solids.html">
-    3D Solid Elements: Tetrahedrons and Hexahedrons
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../theory/07_plasticity.html">
-    Chapter 7: Constitutive Models & Plasticity
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../theory/08_dynamics.html">
-    Structural Dynamics and Time Integration
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../theory/09_modal_periodic.html">
-    Chapter 9: Eigenvalue Problems and Periodic Boundaries
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../theory/10_io_mesh.html">
-    Mesh I/O, Data Types, and Helpers
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../api.html">
-    API Reference
+  <a class="nav-link nav-internal" href="../matlab_python_mapping.html">
+    MATLAB Mapping
   </a>
 </li>
 
@@ -475,13 +326,13 @@
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="ch01_fundamentals.html">Chapter 1: Fundamentals &amp; Data Structures</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ch02_elements.html">Chapter 2: Element Library</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ch03_assembly_statics.html">Chapter 3: Assembly &amp; Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ch03_assembly_statics.html">Chapter 3: Assembly and Constraints</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Chapter 4: Material Models</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ch05_dynamics.html">Chapter 5: Structural Dynamics Theory &amp; Time Integration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ch06_periodic_io.html">Chapter 6: Periodic Boundaries &amp; I/O</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ch07_advanced_examples.html">Chapter 7: Advanced Workflows &amp; Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ch05_dynamics.html">Structural Dynamics and Time Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ch06_periodic_io.html">Chapter 6: Periodic Boundaries and Gmsh I/O</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ch07_packaged_examples.html">Chapter 7: Packaged Workflows and Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ch08_custom_elements.html">Chapter 8: Custom Element Development</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ch09_dynamic_workflows.html">Chapter 9: Advanced Dynamic Workflows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ch09_dynamic_workflows.html">Chapter 9: Dynamic Response Workflows</a></li>
 </ul>
 </div>
 </nav></div>
@@ -544,186 +395,249 @@
                   
   <section class="tex2jax_ignore mathjax_ignore" id="chapter-4-material-models">
 <h1>Chapter 4: Material Models<a class="headerlink" href="#chapter-4-material-models" title="Link to this heading">#</a></h1>
-<p><code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> supports a variety of constitutive models, mapped through the material matrix <span class="math notranslate nohighlight">\(\mathbf{D}\)</span> relating stress to strain: <span class="math notranslate nohighlight">\(\sigma = \mathbf{D} \epsilon\)</span>. This chapter outlines the theoretical foundations for elasticity and plasticity implementations.</p>
+<p><code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> keeps material behavior intentionally compact at the API level. Most routines work with a small material row <code class="docutils literal notranslate"><span class="pre">G</span></code>, a stress vector <code class="docutils literal notranslate"><span class="pre">S</span></code>, and, when plasticity is active, a few scalar history variables. That makes the data flow easy to trace from element routines to Gauss-point updates and then back into the global solver.</p>
+<p>This chapter focuses on three things:</p>
+<ol class="arabic simple">
+<li><p>How the library represents elastic and plastic material data.</p></li>
+<li><p>What the public material helper functions do.</p></li>
+<li><p>How the local return-mapping variables fit together during an update.</p></li>
+</ol>
+<section id="material-data-layout">
+<h2>4.1 Material Data Layout<a class="headerlink" href="#material-data-layout" title="Link to this heading">#</a></h2>
+<p>The material models in this repository are table driven. Instead of passing a large object tree, the element routines expect a compact NumPy row. That choice matches the legacy FemLab style and keeps the kernels easy to vectorize.</p>
+<p>For linear elasticity, the important entries are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">E</span></code>: Young’s modulus.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">nu</span></code>: Poisson’s ratio.</p></li>
+</ul>
+<p>For the plasticity helpers, the same row is extended with:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Sy0</span></code>: initial yield stress.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">H</span></code>: isotropic hardening modulus.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">phi</span></code>: Drucker-Prager friction parameter, where that model is used.</p></li>
+</ul>
+<p>The stress vectors follow the same compact convention:</p>
+<ul class="simple">
+<li><p>Plane stress and plane strain routines typically use <code class="docutils literal notranslate"><span class="pre">[sxx,</span> <span class="pre">syy,</span> <span class="pre">sxy]</span></code>.</p></li>
+<li><p>Three-dimensional invariant helpers accept <code class="docutils literal notranslate"><span class="pre">[sxx,</span> <span class="pre">syy,</span> <span class="pre">szz,</span> <span class="pre">syz,</span> <span class="pre">sxz,</span> <span class="pre">sxy]</span></code>.</p></li>
+</ul>
+<p>That layout matters because most helper functions in <code class="docutils literal notranslate"><span class="pre">src/femlabpy/materials</span></code> are thin transformations on these arrays. They do not hide the data; they expose it in a form that the element and solver code can reuse directly.</p>
+<section id="public-helper-functions">
+<h3>Public helper functions<a class="headerlink" href="#public-helper-functions" title="Link to this heading">#</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">femlabpy.materials</span></code> package re-exports a small set of helpers:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">devstress</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">devstres</span></code> as a compatibility alias for <code class="docutils literal notranslate"><span class="pre">devstress</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">eqstress</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">yieldvm</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dyieldvm</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stressvm</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stressdp</span></code></p></li>
+</ul>
+<p>The first two are invariant utilities. The next three implement the von Mises consistency equation and its return mapping. The last one handles Drucker-Prager plastic correction.</p>
+</section>
+</section>
 <section id="linear-elasticity">
-<h2>4.1 Linear Elasticity<a class="headerlink" href="#linear-elasticity" title="Link to this heading">#</a></h2>
-<p>For an isotropic linear elastic material, the compliance tensor depends solely on Young’s Modulus <span class="math notranslate nohighlight">\(E\)</span> and Poisson’s ratio <span class="math notranslate nohighlight">\(\nu\)</span>. In 2D formulations, we distinguish between two states:</p>
+<h2>4.2 Linear Elasticity<a class="headerlink" href="#linear-elasticity" title="Link to this heading">#</a></h2>
+<p>For isotropic linear elasticity, the constitutive law is written in matrix form as:</p>
+<div class="math notranslate nohighlight">
+\[ \sigma = \mathbf{D} \epsilon \]</div>
+<p>The exact form of <code class="docutils literal notranslate"><span class="pre">D</span></code> depends on the kinematic assumption.</p>
 <section id="plane-stress">
 <h3>Plane Stress<a class="headerlink" href="#plane-stress" title="Link to this heading">#</a></h3>
-<p>Assume <span class="math notranslate nohighlight">\(\sigma_z = \tau_{xz} = \tau_{yz} = 0\)</span>. The material stiffness matrix is:
-$<span class="math notranslate nohighlight">\( \mathbf{D} = \frac{E}{1 - \nu^2} \begin{bmatrix}
+<p>Plane stress is used when the out-of-plane stress components are neglected:</p>
+<div class="math notranslate nohighlight">
+\[ \sigma_z = \tau_{xz} = \tau_{yz} = 0 \]</div>
+<p>The corresponding material matrix is:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split} \mathbf{D} = \frac{E}{1 - \nu^2}
+\begin{bmatrix}
 1 &amp; \nu &amp; 0 \\
 \nu &amp; 1 &amp; 0 \\
-0 &amp; 0 &amp; \frac{1-\nu}{2}
-\end{bmatrix} \)</span>$</p>
+0 &amp; 0 &amp; \frac{1 - \nu}{2}
+\end{bmatrix} \end{split}\]</div>
+<p>This is the standard choice for thin plates and membrane-like 2D idealizations. In the codebase, it is the form most closely aligned with the plane-stress plasticity update.</p>
 </section>
 <section id="plane-strain">
 <h3>Plane Strain<a class="headerlink" href="#plane-strain" title="Link to this heading">#</a></h3>
-<p>Assume <span class="math notranslate nohighlight">\(\epsilon_z = \gamma_{xz} = \gamma_{yz} = 0\)</span>. The material stiffness matrix is:
-$<span class="math notranslate nohighlight">\( \mathbf{D} = \frac{E}{(1+\nu)(1-2\nu)} \begin{bmatrix}
+<p>Plane strain assumes the out-of-plane strains vanish:</p>
+<div class="math notranslate nohighlight">
+\[ \epsilon_z = \gamma_{xz} = \gamma_{yz} = 0 \]</div>
+<p>The constitutive matrix becomes:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split} \mathbf{D} = \frac{E}{(1 + \nu)(1 - 2\nu)}
+\begin{bmatrix}
 1-\nu &amp; \nu &amp; 0 \\
 \nu &amp; 1-\nu &amp; 0 \\
-0 &amp; 0 &amp; \frac{1-2\nu}{2}
-\end{bmatrix} \)</span>$</p>
+0 &amp; 0 &amp; \frac{1 - 2\nu}{2}
+\end{bmatrix} \end{split}\]</div>
+<p>This is the form used for thick sections, long bodies, or any case where the out-of-plane deformation is strongly constrained.</p>
+</section>
+<section id="why-the-chapter-still-matters-for-plasticity">
+<h3>Why the chapter still matters for plasticity<a class="headerlink" href="#why-the-chapter-still-matters-for-plasticity" title="Link to this heading">#</a></h3>
+<p>Even when a material is not purely elastic, the elastic matrix is still the backbone of the update. It supplies the trial stress, the compliance matrix, and the local stiffness that the solver uses when it linearizes the constitutive response.</p>
+</section>
+</section>
+<section id="stress-invariants">
+<h2>4.3 Stress Invariants<a class="headerlink" href="#stress-invariants" title="Link to this heading">#</a></h2>
+<p>Plasticity models in this repository are built around invariants rather than raw component-by-component checks. That is the right choice for isotropic yield criteria because the yield surface depends on the stress state as a whole, not on one stress component in isolation.</p>
+<section id="deviatoric-stress">
+<h3>Deviatoric stress<a class="headerlink" href="#deviatoric-stress" title="Link to this heading">#</a></h3>
+<p>The deviatoric helper follows the compact legacy convention used by the codebase: it strips out the mean-stress contribution in the form expected by the plane and 3D helper routines. In the code, <code class="docutils literal notranslate"><span class="pre">devstress(S)</span></code> returns two values:</p>
+<ul class="simple">
+<li><p>the deviatoric stress vector</p></li>
+<li><p>the mean stress</p></li>
+</ul>
+<p>That split is useful because von Mises plasticity only cares about the deviatoric part, while Drucker-Prager also depends on the mean stress.</p>
+</section>
+<section id="equivalent-stress">
+<h3>Equivalent stress<a class="headerlink" href="#equivalent-stress" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">eqstress(S)</span></code> computes the von Mises equivalent stress from the stress vector. This is the scalar quantity used to compare the current state against the yield stress.</p>
+<p>For a 2D stress vector <code class="docutils literal notranslate"><span class="pre">[sxx,</span> <span class="pre">syy,</span> <span class="pre">sxy]</span></code>, the helper evaluates the standard equivalent-stress expression and returns a single floating-point value. For the 3D form, it uses the six-component tensor convention and includes the shear terms explicitly.</p>
+</section>
+<section id="why-this-is-separated-from-the-plasticity-update">
+<h3>Why this is separated from the plasticity update<a class="headerlink" href="#why-this-is-separated-from-the-plasticity-update" title="Link to this heading">#</a></h3>
+<p>The code keeps invariant calculations in a separate module because they are reused by multiple models:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">stressvm</span></code> uses equivalent-stress logic to drive the von Mises correction.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stressdp</span></code> uses both deviatoric and mean stress to build the Drucker-Prager residual.</p></li>
+</ul>
+<p>This separation keeps the constitutive code readable and avoids duplicating the same tensor algebra in multiple solvers.</p>
 </section>
 </section>
 <section id="von-mises-elastoplasticity">
-<h2>4.2 von Mises Elastoplasticity<a class="headerlink" href="#von-mises-elastoplasticity" title="Link to this heading">#</a></h2>
-<p>For ductile metals, the von Mises yield criterion is employed with isotropic hardening.</p>
+<h2>4.4 Von Mises Elastoplasticity<a class="headerlink" href="#von-mises-elastoplasticity" title="Link to this heading">#</a></h2>
+<p>The von Mises implementation in <code class="docutils literal notranslate"><span class="pre">src/femlabpy/materials/plasticity.py</span></code> is a legacy plane-stress return-mapping routine. It is built around a single scalar unknown: the plastic multiplier increment <code class="docutils literal notranslate"><span class="pre">dL</span></code>.</p>
 <section id="yield-function">
-<h3>Yield Function<a class="headerlink" href="#yield-function" title="Link to this heading">#</a></h3>
-<p>The yield function <span class="math notranslate nohighlight">\(f\)</span> defines the elastic limit based on the deviatoric stress invariants:
-$<span class="math notranslate nohighlight">\( f(\sigma, \bar{\epsilon}_p) = \sigma_{eq} - (\sigma_y + H \bar{\epsilon}_p) \le 0 \)</span><span class="math notranslate nohighlight">\(
-where \)</span>\sigma_{eq} = \sqrt{\frac{3}{2} \mathbf{s}:\mathbf{s}}<span class="math notranslate nohighlight">\( is the equivalent von Mises stress, \)</span>\mathbf{s}<span class="math notranslate nohighlight">\( is the deviatoric stress tensor, \)</span>\sigma_y<span class="math notranslate nohighlight">\( is the initial yield stress, \)</span>H<span class="math notranslate nohighlight">\( is the hardening modulus, and \)</span>\bar{\epsilon}_p$ is the accumulated equivalent plastic strain.</p>
+<h3>Yield function<a class="headerlink" href="#yield-function" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">yieldvm(S,</span> <span class="pre">G,</span> <span class="pre">dL,</span> <span class="pre">Sy)</span></code> evaluates the return-mapping consistency equation. Conceptually, it answers a yes/no question:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">f</span> <span class="pre">&lt;=</span> <span class="pre">0</span></code>: the state is admissible.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">f</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>: the trial stress lies outside the yield surface and must be projected back.</p></li>
+</ul>
+<p>The helper is not just a classifier. It is the scalar residual used by Newton’s method to solve for <code class="docutils literal notranslate"><span class="pre">dL</span></code>.</p>
 </section>
-<section id="radial-return-mapping-algorithm">
-<h3>Radial Return Mapping Algorithm<a class="headerlink" href="#radial-return-mapping-algorithm" title="Link to this heading">#</a></h3>
-<p>When the elastic trial stress violates the yield condition (<span class="math notranslate nohighlight">\(f_{trial} &gt; 0\)</span>), a backward-Euler integration scheme (Radial Return) is executed at the Gauss point level to return the stress to the yield surface. In <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code>, the scalar nonlinear yield equation is solved using Newton-Raphson iterations.</p>
-<p>The exact Python logic for the von Mises radial return mapping loop involves a <code class="docutils literal notranslate"><span class="pre">while</span></code> loop computing the root of the consistency parameter <span class="math notranslate nohighlight">\(\Delta\gamma\)</span> (<code class="docutils literal notranslate"><span class="pre">dL</span></code>):</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="n">dL</span> <span class="o">=</span> <span class="mf">0.0</span>
-    <span class="n">f</span> <span class="o">=</span> <span class="n">yieldvm</span><span class="p">(</span><span class="n">stress</span><span class="p">,</span> <span class="n">material</span><span class="p">,</span> <span class="n">dL</span><span class="p">,</span> <span class="n">Sy</span><span class="p">)</span>
-    <span class="k">while</span> <span class="nb">abs</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">1.0e-6</span><span class="p">:</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="n">dyieldvm</span><span class="p">(</span><span class="n">stress</span><span class="p">,</span> <span class="n">material</span><span class="p">,</span> <span class="n">dL</span><span class="p">,</span> <span class="n">Sy</span><span class="p">)</span>
-        <span class="n">dL</span> <span class="o">-=</span> <span class="n">f</span> <span class="o">/</span> <span class="n">df</span>
-        <span class="n">f</span> <span class="o">=</span> <span class="n">yieldvm</span><span class="p">(</span><span class="n">stress</span><span class="p">,</span> <span class="n">material</span><span class="p">,</span> <span class="n">dL</span><span class="p">,</span> <span class="n">Sy</span><span class="p">)</span>
-</pre></div>
-</div>
+<section id="derivative-of-the-yield-function">
+<h3>Derivative of the yield function<a class="headerlink" href="#derivative-of-the-yield-function" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">dyieldvm(S,</span> <span class="pre">G,</span> <span class="pre">dL,</span> <span class="pre">Sy)</span></code> returns the analytical derivative of the consistency equation with respect to <code class="docutils literal notranslate"><span class="pre">dL</span></code>.</p>
+<p>That derivative is important because the local solve is not a generic black-box root finder. The return mapping converges faster and more reliably when the derivative is computed directly from the constitutive equations.</p>
+</section>
+<section id="stress-return-mapping">
+<h3>Stress return mapping<a class="headerlink" href="#stress-return-mapping" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">stressvm(S,</span> <span class="pre">G,</span> <span class="pre">Sy)</span></code> is the actual correction step. It performs three jobs:</p>
+<ol class="arabic simple">
+<li><p>Start from a trial stress state.</p></li>
+<li><p>Solve for <code class="docutils literal notranslate"><span class="pre">dL</span></code> with a scalar Newton loop.</p></li>
+<li><p>Use the converged multiplier to update the stress components.</p></li>
+</ol>
+<p>The code first evaluates the yield residual at <code class="docutils literal notranslate"><span class="pre">dL</span> <span class="pre">=</span> <span class="pre">0</span></code>. If the state is already admissible, the loop exits almost immediately. If not, it repeatedly updates <code class="docutils literal notranslate"><span class="pre">dL</span></code> with:</p>
+<div class="math notranslate nohighlight">
+\[ dL \leftarrow dL - \frac{f}{f'} \]</div>
+<p>until the residual is small enough.</p>
+<p>The main pieces of data carried through the loop are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">stress</span></code>: the trial stress, stored as a flat vector.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">material</span></code>: the row containing <code class="docutils literal notranslate"><span class="pre">E</span></code>, <code class="docutils literal notranslate"><span class="pre">nu</span></code>, and <code class="docutils literal notranslate"><span class="pre">H</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Sy</span></code>: the current yield stress, which is increased by <code class="docutils literal notranslate"><span class="pre">H</span> <span class="pre">*</span> <span class="pre">dL</span></code> after convergence.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dL</span></code>: the accumulated plastic multiplier increment.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">f</span></code>: the current consistency residual.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">df</span></code>: the derivative of that residual.</p></li>
+</ul>
+<p>After the multiplier converges, the routine computes the corrected stress components and returns:</p>
+<ul class="simple">
+<li><p>the updated stress vector as a column array</p></li>
+<li><p>the converged scalar <code class="docutils literal notranslate"><span class="pre">dL</span></code></p></li>
+</ul>
+</section>
+<section id="what-the-helper-functions-mean-in-practice">
+<h3>What the helper functions mean in practice<a class="headerlink" href="#what-the-helper-functions-mean-in-practice" title="Link to this heading">#</a></h3>
+<p>This is the part that usually matters when you are tracing a failing element step:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">yieldvm</span></code> tells you whether the trial state is inside or outside the yield surface.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dyieldvm</span></code> tells you how steep that scalar residual is.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stressvm</span></code> applies the correction and gives you the projected stress that the element should store at the integration point.</p></li>
+</ul>
+<p>If a plastic step does not converge, the first things to inspect are the trial stress, the hardening modulus, and the sign/size of the derivative returned by <code class="docutils literal notranslate"><span class="pre">dyieldvm</span></code>.</p>
 </section>
 </section>
 <section id="drucker-prager-plasticity">
-<h2>4.3 Drucker-Prager Plasticity<a class="headerlink" href="#drucker-prager-plasticity" title="Link to this heading">#</a></h2>
-<p>For soils and concrete, the yield strength depends heavily on hydrostatic pressure. The Drucker-Prager model approximates the Mohr-Coulomb failure surface using the invariants <span class="math notranslate nohighlight">\(I_1\)</span> (pressure) and <span class="math notranslate nohighlight">\(J_2\)</span> (deviatoric shear).</p>
-<div class="math notranslate nohighlight">
-\[ f(\sigma) = \sqrt{J_2} + \alpha I_1 - k \le 0 \]</div>
-<section id="consistent-tangent-modulus">
-<h3>Consistent Tangent Modulus<a class="headerlink" href="#consistent-tangent-modulus" title="Link to this heading">#</a></h3>
-<p>To preserve the quadratic convergence of the global Newton-Raphson iterations, the algorithmic consistent tangent stiffness <span class="math notranslate nohighlight">\(\mathbf{D}^{ep}\)</span> must be computed, modifying the elastic <span class="math notranslate nohighlight">\(\mathbf{D}\)</span> matrix based on the normal flow direction <span class="math notranslate nohighlight">\(\mathbf{n}\)</span>.</p>
-<p>In the Drucker-Prager local Newton loop, the generalized local system solves for both stress corrections and the plastic multiplier. The tangent matrix is assembled beautifully in Python using <code class="docutils literal notranslate"><span class="pre">np.block</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>        <span class="n">d2f1</span> <span class="o">=</span> <span class="mf">3.0</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">Seq</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">])</span>
-        <span class="n">d2f2</span> <span class="o">=</span> <span class="mf">9.0</span> <span class="o">/</span> <span class="p">(</span><span class="mf">4.0</span> <span class="o">*</span> <span class="n">Seq</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">sd</span> <span class="o">@</span> <span class="n">sd</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
-        <span class="n">d2f</span> <span class="o">=</span> <span class="n">d2f1</span> <span class="o">-</span> <span class="n">d2f2</span>
-        <span class="c1"># Assembling the local elastoplastic tangent stiffness via block matrix</span>
-        <span class="n">tangent</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">block</span><span class="p">([[</span><span class="n">C</span> <span class="o">+</span> <span class="n">dL</span> <span class="o">*</span> <span class="n">d2f</span><span class="p">,</span> <span class="n">df</span><span class="p">],</span> <span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="o">-</span><span class="n">H</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)]])</span>
-        <span class="n">delta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">tangent</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">R</span><span class="p">,</span> <span class="p">[[</span><span class="o">-</span><span class="n">f</span><span class="p">]]]))</span>
+<h2>4.5 Drucker-Prager Plasticity<a class="headerlink" href="#drucker-prager-plasticity" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">stressdp(S,</span> <span class="pre">G,</span> <span class="pre">Sy0,</span> <span class="pre">dE,</span> <span class="pre">dS)</span></code> implements a Drucker-Prager correction for pressure-sensitive plasticity. Compared with the von Mises update, this one carries more local state because the yield function depends on both deviatoric and mean stress, and because the local Newton system solves for more than one unknown at a time.</p>
+<section id="inputs-used-by-the-local-solve">
+<h3>Inputs used by the local solve<a class="headerlink" href="#inputs-used-by-the-local-solve" title="Link to this heading">#</a></h3>
+<p>The function works with these pieces of data:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">S</span></code>: the trial stress state.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">G</span></code>: the material row containing <code class="docutils literal notranslate"><span class="pre">E</span></code>, <code class="docutils literal notranslate"><span class="pre">nu</span></code>, <code class="docutils literal notranslate"><span class="pre">Sy0</span></code>, <code class="docutils literal notranslate"><span class="pre">H</span></code>, and <code class="docutils literal notranslate"><span class="pre">phi</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Sy0</span></code>: the yield stress at the start of the increment.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dE</span></code>: the strain increment at the integration point.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dS</span></code>: the elastic trial stress increment.</p></li>
+</ul>
+<p>That split is deliberate. The function does not recompute the whole finite element step. It only corrects the local constitutive state once the element kernel has already formed the trial increment.</p>
+</section>
+<section id="residuals-and-tangent-data">
+<h3>Residuals and tangent data<a class="headerlink" href="#residuals-and-tangent-data" title="Link to this heading">#</a></h3>
+<p>The local solve uses two residuals:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">f</span></code>: the Drucker-Prager yield residual.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">R</span></code>: the constitutive consistency residual for the stress update.</p></li>
+</ul>
+<p>It also builds several intermediate quantities that are worth knowing when debugging:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Sd</span></code>: deviatoric stress.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Sm</span></code>: mean stress.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Seq</span></code>: equivalent stress.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">df</span></code>: gradient of the yield function.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">d2f</span></code>: curvature of the yield function.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">deltaS</span></code>: cumulative stress correction.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dL</span></code>: plastic multiplier increment.</p></li>
+</ul>
+<p>The code assembles the local Jacobian with <code class="docutils literal notranslate"><span class="pre">np.block</span></code>, which makes the structure explicit:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">tangent</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">block</span><span class="p">([[</span><span class="n">C</span> <span class="o">+</span> <span class="n">dL</span> <span class="o">*</span> <span class="n">d2f</span><span class="p">,</span> <span class="n">df</span><span class="p">],</span> <span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="o">-</span><span class="n">H</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)]])</span>
+<span class="n">delta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">tangent</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">R</span><span class="p">,</span> <span class="p">[[</span><span class="o">-</span><span class="n">f</span><span class="p">]]]))</span>
 </pre></div>
 </div>
+<p>That block matrix is the local linearization of the coupled stress and multiplier system. It is the same idea as a global Newton step, just restricted to one integration point.</p>
+</section>
+<section id="why-this-is-a-coupled-solve">
+<h3>Why this is a coupled solve<a class="headerlink" href="#why-this-is-a-coupled-solve" title="Link to this heading">#</a></h3>
+<p>Unlike the scalar von Mises update, Drucker-Prager does not reduce cleanly to a single multiplier equation. Pressure sensitivity makes the correction depend on the current stress direction and the yield-surface geometry. The code therefore iterates on both the stress correction and the multiplier until both residuals are small.</p>
+<p>The routine returns:</p>
+<ul class="simple">
+<li><p>the corrected stress vector</p></li>
+<li><p>the converged plastic multiplier increment</p></li>
+</ul>
 </section>
 </section>
-<hr class="docutils" />
-<section id="tutorial-src-femlabpy-materials-plasticity-py-line-by-line">
-<h2>4.4 Tutorial: <code class="docutils literal notranslate"><span class="pre">src/femlabpy/materials/plasticity.py</span></code> Line-by-Line<a class="headerlink" href="#tutorial-src-femlabpy-materials-plasticity-py-line-by-line" title="Link to this heading">#</a></h2>
-<p>To master computational plasticity implementations, we will break down the <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> plasticity module.</p>
-<section id="yieldvm-and-dyieldvm">
-<h3>1. <code class="docutils literal notranslate"><span class="pre">yieldvm</span></code> and <code class="docutils literal notranslate"><span class="pre">dyieldvm</span></code><a class="headerlink" href="#yieldvm-and-dyieldvm" title="Link to this heading">#</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">yieldvm</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">dL</span><span class="p">,</span> <span class="n">Sy</span><span class="p">):</span>
-    <span class="o">...</span>
-    <span class="n">stress</span> <span class="o">=</span> <span class="n">as_float_array</span><span class="p">(</span><span class="n">S</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">material</span> <span class="o">=</span> <span class="n">as_float_array</span><span class="p">(</span><span class="n">G</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">E</span> <span class="o">=</span> <span class="n">material</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">nu</span> <span class="o">=</span> <span class="n">material</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-    <span class="n">H</span> <span class="o">=</span> <span class="n">material</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
-</pre></div>
-</div>
-<p>These lines flatten the stress and material vectors and extract Young’s Modulus (<span class="math notranslate nohighlight">\(E\)</span>), Poisson’s ratio (<span class="math notranslate nohighlight">\(\nu\)</span>), and Hardening modulus (<span class="math notranslate nohighlight">\(H\)</span>).</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="n">E1</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">H</span> <span class="o">+</span> <span class="n">E</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">nu</span><span class="p">)</span>
-    <span class="n">E2</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">H</span> <span class="o">+</span> <span class="mf">3.0</span> <span class="o">*</span> <span class="n">E</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">nu</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>These are the effective algorithmic elastic moduli adapted for plane stress kinematics.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="n">s1</span> <span class="o">=</span> <span class="n">stress</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">stress</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-    <span class="n">s2</span> <span class="o">=</span> <span class="n">stress</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">stress</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-    <span class="n">s3</span> <span class="o">=</span> <span class="n">stress</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
-    <span class="n">xi1</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">Sy</span> <span class="o">+</span> <span class="n">dL</span> <span class="o">*</span> <span class="n">E1</span>
-    <span class="n">xi2</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">Sy</span> <span class="o">+</span> <span class="n">dL</span> <span class="o">*</span> <span class="n">E2</span>
-    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">s1</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="n">xi1</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mf">3.0</span> <span class="o">*</span> <span class="n">s2</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="n">xi2</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mf">12.0</span> <span class="o">*</span> <span class="n">s3</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="n">xi2</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>The stress components are transformed. <code class="docutils literal notranslate"><span class="pre">xi1</span></code> and <code class="docutils literal notranslate"><span class="pre">xi2</span></code> represent denominators in the implicit return equation. Finally, the residual <span class="math notranslate nohighlight">\(f(\Delta \gamma)\)</span> is returned. <code class="docutils literal notranslate"><span class="pre">dyieldvm</span></code> acts analogously but evaluates the explicit analytical derivative <code class="docutils literal notranslate"><span class="pre">df</span></code>.</p>
-</section>
-<section id="stressvm">
-<h3>2. <code class="docutils literal notranslate"><span class="pre">stressvm</span></code><a class="headerlink" href="#stressvm" title="Link to this heading">#</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">stressvm</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">Sy</span><span class="p">):</span>
-    <span class="o">...</span>
-    <span class="n">dL</span> <span class="o">=</span> <span class="mf">0.0</span>
-    <span class="n">f</span> <span class="o">=</span> <span class="n">yieldvm</span><span class="p">(</span><span class="n">stress</span><span class="p">,</span> <span class="n">material</span><span class="p">,</span> <span class="n">dL</span><span class="p">,</span> <span class="n">Sy</span><span class="p">)</span>
-    <span class="k">while</span> <span class="nb">abs</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">1.0e-6</span><span class="p">:</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="n">dyieldvm</span><span class="p">(</span><span class="n">stress</span><span class="p">,</span> <span class="n">material</span><span class="p">,</span> <span class="n">dL</span><span class="p">,</span> <span class="n">Sy</span><span class="p">)</span>
-        <span class="n">dL</span> <span class="o">-=</span> <span class="n">f</span> <span class="o">/</span> <span class="n">df</span>
-        <span class="n">f</span> <span class="o">=</span> <span class="n">yieldvm</span><span class="p">(</span><span class="n">stress</span><span class="p">,</span> <span class="n">material</span><span class="p">,</span> <span class="n">dL</span><span class="p">,</span> <span class="n">Sy</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>This is the core standard Newton-Raphson scheme! We initialize the plastic multiplier <span class="math notranslate nohighlight">\(\Delta\gamma = 0\)</span>. If <span class="math notranslate nohighlight">\(f \le 10^{-6}\)</span>, it’s elastic. If <span class="math notranslate nohighlight">\(f &gt; 0\)</span>, we deduct <span class="math notranslate nohighlight">\(f/f'\)</span> from <code class="docutils literal notranslate"><span class="pre">dL</span></code> until the yield surface residual shrinks to near-zero.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="n">Sy</span> <span class="o">=</span> <span class="n">Sy</span> <span class="o">+</span> <span class="n">H</span> <span class="o">*</span> <span class="n">dL</span>
-    <span class="n">E1</span> <span class="o">=</span> <span class="n">E</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">nu</span><span class="p">)</span>
-    <span class="o">...</span>
-    <span class="n">stress</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">s1</span> <span class="o">+</span> <span class="n">s2</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Following the converged <code class="docutils literal notranslate"><span class="pre">dL</span></code>, the final yield stress is updated using linear isotropic hardening. The individual stress components are updated via the radial return update rule.</p>
-</section>
-<section id="stressdp">
-<h3>3. <code class="docutils literal notranslate"><span class="pre">stressdp</span></code><a class="headerlink" href="#stressdp" title="Link to this heading">#</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">stressdp</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">Sy0</span><span class="p">,</span> <span class="n">dE</span><span class="p">,</span> <span class="n">dS</span><span class="p">):</span>
-<span class="o">...</span>
-    <span class="n">C</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">E</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
-            <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="n">nu</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
-            <span class="p">[</span><span class="o">-</span><span class="n">nu</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
-            <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">nu</span><span class="p">)],</span>
-        <span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
-</pre></div>
-</div>
-<p><code class="docutils literal notranslate"><span class="pre">C</span></code> is the purely elastic compliance matrix.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="k">while</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">R</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">rtol</span> <span class="ow">or</span> <span class="nb">abs</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">ftol</span><span class="p">:</span>
-        <span class="n">d2f1</span> <span class="o">=</span> <span class="o">...</span>
-        <span class="n">d2f2</span> <span class="o">=</span> <span class="o">...</span>
-        <span class="n">d2f</span> <span class="o">=</span> <span class="n">d2f1</span> <span class="o">-</span> <span class="n">d2f2</span>
-        <span class="n">tangent</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">block</span><span class="p">([[</span><span class="n">C</span> <span class="o">+</span> <span class="n">dL</span> <span class="o">*</span> <span class="n">d2f</span><span class="p">,</span> <span class="n">df</span><span class="p">],</span> <span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="o">-</span><span class="n">H</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)]])</span>
-        <span class="n">delta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">tangent</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">R</span><span class="p">,</span> <span class="p">[[</span><span class="o">-</span><span class="n">f</span><span class="p">]]]))</span>
-        <span class="n">deltaS</span> <span class="o">+=</span> <span class="n">delta</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span>
-        <span class="n">dL</span> <span class="o">+=</span> <span class="nb">float</span><span class="p">(</span><span class="n">delta</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
-</pre></div>
-</div>
-<p>Unlike von Mises where we only iterated a scalar equation, Drucker-Prager utilizes a multi-variable local Newton iteration. <code class="docutils literal notranslate"><span class="pre">R</span></code> represents the integration point strain residual, and <code class="docutils literal notranslate"><span class="pre">f</span></code> is the yield function residual. They are solved simultaneously for stress increments <code class="docutils literal notranslate"><span class="pre">deltaS</span></code> and multiplier <code class="docutils literal notranslate"><span class="pre">dL</span></code> by factoring the symmetric Jacobian matrix assembled via <code class="docutils literal notranslate"><span class="pre">np.block</span></code>.</p>
-</section>
-</section>
-<hr class="docutils" />
-<section id="runnable-example-loading-a-single-integration-point-to-yield">
-<h2>4.5 Runnable Example: Loading a Single Integration Point to Yield<a class="headerlink" href="#runnable-example-loading-a-single-integration-point-to-yield" title="Link to this heading">#</a></h2>
-<p>Here is a standalone script that loads an elastic integration point beyond the yield strength to showcase the <code class="docutils literal notranslate"><span class="pre">stressvm</span></code> return mapping logic:</p>
+<section id="worked-example">
+<h2>4.6 Worked Example<a class="headerlink" href="#worked-example" title="Link to this heading">#</a></h2>
+<p>The following sketch shows how the public helpers fit together when a trial stress exceeds yield:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">femlabpy.materials.plasticity</span><span class="w"> </span><span class="kn">import</span> <span class="n">stressvm</span><span class="p">,</span> <span class="n">yieldvm</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">femlabpy.materials</span><span class="w"> </span><span class="kn">import</span> <span class="n">yieldvm</span><span class="p">,</span> <span class="n">stressvm</span>
 
-<span class="c1"># Material properties: [E, nu, Sy0, H]</span>
-<span class="c1"># Young&#39;s Modulus = 200e3 MPa, Poisson = 0.3, Yield = 250 MPa, Hardening = 2e3 MPa</span>
+<span class="c1"># Material row: [E, nu, Sy0, H]</span>
 <span class="n">G</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">200000.0</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">250.0</span><span class="p">,</span> <span class="mf">2000.0</span><span class="p">])</span>
 <span class="n">Sy</span> <span class="o">=</span> <span class="n">G</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
 
-<span class="c1"># Trial stress (e.g. from an elastic predictor step): [sigma_xx, sigma_yy, tau_xy]</span>
-<span class="c1"># Let&#39;s apply a uniaxial tension well past the 250 MPa yield limit.</span>
+<span class="c1"># Trial stress in plane form: [sxx, syy, sxy]</span>
 <span class="n">S_trial</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">400.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">])</span>
 
-<span class="c1"># Check initial yield condition (with dL = 0)</span>
-<span class="n">f_initial</span> <span class="o">=</span> <span class="n">yieldvm</span><span class="p">(</span><span class="n">S_trial</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">Sy</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Initial Yield Residual: </span><span class="si">{</span><span class="n">f_initial</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> 
-<span class="c1"># If &gt; 0, it means the state is illegal and outside the yield surface</span>
-
-<span class="k">if</span> <span class="n">f_initial</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Trial stress exceeds yield surface. Performing return mapping...&quot;</span><span class="p">)</span>
-    
-    <span class="c1"># Perform radial return mapping</span>
-    <span class="n">S_returned</span><span class="p">,</span> <span class="n">dL</span> <span class="o">=</span> <span class="n">stressvm</span><span class="p">(</span><span class="n">S_trial</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">Sy</span><span class="p">)</span>
-    
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">--- Results ---&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Converged plastic multiplier (dL): </span><span class="si">{</span><span class="n">dL</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;New Yield Stress: </span><span class="si">{</span><span class="n">Sy</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">G</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">dL</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> MPa&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Returned Stress [Sxx, Syy, Sxy]:&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">S_returned</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="mi">2</span><span class="p">))</span>
-    
-    <span class="c1"># Verification</span>
-    <span class="n">f_final</span> <span class="o">=</span> <span class="n">yieldvm</span><span class="p">(</span><span class="n">S_returned</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">Sy</span> <span class="o">+</span> <span class="n">G</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">*</span> <span class="n">dL</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Final Yield Residual (should be ~0): </span><span class="si">{</span><span class="n">f_final</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">f_trial</span> <span class="o">=</span> <span class="n">yieldvm</span><span class="p">(</span><span class="n">S_trial</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">Sy</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">f_trial</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="n">S_corr</span><span class="p">,</span> <span class="n">dL</span> <span class="o">=</span> <span class="n">stressvm</span><span class="p">(</span><span class="n">S_trial</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">Sy</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>In a real element loop, the returned stress would feed the internal-force vector, and the updated tangent would be used by the global Newton iteration. The key point is that the material update is local, but its effect is global.</p>
+</section>
+<section id="reading-the-source">
+<h2>4.7 Reading the Source<a class="headerlink" href="#reading-the-source" title="Link to this heading">#</a></h2>
+<p>The implementation is small enough to read directly, and that is the best way to understand the code path:</p>
+<ul class="simple">
+<li><p><a class="reference download internal" download="" href="../_downloads/638b268d1b9f7826a4bd1d809a12db02/__init__.py"><span class="xref download myst"><code class="docutils literal notranslate"><span class="pre">src/femlabpy/materials/__init__.py</span></code></span></a> shows the public exports.</p></li>
+<li><p><a class="reference download internal" download="" href="../_downloads/c56f43d558818d7cd14cd2dab0c70c97/invariants.py"><span class="xref download myst"><code class="docutils literal notranslate"><span class="pre">src/femlabpy/materials/invariants.py</span></code></span></a> contains the invariant helpers.</p></li>
+<li><p><a class="reference download internal" download="" href="../_downloads/a21ef137cb66fe368a3aaf94b19fcf6f/plasticity.py"><span class="xref download myst"><code class="docutils literal notranslate"><span class="pre">src/femlabpy/materials/plasticity.py</span></code></span></a> contains the return-mapping routines.</p></li>
+</ul>
+<p>If you are tracing a solver failure, start from the element kernel, inspect the trial stress, and then follow the values passed into <code class="docutils literal notranslate"><span class="pre">yieldvm</span></code>, <code class="docutils literal notranslate"><span class="pre">stressvm</span></code>, or <code class="docutils literal notranslate"><span class="pre">stressdp</span></code>. That is usually enough to locate whether the issue is in the constitutive law, the integration step, or the global assembly.</p>
 </section>
 </section>
 
@@ -743,7 +657,7 @@ where \)</span>\sigma_{eq} = \sqrt{\frac{3}{2} \mathbf{s}:\mathbf{s}}<span class
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Chapter 3: Assembly &amp; Constraints</p>
+        <p class="prev-next-title">Chapter 3: Assembly and Constraints</p>
       </div>
     </a>
     <a class="right-next"
@@ -751,7 +665,7 @@ where \)</span>\sigma_{eq} = \sqrt{\frac{3}{2} \mathbf{s}:\mathbf{s}}<span class
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Chapter 5: Structural Dynamics Theory &amp; Time Integration</p>
+        <p class="prev-next-title">Structural Dynamics and Time Integration</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -774,27 +688,37 @@ where \)</span>\sigma_{eq} = \sqrt{\frac{3}{2} \mathbf{s}:\mathbf{s}}<span class
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#linear-elasticity">4.1 Linear Elasticity</a><ul class="nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#material-data-layout">4.1 Material Data Layout</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#public-helper-functions">Public helper functions</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#linear-elasticity">4.2 Linear Elasticity</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plane-stress">Plane Stress</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plane-strain">Plane Strain</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#why-the-chapter-still-matters-for-plasticity">Why the chapter still matters for plasticity</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#von-mises-elastoplasticity">4.2 von Mises Elastoplasticity</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#yield-function">Yield Function</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#radial-return-mapping-algorithm">Radial Return Mapping Algorithm</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#stress-invariants">4.3 Stress Invariants</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#deviatoric-stress">Deviatoric stress</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#equivalent-stress">Equivalent stress</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#why-this-is-separated-from-the-plasticity-update">Why this is separated from the plasticity update</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#drucker-prager-plasticity">4.3 Drucker-Prager Plasticity</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#consistent-tangent-modulus">Consistent Tangent Modulus</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#von-mises-elastoplasticity">4.4 Von Mises Elastoplasticity</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#yield-function">Yield function</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#derivative-of-the-yield-function">Derivative of the yield function</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#stress-return-mapping">Stress return mapping</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-the-helper-functions-mean-in-practice">What the helper functions mean in practice</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tutorial-src-femlabpy-materials-plasticity-py-line-by-line">4.4 Tutorial: <code class="docutils literal notranslate"><span class="pre">src/femlabpy/materials/plasticity.py</span></code> Line-by-Line</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#yieldvm-and-dyieldvm">1. <code class="docutils literal notranslate"><span class="pre">yieldvm</span></code> and <code class="docutils literal notranslate"><span class="pre">dyieldvm</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#stressvm">2. <code class="docutils literal notranslate"><span class="pre">stressvm</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#stressdp">3. <code class="docutils literal notranslate"><span class="pre">stressdp</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#drucker-prager-plasticity">4.5 Drucker-Prager Plasticity</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inputs-used-by-the-local-solve">Inputs used by the local solve</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#residuals-and-tangent-data">Residuals and tangent data</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#why-this-is-a-coupled-solve">Why this is a coupled solve</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#runnable-example-loading-a-single-integration-point-to-yield">4.5 Runnable Example: Loading a Single Integration Point to Yield</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#worked-example">4.6 Worked Example</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reading-the-source">4.7 Reading the Source</a></li>
 </ul>
   </nav></div>
 

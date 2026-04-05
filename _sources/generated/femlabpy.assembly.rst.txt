@@ -3,11 +3,31 @@
 
 .. automodule:: femlabpy.assembly
 
-   
-   .. rubric:: Functions
 
-   .. autosummary::
-   
-      assmk
-      assmq
-   
+
+
+
+
+Functions
+---------
+
+.. autosummary::
+
+
+   assmk
+   assmq
+
+Function Reference
+------------------
+
+
+.. autofunction:: femlabpy.assembly.assmk
+
+
+.. autofunction:: femlabpy.assembly.assmq
+
+
+
+
+
+

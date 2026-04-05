@@ -1,0 +1,2032 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>femlabpy — Dynamics, Periodic BCs &amp; Advanced Solvers Implementation Plan &#8212; femlabpy 0.6.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=7f76b32a3354e82990f2" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=7f76b32a3354e82990f2" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=aa664f36" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="_static/scripts/fontawesome.js?digest=7f76b32a3354e82990f2"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=7f76b32a3354e82990f2" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=7f76b32a3354e82990f2" />
+
+    <script src="_static/documentation_options.js?v=8fa8b3e9"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'TODO_DYNAMICS_PERIODIC';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="_static/searchtools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">femlabpy 0.6.0 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="tutorials.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="manual/index.html">
+    Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="theory/index.html">
+    Theory
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="matlab_python_mapping.html">
+    MATLAB Mapping
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/adzetto/femlabpy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="tutorials.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="manual/index.html">
+    Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="theory/index.html">
+    Theory
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="matlab_python_mapping.html">
+    MATLAB Mapping
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/adzetto/femlabpy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">femlabpy — Dynamics, Periodic BCs &amp; Advanced Solvers Implementation Plan</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="femlabpy-dynamics-periodic-bcs-advanced-solvers-implementation-plan">
+<h1>femlabpy — Dynamics, Periodic BCs &amp; Advanced Solvers Implementation Plan<a class="headerlink" href="#femlabpy-dynamics-periodic-bcs-advanced-solvers-implementation-plan" title="Link to this heading">#</a></h1>
+<blockquote>
+<div><p><strong>Author:</strong> Auto-generated implementation plan<br />
+<strong>Date:</strong> 2026-04-04<br />
+<strong>Target Version:</strong> v0.6.0<br />
+<strong>Total Tasks:</strong> 82 across 12 phases</p>
+</div></blockquote>
+<hr class="docutils" />
+<section id="current-state-summary">
+<h2>Current State Summary<a class="headerlink" href="#current-state-summary" title="Link to this heading">#</a></h2>
+<p>femlabpy v0.5.0 is a Python FEM teaching library with:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Category</p></th>
+<th class="head"><p>What Exists</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Elements</strong></p></td>
+<td><p>T3 (CST), Q4 (bilinear), T4 (tet), H8 (hex), Bar/Truss — structural + scalar/potential</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Solvers</strong></p></td>
+<td><p>Linear elastic, nonlinear bar (arc-length/orthogonal residual), elastoplastic (Von Mises + Drucker-Prager)</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>BCs</strong></p></td>
+<td><p>Direct elimination (<code class="docutils literal notranslate"><span class="pre">setbc</span></code>), Lagrange multiplier (<code class="docutils literal notranslate"><span class="pre">solve_lag</span></code>, <code class="docutils literal notranslate"><span class="pre">solve_lag_general</span></code>)</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Materials</strong></p></td>
+<td><p>Linear elastic (plane stress/strain/3D), Von Mises plasticity, Drucker-Prager plasticity</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Mesh I/O</strong></p></td>
+<td><p>Gmsh <code class="docutils literal notranslate"><span class="pre">.msh</span></code> parser (v2.x ASCII + v4.x binary), 19 element types</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Post-process</strong></p></td>
+<td><p>Reaction recovery, stress/strain at Gauss points, matplotlib contour plots</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Assembly</strong></p></td>
+<td><p>Dense + scipy sparse (COO scatter), vectorized (T3/T4/H8/Bar) and loop-based (Q4)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<section id="what-s-missing">
+<h3>What’s Missing<a class="headerlink" href="#what-s-missing" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><strong>No mass matrices</strong> — none of the element routines compute element mass matrices</p></li>
+<li><p><strong>No damping</strong> — no Rayleigh damping or any damping formulation</p></li>
+<li><p><strong>No time integration</strong> — no Newmark-beta, central difference, HHT-alpha, or any transient solver</p></li>
+<li><p><strong>No modal analysis</strong> — no eigenvalue solver for natural frequencies / mode shapes</p></li>
+<li><p><strong>No periodic BCs</strong> — no multi-point constraint tying for periodic unit cells (RVE homogenization)</p></li>
+<li><p><strong>No consistent mass vs. lumped mass options</strong></p></li>
+<li><p><strong>No time-dependent loading</strong> — no infrastructure for load functions <code class="docutils literal notranslate"><span class="pre">P(t)</span></code></p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="implementation-order">
+<h2>Implementation Order<a class="headerlink" href="#implementation-order" title="Link to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><p><strong>Phase 1 + 10</strong> → Mass matrices + new module infrastructure (foundation)</p></li>
+<li><p><strong>Phase 6</strong> → Modal analysis (validates mass matrices, needed for damping)</p></li>
+<li><p><strong>Phase 2</strong> → Damping models (required before dynamics)</p></li>
+<li><p><strong>Phase 3</strong> → Newmark-beta integrator (core dynamic solver)</p></li>
+<li><p><strong>Phase 4</strong> → Central difference / explicit solver</p></li>
+<li><p><strong>Phase 5</strong> → HHT-alpha method (refinement of Newmark)</p></li>
+<li><p><strong>Phase 7</strong> → Periodic boundary conditions (independent track)</p></li>
+<li><p><strong>Phase 8</strong> → Nonlinear dynamics</p></li>
+<li><p><strong>Phase 9</strong> → Dynamic post-processing &amp; visualization</p></li>
+<li><p><strong>Phase 11 + 12</strong> → Examples &amp; tests (validation throughout)</p></li>
+</ol>
+</section>
+<hr class="docutils" />
+<section id="phase-1-mass-matrices">
+<h2>Phase 1: Mass Matrices<a class="headerlink" href="#phase-1-mass-matrices" title="Link to this heading">#</a></h2>
+<blockquote>
+<div><p>Add element-level mass matrix routines (consistent + lumped) for all element types.
+<strong>Priority:</strong> HIGH | <strong>New files:</strong> element modules get mass functions</p>
+</div></blockquote>
+<section id="bar-mass-matrix">
+<h3>1.1 Bar Mass Matrix<a class="headerlink" href="#bar-mass-matrix" title="Link to this heading">#</a></h3>
+<ul>
+<li><p>[ ] <strong>Function:</strong> <code class="docutils literal notranslate"><span class="pre">mebar(Xe,</span> <span class="pre">Ge,</span> <span class="pre">*,</span> <span class="pre">lumped=False)</span></code></p></li>
+<li><p><strong>Location:</strong> <code class="docutils literal notranslate"><span class="pre">src/femlabpy/elements/bars.py</span></code></p></li>
+<li><p><strong>Consistent (4×4 for 2D, 6×6 for 3D):</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>M = (rho * A * L / 6) * [2, 1; 1, 2] ⊗ I_dof
+</pre></div>
+</div>
+<p>where <code class="docutils literal notranslate"><span class="pre">rho</span></code> = density, <code class="docutils literal notranslate"><span class="pre">A</span></code> = cross-section area, <code class="docutils literal notranslate"><span class="pre">L</span></code> = bar length, <code class="docutils literal notranslate"><span class="pre">I_dof</span></code> = identity of size <code class="docutils literal notranslate"><span class="pre">dof</span></code></p>
+</li>
+<li><p><strong>Lumped (diagonal):</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">M</span> <span class="o">=</span> <span class="p">(</span><span class="n">rho</span> <span class="o">*</span> <span class="n">A</span> <span class="o">*</span> <span class="n">L</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">I_</span><span class="p">{</span><span class="mi">2</span><span class="o">*</span><span class="n">dof</span><span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Material table:</strong> <code class="docutils literal notranslate"><span class="pre">G</span> <span class="pre">=</span> <span class="pre">[A,</span> <span class="pre">E,</span> <span class="pre">rho]</span></code> (extend from <code class="docutils literal notranslate"><span class="pre">[A,</span> <span class="pre">E]</span></code>)</p></li>
+<li><p><strong>Inputs:</strong> <code class="docutils literal notranslate"><span class="pre">Xe</span></code> = nodal coordinates <code class="docutils literal notranslate"><span class="pre">(2,</span> <span class="pre">ndim)</span></code>, <code class="docutils literal notranslate"><span class="pre">Ge</span></code> = material row <code class="docutils literal notranslate"><span class="pre">[A,</span> <span class="pre">E,</span> <span class="pre">rho]</span></code></p></li>
+<li><p><strong>Outputs:</strong> <code class="docutils literal notranslate"><span class="pre">Me</span></code> = element mass matrix <code class="docutils literal notranslate"><span class="pre">(2*dof,</span> <span class="pre">2*dof)</span></code></p></li>
+</ul>
+</section>
+<section id="t3-cst-triangle-mass-matrix">
+<h3>1.2 T3 (CST Triangle) Mass Matrix<a class="headerlink" href="#t3-cst-triangle-mass-matrix" title="Link to this heading">#</a></h3>
+<ul>
+<li><p>[ ] <strong>Function:</strong> <code class="docutils literal notranslate"><span class="pre">met3e(Xe,</span> <span class="pre">Ge,</span> <span class="pre">*,</span> <span class="pre">lumped=False)</span></code></p></li>
+<li><p><strong>Location:</strong> <code class="docutils literal notranslate"><span class="pre">src/femlabpy/elements/triangles.py</span></code></p></li>
+<li><p><strong>Consistent (6×6 for 2-DOF):</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>M = (rho * t * A / 12) * [2, 1, 1;
+                           1, 2, 1;
+                           1, 1, 2] ⊗ I_2
+</pre></div>
+</div>
+<p>where <code class="docutils literal notranslate"><span class="pre">A</span></code> = triangle area, <code class="docutils literal notranslate"><span class="pre">t</span></code> = thickness</p>
+</li>
+<li><p><strong>Lumped (diagonal):</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">M</span> <span class="o">=</span> <span class="p">(</span><span class="n">rho</span> <span class="o">*</span> <span class="n">t</span> <span class="o">*</span> <span class="n">A</span> <span class="o">/</span> <span class="mi">3</span><span class="p">)</span> <span class="o">*</span> <span class="n">I_6</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Material table:</strong> <code class="docutils literal notranslate"><span class="pre">G</span> <span class="pre">=</span> <span class="pre">[E,</span> <span class="pre">nu,</span> <span class="pre">type,</span> <span class="pre">t,</span> <span class="pre">rho]</span></code> (extend from <code class="docutils literal notranslate"><span class="pre">[E,</span> <span class="pre">nu,</span> <span class="pre">type]</span></code> or <code class="docutils literal notranslate"><span class="pre">[E,</span> <span class="pre">nu]</span></code>)</p></li>
+<li><p><strong>Inputs:</strong> <code class="docutils literal notranslate"><span class="pre">Xe</span></code> = nodal coordinates <code class="docutils literal notranslate"><span class="pre">(3,</span> <span class="pre">2)</span></code>, <code class="docutils literal notranslate"><span class="pre">Ge</span></code> = material row</p></li>
+<li><p><strong>Outputs:</strong> <code class="docutils literal notranslate"><span class="pre">Me</span></code> = <code class="docutils literal notranslate"><span class="pre">(6,</span> <span class="pre">6)</span></code> mass matrix</p></li>
+</ul>
+</section>
+<section id="q4-bilinear-quad-mass-matrix">
+<h3>1.3 Q4 (Bilinear Quad) Mass Matrix<a class="headerlink" href="#q4-bilinear-quad-mass-matrix" title="Link to this heading">#</a></h3>
+<ul>
+<li><p>[ ] <strong>Function:</strong> <code class="docutils literal notranslate"><span class="pre">meq4e(Xe,</span> <span class="pre">Ge,</span> <span class="pre">*,</span> <span class="pre">lumped=False)</span></code></p></li>
+<li><p><strong>Location:</strong> <code class="docutils literal notranslate"><span class="pre">src/femlabpy/elements/quads.py</span></code></p></li>
+<li><p><strong>Consistent (8×8) via 2×2 Gauss quadrature:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">M</span> <span class="o">=</span> <span class="n">Σ_</span><span class="p">{</span><span class="n">gp</span><span class="p">}</span> <span class="n">rho</span> <span class="o">*</span> <span class="n">t</span> <span class="o">*</span> <span class="n">N</span><span class="o">^</span><span class="n">T</span> <span class="o">*</span> <span class="n">N</span> <span class="o">*</span> <span class="n">det</span><span class="p">(</span><span class="n">J</span><span class="p">)</span> <span class="o">*</span> <span class="n">w</span>
+</pre></div>
+</div>
+<p>where <code class="docutils literal notranslate"><span class="pre">N</span></code> = shape function row vector <code class="docutils literal notranslate"><span class="pre">[N1*I2,</span> <span class="pre">N2*I2,</span> <span class="pre">N3*I2,</span> <span class="pre">N4*I2]</span></code></p>
+</li>
+<li><p><strong>Lumped via row-sum:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">M_L</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">Σ_j</span> <span class="n">M</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span>    <span class="p">(</span><span class="n">then</span> <span class="n">scale</span> <span class="n">to</span> <span class="n">preserve</span> <span class="n">total</span> <span class="n">mass</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Material table:</strong> <code class="docutils literal notranslate"><span class="pre">G</span> <span class="pre">=</span> <span class="pre">[E,</span> <span class="pre">nu,</span> <span class="pre">type,</span> <span class="pre">t,</span> <span class="pre">rho]</span></code></p></li>
+<li><p><strong>Inputs:</strong> <code class="docutils literal notranslate"><span class="pre">Xe</span></code> = <code class="docutils literal notranslate"><span class="pre">(4,</span> <span class="pre">2)</span></code>, <code class="docutils literal notranslate"><span class="pre">Ge</span></code> = material row</p></li>
+<li><p><strong>Outputs:</strong> <code class="docutils literal notranslate"><span class="pre">Me</span></code> = <code class="docutils literal notranslate"><span class="pre">(8,</span> <span class="pre">8)</span></code> mass matrix</p></li>
+</ul>
+</section>
+<section id="t4-tetrahedron-mass-matrix">
+<h3>1.4 T4 (Tetrahedron) Mass Matrix<a class="headerlink" href="#t4-tetrahedron-mass-matrix" title="Link to this heading">#</a></h3>
+<ul>
+<li><p>[ ] <strong>Function:</strong> <code class="docutils literal notranslate"><span class="pre">meT4e(Xe,</span> <span class="pre">Ge,</span> <span class="pre">*,</span> <span class="pre">lumped=False)</span></code></p></li>
+<li><p><strong>Location:</strong> <code class="docutils literal notranslate"><span class="pre">src/femlabpy/elements/solids.py</span></code></p></li>
+<li><p><strong>Consistent (12×12) — analytical formula:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">M</span> <span class="o">=</span> <span class="p">(</span><span class="n">rho</span> <span class="o">*</span> <span class="n">V</span> <span class="o">/</span> <span class="mi">20</span><span class="p">)</span> <span class="o">*</span> <span class="p">[</span><span class="mi">2</span><span class="n">I</span><span class="p">,</span> <span class="n">I</span><span class="p">,</span> <span class="n">I</span><span class="p">,</span> <span class="n">I</span><span class="p">;</span>
+                       <span class="n">I</span><span class="p">,</span> <span class="mi">2</span><span class="n">I</span><span class="p">,</span> <span class="n">I</span><span class="p">,</span> <span class="n">I</span><span class="p">;</span>
+                       <span class="n">I</span><span class="p">,</span> <span class="n">I</span><span class="p">,</span> <span class="mi">2</span><span class="n">I</span><span class="p">,</span> <span class="n">I</span><span class="p">;</span>
+                       <span class="n">I</span><span class="p">,</span> <span class="n">I</span><span class="p">,</span> <span class="n">I</span><span class="p">,</span> <span class="mi">2</span><span class="n">I</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>where <code class="docutils literal notranslate"><span class="pre">V</span></code> = tet volume, <code class="docutils literal notranslate"><span class="pre">I</span></code> = 3×3 identity</p>
+</li>
+<li><p><strong>Lumped (diagonal):</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">M</span> <span class="o">=</span> <span class="p">(</span><span class="n">rho</span> <span class="o">*</span> <span class="n">V</span> <span class="o">/</span> <span class="mi">4</span><span class="p">)</span> <span class="o">*</span> <span class="n">I_12</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Material table:</strong> <code class="docutils literal notranslate"><span class="pre">G</span> <span class="pre">=</span> <span class="pre">[E,</span> <span class="pre">nu,</span> <span class="pre">rho]</span></code> (extend from <code class="docutils literal notranslate"><span class="pre">[E,</span> <span class="pre">nu]</span></code>)</p></li>
+<li><p><strong>Inputs:</strong> <code class="docutils literal notranslate"><span class="pre">Xe</span></code> = <code class="docutils literal notranslate"><span class="pre">(4,</span> <span class="pre">3)</span></code>, <code class="docutils literal notranslate"><span class="pre">Ge</span></code> = material row</p></li>
+<li><p><strong>Outputs:</strong> <code class="docutils literal notranslate"><span class="pre">Me</span></code> = <code class="docutils literal notranslate"><span class="pre">(12,</span> <span class="pre">12)</span></code> mass matrix</p></li>
+</ul>
+</section>
+<section id="h8-hexahedron-mass-matrix">
+<h3>1.5 H8 (Hexahedron) Mass Matrix<a class="headerlink" href="#h8-hexahedron-mass-matrix" title="Link to this heading">#</a></h3>
+<ul>
+<li><p>[ ] <strong>Function:</strong> <code class="docutils literal notranslate"><span class="pre">meh8e(Xe,</span> <span class="pre">Ge,</span> <span class="pre">*,</span> <span class="pre">lumped=False)</span></code></p></li>
+<li><p><strong>Location:</strong> <code class="docutils literal notranslate"><span class="pre">src/femlabpy/elements/solids.py</span></code></p></li>
+<li><p><strong>Consistent (24×24) via 2×2×2 Gauss quadrature:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">M</span> <span class="o">=</span> <span class="n">Σ_</span><span class="p">{</span><span class="n">gp</span><span class="p">}</span> <span class="n">rho</span> <span class="o">*</span> <span class="n">N</span><span class="o">^</span><span class="n">T</span> <span class="o">*</span> <span class="n">N</span> <span class="o">*</span> <span class="n">det</span><span class="p">(</span><span class="n">J</span><span class="p">)</span> <span class="o">*</span> <span class="n">w</span>
+</pre></div>
+</div>
+<p>where <code class="docutils literal notranslate"><span class="pre">N</span></code> = <code class="docutils literal notranslate"><span class="pre">(3,</span> <span class="pre">24)</span></code> shape function matrix with <code class="docutils literal notranslate"><span class="pre">N_i</span> <span class="pre">*</span> <span class="pre">I_3</span></code> blocks</p>
+</li>
+<li><p><strong>Lumped via HRZ (Hinton-Rock-Zienkiewicz) method:</strong></p>
+<ol class="arabic simple">
+<li><p>Compute consistent diagonal <code class="docutils literal notranslate"><span class="pre">d_i</span> <span class="pre">=</span> <span class="pre">M_c[i,i]</span></code></p></li>
+<li><p>Scale: <code class="docutils literal notranslate"><span class="pre">M_L[i,i]</span> <span class="pre">=</span> <span class="pre">d_i</span> <span class="pre">*</span> <span class="pre">(total_mass</span> <span class="pre">/</span> <span class="pre">Σ</span> <span class="pre">d_i)</span></code></p></li>
+</ol>
+</li>
+<li><p><strong>Material table:</strong> <code class="docutils literal notranslate"><span class="pre">G</span> <span class="pre">=</span> <span class="pre">[E,</span> <span class="pre">nu,</span> <span class="pre">rho]</span></code></p></li>
+<li><p><strong>Inputs:</strong> <code class="docutils literal notranslate"><span class="pre">Xe</span></code> = <code class="docutils literal notranslate"><span class="pre">(8,</span> <span class="pre">3)</span></code>, <code class="docutils literal notranslate"><span class="pre">Ge</span></code> = material row</p></li>
+<li><p><strong>Outputs:</strong> <code class="docutils literal notranslate"><span class="pre">Me</span></code> = <code class="docutils literal notranslate"><span class="pre">(24,</span> <span class="pre">24)</span></code> mass matrix</p></li>
+</ul>
+</section>
+<section id="global-mass-assembly">
+<h3>1.6 Global Mass Assembly<a class="headerlink" href="#global-mass-assembly" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>[ ] <strong>Function:</strong> <code class="docutils literal notranslate"><span class="pre">assmm(M,</span> <span class="pre">Me,</span> <span class="pre">Te,</span> <span class="pre">dof)</span></code></p></li>
+<li><p><strong>Location:</strong> <code class="docutils literal notranslate"><span class="pre">src/femlabpy/assembly.py</span></code></p></li>
+<li><p>Identical scatter logic to <code class="docutils literal notranslate"><span class="pre">assmk()</span></code> but for mass matrix</p></li>
+<li><p>Handles both dense <code class="docutils literal notranslate"><span class="pre">np.ndarray</span></code> and <code class="docutils literal notranslate"><span class="pre">scipy.sparse.lil_matrix</span></code></p></li>
+<li><p>Uses <code class="docutils literal notranslate"><span class="pre">np.ix_</span></code> indexing for scatter operations</p></li>
+</ul>
+</section>
+<section id="vectorized-mass-assembly">
+<h3>1.7 Vectorized Mass Assembly<a class="headerlink" href="#vectorized-mass-assembly" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>[ ] <strong>Functions:</strong> <code class="docutils literal notranslate"><span class="pre">mt3e(M,</span> <span class="pre">T,</span> <span class="pre">X,</span> <span class="pre">G)</span></code>, <code class="docutils literal notranslate"><span class="pre">mT4e(M,</span> <span class="pre">T,</span> <span class="pre">X,</span> <span class="pre">G)</span></code>, <code class="docutils literal notranslate"><span class="pre">mh8e(M,</span> <span class="pre">T,</span> <span class="pre">X,</span> <span class="pre">G)</span></code>, <code class="docutils literal notranslate"><span class="pre">mbar(M,</span> <span class="pre">T,</span> <span class="pre">X,</span> <span class="pre">G,</span> <span class="pre">dof=2)</span></code></p></li>
+<li><p><strong>Location:</strong> Respective element modules</p></li>
+<li><p>Batch assembly using <code class="docutils literal notranslate"><span class="pre">np.einsum</span></code> matching existing vectorized k-routines</p></li>
+<li><p>Sparse COO scatter for large meshes</p></li>
+<li><p><strong>Pattern:</strong> Same as <code class="docutils literal notranslate"><span class="pre">kt3e</span></code>, <code class="docutils literal notranslate"><span class="pre">kT4e</span></code>, <code class="docutils literal notranslate"><span class="pre">kh8e</span></code>, <code class="docutils literal notranslate"><span class="pre">kbar</span></code> but for mass</p></li>
+</ul>
+</section>
+<section id="material-table-extension">
+<h3>1.8 Material Table Extension<a class="headerlink" href="#material-table-extension" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>[ ] Add <code class="docutils literal notranslate"><span class="pre">rho</span></code> (density) field to material table <code class="docutils literal notranslate"><span class="pre">G</span></code></p></li>
+<li><p><strong>Backward compatibility:</strong> If <code class="docutils literal notranslate"><span class="pre">rho</span></code> not present in G row, default to <code class="docutils literal notranslate"><span class="pre">rho=1.0</span></code> with a warning</p></li>
+<li><p>Updated conventions:</p>
+<ul>
+<li><p>Bar: <code class="docutils literal notranslate"><span class="pre">[A,</span> <span class="pre">E]</span></code> → <code class="docutils literal notranslate"><span class="pre">[A,</span> <span class="pre">E,</span> <span class="pre">rho]</span></code></p></li>
+<li><p>2D structural: <code class="docutils literal notranslate"><span class="pre">[E,</span> <span class="pre">nu]</span></code> or <code class="docutils literal notranslate"><span class="pre">[E,</span> <span class="pre">nu,</span> <span class="pre">type]</span></code> → <code class="docutils literal notranslate"><span class="pre">[E,</span> <span class="pre">nu,</span> <span class="pre">type,</span> <span class="pre">t,</span> <span class="pre">rho]</span></code></p></li>
+<li><p>3D structural: <code class="docutils literal notranslate"><span class="pre">[E,</span> <span class="pre">nu]</span></code> → <code class="docutils literal notranslate"><span class="pre">[E,</span> <span class="pre">nu,</span> <span class="pre">rho]</span></code></p></li>
+</ul>
+</li>
+<li><p>Helper function: <code class="docutils literal notranslate"><span class="pre">_extract_density(Ge,</span> <span class="pre">element_type)</span></code> with smart defaults</p></li>
+</ul>
+</section>
+<section id="lumped-mass-option">
+<h3>1.9 Lumped Mass Option<a class="headerlink" href="#lumped-mass-option" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>[ ] All mass routines accept <code class="docutils literal notranslate"><span class="pre">lumped:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></code> keyword argument</p></li>
+<li><p>When <code class="docutils literal notranslate"><span class="pre">lumped=True</span></code>:</p>
+<ul>
+<li><p>Bar, T3, T4: use analytical lumped formulas (equal distribution)</p></li>
+<li><p>Q4, H8: use row-sum or HRZ method</p></li>
+</ul>
+</li>
+<li><p>Document trade-offs: lumped = cheaper, no coupling, required for explicit methods; consistent = more accurate, better convergence for implicit</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="phase-2-damping-models">
+<h2>Phase 2: Damping Models<a class="headerlink" href="#phase-2-damping-models" title="Link to this heading">#</a></h2>
+<blockquote>
+<div><p>Implement Rayleigh and other damping formulations.
+<strong>Priority:</strong> HIGH | <strong>New file:</strong> <code class="docutils literal notranslate"><span class="pre">src/femlabpy/damping.py</span></code></p>
+</div></blockquote>
+<section id="rayleigh-damping">
+<h3>2.1 Rayleigh Damping<a class="headerlink" href="#rayleigh-damping" title="Link to this heading">#</a></h3>
+<ul>
+<li><p>[ ] <strong>Function:</strong> <code class="docutils literal notranslate"><span class="pre">rayleigh_damping(M,</span> <span class="pre">K,</span> <span class="pre">alpha,</span> <span class="pre">beta)</span> <span class="pre">-&gt;</span> <span class="pre">C</span></code></p></li>
+<li><p><strong>Formula:</strong> <code class="docutils literal notranslate"><span class="pre">C</span> <span class="pre">=</span> <span class="pre">alpha</span> <span class="pre">*</span> <span class="pre">M</span> <span class="pre">+</span> <span class="pre">beta</span> <span class="pre">*</span> <span class="pre">K</span></code></p></li>
+<li><p><strong>Convenience:</strong> <code class="docutils literal notranslate"><span class="pre">rayleigh_coefficients(omega1,</span> <span class="pre">omega2,</span> <span class="pre">zeta1,</span> <span class="pre">zeta2)</span> <span class="pre">-&gt;</span> <span class="pre">(alpha,</span> <span class="pre">beta)</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[alpha]   1        [omega2, -omega1] [zeta1]
+[beta ] = ――――――――― [-1/omega2, 1/omega1] [zeta2]
+          2
+</pre></div>
+</div>
+<p>Solves the 2×2 system for α, β given two target frequencies and damping ratios.</p>
+</li>
+<li><p>Support both dense and sparse matrices</p></li>
+<li><p><strong>Location:</strong> <code class="docutils literal notranslate"><span class="pre">src/femlabpy/damping.py</span></code></p></li>
+</ul>
+</section>
+<section id="modal-damping">
+<h3>2.2 Modal Damping<a class="headerlink" href="#modal-damping" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>[ ] <strong>Function:</strong> <code class="docutils literal notranslate"><span class="pre">modal_damping(M,</span> <span class="pre">K,</span> <span class="pre">zeta,</span> <span class="pre">omega,</span> <span class="pre">phi)</span> <span class="pre">-&gt;</span> <span class="pre">C</span></code></p></li>
+<li><p><strong>Formula:</strong> <code class="docutils literal notranslate"><span class="pre">C</span> <span class="pre">=</span> <span class="pre">M</span> <span class="pre">*</span> <span class="pre">Φ</span> <span class="pre">*</span> <span class="pre">diag(2*ζᵢ*ωᵢ)</span> <span class="pre">*</span> <span class="pre">Φ^T</span> <span class="pre">*</span> <span class="pre">M</span></code>
+where <code class="docutils literal notranslate"><span class="pre">Φ</span></code> = mass-normalized mode shapes, <code class="docutils literal notranslate"><span class="pre">ζᵢ</span></code> = damping ratios, <code class="docutils literal notranslate"><span class="pre">ωᵢ</span></code> = natural frequencies</p></li>
+<li><p>Requires modal analysis results (Phase 6) as input</p></li>
+<li><p><strong>Priority:</strong> MEDIUM</p></li>
+</ul>
+</section>
+<section id="caughey-damping-series">
+<h3>2.3 Caughey Damping Series<a class="headerlink" href="#caughey-damping-series" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>[ ] <strong>Function:</strong> <code class="docutils literal notranslate"><span class="pre">caughey_damping(M,</span> <span class="pre">K,</span> <span class="pre">omega_targets,</span> <span class="pre">zeta_targets)</span> <span class="pre">-&gt;</span> <span class="pre">C</span></code></p></li>
+<li><p><strong>Formula:</strong> <code class="docutils literal notranslate"><span class="pre">C</span> <span class="pre">=</span> <span class="pre">M</span> <span class="pre">*</span> <span class="pre">Σ</span> <span class="pre">aₖ</span> <span class="pre">*</span> <span class="pre">(M⁻¹K)^k</span></code> for k = 0, 1, …, n-1</p></li>
+<li><p>Allows prescribing damping ratios at more than 2 frequencies</p></li>
+<li><p>Coefficients <code class="docutils literal notranslate"><span class="pre">aₖ</span></code> found by solving a Vandermonde-like system</p></li>
+<li><p><strong>Priority:</strong> LOW</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="phase-3-newmark-beta-time-integrator">
+<h2>Phase 3: Newmark-Beta Time Integrator<a class="headerlink" href="#phase-3-newmark-beta-time-integrator" title="Link to this heading">#</a></h2>
+<blockquote>
+<div><p>Core transient dynamic solver — the backbone of structural dynamics.
+<strong>Priority:</strong> HIGH | <strong>New file:</strong> <code class="docutils literal notranslate"><span class="pre">src/femlabpy/dynamics.py</span></code></p>
+</div></blockquote>
+<section id="time-integration-data-structures">
+<h3>3.1 Time Integration Data Structures<a class="headerlink" href="#time-integration-data-structures" title="Link to this heading">#</a></h3>
+<ul>
+<li><p>[ ] <strong>Dataclass:</strong> <code class="docutils literal notranslate"><span class="pre">TimeHistory</span></code></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TimeHistory</span><span class="p">:</span>
+    <span class="n">t</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>          <span class="c1"># (nsteps+1,) time values</span>
+    <span class="n">u</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>          <span class="c1"># (nsteps+1, ndof) displacement history</span>
+    <span class="n">v</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>          <span class="c1"># (nsteps+1, ndof) velocity history</span>
+    <span class="n">a</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>          <span class="c1"># (nsteps+1, ndof) acceleration history</span>
+    <span class="n">dt</span><span class="p">:</span> <span class="nb">float</span>              <span class="c1"># time step size</span>
+    <span class="n">nsteps</span><span class="p">:</span> <span class="nb">int</span>            <span class="c1"># number of time steps</span>
+    <span class="n">energy</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span>    <span class="c1"># {kinetic, strain, dissipated, external, total}</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Dataclass:</strong> <code class="docutils literal notranslate"><span class="pre">NewmarkParams</span></code></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">NewmarkParams</span><span class="p">:</span>
+    <span class="n">beta</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.25</span>     <span class="c1"># Newmark beta parameter</span>
+    <span class="n">gamma</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span>     <span class="c1"># Newmark gamma parameter</span>
+    
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">average_acceleration</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span> <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+    
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">linear_acceleration</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span> <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">6</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+    
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">central_difference</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span> <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
+<section id="load-function-interface">
+<h3>3.2 Load Function Interface<a class="headerlink" href="#load-function-interface" title="Link to this heading">#</a></h3>
+<ul>
+<li><p>[ ] <strong>Abstract interface:</strong> <code class="docutils literal notranslate"><span class="pre">load_func(t)</span> <span class="pre">-&gt;</span> <span class="pre">p_vector</span></code></p></li>
+<li><p><strong>Built-in load functions:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">constant_load</span><span class="p">(</span><span class="n">P</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns lambda t: P (constant in time)&quot;&quot;&quot;</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">ramp_load</span><span class="p">(</span><span class="n">P</span><span class="p">,</span> <span class="n">t_ramp</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Linear ramp: P * min(t/t_ramp, 1.0)&quot;&quot;&quot;</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">harmonic_load</span><span class="p">(</span><span class="n">P</span><span class="p">,</span> <span class="n">omega</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Sinusoidal: P * sin(omega*t + phase)&quot;&quot;&quot;</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">pulse_load</span><span class="p">(</span><span class="n">P</span><span class="p">,</span> <span class="n">t_start</span><span class="p">,</span> <span class="n">t_duration</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Rectangular pulse: P for t_start &lt;= t &lt;= t_start+t_duration, else 0&quot;&quot;&quot;</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">tabulated_load</span><span class="p">(</span><span class="n">P</span><span class="p">,</span> <span class="n">time_table</span><span class="p">,</span> <span class="n">value_table</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Interpolated from table: P * interp1d(time_table, value_table)(t)&quot;&quot;&quot;</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">seismic_load</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">direction</span><span class="p">,</span> <span class="n">accel_record</span><span class="p">,</span> <span class="n">dt_record</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Ground motion: p(t) = -M @ direction * a_g(t)&quot;&quot;&quot;</span>
+</pre></div>
+</div>
+</li>
+<li><p>All return a callable <code class="docutils literal notranslate"><span class="pre">f(t)</span> <span class="pre">-&gt;</span> <span class="pre">ndarray(ndof,</span> <span class="pre">1)</span></code></p></li>
+</ul>
+</section>
+<section id="newmark-beta-solver-main">
+<h3>3.3 Newmark-Beta Solver (Main)<a class="headerlink" href="#newmark-beta-solver-main" title="Link to this heading">#</a></h3>
+<ul>
+<li><p>[ ] <strong>Function:</strong> <code class="docutils literal notranslate"><span class="pre">solve_newmark(M,</span> <span class="pre">C,</span> <span class="pre">K,</span> <span class="pre">p_func,</span> <span class="pre">u0,</span> <span class="pre">v0,</span> <span class="pre">dt,</span> <span class="pre">nsteps,</span> <span class="pre">*,</span> <span class="pre">beta=0.25,</span> <span class="pre">gamma=0.5,</span> <span class="pre">C_bc=None,</span> <span class="pre">dof=2)</span> <span class="pre">-&gt;</span> <span class="pre">TimeHistory</span></code></p></li>
+<li><p><strong>Algorithm (implicit, average acceleration default):</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mf">1.</span> <span class="n">Compute</span> <span class="n">initial</span> <span class="n">acceleration</span><span class="p">:</span> <span class="n">a0</span> <span class="o">=</span> <span class="n">M</span><span class="o">^</span><span class="p">{</span><span class="o">-</span><span class="mi">1</span><span class="p">}</span> <span class="o">*</span> <span class="p">(</span><span class="n">p</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">-</span> <span class="n">C</span><span class="o">*</span><span class="n">v0</span> <span class="o">-</span> <span class="n">K</span><span class="o">*</span><span class="n">u0</span><span class="p">)</span>
+<span class="mf">2.</span> <span class="n">Form</span> <span class="n">effective</span> <span class="n">stiffness</span><span class="p">:</span> <span class="n">K_eff</span> <span class="o">=</span> <span class="n">K</span> <span class="o">+</span> <span class="n">M</span><span class="o">/</span><span class="p">(</span><span class="n">beta</span><span class="o">*</span><span class="n">dt</span><span class="o">^</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="n">gamma</span><span class="o">*</span><span class="n">C</span><span class="o">/</span><span class="p">(</span><span class="n">beta</span><span class="o">*</span><span class="n">dt</span><span class="p">)</span>
+<span class="mf">3.</span> <span class="n">Factorize</span> <span class="n">K_eff</span> <span class="p">(</span><span class="n">once</span><span class="p">,</span> <span class="n">since</span> <span class="n">linear</span><span class="p">)</span>
+<span class="mf">4.</span> <span class="n">For</span> <span class="n">each</span> <span class="n">step</span> <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="n">nsteps</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+   <span class="n">a</span><span class="o">.</span> <span class="n">Compute</span> <span class="n">effective</span> <span class="n">load</span><span class="p">:</span>
+      <span class="n">p_eff</span> <span class="o">=</span> <span class="n">p</span><span class="p">(</span><span class="n">t_</span><span class="p">{</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">})</span> 
+            <span class="o">+</span> <span class="n">M</span> <span class="o">*</span> <span class="p">[</span><span class="n">u_n</span><span class="o">/</span><span class="p">(</span><span class="n">beta</span><span class="o">*</span><span class="n">dt</span><span class="o">^</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="n">v_n</span><span class="o">/</span><span class="p">(</span><span class="n">beta</span><span class="o">*</span><span class="n">dt</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">beta</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">a_n</span><span class="p">]</span>
+            <span class="o">+</span> <span class="n">C</span> <span class="o">*</span> <span class="p">[</span><span class="n">gamma</span><span class="o">*</span><span class="n">u_n</span><span class="o">/</span><span class="p">(</span><span class="n">beta</span><span class="o">*</span><span class="n">dt</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">gamma</span><span class="o">/</span><span class="n">beta</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">v_n</span> <span class="o">+</span> <span class="n">dt</span><span class="o">*</span><span class="p">(</span><span class="n">gamma</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">beta</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">a_n</span><span class="p">]</span>
+   <span class="n">b</span><span class="o">.</span> <span class="n">Solve</span><span class="p">:</span> <span class="n">K_eff</span> <span class="o">*</span> <span class="n">u_</span><span class="p">{</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">}</span> <span class="o">=</span> <span class="n">p_eff</span>
+   <span class="n">c</span><span class="o">.</span> <span class="n">Update</span> <span class="n">acceleration</span><span class="p">:</span> <span class="n">a_</span><span class="p">{</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">}</span> <span class="o">=</span> <span class="p">(</span><span class="n">u_</span><span class="p">{</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">}</span><span class="o">-</span><span class="n">u_n</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">beta</span><span class="o">*</span><span class="n">dt</span><span class="o">^</span><span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="n">v_n</span><span class="o">/</span><span class="p">(</span><span class="n">beta</span><span class="o">*</span><span class="n">dt</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">beta</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">a_n</span>
+   <span class="n">d</span><span class="o">.</span> <span class="n">Update</span> <span class="n">velocity</span><span class="p">:</span> <span class="n">v_</span><span class="p">{</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">}</span> <span class="o">=</span> <span class="n">v_n</span> <span class="o">+</span> <span class="n">dt</span><span class="o">*</span><span class="p">[(</span><span class="mi">1</span><span class="o">-</span><span class="n">gamma</span><span class="p">)</span><span class="o">*</span><span class="n">a_n</span> <span class="o">+</span> <span class="n">gamma</span><span class="o">*</span><span class="n">a_</span><span class="p">{</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">}]</span>
+   <span class="n">e</span><span class="o">.</span> <span class="n">Store</span> <span class="ow">in</span> <span class="n">TimeHistory</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
+<section id="effective-stiffness-formation">
+<h3>3.4 Effective Stiffness Formation<a class="headerlink" href="#effective-stiffness-formation" title="Link to this heading">#</a></h3>
+<ul>
+<li><p>[ ] <strong>Function:</strong> <code class="docutils literal notranslate"><span class="pre">_newmark_effective_stiffness(K,</span> <span class="pre">M,</span> <span class="pre">C,</span> <span class="pre">dt,</span> <span class="pre">beta,</span> <span class="pre">gamma)</span> <span class="pre">-&gt;</span> <span class="pre">K_eff</span></code></p></li>
+<li><p><strong>Formula:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">K_eff</span> <span class="o">=</span> <span class="n">K</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">beta</span> <span class="o">*</span> <span class="n">dt</span><span class="o">^</span><span class="mi">2</span><span class="p">))</span> <span class="o">*</span> <span class="n">M</span> <span class="o">+</span> <span class="p">(</span><span class="n">gamma</span> <span class="o">/</span> <span class="p">(</span><span class="n">beta</span> <span class="o">*</span> <span class="n">dt</span><span class="p">))</span> <span class="o">*</span> <span class="n">C</span>
+</pre></div>
+</div>
+</li>
+<li><p>Handles sparse and dense matrices</p></li>
+<li><p>Returns factorized form (<code class="docutils literal notranslate"><span class="pre">scipy.sparse.linalg.splu</span></code> or <code class="docutils literal notranslate"><span class="pre">scipy.linalg.lu_factor</span></code>) for repeated solves</p></li>
+</ul>
+</section>
+<section id="newmark-update-formulas">
+<h3>3.5 Newmark Update Formulas<a class="headerlink" href="#newmark-update-formulas" title="Link to this heading">#</a></h3>
+<ul>
+<li><p>[ ] <strong>Function:</strong> <code class="docutils literal notranslate"><span class="pre">_newmark_update(u_new,</span> <span class="pre">u_old,</span> <span class="pre">v_old,</span> <span class="pre">a_old,</span> <span class="pre">dt,</span> <span class="pre">beta,</span> <span class="pre">gamma)</span> <span class="pre">-&gt;</span> <span class="pre">(a_new,</span> <span class="pre">v_new)</span></code></p></li>
+<li><p><strong>Acceleration update:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">a_</span><span class="p">{</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">}</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="n">beta</span><span class="o">*</span><span class="n">dt</span><span class="o">^</span><span class="mi">2</span><span class="p">))</span> <span class="o">*</span> <span class="p">(</span><span class="n">u_</span><span class="p">{</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">}</span> <span class="o">-</span> <span class="n">u_n</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="n">beta</span><span class="o">*</span><span class="n">dt</span><span class="p">))</span> <span class="o">*</span> <span class="n">v_n</span> <span class="o">-</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">beta</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">a_n</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Velocity update:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">v_</span><span class="p">{</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">}</span> <span class="o">=</span> <span class="n">v_n</span> <span class="o">+</span> <span class="n">dt</span> <span class="o">*</span> <span class="p">[(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">gamma</span><span class="p">)</span> <span class="o">*</span> <span class="n">a_n</span> <span class="o">+</span> <span class="n">gamma</span> <span class="o">*</span> <span class="n">a_</span><span class="p">{</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">}]</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
+<section id="newmark-parameter-presets">
+<h3>3.6 Newmark Parameter Presets<a class="headerlink" href="#newmark-parameter-presets" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>[ ] Named presets as class methods on <code class="docutils literal notranslate"><span class="pre">NewmarkParams</span></code>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">average_acceleration()</span></code> → <code class="docutils literal notranslate"><span class="pre">(beta=0.25,</span> <span class="pre">gamma=0.5)</span></code> — unconditionally stable, no numerical dissipation, 2nd order accurate</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">linear_acceleration()</span></code> → <code class="docutils literal notranslate"><span class="pre">(beta=1/6,</span> <span class="pre">gamma=0.5)</span></code> — conditionally stable (<code class="docutils literal notranslate"><span class="pre">dt</span> <span class="pre">&lt;</span> <span class="pre">0.551</span> <span class="pre">*</span> <span class="pre">T_min</span></code>), 2nd order accurate</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">central_difference()</span></code> → <code class="docutils literal notranslate"><span class="pre">(beta=0,</span> <span class="pre">gamma=0.5)</span></code> — explicit, conditionally stable (<code class="docutils literal notranslate"><span class="pre">dt</span> <span class="pre">&lt;</span> <span class="pre">T_min/π</span></code>), 2nd order accurate</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fox_goodwin()</span></code> → <code class="docutils literal notranslate"><span class="pre">(beta=1/12,</span> <span class="pre">gamma=0.5)</span></code> — conditionally stable, 4th order accurate for undamped SDOF</p></li>
+</ul>
+</li>
+<li><p>Document stability regions and accuracy order for each</p></li>
+</ul>
+</section>
+<section id="adaptive-time-stepping">
+<h3>3.7 Adaptive Time Stepping<a class="headerlink" href="#adaptive-time-stepping" title="Link to this heading">#</a></h3>
+<ul>
+<li><p>[ ] <strong>Function:</strong> <code class="docutils literal notranslate"><span class="pre">solve_newmark_adaptive(M,</span> <span class="pre">C,</span> <span class="pre">K,</span> <span class="pre">p_func,</span> <span class="pre">u0,</span> <span class="pre">v0,</span> <span class="pre">dt0,</span> <span class="pre">t_end,</span> <span class="pre">*,</span> <span class="pre">tol=1e-4)</span> <span class="pre">-&gt;</span> <span class="pre">TimeHistory</span></code></p></li>
+<li><p><strong>Error estimator:</strong> Run dual solutions with <code class="docutils literal notranslate"><span class="pre">beta=0.25</span></code> and <code class="docutils literal notranslate"><span class="pre">beta=1/6</span></code>, compare:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">err</span> <span class="o">=</span> <span class="o">||</span><span class="n">u_025</span> <span class="o">-</span> <span class="n">u_016</span><span class="o">||</span> <span class="o">/</span> <span class="o">||</span><span class="n">u_025</span><span class="o">||</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Step adjustment:</strong> <code class="docutils literal notranslate"><span class="pre">dt_new</span> <span class="pre">=</span> <span class="pre">dt</span> <span class="pre">*</span> <span class="pre">(tol</span> <span class="pre">/</span> <span class="pre">err)^(1/3)</span></code> with safety factor 0.9</p></li>
+<li><p><strong>Priority:</strong> LOW (nice-to-have)</p></li>
+</ul>
+</section>
+<section id="boundary-conditions-in-dynamic-context">
+<h3>3.8 Boundary Conditions in Dynamic Context<a class="headerlink" href="#boundary-conditions-in-dynamic-context" title="Link to this heading">#</a></h3>
+<ul>
+<li><p>[ ] <strong>Function:</strong> <code class="docutils literal notranslate"><span class="pre">_apply_dynamic_bc(K_eff,</span> <span class="pre">p_eff,</span> <span class="pre">C_bc,</span> <span class="pre">dof,</span> <span class="pre">t,</span> <span class="pre">ks)</span></code></p></li>
+<li><p>Handle three BC types:</p>
+<ol class="arabic">
+<li><p><strong>Fixed zero:</strong> Same as static <code class="docutils literal notranslate"><span class="pre">setbc</span></code> — zero row/col, penalty diagonal</p></li>
+<li><p><strong>Prescribed displacement history:</strong> <code class="docutils literal notranslate"><span class="pre">u_bc(t)</span></code> — modify effective load:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">p_eff</span><span class="p">[</span><span class="n">free</span><span class="p">]</span> <span class="o">-=</span> <span class="n">K_eff</span><span class="p">[</span><span class="n">free</span><span class="p">,</span> <span class="n">bc</span><span class="p">]</span> <span class="o">*</span> <span class="n">u_bc</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Velocity BC:</strong> Convert to displacement BC via integration</p></li>
+</ol>
+</li>
+<li><p>BC constraint matrix <code class="docutils literal notranslate"><span class="pre">C_bc</span></code> can include time-dependent values via callable</p></li>
+<li><p>Re-use existing <code class="docutils literal notranslate"><span class="pre">setbc</span></code> pattern where possible</p></li>
+</ul>
+</section>
+<section id="energy-balance-check">
+<h3>3.9 Energy Balance Check<a class="headerlink" href="#energy-balance-check" title="Link to this heading">#</a></h3>
+<ul>
+<li><p>[ ] <strong>Function:</strong> <code class="docutils literal notranslate"><span class="pre">_compute_energy(M,</span> <span class="pre">C,</span> <span class="pre">K,</span> <span class="pre">u,</span> <span class="pre">v,</span> <span class="pre">p_func,</span> <span class="pre">t,</span> <span class="pre">dt)</span> <span class="pre">-&gt;</span> <span class="pre">dict</span></code></p></li>
+<li><p><strong>Quantities at each step:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">E_kinetic</span>    <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">v</span><span class="o">^</span><span class="n">T</span> <span class="o">*</span> <span class="n">M</span> <span class="o">*</span> <span class="n">v</span>
+<span class="n">E_strain</span>     <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">u</span><span class="o">^</span><span class="n">T</span> <span class="o">*</span> <span class="n">K</span> <span class="o">*</span> <span class="n">u</span>
+<span class="n">E_dissipated</span> <span class="o">+=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">v_n</span> <span class="o">+</span> <span class="n">v_</span><span class="p">{</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">})</span><span class="o">^</span><span class="n">T</span> <span class="o">*</span> <span class="n">C</span> <span class="o">*</span> <span class="p">(</span><span class="n">v_n</span> <span class="o">+</span> <span class="n">v_</span><span class="p">{</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">})</span> <span class="o">*</span> <span class="n">dt</span>  <span class="p">(</span><span class="n">incremental</span><span class="p">)</span>
+<span class="n">W_external</span>   <span class="o">+=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">p_n</span> <span class="o">+</span> <span class="n">p_</span><span class="p">{</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">})</span><span class="o">^</span><span class="n">T</span> <span class="o">*</span> <span class="p">(</span><span class="n">u_</span><span class="p">{</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">}</span> <span class="o">-</span> <span class="n">u_n</span><span class="p">)</span>           <span class="p">(</span><span class="n">incremental</span><span class="p">)</span>
+<span class="n">E_total</span>      <span class="o">=</span> <span class="n">E_kinetic</span> <span class="o">+</span> <span class="n">E_strain</span> <span class="o">+</span> <span class="n">E_dissipated</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Validation:</strong> For undamped system (C=0), <code class="docutils literal notranslate"><span class="pre">E_total</span></code> should be constant</p></li>
+<li><p>Store in <code class="docutils literal notranslate"><span class="pre">TimeHistory.energy</span></code> dict</p></li>
+</ul>
+</section>
+<section id="stability-check">
+<h3>3.10 Stability Check<a class="headerlink" href="#stability-check" title="Link to this heading">#</a></h3>
+<ul>
+<li><p>[ ] <strong>Function:</strong> <code class="docutils literal notranslate"><span class="pre">_check_stability(K,</span> <span class="pre">M,</span> <span class="pre">dt,</span> <span class="pre">beta,</span> <span class="pre">gamma)</span> <span class="pre">-&gt;</span> <span class="pre">(is_stable,</span> <span class="pre">dt_critical)</span></code></p></li>
+<li><p><strong>For conditionally stable schemes (beta &lt; 0.25 or gamma != 0.5):</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">omega_max</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">eig</span><span class="p">(</span><span class="n">M</span><span class="o">^</span><span class="p">{</span><span class="o">-</span><span class="mi">1</span><span class="p">}</span> <span class="n">K</span><span class="p">)))</span>      <span class="c1"># maximum natural frequency</span>
+<span class="n">dt_critical</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">omega_max</span>               <span class="c1"># for central difference</span>
+</pre></div>
+</div>
+<p>For linear acceleration: <code class="docutils literal notranslate"><span class="pre">dt_critical</span> <span class="pre">=</span> <span class="pre">0.551</span> <span class="pre">*</span> <span class="pre">(2*pi</span> <span class="pre">/</span> <span class="pre">omega_max)</span></code></p>
+</li>
+<li><p><strong>Warning:</strong> Emit <code class="docutils literal notranslate"><span class="pre">UserWarning</span></code> if <code class="docutils literal notranslate"><span class="pre">dt</span> <span class="pre">&gt;</span> <span class="pre">dt_critical</span></code></p></li>
+<li><p>For <strong>unconditionally stable</strong> schemes <code class="docutils literal notranslate"><span class="pre">(beta</span> <span class="pre">&gt;=</span> <span class="pre">gamma/2</span> <span class="pre">&gt;=</span> <span class="pre">0.25)</span></code>: no warning needed</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="phase-4-central-difference-explicit-solver">
+<h2>Phase 4: Central Difference (Explicit) Solver<a class="headerlink" href="#phase-4-central-difference-explicit-solver" title="Link to this heading">#</a></h2>
+<blockquote>
+<div><p>For wave propagation, impact, and blast loading.
+<strong>Priority:</strong> MEDIUM | <strong>Location:</strong> <code class="docutils literal notranslate"><span class="pre">src/femlabpy/dynamics.py</span></code></p>
+</div></blockquote>
+<section id="central-difference-solver">
+<h3>4.1 Central Difference Solver<a class="headerlink" href="#central-difference-solver" title="Link to this heading">#</a></h3>
+<ul>
+<li><p>[ ] <strong>Function:</strong> <code class="docutils literal notranslate"><span class="pre">solve_central_diff(M_lumped,</span> <span class="pre">C,</span> <span class="pre">K,</span> <span class="pre">p_func,</span> <span class="pre">u0,</span> <span class="pre">v0,</span> <span class="pre">dt,</span> <span class="pre">nsteps,</span> <span class="pre">*,</span> <span class="pre">dof=2)</span> <span class="pre">-&gt;</span> <span class="pre">TimeHistory</span></code></p></li>
+<li><p><strong>Requirements:</strong> <code class="docutils literal notranslate"><span class="pre">M_lumped</span></code> must be diagonal (1D array or diagonal matrix)</p></li>
+<li><p><strong>Algorithm:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mf">1.</span> <span class="n">Initial</span><span class="p">:</span> <span class="n">a0</span> <span class="o">=</span> <span class="n">M_L</span><span class="o">^</span><span class="p">{</span><span class="o">-</span><span class="mi">1</span><span class="p">}</span> <span class="o">*</span> <span class="p">(</span><span class="n">p</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">-</span> <span class="n">C</span><span class="o">*</span><span class="n">v0</span> <span class="o">-</span> <span class="n">K</span><span class="o">*</span><span class="n">u0</span><span class="p">)</span>
+<span class="mf">2.</span> <span class="n">Compute</span><span class="p">:</span> <span class="n">u_</span><span class="p">{</span><span class="o">-</span><span class="mi">1</span><span class="p">}</span> <span class="o">=</span> <span class="n">u0</span> <span class="o">-</span> <span class="n">dt</span><span class="o">*</span><span class="n">v0</span> <span class="o">+</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">dt</span><span class="o">^</span><span class="mi">2</span><span class="o">*</span><span class="n">a0</span>  <span class="p">(</span><span class="n">backward</span> <span class="n">extrapolation</span><span class="p">)</span>
+<span class="mf">3.</span> <span class="n">For</span> <span class="n">each</span> <span class="n">step</span> <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="n">nsteps</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+   <span class="n">a</span><span class="o">.</span> <span class="n">p_eff</span> <span class="o">=</span> <span class="n">p</span><span class="p">(</span><span class="n">t_n</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">K</span> <span class="o">-</span> <span class="mi">2</span><span class="o">*</span><span class="n">M_L</span><span class="o">/</span><span class="n">dt</span><span class="o">^</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="n">u_n</span> <span class="o">-</span> <span class="p">(</span><span class="n">M_L</span><span class="o">/</span><span class="n">dt</span><span class="o">^</span><span class="mi">2</span> <span class="o">-</span> <span class="n">C</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">dt</span><span class="p">))</span><span class="o">*</span><span class="n">u_</span><span class="p">{</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">}</span>
+   <span class="n">b</span><span class="o">.</span> <span class="n">u_</span><span class="p">{</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">}</span> <span class="o">=</span> <span class="p">(</span><span class="n">M_L</span><span class="o">/</span><span class="n">dt</span><span class="o">^</span><span class="mi">2</span> <span class="o">+</span> <span class="n">C</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">dt</span><span class="p">))</span><span class="o">^</span><span class="p">{</span><span class="o">-</span><span class="mi">1</span><span class="p">}</span> <span class="o">*</span> <span class="n">p_eff</span>
+   <span class="n">c</span><span class="o">.</span> <span class="n">Velocity</span><span class="p">:</span> <span class="n">v_n</span> <span class="o">=</span> <span class="p">(</span><span class="n">u_</span><span class="p">{</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">}</span> <span class="o">-</span> <span class="n">u_</span><span class="p">{</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">})</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">dt</span><span class="p">)</span>
+   <span class="n">d</span><span class="o">.</span> <span class="n">Acceleration</span><span class="p">:</span> <span class="n">a_n</span> <span class="o">=</span> <span class="p">(</span><span class="n">u_</span><span class="p">{</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">}</span> <span class="o">-</span> <span class="mi">2</span><span class="o">*</span><span class="n">u_n</span> <span class="o">+</span> <span class="n">u_</span><span class="p">{</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">})</span> <span class="o">/</span> <span class="n">dt</span><span class="o">^</span><span class="mi">2</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Key advantage:</strong> No matrix factorization when M is diagonal and C is also diagonal (or zero)</p></li>
+</ul>
+</section>
+<section id="central-difference-algorithm-details">
+<h3>4.2 Central Difference Algorithm Details<a class="headerlink" href="#central-difference-algorithm-details" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>[ ] Implement the three-level time marching scheme</p></li>
+<li><p>Handle the special initial step (u_{-1} computation)</p></li>
+<li><p>For diagonal M and diagonal C: pure element-by-element, O(ndof) per step</p></li>
+<li><p>For diagonal M and full C: still requires M/C combination but no full solve</p></li>
+</ul>
+</section>
+<section id="critical-time-step-computation">
+<h3>4.3 Critical Time Step Computation<a class="headerlink" href="#critical-time-step-computation" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>[ ] <strong>Function:</strong> <code class="docutils literal notranslate"><span class="pre">critical_timestep(K,</span> <span class="pre">M,</span> <span class="pre">*,</span> <span class="pre">method='power')</span> <span class="pre">-&gt;</span> <span class="pre">dt_cr</span></code></p></li>
+<li><p><strong>Methods:</strong></p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">'power'</span></code>: Power iteration to find <code class="docutils literal notranslate"><span class="pre">omega_max</span> <span class="pre">=</span> <span class="pre">sqrt(lambda_max(M^{-1}K))</span></code>
+then <code class="docutils literal notranslate"><span class="pre">dt_cr</span> <span class="pre">=</span> <span class="pre">2</span> <span class="pre">/</span> <span class="pre">omega_max</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">'element'</span></code>: Estimate from smallest element size and wave speed
+<code class="docutils literal notranslate"><span class="pre">dt_cr</span> <span class="pre">=</span> <span class="pre">h_min</span> <span class="pre">/</span> <span class="pre">c</span></code> where <code class="docutils literal notranslate"><span class="pre">c</span> <span class="pre">=</span> <span class="pre">sqrt(E/rho)</span></code> and <code class="docutils literal notranslate"><span class="pre">h_min</span></code> = min element characteristic length</p></li>
+</ul>
+</li>
+<li><p><strong>Usage:</strong> Called automatically by <code class="docutils literal notranslate"><span class="pre">solve_central_diff</span></code> with warning if <code class="docutils literal notranslate"><span class="pre">dt</span> <span class="pre">&gt;</span> <span class="pre">dt_cr</span></code></p></li>
+</ul>
+</section>
+<section id="lumped-mass-validation">
+<h3>4.4 Lumped Mass Validation<a class="headerlink" href="#lumped-mass-validation" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>[ ] Auto-check in <code class="docutils literal notranslate"><span class="pre">solve_central_diff</span></code>:</p>
+<ul>
+<li><p>If M is not diagonal, raise <code class="docutils literal notranslate"><span class="pre">ValueError(&quot;Central</span> <span class="pre">difference</span> <span class="pre">requires</span> <span class="pre">lumped</span> <span class="pre">(diagonal)</span> <span class="pre">mass</span> <span class="pre">matrix&quot;)</span></code></p></li>
+<li><p>Provide helper: <code class="docutils literal notranslate"><span class="pre">is_lumped(M)</span> <span class="pre">-&gt;</span> <span class="pre">bool</span></code> — checks if off-diagonal entries are zero (or negligible)</p></li>
+<li><p>Suggest: <code class="docutils literal notranslate"><span class="pre">&quot;Use</span> <span class="pre">lumped=True</span> <span class="pre">in</span> <span class="pre">mass</span> <span class="pre">matrix</span> <span class="pre">computation&quot;</span></code></p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="phase-5-hht-alpha-hilber-hughes-taylor-method">
+<h2>Phase 5: HHT-Alpha (Hilber-Hughes-Taylor) Method<a class="headerlink" href="#phase-5-hht-alpha-hilber-hughes-taylor-method" title="Link to this heading">#</a></h2>
+<blockquote>
+<div><p>Numerical dissipation control for high-frequency noise.
+<strong>Priority:</strong> MEDIUM | <strong>Location:</strong> <code class="docutils literal notranslate"><span class="pre">src/femlabpy/dynamics.py</span></code></p>
+</div></blockquote>
+<section id="hht-alpha-solver">
+<h3>5.1 HHT-Alpha Solver<a class="headerlink" href="#hht-alpha-solver" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>[ ] <strong>Function:</strong> <code class="docutils literal notranslate"><span class="pre">solve_hht(M,</span> <span class="pre">C,</span> <span class="pre">K,</span> <span class="pre">p_func,</span> <span class="pre">u0,</span> <span class="pre">v0,</span> <span class="pre">dt,</span> <span class="pre">nsteps,</span> <span class="pre">*,</span> <span class="pre">alpha=-0.05)</span> <span class="pre">-&gt;</span> <span class="pre">TimeHistory</span></code></p></li>
+<li><p><strong>Valid range:</strong> <code class="docutils literal notranslate"><span class="pre">alpha</span> <span class="pre">∈</span> <span class="pre">[-1/3,</span> <span class="pre">0]</span></code></p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">alpha</span> <span class="pre">=</span> <span class="pre">0</span></code> → standard Newmark (trapezoidal)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">alpha</span> <span class="pre">=</span> <span class="pre">-0.05</span></code> → mild dissipation (recommended default)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">alpha</span> <span class="pre">=</span> <span class="pre">-1/3</span></code> → maximum dissipation</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="hht-parameters-and-equilibrium">
+<h3>5.2 HHT Parameters and Equilibrium<a class="headerlink" href="#hht-parameters-and-equilibrium" title="Link to this heading">#</a></h3>
+<ul>
+<li><p>[ ] <strong>Derived Newmark parameters:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">beta</span>  <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">alpha</span><span class="p">)</span><span class="o">^</span><span class="mi">2</span> <span class="o">/</span> <span class="mi">4</span>
+<span class="n">gamma</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">-</span> <span class="n">alpha</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Modified equilibrium equation at step n+1:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">M</span> <span class="o">*</span> <span class="n">a_</span><span class="p">{</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">}</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">alpha</span><span class="p">)</span> <span class="o">*</span> <span class="n">C</span> <span class="o">*</span> <span class="n">v_</span><span class="p">{</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">}</span> <span class="o">-</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">C</span> <span class="o">*</span> <span class="n">v_n</span>
+             <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">alpha</span><span class="p">)</span> <span class="o">*</span> <span class="n">K</span> <span class="o">*</span> <span class="n">u_</span><span class="p">{</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">}</span> <span class="o">-</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">K</span> <span class="o">*</span> <span class="n">u_n</span>
+             <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">alpha</span><span class="p">)</span> <span class="o">*</span> <span class="n">p_</span><span class="p">{</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">}</span> <span class="o">-</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">p_n</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Effective stiffness:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">K_eff</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">alpha</span><span class="p">)</span><span class="o">*</span><span class="n">K</span> <span class="o">+</span> <span class="n">M</span><span class="o">/</span><span class="p">(</span><span class="n">beta</span><span class="o">*</span><span class="n">dt</span><span class="o">^</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">alpha</span><span class="p">)</span><span class="o">*</span><span class="n">gamma</span><span class="o">*</span><span class="n">C</span><span class="o">/</span><span class="p">(</span><span class="n">beta</span><span class="o">*</span><span class="n">dt</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Effective load includes alpha-weighted previous step terms</strong></p></li>
+</ul>
+</section>
+<section id="recovery-validation">
+<h3>5.3 Recovery &amp; Validation<a class="headerlink" href="#recovery-validation" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>[ ] Verify that <code class="docutils literal notranslate"><span class="pre">alpha=0</span></code> produces identical results to <code class="docutils literal notranslate"><span class="pre">solve_newmark(beta=0.25,</span> <span class="pre">gamma=0.5)</span></code></p></li>
+<li><p>Demonstrate numerical dissipation: run high-frequency oscillation and show amplitude decay increases with |alpha|</p></li>
+<li><p>Show that low-frequency response is preserved (2nd order accuracy maintained)</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="phase-6-modal-analysis-eigenvalue-solver">
+<h2>Phase 6: Modal Analysis (Eigenvalue Solver)<a class="headerlink" href="#phase-6-modal-analysis-eigenvalue-solver" title="Link to this heading">#</a></h2>
+<blockquote>
+<div><p>Natural frequencies and mode shapes.
+<strong>Priority:</strong> HIGH | <strong>New file:</strong> <code class="docutils literal notranslate"><span class="pre">src/femlabpy/modal.py</span></code></p>
+</div></blockquote>
+<section id="eigenvalue-solver">
+<h3>6.1 Eigenvalue Solver<a class="headerlink" href="#eigenvalue-solver" title="Link to this heading">#</a></h3>
+<ul>
+<li><p>[ ] <strong>Function:</strong> <code class="docutils literal notranslate"><span class="pre">solve_modal(K,</span> <span class="pre">M,</span> <span class="pre">n_modes=10,</span> <span class="pre">*,</span> <span class="pre">C_bc=None,</span> <span class="pre">dof=2,</span> <span class="pre">sigma=0.0)</span> <span class="pre">-&gt;</span> <span class="pre">ModalResult</span></code></p></li>
+<li><p><strong>Dataclass:</strong> <code class="docutils literal notranslate"><span class="pre">ModalResult</span></code></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ModalResult</span><span class="p">:</span>
+    <span class="n">eigenvalues</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>      <span class="c1"># (n_modes,) omega^2 values</span>
+    <span class="n">omega</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>            <span class="c1"># (n_modes,) natural frequencies in rad/s</span>
+    <span class="n">freq_hz</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>          <span class="c1"># (n_modes,) frequencies in Hz</span>
+    <span class="n">period</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>           <span class="c1"># (n_modes,) periods in seconds</span>
+    <span class="n">mode_shapes</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>      <span class="c1"># (ndof, n_modes) eigenvectors (columns)</span>
+    <span class="n">participation</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>    <span class="c1"># (n_modes, ndim) modal participation factors</span>
+    <span class="n">effective_mass</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>   <span class="c1"># (n_modes, ndim) effective modal mass</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Solver:</strong> <code class="docutils literal notranslate"><span class="pre">scipy.sparse.linalg.eigsh(K,</span> <span class="pre">k=n_modes,</span> <span class="pre">M=M,</span> <span class="pre">sigma=sigma,</span> <span class="pre">which='SM')</span></code>
+(shift-invert mode for smallest eigenvalues)</p></li>
+</ul>
+</section>
+<section id="boundary-condition-handling-in-eigenvalue-problem">
+<h3>6.2 Boundary Condition Handling in Eigenvalue Problem<a class="headerlink" href="#boundary-condition-handling-in-eigenvalue-problem" title="Link to this heading">#</a></h3>
+<ul>
+<li><p>[ ] <strong>Strategy: System Reduction</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">_reduce_system</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">C_bc</span><span class="p">,</span> <span class="n">dof</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Eliminate constrained DOFs before eigensolve.&quot;&quot;&quot;</span>
+    <span class="n">free_dofs</span> <span class="o">=</span> <span class="n">_get_free_dofs</span><span class="p">(</span><span class="n">C_bc</span><span class="p">,</span> <span class="n">dof</span><span class="p">,</span> <span class="n">ndof</span><span class="p">)</span>
+    <span class="n">K_red</span> <span class="o">=</span> <span class="n">K</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ix_</span><span class="p">(</span><span class="n">free_dofs</span><span class="p">,</span> <span class="n">free_dofs</span><span class="p">)]</span>
+    <span class="n">M_red</span> <span class="o">=</span> <span class="n">M</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ix_</span><span class="p">(</span><span class="n">free_dofs</span><span class="p">,</span> <span class="n">free_dofs</span><span class="p">)]</span>
+    <span class="k">return</span> <span class="n">K_red</span><span class="p">,</span> <span class="n">M_red</span><span class="p">,</span> <span class="n">free_dofs</span>
+</pre></div>
+</div>
+</li>
+<li><p>After eigensolve, expand mode shapes back to full DOF space (zeros at constrained DOFs)</p></li>
+<li><p><strong>Alternative:</strong> Large penalty on constrained DOFs: <code class="docutils literal notranslate"><span class="pre">K[j,j]</span> <span class="pre">+=</span> <span class="pre">1e20</span> <span class="pre">*</span> <span class="pre">max(diag(K))</span></code> (simpler but less accurate)</p></li>
+</ul>
+</section>
+<section id="mode-shape-normalization">
+<h3>6.3 Mode Shape Normalization<a class="headerlink" href="#mode-shape-normalization" title="Link to this heading">#</a></h3>
+<ul>
+<li><p>[ ] <strong>Mass normalization (default):</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">phi_i</span> <span class="o">=</span> <span class="n">phi_i</span> <span class="o">/</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">phi_i</span><span class="o">^</span><span class="n">T</span> <span class="o">*</span> <span class="n">M</span> <span class="o">*</span> <span class="n">phi_i</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>so that <code class="docutils literal notranslate"><span class="pre">Phi^T</span> <span class="pre">*</span> <span class="pre">M</span> <span class="pre">*</span> <span class="pre">Phi</span> <span class="pre">=</span> <span class="pre">I</span></code></p>
+</li>
+<li><p><strong>Displacement normalization:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">phi_i</span> <span class="o">=</span> <span class="n">phi_i</span> <span class="o">/</span> <span class="nb">max</span><span class="p">(</span><span class="o">|</span><span class="n">phi_i</span><span class="o">|</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>so that maximum component is 1.0</p>
+</li>
+</ul>
+</section>
+<section id="frequency-output">
+<h3>6.4 Frequency Output<a class="headerlink" href="#frequency-output" title="Link to this heading">#</a></h3>
+<ul>
+<li><p>[ ] Compute and store:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">omega_i</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">lambda_i</span><span class="p">)</span>         <span class="c1"># rad/s</span>
+<span class="n">f_i</span>     <span class="o">=</span> <span class="n">omega_i</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">pi</span><span class="p">)</span>     <span class="c1"># Hz</span>
+<span class="n">T_i</span>     <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">f_i</span>                <span class="c1"># seconds (period)</span>
+</pre></div>
+</div>
+</li>
+<li><p>Print formatted table:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Mode</span>  <span class="n">omega</span> <span class="p">(</span><span class="n">rad</span><span class="o">/</span><span class="n">s</span><span class="p">)</span>   <span class="n">f</span> <span class="p">(</span><span class="n">Hz</span><span class="p">)</span>    <span class="n">T</span> <span class="p">(</span><span class="n">s</span><span class="p">)</span>
+<span class="o">----</span>  <span class="o">------------</span>   <span class="o">--------</span>  <span class="o">--------</span>
+  <span class="mi">1</span>      <span class="mf">12.34</span>        <span class="mf">1.964</span>     <span class="mf">0.509</span>
+  <span class="mi">2</span>      <span class="mf">48.67</span>        <span class="mf">7.747</span>     <span class="mf">0.129</span>
+  <span class="o">...</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
+<section id="modal-participation-factors">
+<h3>6.5 Modal Participation Factors<a class="headerlink" href="#modal-participation-factors" title="Link to this heading">#</a></h3>
+<ul>
+<li><p>[ ] <strong>Function:</strong> <code class="docutils literal notranslate"><span class="pre">_modal_participation(M,</span> <span class="pre">phi,</span> <span class="pre">dof)</span> <span class="pre">-&gt;</span> <span class="pre">(participation,</span> <span class="pre">effective_mass)</span></code></p></li>
+<li><p><strong>Participation factor for mode i, direction d:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Gamma_</span><span class="p">{</span><span class="n">i</span><span class="p">,</span><span class="n">d</span><span class="p">}</span> <span class="o">=</span> <span class="n">phi_i</span><span class="o">^</span><span class="n">T</span> <span class="o">*</span> <span class="n">M</span> <span class="o">*</span> <span class="n">r_d</span>
+</pre></div>
+</div>
+<p>where <code class="docutils literal notranslate"><span class="pre">r_d</span></code> = unit influence vector for direction d (1 at all DOFs in direction d, 0 elsewhere)</p>
+</li>
+<li><p><strong>Effective modal mass:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">M_eff_</span><span class="p">{</span><span class="n">i</span><span class="p">,</span><span class="n">d</span><span class="p">}</span> <span class="o">=</span> <span class="n">Gamma_</span><span class="p">{</span><span class="n">i</span><span class="p">,</span><span class="n">d</span><span class="p">}</span><span class="o">^</span><span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">phi_i</span><span class="o">^</span><span class="n">T</span> <span class="o">*</span> <span class="n">M</span> <span class="o">*</span> <span class="n">phi_i</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p>Sum of effective masses for all modes = total mass (verification)</p></li>
+</ul>
+</section>
+<section id="mode-shape-plotting">
+<h3>6.6 Mode Shape Plotting<a class="headerlink" href="#mode-shape-plotting" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>[ ] <strong>Function:</strong> <code class="docutils literal notranslate"><span class="pre">plot_modes(T,</span> <span class="pre">X,</span> <span class="pre">phi,</span> <span class="pre">dof,</span> <span class="pre">mode_indices=None,</span> <span class="pre">*,</span> <span class="pre">scale=1.0,</span> <span class="pre">rows=None,</span> <span class="pre">cols=None)</span></code></p></li>
+<li><p>Subplot grid showing deformed mesh for each requested mode</p></li>
+<li><p>Overlay undeformed (dashed) and deformed (solid) mesh</p></li>
+<li><p>Title: “Mode {i}: f = {f_i:.3f} Hz”</p></li>
+<li><p>Optional: colormap by displacement magnitude</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="phase-7-periodic-boundary-conditions">
+<h2>Phase 7: Periodic Boundary Conditions<a class="headerlink" href="#phase-7-periodic-boundary-conditions" title="Link to this heading">#</a></h2>
+<blockquote>
+<div><p>For RVE/unit cell analysis and computational homogenization.
+<strong>Priority:</strong> HIGH | <strong>New file:</strong> <code class="docutils literal notranslate"><span class="pre">src/femlabpy/periodic.py</span></code></p>
+</div></blockquote>
+<section id="periodic-node-pair-identification">
+<h3>7.1 Periodic Node Pair Identification<a class="headerlink" href="#periodic-node-pair-identification" title="Link to this heading">#</a></h3>
+<ul>
+<li><p>[ ] <strong>Function:</strong> <code class="docutils literal notranslate"><span class="pre">find_periodic_pairs(X,</span> <span class="pre">axis,</span> <span class="pre">tol=1e-6)</span> <span class="pre">-&gt;</span> <span class="pre">ndarray</span></code></p></li>
+<li><p><strong>Algorithm:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>1. Find bounding box: x_min, x_max along specified axis
+2. Select nodes on &quot;left&quot; face: X[:, axis] ≈ x_min
+3. Select nodes on &quot;right&quot; face: X[:, axis] ≈ x_max
+4. For each left node, find matching right node by remaining coordinates
+5. Return pairs as (n_pairs, 2) array: [[left_node, right_node], ...]
+</pre></div>
+</div>
+</li>
+<li><p><strong>Matching:</strong> KD-tree or brute-force distance for remaining coordinate dimensions</p></li>
+<li><p><strong>Tolerance:</strong> <code class="docutils literal notranslate"><span class="pre">tol</span></code> relative to element size for floating-point robustness</p></li>
+<li><p><strong>Output:</strong> <code class="docutils literal notranslate"><span class="pre">pairs</span> <span class="pre">=</span> <span class="pre">[[n_left_1,</span> <span class="pre">n_right_1],</span> <span class="pre">[n_left_2,</span> <span class="pre">n_right_2],</span> <span class="pre">...]</span></code> (1-based node numbers)</p></li>
+</ul>
+</section>
+<section id="multi-axis-periodicity">
+<h3>7.2 Multi-Axis Periodicity<a class="headerlink" href="#multi-axis-periodicity" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>[ ] <strong>Function:</strong> <code class="docutils literal notranslate"><span class="pre">find_all_periodic_pairs(X,</span> <span class="pre">periodic_axes,</span> <span class="pre">tol=1e-6)</span> <span class="pre">-&gt;</span> <span class="pre">dict</span></code></p></li>
+<li><p><strong>Support:</strong></p>
+<ul>
+<li><p>1D: <code class="docutils literal notranslate"><span class="pre">periodic_axes=[0]</span></code> → x-periodic only</p></li>
+<li><p>2D: <code class="docutils literal notranslate"><span class="pre">periodic_axes=[0,</span> <span class="pre">1]</span></code> → x+y periodic</p></li>
+<li><p>3D: <code class="docutils literal notranslate"><span class="pre">periodic_axes=[0,</span> <span class="pre">1,</span> <span class="pre">2]</span></code> → fully periodic</p></li>
+</ul>
+</li>
+<li><p>Returns dict: <code class="docutils literal notranslate"><span class="pre">{0:</span> <span class="pre">pairs_x,</span> <span class="pre">1:</span> <span class="pre">pairs_y,</span> <span class="pre">2:</span> <span class="pre">pairs_z}</span></code></p></li>
+<li><p>Handle <strong>corner nodes</strong> that appear in multiple pair sets (avoid double-constraining)</p></li>
+<li><p>Handle <strong>edge nodes</strong> in 3D (on intersection of two periodic faces)</p></li>
+</ul>
+</section>
+<section id="periodic-constraint-matrix">
+<h3>7.3 Periodic Constraint Matrix<a class="headerlink" href="#periodic-constraint-matrix" title="Link to this heading">#</a></h3>
+<ul>
+<li><p>[ ] <strong>Function:</strong> <code class="docutils literal notranslate"><span class="pre">periodic_constraints(X,</span> <span class="pre">pairs,</span> <span class="pre">dof,</span> <span class="pre">*,</span> <span class="pre">eps_macro=None)</span> <span class="pre">-&gt;</span> <span class="pre">(G,</span> <span class="pre">Q)</span></code></p></li>
+<li><p><strong>Constraint equation for each pair (L, R):</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">u_R</span> <span class="o">-</span> <span class="n">u_L</span> <span class="o">=</span> <span class="n">eps_macro</span> <span class="o">*</span> <span class="p">(</span><span class="n">x_R</span> <span class="o">-</span> <span class="n">x_L</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In matrix form: <code class="docutils literal notranslate"><span class="pre">G</span> <span class="pre">*</span> <span class="pre">u</span> <span class="pre">=</span> <span class="pre">Q</span></code></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">G[row,</span> <span class="pre">R_dof]</span> <span class="pre">=</span> <span class="pre">+1</span></code>, <code class="docutils literal notranslate"><span class="pre">G[row,</span> <span class="pre">L_dof]</span> <span class="pre">=</span> <span class="pre">-1</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Q[row]</span> <span class="pre">=</span> <span class="pre">eps_macro</span> <span class="pre">*</span> <span class="pre">(x_R</span> <span class="pre">-</span> <span class="pre">x_L)</span></code> projected onto the DOF direction</p></li>
+</ul>
+</li>
+<li><p><strong>If <code class="docutils literal notranslate"><span class="pre">eps_macro=None</span></code>:</strong> Purely periodic (zero fluctuation): <code class="docutils literal notranslate"><span class="pre">Q</span> <span class="pre">=</span> <span class="pre">0</span></code>, constraints become <code class="docutils literal notranslate"><span class="pre">u_R</span> <span class="pre">=</span> <span class="pre">u_L</span></code></p></li>
+<li><p><strong>Size:</strong> <code class="docutils literal notranslate"><span class="pre">G</span></code> is <code class="docutils literal notranslate"><span class="pre">(n_constraints,</span> <span class="pre">n_total_dof)</span></code>, <code class="docutils literal notranslate"><span class="pre">Q</span></code> is <code class="docutils literal notranslate"><span class="pre">(n_constraints,</span> <span class="pre">1)</span></code></p></li>
+<li><p>n_constraints = n_pairs * dof</p></li>
+</ul>
+</section>
+<section id="integration-with-lagrange-multiplier-solver">
+<h3>7.4 Integration with Lagrange Multiplier Solver<a class="headerlink" href="#integration-with-lagrange-multiplier-solver" title="Link to this heading">#</a></h3>
+<ul>
+<li><p>[ ] <strong>Function:</strong> <code class="docutils literal notranslate"><span class="pre">solve_periodic(K,</span> <span class="pre">p,</span> <span class="pre">X,</span> <span class="pre">T,</span> <span class="pre">G,</span> <span class="pre">dof,</span> <span class="pre">*,</span> <span class="pre">eps_macro=None)</span> <span class="pre">-&gt;</span> <span class="pre">(u,</span> <span class="pre">lam)</span></code></p></li>
+<li><p>Build <code class="docutils literal notranslate"><span class="pre">G,</span> <span class="pre">Q</span></code> from <code class="docutils literal notranslate"><span class="pre">periodic_constraints()</span></code></p></li>
+<li><p>Pass to existing <code class="docutils literal notranslate"><span class="pre">solve_lag_general(K,</span> <span class="pre">p,</span> <span class="pre">G,</span> <span class="pre">Q)</span></code> to solve the augmented system:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">K</span>    <span class="n">G</span><span class="o">^</span><span class="n">T</span><span class="p">]</span> <span class="p">[</span><span class="n">u</span><span class="p">]</span>   <span class="p">[</span><span class="n">p</span><span class="p">]</span>
+<span class="p">[</span><span class="n">G</span>    <span class="mi">0</span>  <span class="p">]</span> <span class="p">[</span><span class="n">λ</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">Q</span><span class="p">]</span>
+</pre></div>
+</div>
+</li>
+<li><p>Return displacement field <code class="docutils literal notranslate"><span class="pre">u</span></code> and Lagrange multipliers <code class="docutils literal notranslate"><span class="pre">λ</span></code> (constraint forces = tractions)</p></li>
+</ul>
+</section>
+<section id="mpc-alternative-direct-elimination">
+<h3>7.5 MPC Alternative (Direct Elimination)<a class="headerlink" href="#mpc-alternative-direct-elimination" title="Link to this heading">#</a></h3>
+<ul>
+<li><p>[ ] <strong>Function:</strong> <code class="docutils literal notranslate"><span class="pre">apply_mpc(K,</span> <span class="pre">p,</span> <span class="pre">pairs,</span> <span class="pre">dof)</span> <span class="pre">-&gt;</span> <span class="pre">(K_red,</span> <span class="pre">p_red,</span> <span class="pre">slave_dofs)</span></code></p></li>
+<li><p><strong>Strategy:</strong> For each pair, eliminate “right” (slave) DOF:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">u_slave</span> <span class="o">=</span> <span class="n">u_master</span> <span class="o">+</span> <span class="n">Q</span><span class="o">/</span><span class="n">G</span>
+</pre></div>
+</div>
+<p>Condense K and p by substituting slave DOFs</p>
+</li>
+<li><p>Advantage: Smaller system, no Lagrange multipliers</p></li>
+<li><p>Disadvantage: More complex implementation, harder to extract reactions</p></li>
+<li><p><strong>Priority:</strong> MEDIUM</p></li>
+</ul>
+</section>
+<section id="macro-strain-application">
+<h3>7.6 Macro Strain Application<a class="headerlink" href="#macro-strain-application" title="Link to this heading">#</a></h3>
+<ul>
+<li><p>[ ] <strong>Function:</strong> <code class="docutils literal notranslate"><span class="pre">apply_macro_strain(X,</span> <span class="pre">pairs,</span> <span class="pre">eps_macro,</span> <span class="pre">dof)</span> <span class="pre">-&gt;</span> <span class="pre">Q</span></code></p></li>
+<li><p><strong>2D macro strain tensor (Voigt):</strong> <code class="docutils literal notranslate"><span class="pre">eps_macro</span> <span class="pre">=</span> <span class="pre">[exx,</span> <span class="pre">eyy,</span> <span class="pre">gamma_xy]</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">eps_tensor</span> <span class="o">=</span> <span class="p">[[</span><span class="n">exx</span><span class="p">,</span>       <span class="n">gamma_xy</span><span class="o">/</span><span class="mi">2</span><span class="p">],</span>
+              <span class="p">[</span><span class="n">gamma_xy</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">eyy</span>       <span class="p">]]</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>3D macro strain tensor (Voigt):</strong> <code class="docutils literal notranslate"><span class="pre">eps_macro</span> <span class="pre">=</span> <span class="pre">[exx,</span> <span class="pre">eyy,</span> <span class="pre">ezz,</span> <span class="pre">gamma_xy,</span> <span class="pre">gamma_yz,</span> <span class="pre">gamma_xz]</span></code></p></li>
+<li><p><strong>RHS for each pair:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Q_pair = eps_tensor @ (x_R - x_L)   → vector of size dof
+</pre></div>
+</div>
+</li>
+<li><p>Assembled into full Q vector matching constraint ordering</p></li>
+</ul>
+</section>
+<section id="computational-homogenization">
+<h3>7.7 Computational Homogenization<a class="headerlink" href="#computational-homogenization" title="Link to this heading">#</a></h3>
+<ul>
+<li><p>[ ] <strong>Function:</strong> <code class="docutils literal notranslate"><span class="pre">homogenize(K,</span> <span class="pre">T,</span> <span class="pre">X,</span> <span class="pre">G,</span> <span class="pre">pairs,</span> <span class="pre">dof)</span> <span class="pre">-&gt;</span> <span class="pre">C_eff</span></code></p></li>
+<li><p><strong>Algorithm:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mf">1.</span> <span class="n">For</span> <span class="n">each</span> <span class="n">canonical</span> <span class="n">unit</span> <span class="n">strain</span> <span class="n">e_i</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mf">1.</span><span class="o">.</span><span class="n">n_voigt</span><span class="p">):</span>
+   <span class="n">a</span><span class="o">.</span> <span class="n">Build</span> <span class="n">G</span><span class="p">,</span> <span class="n">Q_i</span> <span class="o">=</span> <span class="n">apply_macro_strain</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">pairs</span><span class="p">,</span> <span class="n">e_i</span><span class="p">,</span> <span class="n">dof</span><span class="p">)</span>
+   <span class="n">b</span><span class="o">.</span> <span class="n">Solve</span><span class="p">:</span> <span class="n">u_i</span> <span class="o">=</span> <span class="n">solve_periodic</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">dof</span><span class="p">,</span> <span class="n">eps_macro</span><span class="o">=</span><span class="n">e_i</span><span class="p">)</span>
+   <span class="n">c</span><span class="o">.</span> <span class="n">Compute</span><span class="p">:</span> <span class="n">sigma_avg_i</span> <span class="o">=</span> <span class="n">volume_average_stress</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">u_i</span><span class="p">,</span> <span class="n">dof</span><span class="p">)</span>
+<span class="mf">2.</span> <span class="n">Assemble</span> <span class="n">C_eff</span> <span class="n">column</span><span class="o">-</span><span class="n">wise</span><span class="p">:</span> <span class="n">C_eff</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">sigma_avg_i</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>2D:</strong> 3 load cases (exx, eyy, gamma_xy) → 3×3 <code class="docutils literal notranslate"><span class="pre">C_eff</span></code></p></li>
+<li><p><strong>3D:</strong> 6 load cases → 6×6 <code class="docutils literal notranslate"><span class="pre">C_eff</span></code></p></li>
+<li><p>Verify: <code class="docutils literal notranslate"><span class="pre">C_eff</span></code> should be symmetric and positive definite</p></li>
+</ul>
+</section>
+<section id="volume-averaging-utilities">
+<h3>7.8 Volume Averaging Utilities<a class="headerlink" href="#volume-averaging-utilities" title="Link to this heading">#</a></h3>
+<ul>
+<li><p>[ ] <strong>Function:</strong> <code class="docutils literal notranslate"><span class="pre">volume_average_stress(T,</span> <span class="pre">X,</span> <span class="pre">G,</span> <span class="pre">u,</span> <span class="pre">dof,</span> <span class="pre">*,</span> <span class="pre">element_type='q4')</span> <span class="pre">-&gt;</span> <span class="pre">sigma_avg</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sigma_avg</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">V_total</span><span class="p">)</span> <span class="o">*</span> <span class="n">Σ_e</span> <span class="n">sigma_e</span> <span class="o">*</span> <span class="n">V_e</span>
+</pre></div>
+</div>
+<p>where <code class="docutils literal notranslate"><span class="pre">sigma_e</span></code> = stress at element centroid (or Gauss point average), <code class="docutils literal notranslate"><span class="pre">V_e</span></code> = element volume/area</p>
+</li>
+<li><p>[ ] <strong>Function:</strong> <code class="docutils literal notranslate"><span class="pre">volume_average_strain(T,</span> <span class="pre">X,</span> <span class="pre">G,</span> <span class="pre">u,</span> <span class="pre">dof,</span> <span class="pre">*,</span> <span class="pre">element_type='q4')</span> <span class="pre">-&gt;</span> <span class="pre">eps_avg</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">eps_avg</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">V_total</span><span class="p">)</span> <span class="o">*</span> <span class="n">Σ_e</span> <span class="n">eps_e</span> <span class="o">*</span> <span class="n">V_e</span>
+</pre></div>
+</div>
+</li>
+<li><p>Support T3, Q4, T4, H8 elements</p></li>
+<li><p>For elements with multiple Gauss points (Q4, H8), average over Gauss points first</p></li>
+</ul>
+</section>
+<section id="corner-node-fixing">
+<h3>7.9 Corner Node Fixing<a class="headerlink" href="#corner-node-fixing" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>[ ] <strong>Function:</strong> <code class="docutils literal notranslate"><span class="pre">fix_corner(X,</span> <span class="pre">C,</span> <span class="pre">dof)</span> <span class="pre">-&gt;</span> <span class="pre">C_extended</span></code></p></li>
+<li><p>Find the node at the minimum coordinates (bottom-left corner for 2D)</p></li>
+<li><p>Add zero displacement constraints for all DOFs at that node</p></li>
+<li><p>Removes rigid body translation while preserving periodicity</p></li>
+<li><p>For 2D: fix 2 DOFs (remove translation)</p></li>
+<li><p>For 3D: fix 3 DOFs at corner + additional rotational fix if needed</p></li>
+</ul>
+</section>
+<section id="periodic-mesh-validation">
+<h3>7.10 Periodic Mesh Validation<a class="headerlink" href="#periodic-mesh-validation" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>[ ] <strong>Function:</strong> <code class="docutils literal notranslate"><span class="pre">check_periodic_mesh(X,</span> <span class="pre">T,</span> <span class="pre">axis,</span> <span class="pre">tol=1e-6)</span> <span class="pre">-&gt;</span> <span class="pre">(is_valid,</span> <span class="pre">report)</span></code></p></li>
+<li><p><strong>Checks:</strong></p>
+<ol class="arabic simple">
+<li><p>Equal number of nodes on opposite faces</p></li>
+<li><p>Matching coordinate patterns (sorted by remaining coordinates)</p></li>
+<li><p>Compatible element topology on faces (matching edge patterns)</p></li>
+<li><p>No orphan nodes (not paired)</p></li>
+</ol>
+</li>
+<li><p><strong>Report:</strong> Human-readable dict with pass/fail for each check + suggested fixes</p></li>
+<li><p>Warn if mesh is non-periodic and suggest re-meshing with Gmsh structured mesh</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="phase-8-nonlinear-dynamics">
+<h2>Phase 8: Nonlinear Dynamics<a class="headerlink" href="#phase-8-nonlinear-dynamics" title="Link to this heading">#</a></h2>
+<blockquote>
+<div><p>Combine existing nonlinear solvers with time integration.
+<strong>Priority:</strong> MEDIUM | <strong>Location:</strong> <code class="docutils literal notranslate"><span class="pre">src/femlabpy/dynamics.py</span></code></p>
+</div></blockquote>
+<section id="nonlinear-newmark-solver">
+<h3>8.1 Nonlinear Newmark Solver<a class="headerlink" href="#nonlinear-newmark-solver" title="Link to this heading">#</a></h3>
+<ul>
+<li><p>[ ] <strong>Function:</strong> <code class="docutils literal notranslate"><span class="pre">solve_newmark_nl(M,</span> <span class="pre">C,</span> <span class="pre">tangent_func,</span> <span class="pre">internal_force_func,</span> <span class="pre">p_func,</span> <span class="pre">u0,</span> <span class="pre">v0,</span> <span class="pre">dt,</span> <span class="pre">nsteps,</span> <span class="pre">*,</span> <span class="pre">beta=0.25,</span> <span class="pre">gamma=0.5,</span> <span class="pre">tol=1e-6,</span> <span class="pre">max_iter=20)</span> <span class="pre">-&gt;</span> <span class="pre">TimeHistory</span></code></p></li>
+<li><p><strong>Arguments:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">tangent_func(u,</span> <span class="pre">state)</span> <span class="pre">-&gt;</span> <span class="pre">K_t</span></code> — computes tangent stiffness at current config</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">internal_force_func(u,</span> <span class="pre">state)</span> <span class="pre">-&gt;</span> <span class="pre">(q,</span> <span class="pre">state_new)</span></code> — computes internal forces + updates state</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">state</span></code> — can carry plastic history <code class="docutils literal notranslate"><span class="pre">(S,</span> <span class="pre">E)</span></code> or geometric config</p></li>
+</ul>
+</li>
+<li><p><strong>Algorithm at each time step:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mf">1.</span> <span class="n">Predictor</span><span class="p">:</span> <span class="n">u_pred</span> <span class="o">=</span> <span class="n">u_n</span> <span class="o">+</span> <span class="n">dt</span><span class="o">*</span><span class="n">v_n</span> <span class="o">+</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">dt</span><span class="o">^</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">beta</span><span class="p">)</span><span class="o">*</span><span class="n">a_n</span>
+              <span class="n">v_pred</span> <span class="o">=</span> <span class="n">v_n</span> <span class="o">+</span> <span class="n">dt</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">gamma</span><span class="p">)</span><span class="o">*</span><span class="n">a_n</span>
+<span class="mf">2.</span> <span class="n">Newton</span> <span class="n">iteration</span> <span class="n">k</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">...</span><span class="p">:</span>
+   <span class="n">a</span><span class="o">.</span> <span class="n">K_t</span> <span class="o">=</span> <span class="n">tangent_func</span><span class="p">(</span><span class="n">u</span><span class="o">^</span><span class="p">{</span><span class="n">k</span><span class="p">},</span> <span class="n">state</span><span class="p">)</span>
+   <span class="n">b</span><span class="o">.</span> <span class="n">q</span> <span class="o">=</span> <span class="n">internal_force_func</span><span class="p">(</span><span class="n">u</span><span class="o">^</span><span class="p">{</span><span class="n">k</span><span class="p">},</span> <span class="n">state</span><span class="p">)</span>
+   <span class="n">c</span><span class="o">.</span> <span class="n">K_eff</span> <span class="o">=</span> <span class="n">K_t</span> <span class="o">+</span> <span class="n">M</span><span class="o">/</span><span class="p">(</span><span class="n">beta</span><span class="o">*</span><span class="n">dt</span><span class="o">^</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="n">gamma</span><span class="o">*</span><span class="n">C</span><span class="o">/</span><span class="p">(</span><span class="n">beta</span><span class="o">*</span><span class="n">dt</span><span class="p">)</span>
+   <span class="n">d</span><span class="o">.</span> <span class="n">R</span> <span class="o">=</span> <span class="n">p</span><span class="p">(</span><span class="n">t_</span><span class="p">{</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">})</span> <span class="o">-</span> <span class="n">M</span><span class="o">*</span><span class="n">a</span><span class="o">^</span><span class="p">{</span><span class="n">k</span><span class="p">}</span> <span class="o">-</span> <span class="n">C</span><span class="o">*</span><span class="n">v</span><span class="o">^</span><span class="p">{</span><span class="n">k</span><span class="p">}</span> <span class="o">-</span> <span class="n">q</span>
+   <span class="n">e</span><span class="o">.</span> <span class="n">Δu</span> <span class="o">=</span> <span class="n">K_eff</span><span class="o">^</span><span class="p">{</span><span class="o">-</span><span class="mi">1</span><span class="p">}</span> <span class="o">*</span> <span class="n">R</span>
+   <span class="n">f</span><span class="o">.</span> <span class="n">u</span><span class="o">^</span><span class="p">{</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">}</span> <span class="o">=</span> <span class="n">u</span><span class="o">^</span><span class="p">{</span><span class="n">k</span><span class="p">}</span> <span class="o">+</span> <span class="n">Δu</span>
+   <span class="n">g</span><span class="o">.</span> <span class="n">Update</span> <span class="n">a</span><span class="p">,</span> <span class="n">v</span> <span class="kn">from</span><span class="w"> </span><span class="nn">Newmark</span> <span class="n">formulas</span>
+   <span class="n">h</span><span class="o">.</span> <span class="n">Check</span> <span class="n">convergence</span><span class="p">:</span> <span class="o">||</span><span class="n">R</span><span class="o">||</span> <span class="o">/</span> <span class="o">||</span><span class="n">p</span><span class="o">||</span> <span class="o">&lt;</span> <span class="n">tol</span>
+<span class="mf">3.</span> <span class="n">Accept</span><span class="p">:</span> <span class="n">u_</span><span class="p">{</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">}</span> <span class="o">=</span> <span class="n">u</span><span class="o">^</span><span class="p">{</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">},</span> <span class="n">update</span> <span class="n">state</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
+<section id="tangent-based-iteration-details">
+<h3>8.2 Tangent-Based Iteration Details<a class="headerlink" href="#tangent-based-iteration-details" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>[ ] <strong>Effective tangent:</strong> <code class="docutils literal notranslate"><span class="pre">K_eff(u)</span> <span class="pre">=</span> <span class="pre">K_t(u)</span> <span class="pre">+</span> <span class="pre">a0*M</span> <span class="pre">+</span> <span class="pre">a1*C</span></code>
+where <code class="docutils literal notranslate"><span class="pre">a0</span> <span class="pre">=</span> <span class="pre">1/(beta*dt^2)</span></code>, <code class="docutils literal notranslate"><span class="pre">a1</span> <span class="pre">=</span> <span class="pre">gamma/(beta*dt)</span></code></p></li>
+<li><p>Option: <code class="docutils literal notranslate"><span class="pre">modified_newton=True</span></code> → re-use K_t from first iteration (cheaper, slower convergence)</p></li>
+<li><p>Option: <code class="docutils literal notranslate"><span class="pre">initial_stiffness=True</span></code> → use K_0 (elastic) throughout (simplest, worst convergence)</p></li>
+</ul>
+</section>
+<section id="convergence-criteria">
+<h3>8.3 Convergence Criteria<a class="headerlink" href="#convergence-criteria" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>[ ] <strong>Multiple criteria (configurable):</strong></p>
+<ol class="arabic simple">
+<li><p><strong>Residual norm:</strong> <code class="docutils literal notranslate"><span class="pre">||R||₂</span> <span class="pre">/</span> <span class="pre">||p(t_{n+1})||₂</span> <span class="pre">&lt;</span> <span class="pre">tol_r</span></code></p></li>
+<li><p><strong>Energy norm:</strong> <code class="docutils literal notranslate"><span class="pre">|ΔuᵀR|</span> <span class="pre">/</span> <span class="pre">|u_{n+1}ᵀp_{n+1}|</span> <span class="pre">&lt;</span> <span class="pre">tol_e</span></code></p></li>
+<li><p><strong>Displacement increment:</strong> <code class="docutils literal notranslate"><span class="pre">||Δu||₂</span> <span class="pre">/</span> <span class="pre">||u_{n+1}||₂</span> <span class="pre">&lt;</span> <span class="pre">tol_u</span></code></p></li>
+</ol>
+</li>
+<li><p>Default: use residual norm with <code class="docutils literal notranslate"><span class="pre">tol_r</span> <span class="pre">=</span> <span class="pre">1e-6</span></code></p></li>
+<li><p>Log iteration history: <code class="docutils literal notranslate"><span class="pre">{step,</span> <span class="pre">iter,</span> <span class="pre">||R||,</span> <span class="pre">||Δu||,</span> <span class="pre">energy_error}</span></code></p></li>
+</ul>
+</section>
+<section id="line-search-and-arc-length">
+<h3>8.4 Line Search and Arc-Length<a class="headerlink" href="#line-search-and-arc-length" title="Link to this heading">#</a></h3>
+<ul>
+<li><p>[ ] <strong>Line search:</strong> After Newton direction <code class="docutils literal notranslate"><span class="pre">Δu</span></code>, find optimal step <code class="docutils literal notranslate"><span class="pre">η</span> <span class="pre">∈</span> <span class="pre">(0,</span> <span class="pre">1]</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">min</span> <span class="n">η</span><span class="p">:</span> <span class="n">G</span><span class="p">(</span><span class="n">η</span><span class="p">)</span> <span class="o">=</span> <span class="n">Δu</span><span class="o">^</span><span class="n">T</span> <span class="o">*</span> <span class="n">R</span><span class="p">(</span><span class="n">u</span> <span class="o">+</span> <span class="n">η</span><span class="o">*</span><span class="n">Δu</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Using bisection or cubic interpolation</p>
+</li>
+<li><p><strong>Arc-length within time steps:</strong> For highly nonlinear snap-through in dynamics</p>
+<ul class="simple">
+<li><p>Constraint: <code class="docutils literal notranslate"><span class="pre">||Δu||^2</span> <span class="pre">+</span> <span class="pre">(β*ψ*dt)^2*||Δλ*p||^2</span> <span class="pre">=</span> <span class="pre">Δs^2</span></code></p></li>
+<li><p>Rarely needed but important for explosive/impact problems</p></li>
+</ul>
+</li>
+<li><p><strong>Priority:</strong> LOW</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="phase-9-dynamic-post-processing-visualization">
+<h2>Phase 9: Dynamic Post-Processing &amp; Visualization<a class="headerlink" href="#phase-9-dynamic-post-processing-visualization" title="Link to this heading">#</a></h2>
+<blockquote>
+<div><p><strong>Priority:</strong> MEDIUM | <strong>Location:</strong> <code class="docutils literal notranslate"><span class="pre">src/femlabpy/plotting.py</span></code> (extend)</p>
+</div></blockquote>
+<section id="time-history-plots">
+<h3>9.1 Time History Plots<a class="headerlink" href="#time-history-plots" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>[ ] <strong>Function:</strong> <code class="docutils literal notranslate"><span class="pre">plot_time_history(result:</span> <span class="pre">TimeHistory,</span> <span class="pre">dof_index:</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">list,</span> <span class="pre">*,</span> <span class="pre">quantity='displacement',</span> <span class="pre">ax=None)</span></code></p></li>
+<li><p><strong>Quantities:</strong> <code class="docutils literal notranslate"><span class="pre">'displacement'</span></code>, <code class="docutils literal notranslate"><span class="pre">'velocity'</span></code>, <code class="docutils literal notranslate"><span class="pre">'acceleration'</span></code></p></li>
+<li><p>Support single DOF (line plot) or multiple DOFs (overlaid or subplot)</p></li>
+<li><p>Auto-label axes: “Displacement (m)”, “Time (s)”, etc.</p></li>
+<li><p>Return matplotlib axes for further customization</p></li>
+</ul>
+</section>
+<section id="frequency-response-function-frf">
+<h3>9.2 Frequency Response Function (FRF)<a class="headerlink" href="#frequency-response-function-frf" title="Link to this heading">#</a></h3>
+<ul>
+<li><p>[ ] <strong>Function:</strong> <code class="docutils literal notranslate"><span class="pre">compute_frf(M,</span> <span class="pre">C,</span> <span class="pre">K,</span> <span class="pre">input_dof,</span> <span class="pre">output_dof,</span> <span class="pre">freq_range,</span> <span class="pre">*,</span> <span class="pre">n_points=500)</span> <span class="pre">-&gt;</span> <span class="pre">(freq,</span> <span class="pre">H)</span></code></p></li>
+<li><p><strong>Formula:</strong> At each frequency <code class="docutils literal notranslate"><span class="pre">ω</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">H</span><span class="p">(</span><span class="n">ω</span><span class="p">)</span> <span class="o">=</span> <span class="p">[(</span><span class="o">-</span><span class="n">ω</span><span class="o">^</span><span class="mi">2</span><span class="o">*</span><span class="n">M</span> <span class="o">+</span> <span class="n">iω</span><span class="o">*</span><span class="n">C</span> <span class="o">+</span> <span class="n">K</span><span class="p">)</span><span class="o">^</span><span class="p">{</span><span class="o">-</span><span class="mi">1</span><span class="p">}]</span><span class="n">_</span><span class="p">{</span><span class="n">output_dof</span><span class="p">,</span> <span class="n">input_dof</span><span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Plotting:</strong> <code class="docutils literal notranslate"><span class="pre">plot_frf(freq,</span> <span class="pre">H,</span> <span class="pre">*,</span> <span class="pre">log_scale=True)</span></code> — magnitude and phase vs frequency</p></li>
+<li><p>Mark peaks (resonances) with vertical lines and frequency labels</p></li>
+<li><p>Support dB scale: <code class="docutils literal notranslate"><span class="pre">20*log10(|H|/|H_ref|)</span></code></p></li>
+</ul>
+</section>
+<section id="dynamic-animation">
+<h3>9.3 Dynamic Animation<a class="headerlink" href="#dynamic-animation" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>[ ] <strong>Function:</strong> <code class="docutils literal notranslate"><span class="pre">animate_dynamic(T,</span> <span class="pre">X,</span> <span class="pre">u_history,</span> <span class="pre">dof,</span> <span class="pre">*,</span> <span class="pre">dt=1.0,</span> <span class="pre">scale=1.0,</span> <span class="pre">interval=50,</span> <span class="pre">save_path=None)</span></code></p></li>
+<li><p>Uses <code class="docutils literal notranslate"><span class="pre">matplotlib.animation.FuncAnimation</span></code></p></li>
+<li><p>Each frame: deformed mesh at time step <code class="docutils literal notranslate"><span class="pre">n</span></code></p></li>
+<li><p>Optional: color by displacement magnitude or stress</p></li>
+<li><p>Save to <code class="docutils literal notranslate"><span class="pre">.gif</span></code> or <code class="docutils literal notranslate"><span class="pre">.mp4</span></code> via <code class="docutils literal notranslate"><span class="pre">save_path</span></code></p></li>
+<li><p>Show time counter in title</p></li>
+</ul>
+</section>
+<section id="energy-plots">
+<h3>9.4 Energy Plots<a class="headerlink" href="#energy-plots" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>[ ] <strong>Function:</strong> <code class="docutils literal notranslate"><span class="pre">plot_energy(result:</span> <span class="pre">TimeHistory,</span> <span class="pre">*,</span> <span class="pre">ax=None)</span></code></p></li>
+<li><p>Plot on same axes: E_kinetic (blue), E_strain (red), E_dissipated (green), W_external (black dashed), E_total (thick black)</p></li>
+<li><p>Verify: for undamped, E_total should be flat (horizontal line)</p></li>
+<li><p>Legend with max values</p></li>
+</ul>
+</section>
+<section id="phase-plots">
+<h3>9.5 Phase Plots<a class="headerlink" href="#phase-plots" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>[ ] <strong>Function:</strong> <code class="docutils literal notranslate"><span class="pre">plot_phase(result:</span> <span class="pre">TimeHistory,</span> <span class="pre">dof_index:</span> <span class="pre">int,</span> <span class="pre">*,</span> <span class="pre">ax=None)</span></code></p></li>
+<li><p>Plot velocity vs displacement at specified DOF</p></li>
+<li><p>For SDOF harmonic: should show ellipse</p></li>
+<li><p>For nonlinear: shows limit cycle or chaotic attractor</p></li>
+<li><p><strong>Priority:</strong> LOW</p></li>
+</ul>
+</section>
+<section id="fft-of-response">
+<h3>9.6 FFT of Response<a class="headerlink" href="#fft-of-response" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>[ ] <strong>Function:</strong> <code class="docutils literal notranslate"><span class="pre">fft_response(result:</span> <span class="pre">TimeHistory,</span> <span class="pre">dof_index:</span> <span class="pre">int,</span> <span class="pre">*,</span> <span class="pre">n_fft=None,</span> <span class="pre">window='hann')</span> <span class="pre">-&gt;</span> <span class="pre">(freq,</span> <span class="pre">amplitude)</span></code></p></li>
+<li><p>Apply window function, compute <code class="docutils literal notranslate"><span class="pre">np.fft.rfft</span></code></p></li>
+<li><p>Plot amplitude spectrum with peaks labeled</p></li>
+<li><p>Compare peaks with modal frequencies (if available)</p></li>
+<li><p><strong>Priority:</strong> LOW</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="phase-10-infrastructure-integration">
+<h2>Phase 10: Infrastructure &amp; Integration<a class="headerlink" href="#phase-10-infrastructure-integration" title="Link to this heading">#</a></h2>
+<blockquote>
+<div><p><strong>Priority:</strong> HIGH</p>
+</div></blockquote>
+<section id="create-src-femlabpy-dynamics-py">
+<h3>10.1 Create <code class="docutils literal notranslate"><span class="pre">src/femlabpy/dynamics.py</span></code><a class="headerlink" href="#create-src-femlabpy-dynamics-py" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>[ ] New module housing:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">TimeHistory</span></code> and <code class="docutils literal notranslate"><span class="pre">NewmarkParams</span></code> dataclasses</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">solve_newmark()</span></code> — implicit Newmark-beta solver</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">solve_central_diff()</span></code> — explicit central difference</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">solve_hht()</span></code> — HHT-alpha method</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">solve_newmark_nl()</span></code> — nonlinear Newmark</p></li>
+<li><p>Load function builders (constant, ramp, harmonic, pulse, tabulated, seismic)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">critical_timestep()</span></code> — critical dt computation</p></li>
+<li><p>Internal helpers (<code class="docutils literal notranslate"><span class="pre">_newmark_effective_stiffness</span></code>, <code class="docutils literal notranslate"><span class="pre">_newmark_update</span></code>, <code class="docutils literal notranslate"><span class="pre">_apply_dynamic_bc</span></code>, <code class="docutils literal notranslate"><span class="pre">_compute_energy</span></code>, <code class="docutils literal notranslate"><span class="pre">_check_stability</span></code>)</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="create-src-femlabpy-modal-py">
+<h3>10.2 Create <code class="docutils literal notranslate"><span class="pre">src/femlabpy/modal.py</span></code><a class="headerlink" href="#create-src-femlabpy-modal-py" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>[ ] New module housing:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">ModalResult</span></code> dataclass</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">solve_modal()</span></code> — eigenvalue solver</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_reduce_system()</span></code> — BC elimination for eigenproblems</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_modal_participation()</span></code> — participation factors</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">plot_modes()</span></code> — mode shape visualization</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="create-src-femlabpy-periodic-py">
+<h3>10.3 Create <code class="docutils literal notranslate"><span class="pre">src/femlabpy/periodic.py</span></code><a class="headerlink" href="#create-src-femlabpy-periodic-py" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>[ ] New module housing:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">find_periodic_pairs()</span></code> — node pair identification</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">find_all_periodic_pairs()</span></code> — multi-axis periodicity</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">periodic_constraints()</span></code> — constraint matrix builder</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">solve_periodic()</span></code> — Lagrange multiplier periodic solver</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">apply_mpc()</span></code> — direct elimination alternative</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">apply_macro_strain()</span></code> — RHS from macro strain</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">homogenize()</span></code> — full homogenization pipeline</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">volume_average_stress()</span></code> / <code class="docutils literal notranslate"><span class="pre">volume_average_strain()</span></code> — averaging</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fix_corner()</span></code> — rigid body removal</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">check_periodic_mesh()</span></code> — mesh validation</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="extend-init-in-core-py">
+<h3>10.4 Extend <code class="docutils literal notranslate"><span class="pre">init()</span></code> in <code class="docutils literal notranslate"><span class="pre">core.py</span></code><a class="headerlink" href="#extend-init-in-core-py" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>[ ] <strong>Updated signature:</strong> <code class="docutils literal notranslate"><span class="pre">init(nn,</span> <span class="pre">dof,</span> <span class="pre">*,</span> <span class="pre">dynamic=False,</span> <span class="pre">use_sparse=None)</span></code></p></li>
+<li><p>When <code class="docutils literal notranslate"><span class="pre">dynamic=True</span></code>: return <code class="docutils literal notranslate"><span class="pre">(K,</span> <span class="pre">M,</span> <span class="pre">p,</span> <span class="pre">q)</span></code> — allocate mass matrix M in addition to K</p></li>
+<li><p>Damping matrix C is not pre-allocated (constructed from M, K via Rayleigh coefficients)</p></li>
+<li><p>Backward compatible: <code class="docutils literal notranslate"><span class="pre">dynamic=False</span></code> (default) returns <code class="docutils literal notranslate"><span class="pre">(K,</span> <span class="pre">p,</span> <span class="pre">q)</span></code> as before</p></li>
+</ul>
+</section>
+<section id="update-init-py-exports">
+<h3>10.5 Update <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> Exports<a class="headerlink" href="#update-init-py-exports" title="Link to this heading">#</a></h3>
+<ul>
+<li><p>[ ] Add all new public symbols to <code class="docutils literal notranslate"><span class="pre">__all__</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Mass matrices</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.elements.bars</span><span class="w"> </span><span class="kn">import</span> <span class="n">mebar</span><span class="p">,</span> <span class="n">mbar</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.elements.triangles</span><span class="w"> </span><span class="kn">import</span> <span class="n">met3e</span><span class="p">,</span> <span class="n">mt3e</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.elements.quads</span><span class="w"> </span><span class="kn">import</span> <span class="n">meq4e</span><span class="p">,</span> <span class="n">mq4e</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.elements.solids</span><span class="w"> </span><span class="kn">import</span> <span class="n">meT4e</span><span class="p">,</span> <span class="n">mT4e</span><span class="p">,</span> <span class="n">meh8e</span><span class="p">,</span> <span class="n">mh8e</span>
+
+<span class="c1"># Damping</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.damping</span><span class="w"> </span><span class="kn">import</span> <span class="n">rayleigh_damping</span><span class="p">,</span> <span class="n">rayleigh_coefficients</span><span class="p">,</span> <span class="n">modal_damping</span>
+
+<span class="c1"># Dynamics</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.dynamics</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">solve_newmark</span><span class="p">,</span> <span class="n">solve_central_diff</span><span class="p">,</span> <span class="n">solve_hht</span><span class="p">,</span>
+                       <span class="n">solve_newmark_nl</span><span class="p">,</span> <span class="n">TimeHistory</span><span class="p">,</span> <span class="n">NewmarkParams</span><span class="p">,</span>
+                       <span class="n">constant_load</span><span class="p">,</span> <span class="n">ramp_load</span><span class="p">,</span> <span class="n">harmonic_load</span><span class="p">,</span> <span class="n">pulse_load</span><span class="p">,</span>
+                       <span class="n">tabulated_load</span><span class="p">,</span> <span class="n">seismic_load</span><span class="p">,</span> <span class="n">critical_timestep</span><span class="p">)</span>
+
+<span class="c1"># Modal</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.modal</span><span class="w"> </span><span class="kn">import</span> <span class="n">solve_modal</span><span class="p">,</span> <span class="n">ModalResult</span><span class="p">,</span> <span class="n">plot_modes</span>
+
+<span class="c1"># Periodic</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.periodic</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">find_periodic_pairs</span><span class="p">,</span> <span class="n">find_all_periodic_pairs</span><span class="p">,</span>
+                       <span class="n">periodic_constraints</span><span class="p">,</span> <span class="n">solve_periodic</span><span class="p">,</span> <span class="n">apply_macro_strain</span><span class="p">,</span>
+                       <span class="n">homogenize</span><span class="p">,</span> <span class="n">volume_average_stress</span><span class="p">,</span> <span class="n">volume_average_strain</span><span class="p">,</span>
+                       <span class="n">check_periodic_mesh</span><span class="p">,</span> <span class="n">fix_corner</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
+<section id="update-cli-info">
+<h3>10.6 Update CLI <code class="docutils literal notranslate"><span class="pre">--info</span></code><a class="headerlink" href="#update-cli-info" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>[ ] Extend <code class="docutils literal notranslate"><span class="pre">__main__.py</span></code> to list:</p>
+<ul>
+<li><p>Dynamic solvers: Newmark-beta, central difference, HHT-alpha, nonlinear Newmark</p></li>
+<li><p>Modal analysis capabilities</p></li>
+<li><p>Periodic BC support</p></li>
+<li><p>Mass matrix element types</p></li>
+<li><p>Damping models</p></li>
+</ul>
+</li>
+<li><p><strong>Priority:</strong> LOW</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="phase-11-examples-validation">
+<h2>Phase 11: Examples &amp; Validation<a class="headerlink" href="#phase-11-examples-validation" title="Link to this heading">#</a></h2>
+<blockquote>
+<div><p><strong>Priority:</strong> HIGH for core examples, MEDIUM for advanced</p>
+</div></blockquote>
+<section id="sdof-spring-mass-damper-newmark-validation">
+<h3>11.1 SDOF Spring-Mass-Damper (Newmark Validation)<a class="headerlink" href="#sdof-spring-mass-damper-newmark-validation" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>[ ] <strong>File:</strong> <code class="docutils literal notranslate"><span class="pre">src/femlabpy/examples/dynamic_sdof.py</span></code></p></li>
+<li><p><strong>Setup:</strong> Single DOF: <code class="docutils literal notranslate"><span class="pre">m=1,</span> <span class="pre">k=100,</span> <span class="pre">c=2,</span> <span class="pre">p(t)</span> <span class="pre">=</span> <span class="pre">10*sin(5t)</span></code></p></li>
+<li><p><strong>Analytical solution:</strong> <code class="docutils literal notranslate"><span class="pre">u(t)</span> <span class="pre">=</span> <span class="pre">A*sin(ωt</span> <span class="pre">-</span> <span class="pre">φ)</span> <span class="pre">+</span> <span class="pre">transient</span></code>
+where <code class="docutils literal notranslate"><span class="pre">ω_n</span> <span class="pre">=</span> <span class="pre">sqrt(k/m)</span></code>, <code class="docutils literal notranslate"><span class="pre">ζ</span> <span class="pre">=</span> <span class="pre">c/(2*m*ω_n)</span></code>, <code class="docutils literal notranslate"><span class="pre">ω_d</span> <span class="pre">=</span> <span class="pre">ω_n*sqrt(1-ζ²)</span></code></p></li>
+<li><p><strong>Verification:</strong> Compare Newmark solution with analytical at all time steps</p></li>
+<li><p><strong>Convergence:</strong> Show error decreases as <code class="docutils literal notranslate"><span class="pre">O(dt²)</span></code></p></li>
+</ul>
+</section>
+<section id="cantilever-beam-free-vibration-modal-validation">
+<h3>11.2 Cantilever Beam Free Vibration (Modal Validation)<a class="headerlink" href="#cantilever-beam-free-vibration-modal-validation" title="Link to this heading">#</a></h3>
+<ul>
+<li><p>[ ] <strong>File:</strong> <code class="docutils literal notranslate"><span class="pre">src/femlabpy/examples/dynamic_cantilever.py</span></code></p></li>
+<li><p><strong>Setup:</strong> Cantilever beam (Q4 elements), fixed left end, free right end</p></li>
+<li><p><strong>Analytical frequencies (Euler-Bernoulli):</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">f_n</span> <span class="o">=</span> <span class="p">(</span><span class="n">beta_n</span> <span class="o">*</span> <span class="n">L</span><span class="p">)</span><span class="o">^</span><span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="o">*</span><span class="n">L</span><span class="o">^</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">EI</span> <span class="o">/</span> <span class="p">(</span><span class="n">rho</span><span class="o">*</span><span class="n">A</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>where <code class="docutils literal notranslate"><span class="pre">beta_1*L</span> <span class="pre">=</span> <span class="pre">1.875,</span> <span class="pre">beta_2*L</span> <span class="pre">=</span> <span class="pre">4.694,</span> <span class="pre">beta_3*L</span> <span class="pre">=</span> <span class="pre">7.855,</span> <span class="pre">...</span></code></p>
+</li>
+<li><p><strong>Procedure:</strong> Assemble K and M, run <code class="docutils literal notranslate"><span class="pre">solve_modal()</span></code>, compare first 3 frequencies</p></li>
+<li><p><strong>Expected accuracy:</strong> Within 5% for coarse Q4 mesh, &lt;1% for refined mesh</p></li>
+</ul>
+</section>
+<section id="bar-wave-propagation-explicit-validation">
+<h3>11.3 Bar Wave Propagation (Explicit Validation)<a class="headerlink" href="#bar-wave-propagation-explicit-validation" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>[ ] <strong>File:</strong> <code class="docutils literal notranslate"><span class="pre">src/femlabpy/examples/dynamic_wave.py</span></code></p></li>
+<li><p><strong>Setup:</strong> Long bar, impulse at one end, free at other</p></li>
+<li><p><strong>Analytical:</strong> Wave travels at <code class="docutils literal notranslate"><span class="pre">c</span> <span class="pre">=</span> <span class="pre">sqrt(E/rho)</span></code>, arrives at other end at <code class="docutils literal notranslate"><span class="pre">t</span> <span class="pre">=</span> <span class="pre">L/c</span></code></p></li>
+<li><p><strong>Solver:</strong> <code class="docutils literal notranslate"><span class="pre">solve_central_diff</span></code> with lumped mass</p></li>
+<li><p><strong>Verification:</strong> Wave front position matches analytical speed</p></li>
+<li><p><strong>Priority:</strong> MEDIUM</p></li>
+</ul>
+</section>
+<section id="d-rve-with-circular-inclusion-homogenization">
+<h3>11.4 2D RVE with Circular Inclusion (Homogenization)<a class="headerlink" href="#d-rve-with-circular-inclusion-homogenization" title="Link to this heading">#</a></h3>
+<ul>
+<li><p>[ ] <strong>File:</strong> <code class="docutils literal notranslate"><span class="pre">src/femlabpy/examples/periodic_rve.py</span></code></p></li>
+<li><p><strong>Setup:</strong> Square unit cell (Q4 mesh) with circular inclusion of different material</p></li>
+<li><p><strong>Materials:</strong> Matrix (E1, nu1), Inclusion (E2, nu2), volume fraction <code class="docutils literal notranslate"><span class="pre">f</span></code></p></li>
+<li><p><strong>Procedure:</strong> <code class="docutils literal notranslate"><span class="pre">homogenize()</span></code> → C_eff</p></li>
+<li><p><strong>Validation:</strong> Compare with Mori-Tanaka prediction:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">E_eff</span> <span class="o">=</span> <span class="n">E_m</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">f</span><span class="o">*</span><span class="p">(</span><span class="n">E_i</span><span class="o">/</span><span class="n">E_m</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">f</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">E_i</span><span class="o">/</span><span class="n">E_m</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">S</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>and check that C_eff lies within Hashin-Shtrikman bounds</p>
+</li>
+</ul>
+</section>
+<section id="periodic-unit-cell-under-shear">
+<h3>11.5 Periodic Unit Cell Under Shear<a class="headerlink" href="#periodic-unit-cell-under-shear" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>[ ] <strong>File:</strong> <code class="docutils literal notranslate"><span class="pre">src/femlabpy/examples/periodic_shear.py</span></code></p></li>
+<li><p><strong>Setup:</strong> Homogeneous unit cell, apply macro shear strain <code class="docutils literal notranslate"><span class="pre">gamma_xy</span> <span class="pre">=</span> <span class="pre">0.01</span></code></p></li>
+<li><p><strong>Expected result:</strong> Uniform shear stress throughout, sigma_xy = G * gamma_xy</p></li>
+<li><p><strong>Verification:</strong> Volume-averaged stress matches analytical, displacement field is affine</p></li>
+<li><p><strong>Priority:</strong> MEDIUM</p></li>
+</ul>
+</section>
+<section id="forced-vibration-of-plate">
+<h3>11.6 Forced Vibration of Plate<a class="headerlink" href="#forced-vibration-of-plate" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>[ ] <strong>File:</strong> <code class="docutils literal notranslate"><span class="pre">src/femlabpy/examples/dynamic_plate.py</span></code></p></li>
+<li><p><strong>Setup:</strong> Simply-supported plate (Q4), harmonic point load at center</p></li>
+<li><p><strong>Sweep frequency</strong> and compute response amplitude</p></li>
+<li><p><strong>Verification:</strong> FRF peaks coincide with modal analysis frequencies</p></li>
+<li><p><strong>Priority:</strong> MEDIUM</p></li>
+</ul>
+</section>
+<section id="seismic-ground-motion-response">
+<h3>11.7 Seismic Ground Motion Response<a class="headerlink" href="#seismic-ground-motion-response" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>[ ] <strong>File:</strong> <code class="docutils literal notranslate"><span class="pre">src/femlabpy/examples/dynamic_seismic.py</span></code></p></li>
+<li><p><strong>Setup:</strong> Multi-story frame (bar/beam elements) subjected to El Centro earthquake</p></li>
+<li><p><strong>Load:</strong> <code class="docutils literal notranslate"><span class="pre">p(t)</span> <span class="pre">=</span> <span class="pre">-M</span> <span class="pre">&#64;</span> <span class="pre">r</span> <span class="pre">*</span> <span class="pre">a_g(t)</span></code> where <code class="docutils literal notranslate"><span class="pre">a_g(t)</span></code> = ground acceleration record</p></li>
+<li><p><strong>Solver:</strong> <code class="docutils literal notranslate"><span class="pre">solve_newmark</span></code> with Rayleigh damping (5% at modes 1 and 3)</p></li>
+<li><p><strong>Output:</strong> Roof displacement time history, max inter-story drift</p></li>
+<li><p><strong>Priority:</strong> MEDIUM</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="phase-12-tests">
+<h2>Phase 12: Tests<a class="headerlink" href="#phase-12-tests" title="Link to this heading">#</a></h2>
+<blockquote>
+<div><p><strong>Priority:</strong> HIGH for core, MEDIUM for advanced</p>
+</div></blockquote>
+<section id="tests-test-mass-matrices-py">
+<h3>12.1 <code class="docutils literal notranslate"><span class="pre">tests/test_mass_matrices.py</span></code><a class="headerlink" href="#tests-test-mass-matrices-py" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>[ ] <strong>Tests:</strong></p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_bar_mass_consistent</span></code> — verify shape, symmetry, positive semi-definite</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_bar_mass_lumped</span></code> — verify diagonal, total mass = rho<em>A</em>L</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_t3_mass_consistent</span></code> — verify shape (6,6), symmetry, positive definite</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_t3_mass_total</span></code> — sum of diagonal = total mass = rho<em>t</em>A</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_q4_mass_consistent</span></code> — verify (8,8), symmetry, SPD</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_q4_mass_lumped_preserves_mass</span></code> — row-sum lumped preserves total mass</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_t4_mass_consistent</span></code> — verify (12,12), total mass = rho*V</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_h8_mass_consistent</span></code> — verify (24,24), total mass = rho*V</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_global_mass_assembly</span></code> — verify assembled M has correct total mass</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_mass_sparse_dense_agree</span></code> — sparse and dense assembly give same result</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="tests-test-newmark-py">
+<h3>12.2 <code class="docutils literal notranslate"><span class="pre">tests/test_newmark.py</span></code><a class="headerlink" href="#tests-test-newmark-py" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>[ ] <strong>Tests:</strong></p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_sdof_undamped_free</span></code> — compare with <code class="docutils literal notranslate"><span class="pre">u(t)</span> <span class="pre">=</span> <span class="pre">u0*cos(omega_n*t)</span></code>, error &lt; 1e-3</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_sdof_damped_forced</span></code> — compare with analytical forced response</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_energy_conservation_undamped</span></code> — E_total variation &lt; 1e-6 over 1000 steps</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_unconditional_stability</span></code> — large dt still converges (doesn’t blow up)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_2nd_order_accuracy</span></code> — error ratio at dt vs dt/2 ≈ 4.0</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_linear_acceleration_preset</span></code> — beta=1/6 produces correct results</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_zero_initial_conditions</span></code> — static load converges to static solution</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_bc_handling</span></code> — constrained DOFs remain zero throughout</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="tests-test-central-diff-py">
+<h3>12.3 <code class="docutils literal notranslate"><span class="pre">tests/test_central_diff.py</span></code><a class="headerlink" href="#tests-test-central-diff-py" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>[ ] <strong>Tests:</strong></p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_sdof_explicit_matches_implicit</span></code> — for small dt, same as Newmark</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_conditional_stability_blowup</span></code> — dt &gt; dt_cr causes amplitude growth</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_critical_timestep_computation</span></code> — dt_cr matches analytical for SDOF</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_requires_lumped_mass</span></code> — error raised for consistent mass input</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_wave_speed</span></code> — wave front position in bar matches <code class="docutils literal notranslate"><span class="pre">c</span> <span class="pre">=</span> <span class="pre">sqrt(E/rho)</span></code></p></li>
+<li><p><strong>Priority:</strong> MEDIUM</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="tests-test-modal-py">
+<h3>12.4 <code class="docutils literal notranslate"><span class="pre">tests/test_modal.py</span></code><a class="headerlink" href="#tests-test-modal-py" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>[ ] <strong>Tests:</strong></p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_sdof_frequency</span></code> — <code class="docutils literal notranslate"><span class="pre">omega</span> <span class="pre">=</span> <span class="pre">sqrt(k/m)</span></code> for single spring-mass</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_bar_frequencies</span></code> — compare with analytical <code class="docutils literal notranslate"><span class="pre">f_n</span> <span class="pre">=</span> <span class="pre">n/(2L)</span> <span class="pre">*</span> <span class="pre">sqrt(E/rho)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_mass_orthogonality</span></code> — <code class="docutils literal notranslate"><span class="pre">Phi^T</span> <span class="pre">M</span> <span class="pre">Phi</span> <span class="pre">=</span> <span class="pre">I</span></code> within tolerance</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_stiffness_orthogonality</span></code> — <code class="docutils literal notranslate"><span class="pre">Phi^T</span> <span class="pre">K</span> <span class="pre">Phi</span> <span class="pre">=</span> <span class="pre">diag(omega_i^2)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_bc_elimination</span></code> — constrained DOFs have zero in mode shapes</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_participation_sum</span></code> — sum of effective masses = total mass (per direction)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_n_modes_parameter</span></code> — requesting n modes returns exactly n</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="tests-test-periodic-py">
+<h3>12.5 <code class="docutils literal notranslate"><span class="pre">tests/test_periodic.py</span></code><a class="headerlink" href="#tests-test-periodic-py" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>[ ] <strong>Tests:</strong></p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_pair_detection_simple</span></code> — 4x4 mesh, known pairs on boundaries</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_pair_detection_symmetric_count</span></code> — left face nodes = right face nodes</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_constraint_matrix_rank</span></code> — G has correct rank (n_pairs * dof)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_homogeneous_unit_strain</span></code> — uniform material under unit strain gives expected C</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_C_eff_symmetry</span></code> — C_eff = C_eff^T within tolerance</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_C_eff_positive_definite</span></code> — all eigenvalues of C_eff &gt; 0</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_periodic_vs_large_domain</span></code> — C_eff matches large domain (homogeneous case)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_corner_fixing</span></code> — solution doesn’t have rigid body modes</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="tests-test-hht-py">
+<h3>12.6 <code class="docutils literal notranslate"><span class="pre">tests/test_hht.py</span></code><a class="headerlink" href="#tests-test-hht-py" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>[ ] <strong>Tests:</strong></p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_alpha_zero_is_newmark</span></code> — solve_hht(alpha=0) matches solve_newmark(beta=0.25, gamma=0.5)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_high_freq_dissipation</span></code> — high-frequency component amplitude decays with alpha &lt; 0</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_low_freq_preservation</span></code> — low-frequency response unaffected by alpha</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_alpha_range_validation</span></code> — error for alpha outside [-1/3, 0]</p></li>
+<li><p><strong>Priority:</strong> MEDIUM</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="tests-test-rayleigh-damping-py">
+<h3>12.7 <code class="docutils literal notranslate"><span class="pre">tests/test_rayleigh_damping.py</span></code><a class="headerlink" href="#tests-test-rayleigh-damping-py" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>[ ] <strong>Tests:</strong></p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_rayleigh_formula</span></code> — C = alpha<em>M + beta</em>K exactly</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_coefficients_at_target_frequencies</span></code> — damping ratios match at omega1, omega2</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_sparse_dense_agree</span></code> — sparse and dense versions give same C</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_zero_coefficients</span></code> — alpha=0, beta=0 gives C=0</p></li>
+<li><p><strong>Priority:</strong> MEDIUM</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="tests-test-energy-balance-py">
+<h3>12.8 <code class="docutils literal notranslate"><span class="pre">tests/test_energy_balance.py</span></code><a class="headerlink" href="#tests-test-energy-balance-py" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>[ ] <strong>Tests:</strong></p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_undamped_energy_constant</span></code> — E_k + E_s = const (within 1e-8)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_damped_energy_decreasing</span></code> — E_total strictly decreasing for free vibration with damping</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_external_work_balance</span></code> — W_ext = ΔE_k + ΔE_s + E_dissipated</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_energy_at_rest</span></code> — E_k = 0, E_s = 0.5<em>u^T</em>K*u when velocity = 0</p></li>
+<li><p><strong>Priority:</strong> MEDIUM</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="summary-statistics">
+<h2>Summary Statistics<a class="headerlink" href="#summary-statistics" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Phase</p></th>
+<th class="head"><p>Tasks</p></th>
+<th class="head"><p>Priority</p></th>
+<th class="head"><p>New Files</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>1. Mass Matrices</p></td>
+<td><p>9</p></td>
+<td><p>HIGH</p></td>
+<td><p>— (extend existing)</p></td>
+</tr>
+<tr class="row-odd"><td><p>2. Damping Models</p></td>
+<td><p>3</p></td>
+<td><p>HIGH/MED/LOW</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">damping.py</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>3. Newmark-Beta</p></td>
+<td><p>10</p></td>
+<td><p>HIGH</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">dynamics.py</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>4. Central Difference</p></td>
+<td><p>4</p></td>
+<td><p>MEDIUM</p></td>
+<td><p>(in <code class="docutils literal notranslate"><span class="pre">dynamics.py</span></code>)</p></td>
+</tr>
+<tr class="row-even"><td><p>5. HHT-Alpha</p></td>
+<td><p>3</p></td>
+<td><p>MEDIUM</p></td>
+<td><p>(in <code class="docutils literal notranslate"><span class="pre">dynamics.py</span></code>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>6. Modal Analysis</p></td>
+<td><p>6</p></td>
+<td><p>HIGH</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">modal.py</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>7. Periodic BCs</p></td>
+<td><p>10</p></td>
+<td><p>HIGH</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">periodic.py</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>8. Nonlinear Dynamics</p></td>
+<td><p>4</p></td>
+<td><p>MEDIUM</p></td>
+<td><p>(in <code class="docutils literal notranslate"><span class="pre">dynamics.py</span></code>)</p></td>
+</tr>
+<tr class="row-even"><td><p>9. Post-Processing</p></td>
+<td><p>6</p></td>
+<td><p>MEDIUM/LOW</p></td>
+<td><p>(in <code class="docutils literal notranslate"><span class="pre">plotting.py</span></code>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>10. Infrastructure</p></td>
+<td><p>6</p></td>
+<td><p>HIGH</p></td>
+<td><p>— (integration)</p></td>
+</tr>
+<tr class="row-even"><td><p>11. Examples</p></td>
+<td><p>7</p></td>
+<td><p>HIGH/MED</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">examples/dynamic_*.py</span></code>, <code class="docutils literal notranslate"><span class="pre">examples/periodic_*.py</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>12. Tests</p></td>
+<td><p>8</p></td>
+<td><p>HIGH/MED</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">tests/test_*.py</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>TOTAL</strong></p></td>
+<td><p><strong>76 subtasks</strong></p></td>
+<td><p></p></td>
+<td><p><strong>4 new modules</strong></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#current-state-summary">Current State Summary</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-s-missing">What’s Missing</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#implementation-order">Implementation Order</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#phase-1-mass-matrices">Phase 1: Mass Matrices</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bar-mass-matrix">1.1 Bar Mass Matrix</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#t3-cst-triangle-mass-matrix">1.2 T3 (CST Triangle) Mass Matrix</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#q4-bilinear-quad-mass-matrix">1.3 Q4 (Bilinear Quad) Mass Matrix</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#t4-tetrahedron-mass-matrix">1.4 T4 (Tetrahedron) Mass Matrix</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#h8-hexahedron-mass-matrix">1.5 H8 (Hexahedron) Mass Matrix</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#global-mass-assembly">1.6 Global Mass Assembly</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#vectorized-mass-assembly">1.7 Vectorized Mass Assembly</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#material-table-extension">1.8 Material Table Extension</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#lumped-mass-option">1.9 Lumped Mass Option</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#phase-2-damping-models">Phase 2: Damping Models</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#rayleigh-damping">2.1 Rayleigh Damping</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#modal-damping">2.2 Modal Damping</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#caughey-damping-series">2.3 Caughey Damping Series</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#phase-3-newmark-beta-time-integrator">Phase 3: Newmark-Beta Time Integrator</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#time-integration-data-structures">3.1 Time Integration Data Structures</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#load-function-interface">3.2 Load Function Interface</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#newmark-beta-solver-main">3.3 Newmark-Beta Solver (Main)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#effective-stiffness-formation">3.4 Effective Stiffness Formation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#newmark-update-formulas">3.5 Newmark Update Formulas</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#newmark-parameter-presets">3.6 Newmark Parameter Presets</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#adaptive-time-stepping">3.7 Adaptive Time Stepping</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#boundary-conditions-in-dynamic-context">3.8 Boundary Conditions in Dynamic Context</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#energy-balance-check">3.9 Energy Balance Check</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#stability-check">3.10 Stability Check</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#phase-4-central-difference-explicit-solver">Phase 4: Central Difference (Explicit) Solver</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#central-difference-solver">4.1 Central Difference Solver</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#central-difference-algorithm-details">4.2 Central Difference Algorithm Details</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#critical-time-step-computation">4.3 Critical Time Step Computation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#lumped-mass-validation">4.4 Lumped Mass Validation</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#phase-5-hht-alpha-hilber-hughes-taylor-method">Phase 5: HHT-Alpha (Hilber-Hughes-Taylor) Method</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hht-alpha-solver">5.1 HHT-Alpha Solver</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hht-parameters-and-equilibrium">5.2 HHT Parameters and Equilibrium</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#recovery-validation">5.3 Recovery &amp; Validation</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#phase-6-modal-analysis-eigenvalue-solver">Phase 6: Modal Analysis (Eigenvalue Solver)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#eigenvalue-solver">6.1 Eigenvalue Solver</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#boundary-condition-handling-in-eigenvalue-problem">6.2 Boundary Condition Handling in Eigenvalue Problem</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mode-shape-normalization">6.3 Mode Shape Normalization</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#frequency-output">6.4 Frequency Output</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#modal-participation-factors">6.5 Modal Participation Factors</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mode-shape-plotting">6.6 Mode Shape Plotting</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#phase-7-periodic-boundary-conditions">Phase 7: Periodic Boundary Conditions</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#periodic-node-pair-identification">7.1 Periodic Node Pair Identification</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#multi-axis-periodicity">7.2 Multi-Axis Periodicity</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#periodic-constraint-matrix">7.3 Periodic Constraint Matrix</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#integration-with-lagrange-multiplier-solver">7.4 Integration with Lagrange Multiplier Solver</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mpc-alternative-direct-elimination">7.5 MPC Alternative (Direct Elimination)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#macro-strain-application">7.6 Macro Strain Application</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#computational-homogenization">7.7 Computational Homogenization</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#volume-averaging-utilities">7.8 Volume Averaging Utilities</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corner-node-fixing">7.9 Corner Node Fixing</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#periodic-mesh-validation">7.10 Periodic Mesh Validation</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#phase-8-nonlinear-dynamics">Phase 8: Nonlinear Dynamics</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nonlinear-newmark-solver">8.1 Nonlinear Newmark Solver</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tangent-based-iteration-details">8.2 Tangent-Based Iteration Details</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#convergence-criteria">8.3 Convergence Criteria</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#line-search-and-arc-length">8.4 Line Search and Arc-Length</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#phase-9-dynamic-post-processing-visualization">Phase 9: Dynamic Post-Processing &amp; Visualization</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#time-history-plots">9.1 Time History Plots</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#frequency-response-function-frf">9.2 Frequency Response Function (FRF)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dynamic-animation">9.3 Dynamic Animation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#energy-plots">9.4 Energy Plots</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#phase-plots">9.5 Phase Plots</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fft-of-response">9.6 FFT of Response</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#phase-10-infrastructure-integration">Phase 10: Infrastructure &amp; Integration</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#create-src-femlabpy-dynamics-py">10.1 Create <code class="docutils literal notranslate"><span class="pre">src/femlabpy/dynamics.py</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#create-src-femlabpy-modal-py">10.2 Create <code class="docutils literal notranslate"><span class="pre">src/femlabpy/modal.py</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#create-src-femlabpy-periodic-py">10.3 Create <code class="docutils literal notranslate"><span class="pre">src/femlabpy/periodic.py</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#extend-init-in-core-py">10.4 Extend <code class="docutils literal notranslate"><span class="pre">init()</span></code> in <code class="docutils literal notranslate"><span class="pre">core.py</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#update-init-py-exports">10.5 Update <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> Exports</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#update-cli-info">10.6 Update CLI <code class="docutils literal notranslate"><span class="pre">--info</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#phase-11-examples-validation">Phase 11: Examples &amp; Validation</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sdof-spring-mass-damper-newmark-validation">11.1 SDOF Spring-Mass-Damper (Newmark Validation)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#cantilever-beam-free-vibration-modal-validation">11.2 Cantilever Beam Free Vibration (Modal Validation)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bar-wave-propagation-explicit-validation">11.3 Bar Wave Propagation (Explicit Validation)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#d-rve-with-circular-inclusion-homogenization">11.4 2D RVE with Circular Inclusion (Homogenization)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#periodic-unit-cell-under-shear">11.5 Periodic Unit Cell Under Shear</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#forced-vibration-of-plate">11.6 Forced Vibration of Plate</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seismic-ground-motion-response">11.7 Seismic Ground Motion Response</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#phase-12-tests">Phase 12: Tests</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-mass-matrices-py">12.1 <code class="docutils literal notranslate"><span class="pre">tests/test_mass_matrices.py</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-newmark-py">12.2 <code class="docutils literal notranslate"><span class="pre">tests/test_newmark.py</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-central-diff-py">12.3 <code class="docutils literal notranslate"><span class="pre">tests/test_central_diff.py</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-modal-py">12.4 <code class="docutils literal notranslate"><span class="pre">tests/test_modal.py</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-periodic-py">12.5 <code class="docutils literal notranslate"><span class="pre">tests/test_periodic.py</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-hht-py">12.6 <code class="docutils literal notranslate"><span class="pre">tests/test_hht.py</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-rayleigh-damping-py">12.7 <code class="docutils literal notranslate"><span class="pre">tests/test_rayleigh_damping.py</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-test-energy-balance-py">12.8 <code class="docutils literal notranslate"><span class="pre">tests/test_energy_balance.py</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary-statistics">Summary Statistics</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="_sources/TODO_DYNAMICS_PERIODIC.md.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=7f76b32a3354e82990f2"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=7f76b32a3354e82990f2"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, femlabpy contributors.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.17.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

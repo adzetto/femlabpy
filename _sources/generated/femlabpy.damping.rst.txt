@@ -3,12 +3,35 @@
 
 .. automodule:: femlabpy.damping
 
-   
-   .. rubric:: Functions
 
-   .. autosummary::
-   
-      modal_damping
-      rayleigh_coefficients
-      rayleigh_damping
-   
+
+
+
+
+Functions
+---------
+
+.. autosummary::
+
+
+   modal_damping
+   rayleigh_coefficients
+   rayleigh_damping
+
+Function Reference
+------------------
+
+
+.. autofunction:: femlabpy.damping.modal_damping
+
+
+.. autofunction:: femlabpy.damping.rayleigh_coefficients
+
+
+.. autofunction:: femlabpy.damping.rayleigh_damping
+
+
+
+
+
+

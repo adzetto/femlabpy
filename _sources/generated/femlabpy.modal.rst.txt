@@ -3,17 +3,49 @@
 
 .. automodule:: femlabpy.modal
 
-   
-   .. rubric:: Functions
 
-   .. autosummary::
-   
-      plot_modes
-      solve_modal
-   
-   .. rubric:: Classes
 
-   .. autosummary::
-   
-      ModalResult
-   
+
+
+
+Functions
+---------
+
+.. autosummary::
+
+
+   plot_modes
+   solve_modal
+
+Function Reference
+------------------
+
+
+.. autofunction:: femlabpy.modal.plot_modes
+
+
+.. autofunction:: femlabpy.modal.solve_modal
+
+
+
+
+
+Classes
+-------
+
+.. autosummary::
+
+
+   ModalResult
+
+Class Reference
+---------------
+
+
+.. autoclass:: femlabpy.modal.ModalResult
+   :members:
+   :show-inheritance:
+
+
+
+

@@ -3,22 +3,75 @@
 
 .. automodule:: femlabpy.matlab
 
-   
-   .. rubric:: Functions
 
-   .. autosummary::
-   
-      bar01
-      bar02
-      bar03
-      canti
-      elastic
-      flow
-      flowq4
-      flowt3
-      hole
-      nlbar
-      plastpe
-      plastps
-      square
-   
+
+
+
+
+Functions
+---------
+
+.. autosummary::
+
+
+   bar01
+   bar02
+   bar03
+   canti
+   elastic
+   flow
+   flowq4
+   flowt3
+   hole
+   nlbar
+   plastpe
+   plastps
+   square
+
+Function Reference
+------------------
+
+
+.. autofunction:: femlabpy.matlab.bar01
+
+
+.. autofunction:: femlabpy.matlab.bar02
+
+
+.. autofunction:: femlabpy.matlab.bar03
+
+
+.. autofunction:: femlabpy.matlab.canti
+
+
+.. autofunction:: femlabpy.matlab.elastic
+
+
+.. autofunction:: femlabpy.matlab.flow
+
+
+.. autofunction:: femlabpy.matlab.flowq4
+
+
+.. autofunction:: femlabpy.matlab.flowt3
+
+
+.. autofunction:: femlabpy.matlab.hole
+
+
+.. autofunction:: femlabpy.matlab.nlbar
+
+
+.. autofunction:: femlabpy.matlab.plastpe
+
+
+.. autofunction:: femlabpy.matlab.plastps
+
+
+.. autofunction:: femlabpy.matlab.square
+
+
+
+
+
+

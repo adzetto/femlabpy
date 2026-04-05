@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Plotting and Post-Processing &#8212; femlabpy 0.6.0 documentation</title>
+    <title>Plotting and Postprocessing &#8212; femlabpy 0.6.0 documentation</title>
   
   
   
@@ -31,6 +31,7 @@
 <link href="../_static/styles/pydata-sphinx-theme.css?digest=7f76b32a3354e82990f2" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=aa664f36" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../_static/scripts/fontawesome.js?digest=7f76b32a3354e82990f2"></script>
@@ -41,13 +42,11 @@
     <script src="../_static/documentation_options.js?v=8fa8b3e9"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'theory/12_plotting_postprocessing';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="13. Legacy Wrappers for MATLAB Compatibility" href="13_legacy_wrappers.html" />
+    <link rel="next" title="Chapter 13: Legacy Wrappers" href="13_legacy_wrappers.html" />
     <link rel="prev" title="Chapter 11: Nonlinear Solvers" href="11_nonlinear_solvers.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -133,118 +132,38 @@
     
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../tutorials.html">
-    Tutorials & Usage Manual
+    Tutorials
   </a>
 </li>
 
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../manual/index.html">
-    User Guide
+    Guide
   </a>
 </li>
 
 
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="index.html">
-    Theory & Reference Manual
+    Theory
   </a>
 </li>
 
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../api.html">
-    API Reference
+    API
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="01_core_assembly.html">
-    Global Matrix Assembly in Finite Element Analysis: A Rigorous Perspective
+  <a class="nav-link nav-internal" href="../matlab_python_mapping.html">
+    MATLAB Mapping
   </a>
 </li>
 
-            <li class="nav-item dropdown">
-                <button class="btn dropdown-toggle nav-item" type="button"
-                data-bs-toggle="dropdown" aria-expanded="false"
-                aria-controls="pst-nav-more-links">
-                    More
-                </button>
-                <ul id="pst-nav-more-links" class="dropdown-menu">
-                    
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="02_boundary_loads.html">
-    Chapter 2: Boundary Conditions and Loads
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="03_1d_bars.html">
-    Chapter 3: 1D Bar Elements (Linear & Nonlinear)
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="04_2d_triangles.html">
-    2D Triangular Elements (CST)
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="05_2d_quads.html">
-    Chapter 5: 2D Isoparametric Quadrilateral Elements
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="06_3d_solids.html">
-    3D Solid Elements: Tetrahedrons and Hexahedrons
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="07_plasticity.html">
-    Chapter 7: Constitutive Models & Plasticity
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="08_dynamics.html">
-    Structural Dynamics and Time Integration
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="09_modal_periodic.html">
-    Chapter 9: Eigenvalue Problems and Periodic Boundaries
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="10_io_mesh.html">
-    Mesh I/O, Data Types, and Helpers
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../api.html">
-    API Reference
-  </a>
-</li>
-
-                </ul>
-            </li>
-            
   </ul>
 </nav></div>
       
@@ -328,105 +247,35 @@
     
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../tutorials.html">
-    Tutorials & Usage Manual
+    Tutorials
   </a>
 </li>
 
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../manual/index.html">
-    User Guide
+    Guide
   </a>
 </li>
 
 
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="index.html">
-    Theory & Reference Manual
+    Theory
   </a>
 </li>
 
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../api.html">
-    API Reference
+    API
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="01_core_assembly.html">
-    Global Matrix Assembly in Finite Element Analysis: A Rigorous Perspective
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="02_boundary_loads.html">
-    Chapter 2: Boundary Conditions and Loads
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="03_1d_bars.html">
-    Chapter 3: 1D Bar Elements (Linear & Nonlinear)
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="04_2d_triangles.html">
-    2D Triangular Elements (CST)
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="05_2d_quads.html">
-    Chapter 5: 2D Isoparametric Quadrilateral Elements
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="06_3d_solids.html">
-    3D Solid Elements: Tetrahedrons and Hexahedrons
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="07_plasticity.html">
-    Chapter 7: Constitutive Models & Plasticity
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="08_dynamics.html">
-    Structural Dynamics and Time Integration
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="09_modal_periodic.html">
-    Chapter 9: Eigenvalue Problems and Periodic Boundaries
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="10_io_mesh.html">
-    Mesh I/O, Data Types, and Helpers
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../api.html">
-    API Reference
+  <a class="nav-link nav-internal" href="../matlab_python_mapping.html">
+    MATLAB Mapping
   </a>
 </li>
 
@@ -473,20 +322,19 @@
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="01_core_assembly.html">Global Matrix Assembly in Finite Element Analysis: A Rigorous Perspective</a></li>
-<li class="toctree-l1"><a class="reference internal" href="02_boundary_loads.html">Chapter 2: Boundary Conditions and Loads</a></li>
-<li class="toctree-l1"><a class="reference internal" href="03_1d_bars.html">Chapter 3: 1D Bar Elements (Linear &amp; Nonlinear)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="04_2d_triangles.html">2D Triangular Elements (CST)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="05_2d_quads.html">Chapter 5: 2D Isoparametric Quadrilateral Elements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="01_core_assembly.html">Core Assembly in Finite Element Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="02_boundary_loads.html">Boundary conditions and loads</a></li>
+<li class="toctree-l1"><a class="reference internal" href="03_1d_bars.html">1D bar elements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04_2d_triangles.html">2D Triangular Elements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05_2d_quads.html">2D Isoparametric Quadrilateral Elements</a></li>
 <li class="toctree-l1"><a class="reference internal" href="06_3d_solids.html">3D Solid Elements: Tetrahedrons and Hexahedrons</a></li>
-
-<li class="toctree-l1"><a class="reference internal" href="07_plasticity.html">Chapter 7: Constitutive Models &amp; Plasticity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="07_plasticity.html">Constitutive Models and Plasticity</a></li>
 <li class="toctree-l1"><a class="reference internal" href="08_dynamics.html">Structural Dynamics and Time Integration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="09_modal_periodic.html">Chapter 9: Eigenvalue Problems and Periodic Boundaries</a></li>
-<li class="toctree-l1"><a class="reference internal" href="10_io_mesh.html">Mesh I/O, Data Types, and Helpers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="09_modal_periodic.html">Modal analysis and periodic boundaries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="10_io_mesh.html">Mesh I/O and Gmsh Import</a></li>
 <li class="toctree-l1"><a class="reference internal" href="11_nonlinear_solvers.html">Chapter 11: Nonlinear Solvers</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Plotting and Post-Processing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="13_legacy_wrappers.html">13. Legacy Wrappers for MATLAB Compatibility</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Plotting and Postprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13_legacy_wrappers.html">Chapter 13: Legacy Wrappers</a></li>
 </ul>
 </div>
 </nav></div>
@@ -528,9 +376,9 @@
       </a>
     </li>
     
-    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Theory &amp; Reference Manual</a></li>
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Theory and Reference Manual</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Plotting and Post-Processing</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Plotting and Postprocessing</span></li>
   </ul>
 </nav>
 </div>
@@ -547,48 +395,124 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="plotting-and-post-processing">
-<h1>Plotting and Post-Processing<a class="headerlink" href="#plotting-and-post-processing" title="Link to this heading">#</a></h1>
-<p>In finite element analysis, visualizing the results and calculating reaction forces are crucial steps after solving the global system of equations. This document details the procedures used in our software.</p>
-<section id="mesh-plotting-with-polycollection">
-<h2>Mesh Plotting with <code class="docutils literal notranslate"><span class="pre">PolyCollection</span></code><a class="headerlink" href="#mesh-plotting-with-polycollection" title="Link to this heading">#</a></h2>
-<p>In <code class="docutils literal notranslate"><span class="pre">plotting.py</span></code>, rendering the finite element mesh element-by-element using standard plot commands is extremely slow for large meshes. Instead, it uses <code class="docutils literal notranslate"><span class="pre">matplotlib.collections.PolyCollection</span></code>.</p>
-<p>A <code class="docutils literal notranslate"><span class="pre">PolyCollection</span></code> allows <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code> to draw a large number of polygons in a single efficient step. The implementation works as follows:</p>
-<ol class="arabic simple">
-<li><p>The global coordinates of the nodes for each element are gathered into a 3D NumPy array of shape <code class="docutils literal notranslate"><span class="pre">(num_elements,</span> <span class="pre">num_nodes_per_element,</span> <span class="pre">2)</span></code>.</p></li>
-<li><p>This array is passed directly into the <code class="docutils literal notranslate"><span class="pre">PolyCollection</span></code> constructor.</p></li>
-<li><p>The resulting collection is then added to the plot’s <code class="docutils literal notranslate"><span class="pre">Axes</span></code> object. This allows for fast and seamless rendering of the entire mesh, as well as easy mapping of scalar arrays (like extrapolated nodal values) to a colormap for contour plotting.</p></li>
-</ol>
+  <section class="tex2jax_ignore mathjax_ignore" id="plotting-and-postprocessing">
+<h1>Plotting and Postprocessing<a class="headerlink" href="#plotting-and-postprocessing" title="Link to this heading">#</a></h1>
+<p>This chapter explains how <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> turns solved arrays into figures and how it
+extracts support reactions from the internal force vector. The code is small, but
+the conventions matter.</p>
+<section id="mesh-and-field-plotting">
+<h2>Mesh and Field Plotting<a class="headerlink" href="#mesh-and-field-plotting" title="Link to this heading">#</a></h2>
+<p>The plotting helpers in <code class="docutils literal notranslate"><span class="pre">plotting.py</span></code> work directly on the topology and
+coordinate arrays used elsewhere in the package.</p>
+<section id="plotelem">
+<h3><code class="docutils literal notranslate"><span class="pre">plotelem</span></code><a class="headerlink" href="#plotelem" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">plotelem(T,</span> <span class="pre">X,</span> <span class="pre">...)</span></code> draws the undeformed mesh. It reads each element row,
+subtracts one from the one-based node ids, and plots the resulting polygon or
+polyline.</p>
+<p>The helper also supports optional node and element labels. That is useful when
+you are checking topology ordering or debugging a bad mesh import.</p>
 </section>
-<section id="stress-extrapolation-in-plotq4">
-<h2>Stress Extrapolation in <code class="docutils literal notranslate"><span class="pre">plotq4</span></code><a class="headerlink" href="#stress-extrapolation-in-plotq4" title="Link to this heading">#</a></h2>
-<p>In a displacement-based Q4 (bilinear quadrilateral) element formulation, stresses and strains are evaluated at the integration points (Gauss points) inside the element. For a 2x2 Gauss quadrature rule, there are 4 Gauss points.</p>
-<p>However, continuous contour plotting (Gouraud shading) requires scalar values at the element nodes. In <code class="docutils literal notranslate"><span class="pre">plotq4</span></code>, this is achieved by extrapolating the Gauss point stresses to the corner nodes:</p>
-<ol class="arabic simple">
-<li><p>A local coordinate system is defined where the 4 Gauss points are treated as the “corners” of an auxiliary square (<span class="math notranslate nohighlight">\(\xi, \eta = \pm 1/\sqrt{3}\)</span>).</p></li>
-<li><p>An extrapolation matrix <span class="math notranslate nohighlight">\(\mathbf{E}\)</span> is constructed using standard bilinear shape functions evaluated at the actual node locations (<span class="math notranslate nohighlight">\(\xi, \eta = \pm 1\)</span>) relative to the auxiliary square.</p></li>
-<li><p>The Gauss point stresses for each element, <span class="math notranslate nohighlight">\(\boldsymbol{\sigma}_{GP}\)</span>, are multiplied by this matrix to yield the nodal stresses:
-$<span class="math notranslate nohighlight">\( \boldsymbol{\sigma}_{node} = \mathbf{E} \boldsymbol{\sigma}_{GP} \)</span>$</p></li>
-<li><p>Because multiple elements share the same node, the extrapolated stress values from all elements meeting at a node are averaged to produce a smooth, continuous field for contour plotting.</p></li>
-</ol>
+<section id="plotforces">
+<h3><code class="docutils literal notranslate"><span class="pre">plotforces</span></code><a class="headerlink" href="#plotforces" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">plotforces(T,</span> <span class="pre">X,</span> <span class="pre">P,</span> <span class="pre">...)</span></code> draws nodal loads as arrows. The element table is not
+used directly; it is accepted only for a consistent plotting signature.</p>
+<p>The arrow size is scaled from the mesh span so a small model and a large model
+remain readable with the same function call.</p>
 </section>
-<section id="reaction-forces-calculation">
-<h2>Reaction Forces Calculation<a class="headerlink" href="#reaction-forces-calculation" title="Link to this heading">#</a></h2>
-<p>To compute the reaction forces at the constrained degrees of freedom (the supports), <code class="docutils literal notranslate"><span class="pre">postprocess.py</span></code> applies the global equilibrium equation:</p>
-<div class="math notranslate nohighlight">
-\[ \mathbf{R} = \mathbf{K} \mathbf{u} - \mathbf{P} \]</div>
-<p>Where:</p>
+<section id="plotbc">
+<h3><code class="docutils literal notranslate"><span class="pre">plotbc</span></code><a class="headerlink" href="#plotbc" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">plotbc(T,</span> <span class="pre">X,</span> <span class="pre">C,</span> <span class="pre">...)</span></code> visualizes prescribed displacements. Zero-valued
+constraints are shown as markers, while nonzero prescribed values are drawn as
+arrows.</p>
+<p>That distinction matches the actual solver behavior:</p>
 <ul class="simple">
-<li><p><span class="math notranslate nohighlight">\(\mathbf{K}\)</span> is the global stiffness matrix.</p></li>
-<li><p><span class="math notranslate nohighlight">\(\mathbf{u}\)</span> is the full global displacement vector.</p></li>
-<li><p><span class="math notranslate nohighlight">\(\mathbf{P}\)</span> is the vector of applied external nodal forces.</p></li>
-<li><p><span class="math notranslate nohighlight">\(\mathbf{R}\)</span> is the vector of reaction forces.</p></li>
+<li><p>zero values are fixed degrees of freedom;</p></li>
+<li><p>nonzero values are enforced displacements.</p></li>
 </ul>
-<p>Since external forces and internal forces balance out at free degrees of freedom, <span class="math notranslate nohighlight">\(\mathbf{R}\)</span> will be zero at the free nodes and will contain the actual support reactions at the constrained nodes.</p>
-<p>The exact Python code used to calculate the reaction forces is:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">R</span> <span class="o">=</span> <span class="n">K</span> <span class="o">@</span> <span class="n">u</span> <span class="o">-</span> <span class="n">P</span>
+</section>
+<section id="plotu">
+<h3><code class="docutils literal notranslate"><span class="pre">plotu</span></code><a class="headerlink" href="#plotu" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">plotu(T,</span> <span class="pre">X,</span> <span class="pre">u,</span> <span class="pre">...)</span></code> draws a scalar nodal field over a 2D or 3D mesh. In 2D it
+uses <code class="docutils literal notranslate"><span class="pre">PolyCollection</span></code>. In 3D it uses <code class="docutils literal notranslate"><span class="pre">Poly3DCollection</span></code>.</p>
+<p>The function does not attempt to infer the meaning of the scalar field. It just
+colors each element by the mean value of its nodal samples.</p>
+</section>
+</section>
+<section id="element-contours">
+<h2>Element Contours<a class="headerlink" href="#element-contours" title="Link to this heading">#</a></h2>
+<section id="plotq4">
+<h3><code class="docutils literal notranslate"><span class="pre">plotq4</span></code><a class="headerlink" href="#plotq4" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">plotq4(T,</span> <span class="pre">X,</span> <span class="pre">S,</span> <span class="pre">scomp,</span> <span class="pre">...)</span></code> reconstructs a nodal contour from Q4 Gauss-point
+results. The code expects the Q4 storage layout used by the Q4 recovery
+functions: each component is stored at four Gauss points per element.</p>
+<p>The implementation does three things:</p>
+<ol class="arabic simple">
+<li><p>it extracts the requested component with one-based <code class="docutils literal notranslate"><span class="pre">scomp</span></code>;</p></li>
+<li><p>it maps the four Gauss-point values to corner values with a small
+extrapolation matrix;</p></li>
+<li><p>it averages contributions from adjacent elements at each node.</p></li>
+</ol>
+<p>The final contour is displayed with <code class="docutils literal notranslate"><span class="pre">tripcolor(...,</span> <span class="pre">shading=&quot;gouraud&quot;)</span></code> so the
+result looks smooth across the mesh.</p>
+</section>
+<section id="plott3">
+<h3><code class="docutils literal notranslate"><span class="pre">plott3</span></code><a class="headerlink" href="#plott3" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">plott3(T,</span> <span class="pre">X,</span> <span class="pre">S,</span> <span class="pre">scomp,</span> <span class="pre">...)</span></code> follows the same idea for T3 output. The recovery
+is simpler because the T3 storage is already element-centered in the form used
+by the rest of the codebase.</p>
+</section>
+</section>
+<section id="reactions">
+<h2>Reactions<a class="headerlink" href="#reactions" title="Link to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">reaction()</span></code> function in <code class="docutils literal notranslate"><span class="pre">postprocess.py</span></code> reads the internal force vector
+and extracts the support reactions associated with constrained degrees of
+freedom.</p>
+<p>It does not recompute the finite element solution. It assumes you already have
+the assembled internal force vector <code class="docutils literal notranslate"><span class="pre">q</span></code> and the constraint table <code class="docutils literal notranslate"><span class="pre">C</span></code>.</p>
+<section id="inputs-and-outputs">
+<h3>Inputs and outputs<a class="headerlink" href="#inputs-and-outputs" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">q</span></code> is the global internal force vector.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">C</span></code> is the constraint table.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dof</span></code> tells the helper how to flatten node and local DOF ids.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">comp</span></code> optionally filters the returned rows by a single constrained
+component.</p></li>
+</ul>
+<p>The output is either:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">[node,</span> <span class="pre">local_dof,</span> <span class="pre">reaction]</span></code>, or</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[constraint_row,</span> <span class="pre">reaction]</span></code> when <code class="docutils literal notranslate"><span class="pre">comp</span></code> is supplied.</p></li>
+</ul>
+</section>
+<section id="why-this-helper-is-small">
+<h3>Why this helper is small<a class="headerlink" href="#why-this-helper-is-small" title="Link to this heading">#</a></h3>
+<p>Support reactions are a recovery task, not a solve task. The helper exists so
+the solve path can stay focused on matrix assembly while the postprocess layer
+handles the bookkeeping required to report reactions cleanly.</p>
+</section>
+</section>
+<section id="typical-workflow">
+<h2>Typical Workflow<a class="headerlink" href="#typical-workflow" title="Link to this heading">#</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">femlabpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">fp</span>
+
+<span class="n">K</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">q</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">nn</span><span class="p">,</span> <span class="n">dof</span><span class="p">)</span>
+<span class="n">K</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">kq4e</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">G</span><span class="p">)</span>
+<span class="n">p</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">setload</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">P</span><span class="p">)</span>
+<span class="n">K</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">setbc</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">dof</span><span class="p">)</span>
+<span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+<span class="n">q</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">E</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">qq4e</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">u</span><span class="p">)</span>
+<span class="n">R</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">reaction</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">dof</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>Then use the plotting helpers to inspect the result:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">plotelem</span></code> for geometry,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">plotforces</span></code> for loads,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">plotbc</span></code> for constraints,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">plotu</span></code> for scalar nodal fields,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">plotq4</span></code> or <code class="docutils literal notranslate"><span class="pre">plott3</span></code> for stress or strain contours.</p></li>
+</ul>
 </section>
 </section>
 
@@ -616,7 +540,7 @@ $<span class="math notranslate nohighlight">\( \boldsymbol{\sigma}_{node} = \mat
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">13. Legacy Wrappers for MATLAB Compatibility</p>
+        <p class="prev-next-title">Chapter 13: Legacy Wrappers</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -639,9 +563,24 @@ $<span class="math notranslate nohighlight">\( \boldsymbol{\sigma}_{node} = \mat
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mesh-plotting-with-polycollection">Mesh Plotting with <code class="docutils literal notranslate"><span class="pre">PolyCollection</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#stress-extrapolation-in-plotq4">Stress Extrapolation in <code class="docutils literal notranslate"><span class="pre">plotq4</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reaction-forces-calculation">Reaction Forces Calculation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mesh-and-field-plotting">Mesh and Field Plotting</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plotelem"><code class="docutils literal notranslate"><span class="pre">plotelem</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plotforces"><code class="docutils literal notranslate"><span class="pre">plotforces</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plotbc"><code class="docutils literal notranslate"><span class="pre">plotbc</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plotu"><code class="docutils literal notranslate"><span class="pre">plotu</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#element-contours">Element Contours</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plotq4"><code class="docutils literal notranslate"><span class="pre">plotq4</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plott3"><code class="docutils literal notranslate"><span class="pre">plott3</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reactions">Reactions</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inputs-and-outputs">Inputs and outputs</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#why-this-helper-is-small">Why this helper is small</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#typical-workflow">Typical Workflow</a></li>
 </ul>
   </nav></div>
 

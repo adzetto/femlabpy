@@ -3,10 +3,35 @@
 
 .. automodule:: femlabpy.core
 
-   
-   .. rubric:: Functions
 
-   .. autosummary::
-   
-      init
-   
+
+
+
+
+Functions
+---------
+
+.. autosummary::
+
+
+   cols
+   init
+   rows
+
+Function Reference
+------------------
+
+
+.. autofunction:: femlabpy.core.cols
+
+
+.. autofunction:: femlabpy.core.init
+
+
+.. autofunction:: femlabpy.core.rows
+
+
+
+
+
+

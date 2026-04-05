@@ -1,0 +1,634 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Chapter 7: Packaged Workflows and Examples &#8212; femlabpy 0.6.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=7f76b32a3354e82990f2" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=7f76b32a3354e82990f2" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=aa664f36" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=7f76b32a3354e82990f2"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=7f76b32a3354e82990f2" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=7f76b32a3354e82990f2" />
+
+    <script src="../_static/documentation_options.js?v=8fa8b3e9"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'manual/ch07_packaged_examples';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Chapter 8: Custom Element Development" href="ch08_custom_elements.html" />
+    <link rel="prev" title="Chapter 6: Periodic Boundaries and Gmsh I/O" href="ch06_periodic_io.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">femlabpy 0.6.0 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../tutorials.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../theory/index.html">
+    Theory
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../matlab_python_mapping.html">
+    MATLAB Mapping
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/adzetto/femlabpy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../tutorials.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../theory/index.html">
+    Theory
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../matlab_python_mapping.html">
+    MATLAB Mapping
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/adzetto/femlabpy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar"><svg class="pst-icon svg-inline--fa" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="ch01_fundamentals.html">Chapter 1: Fundamentals &amp; Data Structures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ch02_elements.html">Chapter 2: Element Library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ch03_assembly_statics.html">Chapter 3: Assembly and Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ch04_materials.html">Chapter 4: Material Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ch05_dynamics.html">Structural Dynamics and Time Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ch06_periodic_io.html">Chapter 6: Periodic Boundaries and Gmsh I/O</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Chapter 7: Packaged Workflows and Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ch08_custom_elements.html">Chapter 8: Custom Element Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ch09_dynamic_workflows.html">Chapter 9: Dynamic Response Workflows</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">User Guide</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Chapter 7: Packaged Workflows and Examples</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="chapter-7-packaged-workflows-and-examples">
+<h1>Chapter 7: Packaged Workflows and Examples<a class="headerlink" href="#chapter-7-packaged-workflows-and-examples" title="Link to this heading">#</a></h1>
+<p>This chapter mirrors the packaged drivers under <code class="docutils literal notranslate"><span class="pre">src/femlabpy/examples/</span></code>. The goal is not to hide the mechanics behind a one-line wrapper, but to show how the data dictionaries, assemblers, solvers, and post-processing steps fit together.</p>
+<p>The examples below are intentionally practical:</p>
+<ul class="simple">
+<li><p>the nonlinear truss example shows how the legacy orthogonal-residual driver walks a snap-through path,</p></li>
+<li><p>the wave example shows why explicit dynamics wants a lumped mass matrix and a stable time step,</p></li>
+<li><p>the imported-mesh example shows how Gmsh data, direct constraints, and reaction recovery connect in one workflow.</p></li>
+</ul>
+<section id="geometrically-nonlinear-truss-snap-through">
+<h2>7.1 Geometrically Nonlinear Truss Snap-Through<a class="headerlink" href="#geometrically-nonlinear-truss-snap-through" title="Link to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">bar01</span></code> benchmark is the smallest example in the repository that still behaves like a real nonlinear structural problem. The geometry is shallow enough that the response does not stay on a single equilibrium branch, so a plain load-controlled solve is not robust. That is why the example uses <code class="docutils literal notranslate"><span class="pre">solve_nlbar</span></code>, which follows the legacy orthogonal-residual continuation strategy.</p>
+<p>The packaged data come from <code class="docutils literal notranslate"><span class="pre">femlabpy.examples.bar01_data()</span></code>. The fields matter:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">X</span></code> stores node coordinates,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">T</span></code> stores bar connectivity and material ids,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">G</span></code> stores the bar material table,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">C</span></code> stores prescribed displacements,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">P</span></code> stores the reference nodal load vector,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">no_loadsteps</span></code>, <code class="docutils literal notranslate"><span class="pre">i_max</span></code>, <code class="docutils literal notranslate"><span class="pre">i_d</span></code>, and <code class="docutils literal notranslate"><span class="pre">TOL</span></code> control the continuation loop.</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">femlabpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">fp</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">femlabpy.examples</span><span class="w"> </span><span class="kn">import</span> <span class="n">bar01_data</span>
+
+<span class="n">data</span> <span class="o">=</span> <span class="n">bar01_data</span><span class="p">()</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">solve_nlbar</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">[</span><span class="s2">&quot;X&quot;</span><span class="p">],</span>
+    <span class="n">data</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">],</span>
+    <span class="n">data</span><span class="p">[</span><span class="s2">&quot;G&quot;</span><span class="p">],</span>
+    <span class="n">data</span><span class="p">[</span><span class="s2">&quot;C&quot;</span><span class="p">],</span>
+    <span class="n">data</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span>
+    <span class="n">no_loadsteps</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;no_loadsteps&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span>
+    <span class="n">i_max</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;i_max&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span>
+    <span class="n">i_d</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;i_d&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span>
+    <span class="n">tol</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;TOL&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span>
+    <span class="n">plotdof</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;plotdof&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span>
+<span class="p">)</span>
+
+<span class="n">u_path</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;U_path&quot;</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="n">f_path</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;F_path&quot;</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>What this code is doing is straightforward once you align it with the solver:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">bar01_data()</span></code> gives you the exact legacy deck that the original MATLAB example used.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">solve_nlbar(...)</span></code> assembles the tangent stiffness with <code class="docutils literal notranslate"><span class="pre">kbar</span></code>, evaluates internal forces with <code class="docutils literal notranslate"><span class="pre">qbar</span></code>, and applies displacement constraints with <code class="docutils literal notranslate"><span class="pre">setbc</span></code>.</p></li>
+<li><p>Each load step starts from a predictor displacement increment, then corrects that increment until the residual norm is small enough.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">U_path</span></code> and <code class="docutils literal notranslate"><span class="pre">F_path</span></code> record the monitored degree of freedom, which is what you plot to see the snap-through curve.</p></li>
+</ul>
+<p>The important point is that the solver is not trying to force the structure through a bad equilibrium path. It keeps relinearizing the tangent problem and lets the load factor change sign when the response demands it. That is exactly what a snap-through benchmark needs.</p>
+<p>If you prefer the packaged driver instead of the lower-level call, <code class="docutils literal notranslate"><span class="pre">femlabpy.examples.run_bar01_nlbar(plot=True)</span></code> returns the same result plus ready-made figures.</p>
+</section>
+<section id="explicit-bar-wave-propagation">
+<h2>7.2 Explicit Bar Wave Propagation<a class="headerlink" href="#explicit-bar-wave-propagation" title="Link to this heading">#</a></h2>
+<p>The wave example exists to show a different kind of numerical behavior. Here the goal is not geometric nonlinearity, but a time discretization that can follow a sharp wave front without smearing it away. That is why the example uses the explicit central-difference solver together with a lumped mass matrix.</p>
+<p>The packaged driver is <code class="docutils literal notranslate"><span class="pre">femlabpy.examples.run_dynamic_wave()</span></code>. Its output includes the exact wave speed from the material data, the critical time step, the time step actually used, and a <code class="docutils literal notranslate"><span class="pre">TimeHistory</span></code> object with the full displacement history.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">femlabpy.examples</span><span class="w"> </span><span class="kn">import</span> <span class="n">run_dynamic_wave</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="n">run_dynamic_wave</span><span class="p">(</span><span class="n">dt_factor</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;critical dt:&quot;</span><span class="p">,</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;dt_cr&quot;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;used dt:&quot;</span><span class="p">,</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;dt_used&quot;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;exact wave speed:&quot;</span><span class="p">,</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;c_wave_exact&quot;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;measured wave speed:&quot;</span><span class="p">,</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;c_wave_measured&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>The internal workflow is the part worth understanding:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">dynamic_wave_data()</span></code> builds a 1D bar mesh, the material table, and the reference wave speed <code class="docutils literal notranslate"><span class="pre">c_wave</span> <span class="pre">=</span> <span class="pre">sqrt(E</span> <span class="pre">/</span> <span class="pre">rho)</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_assemble_bar_system()</span></code> loops over the elements and accumulates the bar stiffness and lumped mass into the global matrices.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">critical_timestep(K,</span> <span class="pre">M)</span></code> estimates the stability limit for the explicit method, then the example multiplies that limit by <code class="docutils literal notranslate"><span class="pre">dt_factor</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">solve_central_diff(...)</span></code> advances the response using the diagonal mass entries directly, so there is no matrix factorization in the time loop.</p></li>
+<li><p>the pulse is injected through a small local force function <code class="docutils literal notranslate"><span class="pre">p_func(t)</span></code>, which keeps the load history explicit and easy to inspect.</p></li>
+</ul>
+<p>The history arrays are stored in time-major form. <code class="docutils literal notranslate"><span class="pre">TimeHistory.u</span></code> is organized so <code class="docutils literal notranslate"><span class="pre">result.u[i,</span> <span class="pre">j]</span></code> means “displacement at step <code class="docutils literal notranslate"><span class="pre">i</span></code>, degree of freedom <code class="docutils literal notranslate"><span class="pre">j</span></code>”. That makes it easy to plot a waterfall snapshot, a midpoint trace, or a response history at a single node.</p>
+<p>The example also checks the measured arrival time against the analytical estimate <code class="docutils literal notranslate"><span class="pre">L</span> <span class="pre">/</span> <span class="pre">c_wave</span></code>. That is useful because it turns the script into a validation case instead of just a pretty animation.</p>
+</section>
+<section id="imported-mesh-with-direct-constraints">
+<h2>7.3 Imported Mesh With Direct Constraints<a class="headerlink" href="#imported-mesh-with-direct-constraints" title="Link to this heading">#</a></h2>
+<p>The triangular Gmsh example shows the most typical non-legacy workflow in the repository: read a mesh, assemble a system, apply prescribed displacements, solve, then recover reactions and stresses.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">femlabpy.examples</span><span class="w"> </span><span class="kn">import</span> <span class="n">gmsh_triangle_data</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">femlabpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">init</span><span class="p">,</span> <span class="n">kt3e</span><span class="p">,</span> <span class="n">qt3e</span><span class="p">,</span> <span class="n">reaction</span><span class="p">,</span> <span class="n">setload</span><span class="p">,</span> <span class="n">solve_lag</span>
+
+<span class="n">data</span> <span class="o">=</span> <span class="n">gmsh_triangle_data</span><span class="p">()</span>
+
+<span class="n">K</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">q</span> <span class="o">=</span> <span class="n">init</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;X&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;dof&quot;</span><span class="p">],</span> <span class="n">use_sparse</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">K</span> <span class="o">=</span> <span class="n">kt3e</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;X&quot;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;G&quot;</span><span class="p">])</span>
+<span class="n">p</span> <span class="o">=</span> <span class="n">setload</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">])</span>
+<span class="n">u</span> <span class="o">=</span> <span class="n">solve_lag</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;C&quot;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;dof&quot;</span><span class="p">])</span>
+<span class="n">q</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">E</span> <span class="o">=</span> <span class="n">qt3e</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;T&quot;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;X&quot;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;G&quot;</span><span class="p">],</span> <span class="n">u</span><span class="p">)</span>
+<span class="n">R</span> <span class="o">=</span> <span class="n">reaction</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;C&quot;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;dof&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>This example is useful because it makes the data flow explicit:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">gmsh_triangle_data()</span></code> uses <code class="docutils literal notranslate"><span class="pre">load_gmsh</span></code> under the hood and returns a normal FemLab-style dictionary.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">init(...)</span></code> creates the global stiffness, load, and internal-force arrays with the right size for the mesh.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">kt3e(...)</span></code> scatters the element stiffness contributions into the global matrix.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">setload(...)</span></code> writes the nodal loads into the global right-hand side vector.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">solve_lag(...)</span></code> enforces the prescribed displacements by augmenting the system with Lagrange multipliers.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">qt3e(...)</span></code> recomputes the internal forces and the element stress/strain fields from the solved displacement vector.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">reaction(...)</span></code> extracts the support reactions from the internal-force vector so you can check equilibrium.</p></li>
+</ul>
+<p>This is the pattern to follow whenever you want to work from an imported mesh instead of one of the packaged benchmark decks. The solver remains transparent: every array is still available, and every step is still inspectable.</p>
+</section>
+<section id="what-to-read-next">
+<h2>7.4 What To Read Next<a class="headerlink" href="#what-to-read-next" title="Link to this heading">#</a></h2>
+<p>The next step is to look at the source code for the exact functions these examples call:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">src/femlabpy/solvers.py</span></code> for <code class="docutils literal notranslate"><span class="pre">solve_nlbar</span></code>,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">src/femlabpy/dynamics.py</span></code> for <code class="docutils literal notranslate"><span class="pre">solve_central_diff</span></code>, <code class="docutils literal notranslate"><span class="pre">critical_timestep</span></code>, and the load builders,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">src/femlabpy/examples/legacy_cases.py</span></code> for the packaged nonlinear benchmark decks,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">src/femlabpy/examples/dynamic_wave.py</span></code> for the wave-propagation validation script,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">src/femlabpy/examples/gmsh_triangle.py</span></code> for the imported-mesh workflow.</p></li>
+</ul>
+<p>If you read the examples and the source together, the library stops looking like a black box. You can see exactly where the input tables go, how the global matrices are assembled, and how the solver returns the response history you plot afterwards.</p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="ch06_periodic_io.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Chapter 6: Periodic Boundaries and Gmsh I/O</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="ch08_custom_elements.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Chapter 8: Custom Element Development</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#geometrically-nonlinear-truss-snap-through">7.1 Geometrically Nonlinear Truss Snap-Through</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#explicit-bar-wave-propagation">7.2 Explicit Bar Wave Propagation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#imported-mesh-with-direct-constraints">7.3 Imported Mesh With Direct Constraints</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-to-read-next">7.4 What To Read Next</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../_sources/manual/ch07_packaged_examples.md.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=7f76b32a3354e82990f2"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=7f76b32a3354e82990f2"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, femlabpy contributors.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.17.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

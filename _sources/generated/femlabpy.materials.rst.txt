@@ -3,4 +3,51 @@
 
 .. automodule:: femlabpy.materials
 
-   
+
+
+
+
+
+Functions
+---------
+
+.. autosummary::
+
+
+   devstress
+   devstres
+   dyieldvm
+   eqstress
+   stressdp
+   stressvm
+   yieldvm
+
+Function Reference
+------------------
+
+
+.. autofunction:: femlabpy.materials.devstress
+
+
+.. autofunction:: femlabpy.materials.devstres
+
+
+.. autofunction:: femlabpy.materials.dyieldvm
+
+
+.. autofunction:: femlabpy.materials.eqstress
+
+
+.. autofunction:: femlabpy.materials.stressdp
+
+
+.. autofunction:: femlabpy.materials.stressvm
+
+
+.. autofunction:: femlabpy.materials.yieldvm
+
+
+
+
+
+

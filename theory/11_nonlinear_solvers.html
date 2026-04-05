@@ -31,6 +31,7 @@
 <link href="../_static/styles/pydata-sphinx-theme.css?digest=7f76b32a3354e82990f2" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=aa664f36" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../_static/scripts/fontawesome.js?digest=7f76b32a3354e82990f2"></script>
@@ -41,14 +42,12 @@
     <script src="../_static/documentation_options.js?v=8fa8b3e9"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'theory/11_nonlinear_solvers';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Plotting and Post-Processing" href="12_plotting_postprocessing.html" />
-    <link rel="prev" title="Mesh I/O, Data Types, and Helpers" href="10_io_mesh.html" />
+    <link rel="next" title="Plotting and Postprocessing" href="12_plotting_postprocessing.html" />
+    <link rel="prev" title="Mesh I/O and Gmsh Import" href="10_io_mesh.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -133,118 +132,38 @@
     
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../tutorials.html">
-    Tutorials & Usage Manual
+    Tutorials
   </a>
 </li>
 
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../manual/index.html">
-    User Guide
+    Guide
   </a>
 </li>
 
 
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="index.html">
-    Theory & Reference Manual
+    Theory
   </a>
 </li>
 
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../api.html">
-    API Reference
+    API
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="01_core_assembly.html">
-    Global Matrix Assembly in Finite Element Analysis: A Rigorous Perspective
+  <a class="nav-link nav-internal" href="../matlab_python_mapping.html">
+    MATLAB Mapping
   </a>
 </li>
 
-            <li class="nav-item dropdown">
-                <button class="btn dropdown-toggle nav-item" type="button"
-                data-bs-toggle="dropdown" aria-expanded="false"
-                aria-controls="pst-nav-more-links">
-                    More
-                </button>
-                <ul id="pst-nav-more-links" class="dropdown-menu">
-                    
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="02_boundary_loads.html">
-    Chapter 2: Boundary Conditions and Loads
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="03_1d_bars.html">
-    Chapter 3: 1D Bar Elements (Linear & Nonlinear)
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="04_2d_triangles.html">
-    2D Triangular Elements (CST)
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="05_2d_quads.html">
-    Chapter 5: 2D Isoparametric Quadrilateral Elements
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="06_3d_solids.html">
-    3D Solid Elements: Tetrahedrons and Hexahedrons
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="07_plasticity.html">
-    Chapter 7: Constitutive Models & Plasticity
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="08_dynamics.html">
-    Structural Dynamics and Time Integration
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="09_modal_periodic.html">
-    Chapter 9: Eigenvalue Problems and Periodic Boundaries
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="10_io_mesh.html">
-    Mesh I/O, Data Types, and Helpers
-  </a>
-</li>
-
-
-<li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="../api.html">
-    API Reference
-  </a>
-</li>
-
-                </ul>
-            </li>
-            
   </ul>
 </nav></div>
       
@@ -328,105 +247,35 @@
     
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../tutorials.html">
-    Tutorials & Usage Manual
+    Tutorials
   </a>
 </li>
 
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../manual/index.html">
-    User Guide
+    Guide
   </a>
 </li>
 
 
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="index.html">
-    Theory & Reference Manual
+    Theory
   </a>
 </li>
 
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../api.html">
-    API Reference
+    API
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="01_core_assembly.html">
-    Global Matrix Assembly in Finite Element Analysis: A Rigorous Perspective
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="02_boundary_loads.html">
-    Chapter 2: Boundary Conditions and Loads
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="03_1d_bars.html">
-    Chapter 3: 1D Bar Elements (Linear & Nonlinear)
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="04_2d_triangles.html">
-    2D Triangular Elements (CST)
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="05_2d_quads.html">
-    Chapter 5: 2D Isoparametric Quadrilateral Elements
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="06_3d_solids.html">
-    3D Solid Elements: Tetrahedrons and Hexahedrons
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="07_plasticity.html">
-    Chapter 7: Constitutive Models & Plasticity
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="08_dynamics.html">
-    Structural Dynamics and Time Integration
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="09_modal_periodic.html">
-    Chapter 9: Eigenvalue Problems and Periodic Boundaries
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="10_io_mesh.html">
-    Mesh I/O, Data Types, and Helpers
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../api.html">
-    API Reference
+  <a class="nav-link nav-internal" href="../matlab_python_mapping.html">
+    MATLAB Mapping
   </a>
 </li>
 
@@ -473,20 +322,19 @@
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="01_core_assembly.html">Global Matrix Assembly in Finite Element Analysis: A Rigorous Perspective</a></li>
-<li class="toctree-l1"><a class="reference internal" href="02_boundary_loads.html">Chapter 2: Boundary Conditions and Loads</a></li>
-<li class="toctree-l1"><a class="reference internal" href="03_1d_bars.html">Chapter 3: 1D Bar Elements (Linear &amp; Nonlinear)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="04_2d_triangles.html">2D Triangular Elements (CST)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="05_2d_quads.html">Chapter 5: 2D Isoparametric Quadrilateral Elements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="01_core_assembly.html">Core Assembly in Finite Element Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="02_boundary_loads.html">Boundary conditions and loads</a></li>
+<li class="toctree-l1"><a class="reference internal" href="03_1d_bars.html">1D bar elements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04_2d_triangles.html">2D Triangular Elements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05_2d_quads.html">2D Isoparametric Quadrilateral Elements</a></li>
 <li class="toctree-l1"><a class="reference internal" href="06_3d_solids.html">3D Solid Elements: Tetrahedrons and Hexahedrons</a></li>
-
-<li class="toctree-l1"><a class="reference internal" href="07_plasticity.html">Chapter 7: Constitutive Models &amp; Plasticity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="07_plasticity.html">Constitutive Models and Plasticity</a></li>
 <li class="toctree-l1"><a class="reference internal" href="08_dynamics.html">Structural Dynamics and Time Integration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="09_modal_periodic.html">Chapter 9: Eigenvalue Problems and Periodic Boundaries</a></li>
-<li class="toctree-l1"><a class="reference internal" href="10_io_mesh.html">Mesh I/O, Data Types, and Helpers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="09_modal_periodic.html">Modal analysis and periodic boundaries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="10_io_mesh.html">Mesh I/O and Gmsh Import</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Chapter 11: Nonlinear Solvers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="12_plotting_postprocessing.html">Plotting and Post-Processing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="13_legacy_wrappers.html">13. Legacy Wrappers for MATLAB Compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12_plotting_postprocessing.html">Plotting and Postprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13_legacy_wrappers.html">Chapter 13: Legacy Wrappers</a></li>
 </ul>
 </div>
 </nav></div>
@@ -528,7 +376,7 @@
       </a>
     </li>
     
-    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Theory &amp; Reference Manual</a></li>
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Theory and Reference Manual</a></li>
     
     <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Chapter 11: Nonlinear Solvers</span></li>
   </ul>
@@ -549,93 +397,123 @@
                   
   <section class="tex2jax_ignore mathjax_ignore" id="chapter-11-nonlinear-solvers">
 <h1>Chapter 11: Nonlinear Solvers<a class="headerlink" href="#chapter-11-nonlinear-solvers" title="Link to this heading">#</a></h1>
-<p>Welcome to Chapter 11. As a computational mechanics professor, I will guide you through the intricate world of nonlinear solvers, focusing on two pivotal methods utilized in our <code class="docutils literal notranslate"><span class="pre">femlab-python</span></code> repository: the Orthogonal Residual Method (often referred to as Arc-Length) in <code class="docutils literal notranslate"><span class="pre">solve_nlbar</span></code>, and the standard Newton-Raphson scheme in <code class="docutils literal notranslate"><span class="pre">solve_plastic</span></code>.</p>
-<section id="the-orthogonal-residual-method-solve-nlbar">
-<h2>11.1 The Orthogonal Residual Method (<code class="docutils literal notranslate"><span class="pre">solve_nlbar</span></code>)<a class="headerlink" href="#the-orthogonal-residual-method-solve-nlbar" title="Link to this heading">#</a></h2>
-<p>When structures undergo severe nonlinearities, such as snap-through or snap-back buckling, load-control and displacement-control methods fail. We must allow both the load parameter, <span class="math notranslate nohighlight">\(\lambda\)</span>, and the displacement vector, <span class="math notranslate nohighlight">\(\mathbf{u}\)</span>, to vary simultaneously. This is where Arc-Length methods come into play.</p>
-<p>In our <code class="docutils literal notranslate"><span class="pre">solve_nlbar</span></code> implementation, we employ the Orthogonal Residual Method. The equilibrium equation is:
-$<span class="math notranslate nohighlight">\( \mathbf{r}(\mathbf{u}, \lambda) = \mathbf{f}_{int}(\mathbf{u}) - \lambda \mathbf{f}_{ext} = \mathbf{0} \)</span>$</p>
-<p>For a given iteration, the change in displacement is decomposed into two parts:
-$<span class="math notranslate nohighlight">\( \Delta \mathbf{u} = \Delta \mathbf{u}_r + \Delta \lambda \Delta \mathbf{u}_f \)</span>$
-where:</p>
+<p>This chapter covers the two nonlinear control flows implemented in the codebase:
+the orthogonal-residual load-stepping path for nonlinear bars and the Newton
+style elastoplastic solve for Q4 elements. Both routines are legacy-compatible
+wrappers around the actual element kernels and constraint helpers.</p>
+<section id="orthogonal-residual-solver">
+<h2>Orthogonal Residual Solver<a class="headerlink" href="#orthogonal-residual-solver" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">solve_nlbar(X,</span> <span class="pre">T,</span> <span class="pre">G,</span> <span class="pre">C,</span> <span class="pre">P,</span> <span class="pre">...)</span></code> reproduces the nonlinear bar workflow used by
+the old FemLab classroom examples. The function is not a generic arc-length
+framework. It is a concrete solver with a specific data flow:</p>
+<ol class="arabic simple">
+<li><p>start from zero displacement, zero internal force, and the applied nodal load
+table;</p></li>
+<li><p>build a tangent stiffness matrix with <code class="docutils literal notranslate"><span class="pre">kbar</span></code>;</p></li>
+<li><p>apply displacement constraints with <code class="docutils literal notranslate"><span class="pre">setbc</span></code>;</p></li>
+<li><p>solve a reference increment <code class="docutils literal notranslate"><span class="pre">du0</span></code>;</p></li>
+<li><p>iterate with an orthogonal residual correction until convergence;</p></li>
+<li><p>commit the load and displacement path;</p></li>
+<li><p>recover reactions with <code class="docutils literal notranslate"><span class="pre">reaction</span></code>.</p></li>
+</ol>
+<p>The returned dictionary contains the converged fields and the load path:</p>
 <ul class="simple">
-<li><p><span class="math notranslate nohighlight">\(\Delta \mathbf{u}_r = \mathbf{K}_T^{-1} (-\mathbf{r})\)</span> is the residual displacement due to out-of-balance forces.</p></li>
-<li><p><span class="math notranslate nohighlight">\(\Delta \mathbf{u}_f = \mathbf{K}_T^{-1} \mathbf{f}_{ext}\)</span> is the forward displacement due to external loads.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">u</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">q</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">S</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">E</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">R</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">f</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">U_path</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">F_path</span></code></p></li>
 </ul>
-<section id="enforcing-orthogonality">
-<h3>Enforcing Orthogonality<a class="headerlink" href="#enforcing-orthogonality" title="Link to this heading">#</a></h3>
-<p>To solve for the unknown load increment <span class="math notranslate nohighlight">\(\Delta \lambda\)</span>, we constrain the iterative change in displacement to be orthogonal to the previous step displacement. That is, we enforce:
-$<span class="math notranslate nohighlight">\( \Delta \mathbf{u}_i^T \Delta \mathbf{u}_{i+1} = 0 \)</span>$</p>
-<p>In Python, this constraint allows us to predict the load increment factor <code class="docutils literal notranslate"><span class="pre">dlambda</span></code> (<span class="math notranslate nohighlight">\(\Delta \lambda\)</span>) and the updated displacement <code class="docutils literal notranslate"><span class="pre">du</span></code> (<span class="math notranslate nohighlight">\(\Delta \mathbf{u}\)</span>):</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Tangent stiffness matrix K_T, internal forces f_int, external load f_ext</span>
-<span class="c1"># Compute residual</span>
-<span class="n">residual</span> <span class="o">=</span> <span class="n">f_int</span> <span class="o">-</span> <span class="n">lambda_current</span> <span class="o">*</span> <span class="n">f_ext</span>
-
-<span class="c1"># Solve for the two displacement components</span>
-<span class="n">du_r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">K_T</span><span class="p">,</span> <span class="o">-</span><span class="n">residual</span><span class="p">)</span>
-<span class="n">du_f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">K_T</span><span class="p">,</span> <span class="n">f_ext</span><span class="p">)</span>
-
-<span class="c1"># Predict dlambda by enforcing the orthogonality condition: du_prev.T @ du_new = 0</span>
-<span class="c1"># where du_new = du_r + dlambda * du_f</span>
-<span class="c1"># Therefore: du_prev.T @ (du_r + dlambda * du_f) = 0</span>
-<span class="n">dlambda</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">du_prev</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">du_r</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">du_prev</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">du_f</span><span class="p">)</span>
-
-<span class="c1"># Predict updated displacement increment</span>
-<span class="n">du_new</span> <span class="o">=</span> <span class="n">du_r</span> <span class="o">+</span> <span class="n">dlambda</span> <span class="o">*</span> <span class="n">du_f</span>
-
-<span class="c1"># Update totals</span>
-<span class="n">lambda_current</span> <span class="o">+=</span> <span class="n">dlambda</span>
-<span class="n">u_current</span> <span class="o">+=</span> <span class="n">du_new</span>
-</pre></div>
-</div>
+<section id="what-the-loop-actually-does">
+<h3>What the loop actually does<a class="headerlink" href="#what-the-loop-actually-does" title="Link to this heading">#</a></h3>
+<p>The solver keeps three vectors in play:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">u</span></code>, the accumulated displacement state,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">du</span></code>, the current incremental step,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">f</span></code>, the accumulated external force state.</p></li>
+</ul>
+<p>For each load step it computes a fresh tangent matrix, solves a reference
+increment, then corrects that increment using the residual from
+<code class="docutils literal notranslate"><span class="pre">qbar(...,</span> <span class="pre">u</span> <span class="pre">+</span> <span class="pre">du)</span></code>. The ratio</p>
+<p><code class="docutils literal notranslate"><span class="pre">((dq.T</span> <span class="pre">&#64;</span> <span class="pre">du)</span> <span class="pre">/</span> <span class="pre">(df.T</span> <span class="pre">&#64;</span> <span class="pre">du))</span></code></p>
+<p>is the scalar update that moves the step along the orthogonal-residual path.
+If the corrector does not converge before <code class="docutils literal notranslate"><span class="pre">i_max</span></code>, the solver restarts with a
+smaller step.</p>
+</section>
+<section id="why-the-residual-norm-matters">
+<h3>Why the residual norm matters<a class="headerlink" href="#why-the-residual-norm-matters" title="Link to this heading">#</a></h3>
+<p>The helper <code class="docutils literal notranslate"><span class="pre">rnorm()</span></code> measures the residual on the constrained system in the same
+legacy convention as the old code. That means the convergence test is tied to the
+active degrees of freedom rather than a raw global vector norm.</p>
+</section>
+<section id="practical-meaning-of-the-inputs">
+<h3>Practical meaning of the inputs<a class="headerlink" href="#practical-meaning-of-the-inputs" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">X</span></code> is the node coordinate table.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">T</span></code> is the bar topology table.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">G</span></code> stores material and section data.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">C</span></code> stores prescribed displacements.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">P</span></code> stores nodal loads.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">plotdof</span></code> is one-based, because the original benchmark scripts were one-based.</p></li>
+</ul>
 </section>
 </section>
-<section id="the-standard-newton-raphson-scheme-solve-plastic">
-<h2>11.2 The Standard Newton-Raphson Scheme (<code class="docutils literal notranslate"><span class="pre">solve_plastic</span></code>)<a class="headerlink" href="#the-standard-newton-raphson-scheme-solve-plastic" title="Link to this heading">#</a></h2>
-<p>For material nonlinearities such as plasticity (without path-instabilities), the standard Newton-Raphson algorithm remains our workhorse, as seen in <code class="docutils literal notranslate"><span class="pre">solve_plastic</span></code>.</p>
-<p>We seek to find <span class="math notranslate nohighlight">\(\mathbf{u}\)</span> such that the residual vanishes:
-$<span class="math notranslate nohighlight">\( \mathbf{R}(\mathbf{u}) = \mathbf{F}_{int}(\mathbf{u}) - \mathbf{F}_{ext} = \mathbf{0} \)</span>$</p>
-<p>Using a Taylor series expansion, the update equation is:
-$<span class="math notranslate nohighlight">\( \mathbf{K}_T \Delta \mathbf{u} = -\mathbf{R}(\mathbf{u}) \)</span>$</p>
-<p>where <span class="math notranslate nohighlight">\(\mathbf{K}_T = \frac{\partial \mathbf{F}_{int}}{\partial \mathbf{u}}\)</span> is the algorithmic tangent stiffness matrix.</p>
-<section id="d-nonlinear-spring-example">
-<h3>1D Nonlinear Spring Example<a class="headerlink" href="#d-nonlinear-spring-example" title="Link to this heading">#</a></h3>
-<p>To crystallize this concept, here is a runnable Python script of a 1D nonlinear spring with stiffness <span class="math notranslate nohighlight">\(k(x) = k_0 + \alpha x^2\)</span>. The internal force is <span class="math notranslate nohighlight">\(F_{int}(x) = k_0 x + \frac{1}{3}\alpha x^3\)</span>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-
-<span class="k">def</span><span class="w"> </span><span class="nf">solve_1d_spring</span><span class="p">(</span><span class="n">F_ext</span><span class="p">,</span> <span class="n">k0</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">20</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Solves a 1D nonlinear spring using Newton-Raphson.&quot;&quot;&quot;</span>
-    <span class="n">x</span> <span class="o">=</span> <span class="mf">0.0</span>  <span class="c1"># Initial guess</span>
-    
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Solving for F_ext = </span><span class="si">{</span><span class="n">F_ext</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">30</span><span class="p">)</span>
-    
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_iter</span><span class="p">):</span>
-        <span class="c1"># Internal force and Tangent stiffness</span>
-        <span class="n">F_int</span> <span class="o">=</span> <span class="n">k0</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="mf">3.0</span><span class="p">)</span> <span class="o">*</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">x</span><span class="o">**</span><span class="mi">3</span>
-        <span class="n">K_T</span> <span class="o">=</span> <span class="n">k0</span> <span class="o">+</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span>
-        
-        <span class="c1"># Residual</span>
-        <span class="n">R</span> <span class="o">=</span> <span class="n">F_int</span> <span class="o">-</span> <span class="n">F_ext</span>
-        
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Iter </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">: x = </span><span class="si">{</span><span class="n">x</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">, R = </span><span class="si">{</span><span class="n">R</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        
-        <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">R</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">tol</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Converged in </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2"> iterations.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">x</span>
-            
-        <span class="c1"># Newton-Raphson update</span>
-        <span class="n">dx</span> <span class="o">=</span> <span class="o">-</span><span class="n">R</span> <span class="o">/</span> <span class="n">K_T</span>
-        <span class="n">x</span> <span class="o">+=</span> <span class="n">dx</span>
-        
-    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Newton-Raphson failed to converge.&quot;</span><span class="p">)</span>
-
-<span class="c1"># Run the script</span>
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-    <span class="n">final_x</span> <span class="o">=</span> <span class="n">solve_1d_spring</span><span class="p">(</span><span class="n">F_ext</span><span class="o">=</span><span class="mf">25.0</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Final displacement: x = </span><span class="si">{</span><span class="n">final_x</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
+<section id="elastoplastic-solver">
+<h2>Elastoplastic Solver<a class="headerlink" href="#elastoplastic-solver" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">solve_plastic(X,</span> <span class="pre">T,</span> <span class="pre">G,</span> <span class="pre">C,</span> <span class="pre">P,</span> <span class="pre">...)</span></code> handles the legacy Q4 elastoplastic cases.
+The code keeps the constitutive update inside the element routines and uses the
+solver only for load stepping and equilibrium enforcement.</p>
+<p>The solver supports two geometric branches:</p>
+<ul class="simple">
+<li><p>plane stress through <code class="docutils literal notranslate"><span class="pre">kq4eps</span></code> and <code class="docutils literal notranslate"><span class="pre">qq4eps</span></code>;</p></li>
+<li><p>plane strain through <code class="docutils literal notranslate"><span class="pre">kq4epe</span></code> and <code class="docutils literal notranslate"><span class="pre">qq4epe</span></code>.</p></li>
+</ul>
+<p>It also supports two material laws selected by <code class="docutils literal notranslate"><span class="pre">material_type</span></code>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">1</span></code> for von Mises;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">2</span></code> for Drucker-Prager.</p></li>
+</ul>
+<section id="plane-strain-and-plane-stress">
+<h3>Plane strain and plane stress<a class="headerlink" href="#plane-strain-and-plane-stress" title="Link to this heading">#</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">_solve_plastic_system()</span></code> helper chooses a symmetry-aware dense fallback for
+plane strain and the generic linear solver otherwise. That is a compatibility
+choice, not a new constitutive model.</p>
+</section>
+<section id="state-flow">
+<h3>State flow<a class="headerlink" href="#state-flow" title="Link to this heading">#</a></h3>
+<p>The plastic driver keeps the following state arrays:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">u</span></code> and <code class="docutils literal notranslate"><span class="pre">du</span></code> for the displacement history,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">f</span></code> and <code class="docutils literal notranslate"><span class="pre">df</span></code> for the external force state,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">S</span></code> and <code class="docutils literal notranslate"><span class="pre">E</span></code> for the committed element stress and strain-like history values.</p></li>
+</ul>
+<p>Inside each corrector iteration it:</p>
+<ol class="arabic simple">
+<li><p>rebuilds the tangent matrix from the current state;</p></li>
+<li><p>applies the boundary conditions;</p></li>
+<li><p>computes the internal force vector with the Q4 stress update routine;</p></li>
+<li><p>forms the residual <code class="docutils literal notranslate"><span class="pre">dq</span> <span class="pre">=</span> <span class="pre">q</span> <span class="pre">-</span> <span class="pre">f</span></code>;</p></li>
+<li><p>updates the step with the orthogonal residual correction;</p></li>
+<li><p>commits the element state when the step converges.</p></li>
+</ol>
+<p>The returned dictionary mirrors the bar solver and includes the same path
+vectors together with the element state arrays.</p>
+</section>
+<section id="what-to-read-in-the-source">
+<h3>What to read in the source<a class="headerlink" href="#what-to-read-in-the-source" title="Link to this heading">#</a></h3>
+<p>If you want to modify this solver, read the code in this order:</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">solve_nlbar()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">solve_plastic()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_solve_plastic_system()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">kbar</span></code>, <code class="docutils literal notranslate"><span class="pre">qbar</span></code>, <code class="docutils literal notranslate"><span class="pre">kq4epe</span></code>, <code class="docutils literal notranslate"><span class="pre">kq4eps</span></code>, <code class="docutils literal notranslate"><span class="pre">qq4epe</span></code>, <code class="docutils literal notranslate"><span class="pre">qq4eps</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">setbc()</span></code>, <code class="docutils literal notranslate"><span class="pre">setload()</span></code>, and <code class="docutils literal notranslate"><span class="pre">reaction()</span></code></p></li>
+</ol>
+<p>That order matches the actual control flow and makes the restart behavior much
+easier to follow.</p>
 </section>
 </section>
 </section>
@@ -656,7 +534,7 @@ $<span class="math notranslate nohighlight">\( \mathbf{K}_T \Delta \mathbf{u} = 
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Mesh I/O, Data Types, and Helpers</p>
+        <p class="prev-next-title">Mesh I/O and Gmsh Import</p>
       </div>
     </a>
     <a class="right-next"
@@ -664,7 +542,7 @@ $<span class="math notranslate nohighlight">\( \mathbf{K}_T \Delta \mathbf{u} = 
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Plotting and Post-Processing</p>
+        <p class="prev-next-title">Plotting and Postprocessing</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -687,12 +565,16 @@ $<span class="math notranslate nohighlight">\( \mathbf{K}_T \Delta \mathbf{u} = 
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-orthogonal-residual-method-solve-nlbar">11.1 The Orthogonal Residual Method (<code class="docutils literal notranslate"><span class="pre">solve_nlbar</span></code>)</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#enforcing-orthogonality">Enforcing Orthogonality</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#orthogonal-residual-solver">Orthogonal Residual Solver</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-the-loop-actually-does">What the loop actually does</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#why-the-residual-norm-matters">Why the residual norm matters</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#practical-meaning-of-the-inputs">Practical meaning of the inputs</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-standard-newton-raphson-scheme-solve-plastic">11.2 The Standard Newton-Raphson Scheme (<code class="docutils literal notranslate"><span class="pre">solve_plastic</span></code>)</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#d-nonlinear-spring-example">1D Nonlinear Spring Example</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#elastoplastic-solver">Elastoplastic Solver</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plane-strain-and-plane-stress">Plane strain and plane stress</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#state-flow">State flow</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-to-read-in-the-source">What to read in the source</a></li>
 </ul>
 </li>
 </ul>

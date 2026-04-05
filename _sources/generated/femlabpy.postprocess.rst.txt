@@ -3,10 +3,27 @@
 
 .. automodule:: femlabpy.postprocess
 
-   
-   .. rubric:: Functions
 
-   .. autosummary::
-   
-      reaction
-   
+
+
+
+
+Functions
+---------
+
+.. autosummary::
+
+
+   reaction
+
+Function Reference
+------------------
+
+
+.. autofunction:: femlabpy.postprocess.reaction
+
+
+
+
+
+
