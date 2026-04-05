@@ -1,3 +1,21 @@
+"""
+Three-dimensional solid element kernels for tetrahedra and hexahedra.
+
+Workflow role
+-------------
+This module contains the 3D structural kernels used when the model carries
+three translational degrees of freedom per node. It covers both simplex and
+brick topologies and includes stiffness, internal-force, and mass-matrix
+construction at element and assembled levels.
+
+Public entry points
+-------------------
+- ``keT4e`` and ``qeT4e`` operate on one tetrahedral element.
+- ``keh8e`` and ``qeh8e`` operate on one hexahedral brick.
+- ``kT4e``, ``qT4e``, ``kh8e``, and ``qh8e`` assemble those responses globally.
+- ``meT4e``, ``mT4e``, ``meh8e``, and ``mh8e`` provide the dynamic mass terms.
+"""
+
 from __future__ import annotations
 
 import numpy as np

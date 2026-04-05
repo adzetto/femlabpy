@@ -1,220 +1,245 @@
 # Chapter 8: Custom Element Development
 
-The architecture of `femlabpy` makes it exceptionally straightforward to write and integrate your own finite elements. Unlike heavy, deeply-nested object-oriented frameworks, `femlabpy` requires exactly two mathematically pure functions per element type:
+`femlabpy` is built around small, explicit kernels instead of a deep class hierarchy. That makes custom element work practical: you write the element math once, then wire it into the same assembly and recovery flow used everywhere else in the library.
 
-1. **Stiffness Routine (`ke...`)**: A function that returns the $n \times n$ elemental stiffness matrix.
-2. **Force Routine (`qe...`)**: A function that returns the $n \times 1$ elemental internal force vector.
+The important part is not just the local matrix formula. A usable custom element has to match the repository conventions for topology rows, material tables, degrees of freedom, and recovery outputs. This chapter shows that flow from the helper functions up to the assembled global system.
 
-In this chapter, we will dive profoundly into the mechanics of element assembly. We will thoroughly explore how the `assmk` and `assmq` core functions operate, investigate the monumental performance implications of `is_sparse`, and walk step-by-step through the creation of a **Custom 2D Heat Transfer Element** and a **2D Beam Element**.
+## 8.1 The element contract
 
----
+In this repository, every element family follows the same pattern:
 
-## 8.1 The Philosophy of Element Assembly
+`ke...`
+: Return a local stiffness matrix.
 
-At the heart of the finite element method lies the assembly process—mapping local elemental contributions into the global system matrices. In `femlabpy`, this heavy lifting is performed by two highly optimized workhorses: `assmk` (Assemble Matrix K) and `assmq` (Assemble Vector Q).
+`q...`
+: Return the local internal-force vector and, when useful, element output quantities such as stress and strain.
 
-### Deep Dive: `assmk` and `assmq`
+`m...`
+: Return a local mass matrix for dynamic analysis.
 
-The purpose of `assmk(K, Ke, nodes, dof)` is to take an $n_{el} \times n_{el}$ local stiffness matrix `Ke` and scatter-add it into the global $N_{total} \times N_{total}$ matrix `K`.
+`k...`
+: Assemble all element stiffness matrices into the global matrix.
 
-*   `K`: The global stiffness, mass, or damping matrix.
-*   `Ke`: The elemental matrix (e.g., $3 \times 3$ for a 3-node scalar triangle, $6 \times 6$ for a 2-node beam).
-*   `nodes`: A list or array of global node IDs connected to this element (1-based indexing in standard `femlabpy`).
-*   `dof`: The number of degrees of freedom per node.
+`q...`
+: Assemble all element internal-force vectors into the global vector.
 
-When you pass `dof`, `assmk` automatically calculates the correct block-strides in the global matrix. For example, if `dof=2` (solid mechanics), node `5` corresponds to global rows/cols `8` and `9` (since $(5-1) \times 2 = 8$). `assmk` seamlessly maps the local matrix indices to these global slots.
+That split is deliberate. The local routine should know only element geometry, materials, and interpolation. The assembly routine should know only how to loop through the topology table and scatter the element result into the global system.
 
-`assmq(Q, Qe, nodes, dof)` operates identically but for vectors, mapping an $n_{el} \times 1$ local force vector `Qe` into the global load vector `Q`.
+The helper functions in `src/femlabpy/_helpers.py` define the data model that makes this work:
 
-### The Profound Impact of `is_sparse`
+`topology_nodes`
+: Removes the last entry of a legacy topology row and returns the connected node numbers.
 
-In computational mechanics, memory and performance are dominated by the sparsity of the global matrix. `femlabpy` detects the matrix format dynamically using the `is_sparse` utility.
+`topology_property`
+: Reads the final entry of the same topology row and treats it as the material or property id.
 
-```{warning}
-A $10,000$ node 2D solid mechanics problem has $20,000$ DOFs. A dense float64 matrix of this size requires **3.2 Gigabytes** of RAM. A sparse representation requires barely **a few Megabytes**.
-```
+`material_row`
+: Converts that one-based property id into the matching row from the material table.
 
-How does `is_sparse` affect the custom element assembly loop?
+`node_dof_indices`
+: Expands one-based node numbers into flattened global DOF indices.
 
-1. **Dense Assembly (`is_sparse(K) == False`)**: 
-   If `K` is a standard NumPy `ndarray`, `assmk` executes a direct slicing and accumulation operation. It calculates the global indices and adds `Ke` using `K[ix, iy] += Ke`. This is exceedingly fast for small academic problems but scales at $O(N^2)$ in memory.
-   
-2. **Sparse Assembly (`is_sparse(K) == True`)**:
-   If `K` is a `scipy.sparse` matrix (typically LIL or COO format during assembly), direct slicing is incredibly slow. When `assmk` detects a sparse matrix via `is_sparse`, it switches paradigms. It does not slice. Instead, it extracts the target row and column indices for the elemental block and appends the non-zero entries of `Ke` along with their `(row, col)` coordinates to internal lists (COO format generation).
-   
-By abstracting this inside `assmk`, your custom element driver loops remain perfectly clean, yet they scale seamlessly from 10 elements to 10,000,000 elements.
+If you keep those four conventions intact, your custom element can plug into the rest of the package without special-case glue.
 
----
+## 8.2 How assembly works here
 
-## 8.2 Writing a Custom 2D Heat Transfer Element (`ket3p`)
+The assembly helpers in `src/femlabpy/assembly.py` are intentionally small:
 
-Let's design a 3-node triangular element for 2D steady-state heat conduction (a "Potential" problem). 
+`assmk(K, Ke, Te, dof)`
+: Extract the node numbers from `Te`, build the global DOF indices, and add `Ke` into the global matrix `K`.
 
-### The Mathematical Formulation
+`assmq(q, qe, Te, dof)`
+: Do the same thing for a force vector.
 
-The governing equation (Poisson's equation) is:
-$$ -\nabla \cdot (\mathbf{k} \nabla T) = Q $$
+That means the assembly loop in a custom driver should stay boring. Boring is good here. The real work belongs in the local kernel.
 
-Where $T$ is temperature, $\mathbf{k}$ is the thermal conductivity matrix, and $Q$ is the heat generation. Using the Galerkin method, the weak form leads to the elemental stiffness matrix:
-
-$$ \mathbf{K}_e = \int_{\Omega_e} \nabla \mathbf{N}^T \mathbf{k} \nabla \mathbf{N} \, dA $$
-
-For a 3-node triangle, the shape functions $\mathbf{N} = [N_1, N_2, N_3]$ depend on the natural coordinates $(\xi, \eta)$. The gradient matrix $\mathbf{B}$ contains the spatial derivatives of the shape functions:
-
-$$ \mathbf{B} = \begin{bmatrix} \frac{\partial N_1}{\partial x} & \frac{\partial N_2}{\partial x} & \frac{\partial N_3}{\partial x} \\ \frac{\partial N_1}{\partial y} & \frac{\partial N_2}{\partial y} & \frac{\partial N_3}{\partial y} \end{bmatrix} $$
-
-### Gauss Integration: Theory to Python
-
-To evaluate the integral over the element domain $\Omega_e$, we map the element to a reference master triangle and use numerical Gauss-Legendre quadrature. 
-
-The mapping introduces the Jacobian matrix $\mathbf{J}$, which links the natural derivatives to the spatial derivatives. The integral transforms as:
-
-$$ \int_{\Omega_e} \mathbf{B}^T \mathbf{k} \mathbf{B} \, dA = \sum_{i=1}^{n_{int}} w_i \mathbf{B}(\xi_i, \eta_i)^T \mathbf{k} \mathbf{B}(\xi_i, \eta_i) \det(\mathbf{J}) $$
-
-For a linear triangle, the $\mathbf{B}$ matrix and Jacobian are constant, so a single integration point ($n_{int}=1$, $w_1 = 1/2$) is exact! The beautiful part of computational mechanics is how this complex continuous math reduces to a single, elegant line of linear algebra in Python:
+For a dense matrix, the pattern is straightforward:
 
 ```python
-Ke += B.T @ D @ B * detJ * weight
+indices = node_dof_indices(topology_nodes(row), dof)
+K[np.ix_(indices, indices)] += Ke
 ```
-*(where `D` is our conductivity matrix $\mathbf{k}$)*.
 
-### Python Implementation of `ket3p`
+For a sparse matrix, the same indexing path is used, but you should keep the matrix in an assignment-friendly sparse format during assembly and convert it later if needed.
 
-Here is the exact implementation of the local element routine.
+The practical implication is simple:
+
+1. Build local matrices with NumPy.
+2. Assemble with `assmk` and `assmq`.
+3. Keep the topology format consistent with the rest of the library.
+4. Do not mix local kernel logic with global solve logic.
+
+## 8.3 Scalar potential elements
+
+The scalar potential family is the cleanest place to start because it uses `dof = 1`. The repository already includes the full pattern in `src/femlabpy/elements/triangles.py` and `src/femlabpy/elements/quads.py`.
+
+The triangular scalar kernel is `ket3p`:
 
 ```python
-import numpy as np
-
-def ket3p(Xe, D, th):
-    """
-    Compute the 3x3 conductivity (stiffness) matrix for a 2D Heat Transfer Triangle.
-    
-    Parameters
-    ----------
-    Xe : ndarray
-        3x2 array of node coordinates: [[x1, y1], [x2, y2], [x3, y3]]
-    D : ndarray
-        2x2 thermal conductivity matrix (k_xx, k_yy, etc.)
-    th : float
-        Thickness of the element
-        
-    Returns
-    -------
-    Ke : ndarray
-        3x3 elemental stiffness matrix
-    """
-    # 1. Define Gauss integration point for linear triangle (1 point rule)
-    r, s = 1.0/3.0, 1.0/3.0
-    weight = 0.5  # Area of the reference triangle
-    
-    # 2. Derivatives of shape functions w.r.t natural coords (xi, eta)
-    # N1 = 1 - r - s; N2 = r; N3 = s
-    dN = np.array([
-        [-1.0, 1.0, 0.0],
-        [-1.0, 0.0, 1.0]
-    ])
-    
-    # 3. Compute Jacobian
-    J = dN @ Xe
-    detJ = np.linalg.det(J)
-    
-    if detJ <= 0:
-        raise ValueError("Element Jacobian is zero or negative. Check node numbering.")
-        
-    # 4. Map natural derivatives to spatial derivatives (B matrix)
-    invJ = np.linalg.inv(J)
-    B = invJ @ dN
-    
-    # 5. Gauss Integration
-    # \int B^T * D * B * detJ * dA
-    Ke = B.T @ D @ B * detJ * weight * th
-    
+def ket3p(Xe, Ge):
+    a, area = _triangle_geometry(Xe)
+    props = as_float_array(Ge).reshape(-1)
+    conductivity = props[0]
+    D = np.eye(2, dtype=float) * conductivity
+    B = (1.0 / (2.0 * area)) * np.column_stack([-a[:, 1], a[:, 0]]).T
+    Ke = area * B.T @ D @ B
+    if props.size > 1:
+        b = props[1]
+        Ke = Ke + (b * area / 12.0) * np.array(
+            [[2.0, 1.0, 1.0], [1.0, 2.0, 1.0], [1.0, 1.0, 2.0]]
+        )
     return Ke
 ```
 
-### The Assembly Driver Loop
+What matters in that routine:
 
-To assemble a mesh of 50,000 thermal triangles, we write a driver function `kt3p`. Note how heavily we rely on `assmk`. For a scalar potential problem, `dof = 1`.
+`Xe`
+: The element coordinates. The kernel never asks where the element came from; it only needs the coordinates of the current triangle.
+
+`Ge`
+: A material row. For this element, the first value is conductivity and the optional second value is a reaction term.
+
+`B`
+: The gradient operator. It maps nodal potentials to spatial gradients.
+
+`Ke`
+: The conductivity matrix that will be scattered into the global system.
+
+The companion recovery kernel is `qet3p`, which returns the equivalent nodal flux vector plus the element gradient and flux:
 
 ```python
-from femlabpy.assembly import assmk
+qe, Se, Ee = qet3p(Xe, Ge, Ue)
+```
 
-def kt3p(K, T, X, G):
-    """
-    Global assembly driver for 2D Heat Transfer Triangles.
-    """
-    nel = T.shape[0]
-    dof = 1  # 1 DOF per node (Temperature)
-    
-    # Loop over all elements in the mesh
-    for e in range(nel):
-        # 1-based node IDs from topology matrix
-        n1, n2, n3 = int(T[e, 0]), int(T[e, 1]), int(T[e, 2])
-        prop_id = int(T[e, 3]) - 1
-        
-        # Extract nodal coordinates
-        Xe = np.vstack((X[n1-1], X[n2-1], X[n3-1]))
-        
-        # Extract material properties (Conductivity and thickness)
-        kx = G[prop_id, 0]
-        ky = G[prop_id, 1]
-        D = np.array([[kx, 0], [0, ky]])
-        th = G[prop_id, 2]
-        
-        # 1. Compute elemental matrix
-        Ke = ket3p(Xe, D, th)
-        
-        # 2. Assemble into global matrix
-        nodes = [n1, n2, n3]
-        K = assmk(K, Ke, nodes, dof)
-        
+`qt3p` then loops over the topology table, calls `qet3p` for each element, and accumulates the global vector with `assmq`.
+
+The quadrilateral scalar path follows the same structure. `kq4p` uses the same topological and assembly conventions, but the local integration rule is a 2x2 Gauss scheme instead of the triangle's closed-form expression. That difference stays inside the element kernel, not the public API. If you understand one family, the other family is the same workflow with different interpolation.
+
+## 8.4 Structural elements
+
+The structural triangle kernels use the same assembly model, but the local DOF layout changes to `dof = 2`.
+
+`ket3e`
+: Returns the 6x6 plane-stress or plane-strain stiffness matrix for a constant-strain triangle.
+
+`qet3e`
+: Returns the internal-force vector together with element stress and strain values.
+
+`kt3e`
+: Assembles all T3 element stiffness matrices into the global stiffness matrix.
+
+`qt3e`
+: Recomputes element stress and strain from the global displacement field and scatters the equivalent nodal forces.
+
+The ordering is:
+
+```text
+[u1, v1, u2, v2, u3, v3]
+```
+
+That ordering is what `element_dof_indices` and `assmk` expect. If your custom element uses a different ordering, every downstream routine will be wrong even if the local math is correct.
+
+The same pattern appears in the 3D solid family:
+
+`keT4e`, `qeT4e`, `kT4e`, `qT4e`
+: Four-node tetrahedron element kernels and assembly wrappers.
+
+`keh8e`, `qeh8e`, `kh8e`, `qh8e`
+: Eight-node hexahedron element kernels and assembly wrappers.
+
+These modules are useful references because they show how the repository handles:
+
+1. Vectorized batch assembly.
+2. Material selection through topology property ids.
+3. Stress and strain recovery stored per element.
+4. Sparse-aware accumulation without changing the public API.
+
+## 8.5 Writing a new kernel
+
+When you add a new element, keep the implementation split in the same way as the existing code.
+
+1. Write a local stiffness function `kefoo(Xe, Ge)` that takes only one element's coordinates and material data.
+2. Write a recovery function `qfoo(Xe, Ge, Ue)` if the element has internal forces, stresses, or fluxes.
+3. Write a global assembly wrapper `kfoo(K, T, X, G)` that loops over `T`, extracts `Xe` with `topology_nodes`, resolves the material row with `material_row`, and calls `assmk`.
+4. Write the matching force wrapper `qfoo_global(q, T, X, G, u)` and call `assmq`.
+5. Add the symbols to `src/femlabpy/elements/__init__.py` and, if needed, to the package root exports.
+
+The following skeleton matches the style used in the repository:
+
+```python
+def kefoo(Xe, Ge):
+    Xe = as_float_array(Xe)
+    props = as_float_array(Ge).reshape(-1)
+    # build local interpolation, gradients, constitutive matrix
+    # return the element matrix only
+    return Ke
+
+
+def qfoo(Xe, Ge, Ue):
+    Xe = as_float_array(Xe)
+    Ue = as_float_array(Ue).reshape(-1, 1)
+    # compute local response
+    return qe, Se, Ee
+
+
+def kfoo(K, T, X, G):
+    coords = as_float_array(X)
+    dof = 2  # change to 1 for scalar kernels
+    for row in as_float_array(T):
+        nodes = topology_nodes(row)
+        prop = topology_property(row)
+        Ke = kefoo(coords[nodes - 1], material_row(G, prop))
+        K = assmk(K, Ke, row, dof)
     return K
+
+
+def qfoo_global(q, T, X, G, u):
+    coords = as_float_array(X)
+    dof = 2  # change to 1 for scalar kernels
+    U = as_float_array(u).reshape(coords.shape[0], dof)
+    for row in as_float_array(T):
+        nodes = topology_nodes(row)
+        prop = topology_property(row)
+        Ue = U[nodes - 1].reshape(-1, 1)
+        qe, _, _ = qfoo(coords[nodes - 1], material_row(G, prop), Ue)
+        q = assmq(q, qe, row, dof)
+    return q
 ```
 
-This design separates the finite element math (`ket3p`) from the graph-theory mesh topology (`kt3p`), yielding code that is both beautiful to read and fiercely performant.
+Do not try to make the local kernel aware of the global matrix shape. That coupling makes the code harder to test and much harder to reuse.
 
----
+## 8.6 Example integration checklist
 
-## 8.3 Example: 2D Euler-Bernoulli Beam Element
+Before a new element is considered finished, check these items:
 
-For completeness, let us observe a structural element. A 2D beam element has two nodes, with 3 DOFs per node ($u_x, u_y, \theta_z$). 
+1. The local kernel returns the expected matrix shape.
+2. The recovery kernel returns arrays with predictable shapes and consistent ordering.
+3. The topology row format matches the rest of the package.
+4. The material table row format is documented and used consistently.
+5. Dense and sparse assembly both work on a small test problem.
+6. The element is exported from `src/femlabpy/elements/__init__.py`.
+7. The element is reachable from the package root if users are meant to import it directly.
+8. A short documentation example shows the full flow from `Xe` and `Ge` to assembled `K` and `q`.
 
-The stiffness matrix relies on the standard beam equations and requires an angle transformation $\mathbf{R}^T \mathbf{K}_{loc} \mathbf{R}$.
+A regression test should use a tiny problem where you can compute the same result by hand. For a new scalar element, a single triangle or quadrilateral is enough. For a structural element, compare the new kernel against a known textbook case or one of the existing `femlabpy` elements with the same interpolation order.
 
-```python
-def kebeam2d(Xe, Ge):
-    A, I, E = Ge[0], Ge[1], Ge[2]
-    
-    dx = Xe[1, 0] - Xe[0, 0]
-    dy = Xe[1, 1] - Xe[0, 1]
-    L = np.sqrt(dx**2 + dy**2)
-    c, s = dx / L, dy / L
-    
-    k_axial = E * A / L
-    k_shear = 12 * E * I / L**3
-    k_mom1  = 6 * E * I / L**2
-    k_mom2  = 4 * E * I / L
-    k_mom3  = 2 * E * I / L
-    
-    K_loc = np.array([
-        [ k_axial,  0,        0,       -k_axial,  0,        0      ],
-        [ 0,        k_shear,  k_mom1,   0,       -k_shear,  k_mom1 ],
-        [ 0,        k_mom1,   k_mom2,   0,       -k_mom1,   k_mom3 ],
-        [-k_axial,  0,        0,        k_axial,  0,        0      ],
-        [ 0,       -k_shear, -k_mom1,   0,        k_shear, -k_mom1 ],
-        [ 0,        k_mom1,   k_mom3,   0,       -k_mom1,   k_mom2 ]
-    ])
-    
-    R = np.array([
-        [ c,  s,  0,  0,  0,  0],
-        [-s,  c,  0,  0,  0,  0],
-        [ 0,  0,  1,  0,  0,  0],
-        [ 0,  0,  0,  c,  s,  0],
-        [ 0,  0,  0, -s,  c,  0],
-        [ 0,  0,  0,  0,  0,  1]
-    ])
-    
-    return R.T @ K_loc @ R
-```
+## 8.7 What to read next
 
-The assembly driver `kbeam2d` operates exactly like `kt3p`, except we declare `dof = 3`. The core philosophy remains undisturbed: build local, assemble global.
+If you are adding a new kernel family, read these files in this order:
+
+`src/femlabpy/_helpers.py`
+: For the node, material, and index conventions.
+
+`src/femlabpy/assembly.py`
+: For the scatter-add pattern.
+
+`src/femlabpy/elements/triangles.py`
+: For the simplest full examples in both scalar and structural form.
+
+`src/femlabpy/elements/quads.py`
+: For the higher-order version of the same workflow.
+
+`src/femlabpy/elements/solids.py`
+: For vectorized batch assembly and 3D indexing.
+
+If you keep the math local and the assembly generic, a custom element stays small enough to understand and test.

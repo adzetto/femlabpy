@@ -1,3 +1,21 @@
+"""
+Global array allocation and small indexing helpers for the femlabpy workflow.
+
+Workflow role
+-------------
+This module is the normal starting point after the node table and the number of
+degrees of freedom per node are known. It creates the zeroed global arrays that
+the assembly, boundary, modal, and dynamics modules fill later in the solve
+sequence.
+
+Public entry points
+-------------------
+- ``init`` allocates stiffness, optional mass, external load, and internal
+  force arrays with dense or sparse storage.
+- ``rows`` and ``cols`` are lightweight shape helpers re-exported from the
+  private helper layer because the legacy translation code uses them often.
+"""
+
 from __future__ import annotations
 
 from ._helpers import cols, rows, zeros_matrix, zeros_vector

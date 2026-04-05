@@ -1,64 +1,68 @@
-# Chapter 2: Boundary Conditions and Loads
+# Boundary conditions and loads
 
-In computational mechanics, the formulation of a finite element problem ultimately leads to a system of algebraic equations, typically expressed in the form of a global system:
+In `femlabpy`, a finite element model eventually becomes a global linear system with known and unknown degrees of freedom. The solver needs two things before that system can be used directly: the external load vector and the boundary-condition handling that removes or constrains rigid body motion.
 
 $$ \mathbf{K} \mathbf{u} = \mathbf{P} $$
 
-where $\mathbf{K}$ is the global stiffness matrix, $\mathbf{u}$ is the vector of unknown nodal displacements, and $\mathbf{P}$ is the global load vector. However, before this system can be solved, the equations are singular; they represent a body floating freely in space with rigid body modes. To render the system nonsingular and to reflect the physical reality of the problem, we must impose constraints (Boundary Conditions) and apply external forces (Loads).
+where $\mathbf{K}$ is the global stiffness matrix, $\mathbf{u}$ is the vector of nodal unknowns, and $\mathbf{P}$ is the global load vector. Before the system is solved, the unconstrained equations are usually singular, so the code must first apply loads and then enforce constraints in a way that matches the stored DOF layout.
 
-This chapter discusses the mathematical theory and the computational implementation of boundary conditions and loads within the `femlabpy` framework, specifically focusing on `src/femlabpy/boundary.py` and `src/femlabpy/loads.py`.
+This chapter follows the actual implementation in `loads.py` and `boundary.py`. The important point is that the public helpers do not hide the array shape: they expect the same column conventions used everywhere else in the codebase, and the theory here explains why.
 
 ---
 
-## 2.1 Applying External Loads
+## 2.1 Applying external loads
 
-The global load vector $\mathbf{P}$ accumulates all external forces applied to the structure. These forces can originate from nodal point loads, surface tractions (distributed loads), or body forces (like gravity).
+The global load vector $\mathbf{P}$ accumulates all external forces applied to the structure. In this repository the most common case is a nodal load table where each row begins with a 1-based node index and the remaining columns are the force components in DOF order.
 
-In standard finite element assembly, the contributions from elements are transformed into equivalent nodal loads and added into the global vector. When dealing with point loads explicitly applied to specific degrees of freedom (DOFs), we directly manipulate the entries of $\mathbf{P}$.
+The helpers in `src/femlabpy/loads.py` do two different things:
 
-### 2.1.1 Setting and Adding Loads
+`setload(p, P)` replaces the current values at the listed DOFs.
+`addload(p, P)` accumulates additional values at the same DOFs.
 
-The `femlabpy` library provides two primary functions in `loads.py` for manipulating the global load vector: `setload` and `addload`.
+That distinction matters in assembly workflows. Use `setload` when the input table is the full load definition for the problem. Use `addload` when several tables or source terms need to be combined into one vector.
 
-*   **`setload(P, dofs, values)`**: Explicitly overrides the current value at the specified DOFs with new values.
-*   **`addload(P, dofs, values)`**: Adds new load values to the existing values in the load vector.
+### Load table layout
 
 ```python
-# Example: Applying loads in femlabpy
 import numpy as np
+from femlabpy import init
 from femlabpy.loads import setload, addload
 
-P = np.zeros(6)
-setload(P, [2], [50.0])
-addload(P, [2, 4], [10.0, -25.0])
-print("Global Load Vector:", P)
+_, p, _ = init(nn=3, dof=2)
+
+# [node, Fx, Fy]
+P = np.array([
+    [1, 0.0, -100.0],
+    [3, 50.0, 0.0],
+])
+
+p = setload(p, P)
+p = addload(p, np.array([[3, 0.0, -25.0]]))
 ```
 
 ---
 
-## 2.2 Dirichlet Boundary Conditions: The Penalty and Direct Elimination Methods
+## 2.2 Dirichlet boundary conditions
 
-Dirichlet boundary conditions, also known as essential boundary conditions, specify the known values of the primary field variable (e.g., displacements) at certain boundaries:
+Dirichlet boundary conditions specify known values of the primary field variable at certain nodes or components:
 
 $$ u_i = \bar{u}_i \quad \forall i \in \mathcal{C} $$
 
-Enforcing this directly in the system $\mathbf{K} \mathbf{u} = \mathbf{P}$ requires modifying the equations. Two highly prominent alternatives are the Penalty Method (Large Spring) and the Direct Elimination Method (with a scaled diagonal). `femlabpy` utilizes a hybrid approach in its `setbc` function.
+The code uses a direct-elimination strategy with a scaled diagonal entry. That is close to the textbook "large spring" idea, but the implementation is more careful: before a constrained row is overwritten, its coupling terms are moved to the right-hand side so non-zero prescribed values are handled correctly.
 
-### 2.2.1 Mathematics of the Large Spring Method in Extreme Detail
+The active helper is `setbc(K, p, C, dof)`. The constraint table `C` follows the same legacy layout used throughout the repository:
 
-The penalty method, fundamentally, attaches an extremely stiff spring to the constrained DOF and applies an enormous force such that the spring extends exactly by the desired displacement $\bar{u}_i$.
+`[node, value]` for scalar problems.
+`[node, local_dof, value]` for vector problems.
 
-Often in textbooks, a penalty parameter $\alpha$ is defined to be significantly larger than the stiffness of the system, e.g., $\alpha = 10^6 \times \max(\mathbf{K})$. 
-1. **Modify Stiffness:** Add $\alpha$ to the diagonal entry of $\mathbf{K}$: $K_{ii} \leftarrow K_{ii} + \alpha$
-2. **Modify Load:** Set the corresponding load vector entry to $P_i \leftarrow \alpha \times \bar{u}_i$.
+### How `setbc` works
 
-Since $\alpha$ is overwhelmingly large, the $i$-th equation effectively becomes $\alpha u_i = \alpha \bar{u}_i \implies u_i \approx \bar{u}_i$.
+The implementation in `src/femlabpy/boundary.py` does four things in order:
 
-However, `femlabpy` uses a rigorous direct elimination variant matching the legacy Scilab FemLab implementation. Instead of adding a penalty to the existing stiffness, the entire row and column for DOF $i$ are zeroed out, and a specific "spring stiffness" $k_s$ is assigned to the diagonal, accompanied by transferring coupling forces. The scaling used in `femlabpy` is $0.1 \times \max(|K_{ii}|)$.
-
-### 2.2.2 Exact Python Code for `setbc`
-
-The `setbc` function in `src/femlabpy/boundary.py` implements this flawlessly. Here is the exact Python code responsible for zeroing the rows/columns, updating the RHS, and placing the diagonal stiffness:
+1. It computes a diagonal scale `ks` from the current stiffness matrix.
+2. It converts the 1-based node/component pairs into global DOF indices.
+3. It subtracts the coupling contribution of each constrained DOF from the global load vector.
+4. It zeros the row and column, then places `ks` on the diagonal and `ks * value` in the load vector.
 
 ```python
     ks = 0.1 * max_abs_diagonal(K)
@@ -85,25 +89,25 @@ The `setbc` function in `src/femlabpy/boundary.py` implements this flawlessly. H
         p[j, 0] = ks * val
 ```
 
-This procedure ensures mathematical exactness. Before the row/column is zeroed, the off-diagonal terms $K_{ij}$ are multiplied by the prescribed displacement `val` and moved to the load vector `p`. Then, the $j$-th equation is entirely replaced with $k_s u_j = k_s \bar{u}_j$.
+This procedure keeps the constrained value exactly visible in the modified system and avoids leaving stale coupling terms in the matrix.
 
 ---
 
-## 2.3 General Constraints: Lagrange Multipliers
+## 2.3 General constraints
 
-While Dirichlet conditions fix individual DOFs, engineering problems often involve multi-point constraints (MPCs), where a linear combination of DOFs must satisfy a condition:
+Some problems need multi-point constraints instead of single-node fixities. In that case the condition has the form:
 
 $$ \mathbf{G} \mathbf{u} = \mathbf{Q} $$
 
-where $\mathbf{G}$ is an $m \times n$ constraint matrix and $\mathbf{Q}$ is an $m \times 1$ vector. We use the method of **Lagrange Multipliers**.
+where $\mathbf{G}$ is the constraint matrix and $\mathbf{Q}$ is the constraint right-hand side. `femlabpy` handles this with Lagrange multipliers through `solve_lag_general`.
 
-### 2.3.1 Building the Saddle-Point Matrix via `np.block`
+### Building the saddle-point system
 
-We introduce a vector of Lagrange multipliers, $\boldsymbol{\lambda}$. The total potential energy functional is augmented to include the constraint, leading to the saddle-point equations:
+The augmented system couples the unknown displacements and the multipliers:
 
 $$ \begin{bmatrix} \mathbf{K} & \mathbf{G}^T \\ \mathbf{G} & \mathbf{0} \end{bmatrix} \begin{bmatrix} \mathbf{u} \\ \boldsymbol{\lambda} \end{bmatrix} = \begin{bmatrix} \mathbf{P} \\ \mathbf{Q} \end{bmatrix} $$
 
-In `femlabpy`, `solve_lag_general` handles the construction of this augmented block matrix. A scaling factor is applied to $\mathbf{G}$ and $\mathbf{Q}$ to maintain numerical compatibility, then `numpy.block` is utilized to effortlessly stitch the submatrices together for dense arrays:
+In `solve_lag_general`, the constraint rows are scaled to stay numerically compatible with the stiffness matrix. The function then builds the block matrix with `numpy.block` for dense systems, or `scipy.sparse.bmat` for sparse systems.
 
 ```python
     Gbar = scale * constraint_matrix
@@ -124,53 +128,47 @@ In `femlabpy`, `solve_lag_general` handles the construction of this augmented bl
     )
 ```
 
-This resulting `Kbar` is the indefinite augmented stiffness matrix, and the augmented load vector `pbar` is obtained via `np.vstack`.
+The returned solution contains the physical displacement vector. If requested, the recovered multipliers are rescaled back to the original constraint units.
 
-### 2.3.2 Example: 2-Node Spring System
+### Example: two-spring system
 
-Here is a 50-line runnable Python script demonstrating `solve_lag_general` applied to a simple 2-node spring system where the two nodes are constrained to move exactly together (i.e., $u_1 - u_2 = 0$).
+This example shows the same structure as the implementation: one equilibrium solve, one constraint equation, and one multiplier that reports the transmitted constraint force.
 
 ```python
 import numpy as np
 
-# A standalone mock-up of the solve_lag_general logic for demonstration
 def solve_lag_general(K, p, G, Q):
     scale = 1.0e-2 * np.max(np.abs(np.diag(K)))
     Gbar = scale * G
     Qbar = scale * Q
     
-    # 1. Build Saddle-Point Matrix
+    # Build the saddle-point matrix
     Kbar = np.block([
         [K, Gbar.T],
         [Gbar, np.zeros((G.shape[0], G.shape[0]))]
     ])
     
-    # 2. Build Augmented RHS
+    # Build the augmented right-hand side
     pbar = np.vstack([p, Qbar])
     
-    # 3. Solve System
+    # Solve the augmented system
     augmented = np.linalg.solve(Kbar, pbar)
     u = augmented[:K.shape[0]]
     lagrange = augmented[K.shape[0]:] * scale
     return u, lagrange
 
 def main():
-    # 2-node system: Spring 1 connects ground to Node 1, Spring 2 connects Node 1 to Node 2
-    # k1 = 1000, k2 = 500
     K = np.array([
         [1500.0, -500.0],
         [-500.0,  500.0]
     ])
     
-    # Load applied to Node 2
     p = np.array([[0.0], 
                   [100.0]])
-                  
-    # Constraint: u_1 - u_2 = 0
+
     G = np.array([[1.0, -1.0]])
     Q = np.array([[0.0]])
-    
-    # Solve using Lagrange Multipliers
+
     u, lagrange = solve_lag_general(K, p, G, Q)
     
     print("Displacements:")
@@ -183,10 +181,10 @@ if __name__ == "__main__":
     main()
 ```
 
-When run, both $u_1$ and $u_2$ evaluate to $0.1$ because the two nodes are constrained to displace by the same amount, making the equivalent stiffness acting on the 100 load equal to $1000$, thus $100 / 1000 = 0.1$. The Lagrange multiplier returns the constraint force transmitted between the nodes.
+The key outcome is that the constraint is enforced without guessing a penalty stiffness. That makes the method useful whenever the exact multiplier value matters, such as in periodic constraints or multi-point tie conditions.
 
 ---
 
 ## Summary
 
-Proper handling of boundary conditions dictates the stability and correctness of finite element solutions. `femlabpy` combines the computationally efficient direct elimination with a scaled diagonal for Dirichlet conditions, and the rigorous Lagrange Multiplier formulation for complex multi-point constraints utilizing `np.block` for saddle-point matrix assembly.
+`femlabpy` uses direct elimination for standard fixed DOFs and Lagrange multipliers for general linear constraints. The two paths share the same global indexing rules, so the boundary-condition code stays consistent with the rest of the assembly pipeline.

@@ -1,3 +1,19 @@
+"""
+Load-vector utilities for nodal force tables.
+
+Workflow role
+-------------
+The functions in this module are intentionally small. They take the compact
+FemLab-style load matrix ``P`` and map it into the global right-hand side
+vector used by static, modal, and dynamic workflows.
+
+Public entry points
+-------------------
+- ``setload`` writes the supplied nodal loads into the target vector.
+- ``addload`` accumulates additional nodal loads without clearing previous
+  entries.
+"""
+
 from __future__ import annotations
 
 import numpy as np

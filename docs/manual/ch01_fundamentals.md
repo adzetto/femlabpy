@@ -2,22 +2,42 @@
 
 ## 1.1 The femlabpy Philosophy
 
-`femlabpy` is a pure-Python finite element library that inherits the array-based, vectorized philosophy of the MATLAB/Scilab FemLab toolboxes. Unlike many modern object-oriented finite element frameworks that represent nodes, elements, and materials as deeply nested class instances, `femlabpy` relies entirely on flat, contiguous `numpy` arrays. This design choice has several profound implications:
+`femlabpy` is a pure-Python finite element library built around flat `numpy`
+arrays rather than a deep object hierarchy. That choice is intentional. The
+library follows the FemLab MATLAB/Scilab style where the model is represented by
+tables and vectors, and each solver step maps directly onto array operations.
 
-1. **Performance:** By storing data in NumPy arrays, we leverage highly optimized C and Fortran backends for matrix operations, assembly, and slicing.
-2. **Transparency:** The mathematical mapping from theory to code is direct. A stiffness matrix $K_e$ is simply a 2D array; a displacement vector $u$ is a 1D array.
-3. **Didactic Clarity:** Students and researchers can inspect the entire state of the model at any point by simply printing an array. There are no hidden states or complex getters/setters.
+That design has three practical consequences:
+
+1. The code mirrors the math. A stiffness matrix is a 2D array, a displacement
+   field is a column vector, and a mesh is a small set of integer tables.
+2. The data flow is easy to inspect. You can print the arrays before and after
+   assembly or boundary-condition application and see exactly what changed.
+3. The implementation stays close to NumPy and SciPy primitives, which keeps the
+   kernels compact and makes vectorized assembly straightforward.
+
+The public API exposed through `src/femlabpy/__init__.py`
+collects the core pieces of that workflow at package level. Functions such as
+`init`, `setload`, `setbc`, `assmk`, `assmq`, and the element kernels are all
+imported there so users can work in the same style as the legacy FemLab scripts.
 
 ## 1.2 Core Data Structures
 
-A finite element model in `femlabpy` is completely described by five core matrices. Understanding the mathematical and structural shape of these arrays is the fundamental prerequisite for using the library.
+A finite element model in `femlabpy` is defined by a small set of arrays. The
+library does not hide these arrays behind wrappers; instead, the arrays are the
+model.
 
-### 1.2.1 Node Coordinates Matrix (`X`)
+### 1.2.1 Node Coordinates Matrix
 
-The matrix `X` stores the spatial coordinates of all nodes in the global coordinate system. For a 2D problem with $N$ nodes, `X` is an $N \times 2$ matrix. The row index corresponds to the global node ID.
+The matrix `X` stores the coordinates of every node in the global coordinate
+system. For a 2D model with `N` nodes, `X` has shape `(N, 2)`. For a 3D model,
+the shape is `(N, 3)`.
+
+Each row is one node:
 
 $$
-\mathbf{X} = \begin{bmatrix}
+\mathbf{X} =
+\begin{bmatrix}
 x_1 & y_1 \\
 x_2 & y_2 \\
 \vdots & \vdots \\
@@ -25,196 +45,279 @@ x_N & y_N
 \end{bmatrix}
 $$
 
-*Note: `femlabpy` strictly uses 1-based indexing for node references in topology arrays to maintain compatibility with legacy meshes and mathematical conventions, although the Python arrays themselves are 0-indexed under the hood.*
+In the code, `X[i]` means the coordinates of node `i + 1` in the legacy
+one-based numbering used by the mesh tables. The Python array is still
+zero-based, so any user-facing node number must be shifted down before it is
+used as an index.
 
-### 1.2.2 Topology Matrix (`T`)
+### 1.2.2 Topology Matrix
 
-The topology matrix `T` defines the connectivity of the elements. For a mesh of 4-node quadrilaterals (Q4) with $E$ elements, `T` is an $E \times 5$ integer array. The first 4 columns contain the 1-based global node IDs that make up the element, ordered counter-clockwise. The final column is the material property ID.
+The topology matrix `T` defines element connectivity. Each row corresponds to
+one element. The first columns list the one-based node numbers that belong to
+the element, and the final column stores the property number used to look up the
+material row in `G`.
+
+For a Q4 mesh, `T` typically has shape `(E, 5)`:
 
 $$
-\mathbf{T} = \begin{bmatrix}
-n_{1,1} & n_{1,2} & n_{1,3} & n_{1,4} & \text{prop}_1 \\
+\mathbf{T} =
+\begin{bmatrix}
+n_{1,1} & n_{1,2} & n_{1,3} & n_{1,4} & p_1 \\
 \vdots & \vdots & \vdots & \vdots & \vdots \\
-n_{E,1} & n_{E,2} & n_{E,3} & n_{E,4} & \text{prop}_E
+n_{E,1} & n_{E,2} & n_{E,3} & n_{E,4} & p_E
 \end{bmatrix}
 $$
 
-### 1.2.3 Material Properties (`G`)
+The topology row is the entry point for almost every element kernel. In the
+helpers layer, `topology_nodes()` returns the node portion of the row and
+`topology_property()` returns the material/property id. That split matters
+because the last column is not part of the connectivity itself.
 
-The material matrix `G` contains the physical properties assigned to the elements. For 2D plane stress/strain problems, a row typically takes the form: `[E, \nu, \text{type}, t, \rho]`, where:
-- $E$: Young's Modulus
-- $\nu$: Poisson's Ratio
-- $\text{type}$: 1 for Plane Stress, 2 for Plane Strain
-- $t$: Thickness (for Plane Stress)
-- $\rho$: Density (for dynamic mass matrices)
+### 1.2.3 Material Properties
 
-### 1.2.4 Boundary Constraints (`C`)
+The material matrix `G` stores the physical properties associated with each
+property id. Each row is one material definition. For common 2D elastic
+problems, a row often looks like:
 
-Dirichlet boundary conditions (prescribed displacements) are stored in the `C` array. Each row specifies a constrained node, the degree of freedom (DOF) index (1 for $u_x$, 2 for $u_y$), and the prescribed value $\bar{u}$.
+`[E, nu, type, t, rho]`
 
-$$
-\mathbf{C} = \begin{bmatrix}
-\text{node\_id}_1 & \text{dof}_1 & \bar{u}_1 \\
-\vdots & \vdots & \vdots
-\end{bmatrix}
-$$
+where:
 
-### 1.2.5 Point Loads (`P`)
+`E`
+: Young's modulus.
 
-Neumann boundary conditions (point loads) are stored in the `P` array, following a similar format to `C`: `[node_id, dof, force_value]`.
+`nu`
+: Poisson ratio.
 
-## 1.3 The Finite Element Analysis Sequence
+`type`
+: Material mode selector used by the element kernel, for example plane stress
+  or plane strain.
 
-The standard linear static analysis in `femlabpy` follows a rigorous mathematical sequence:
+`t`
+: Thickness for 2D formulations.
 
-1. **Initialization:** The global stiffness matrix $\mathbf{K}$ and load vector $\mathbf{p}$ are initialized to zero.
-   ```python
-   K, p = fp.init(nn, dof)
-   ```
-2. **Assembly:** Element stiffness matrices $\mathbf{K}_e$ are computed and assembled into $\mathbf{K}$.
-   $$ \mathbf{K} = \sum_{e=1}^{E} \mathbf{L}_e^T \mathbf{K}_e \mathbf{L}_e $$
-   ```python
-   K = fp.kq4e(K, T, X, G)
-   ```
-3. **Load Application:** Point loads are mapped into the global load vector $\mathbf{p}$.
-   ```python
-   p = fp.setload(p, P, dof)
-   ```
-4. **Boundary Conditions:** Constraints are applied using the penalty method, modifying $\mathbf{K}$ and $\mathbf{p}$ in place.
-   ```python
-   K_bc, p_bc, _ = fp.setbc(K, p, C, dof)
-   ```
-5. **Solution:** The algebraic system $\mathbf{K}_{bc} \mathbf{u} = \mathbf{p}_{bc}$ is solved for the nodal displacements $\mathbf{u}$.
-   ```python
-   u = np.linalg.solve(K_bc, p_bc)
-   ```
-6. **Internal Forces Recovery:** Stresses and strains are computed at the element Gauss points.
-   ```python
-   q, S, E = fp.qq4e(np.zeros_like(p), T, X, G, u)
-   ```
+`rho`
+: Density used by dynamic mass-matrix kernels.
 
-## 1.4 Step-by-Step Tutorial: Array Manipulation and Workflow
+The helper `material_row()` converts the one-based property number stored in
+`T` into the correct zero-based row of `G`.
 
-Let us dive deeply into a hands-on example to solidify these concepts. We will construct a simple single-element problem, exploring precisely how `femlabpy` expects you to manage and query its arrays. 
+### 1.2.4 Boundary Constraints
 
-### 1.4.1 Constructing the Arrays
+The boundary-condition table `C` stores prescribed displacements. Each row
+identifies a node, a local degree of freedom, and the prescribed value.
 
-First, we import `numpy` and `femlabpy`.
+For a 2D problem, the standard row format is:
+
+`[node_id, dof_id, prescribed_value]`
+
+The DOF numbering is one-based in the public tables:
+
+`1`
+: First translational DOF, usually `u_x`.
+
+`2`
+: Second translational DOF, usually `u_y`.
+
+`3`
+: Third translational DOF for 3D problems, usually `u_z`.
+
+The boundary solver uses these rows to compute the flattened global DOF index
+before it modifies the system.
+
+### 1.2.5 Point Loads
+
+The point-load table `P` has the same indexing convention as `C`, but the third
+column stores a force component rather than a prescribed displacement.
+
+`[node_id, dof_id, force_value]`
+
+This table is consumed by `setload()`, which maps each row into the correct
+entry of the global load vector.
+
+### 1.2.6 Global Vectors and Matrices
+
+The array-based workflow only becomes useful once the global system is defined.
+`core.init()` allocates the containers used by the solvers:
+
+- `K`: global stiffness matrix.
+- `M`: global mass matrix, when dynamic analysis is requested.
+- `p`: global external load vector.
+- `q`: global internal force vector.
+
+The helper returns dense `numpy.ndarray` objects by default, but it can switch
+to sparse storage for large problems. The purpose is simple: the rest of the
+library should not care whether the system is dense or sparse, only that the
+container has the right shape and supports incremental assembly.
+
+## 1.3 Array Helpers and Index Flow
+
+The small helper functions in `src/femlabpy/_helpers.py`
+do most of the indexing work. They are the bridge between the human-facing
+tables and the zero-based NumPy arrays used by the solvers.
+
+`as_float_array()` and `as_int_array()` normalize incoming data so the kernels do
+not need to repeat type checks. `as_column()` forces a column-vector shape, which
+is important because many solver routines expect `(ndof, 1)` rather than a flat
+vector.
+
+`rows()` and `cols()` provide MATLAB-like shape queries. They are useful when the
+library accepts both row vectors and column vectors but still needs to preserve
+the classroom conventions of the legacy FemLab scripts.
+
+The most important indexing helpers are these:
+
+- `element_dof_indices(node_numbers, dof)` expands one-based node numbers into
+  flattened zero-based DOF indices.
+- `node_dof_indices(node_numbers, dof)` is the flattened version used by
+  assembly and load application.
+- `topology_nodes(topology_row)` strips the property id from a legacy topology
+  row.
+- `material_row(materials, property_number)` resolves a one-based property id to
+  the correct material row.
+
+That flow is the same everywhere in the package:
+
+1. Read a one-based user table.
+2. Convert it to zero-based integer indices.
+3. Use NumPy advanced indexing or sparse assembly to update the global arrays.
+
+## 1.4 The Finite Element Analysis Sequence
+
+The standard static workflow in `femlabpy` is intentionally explicit:
+
+1. Allocate global arrays with `init()`.
+2. Compute element matrices and assemble them into the global system.
+3. Map the load table into the global right-hand side.
+4. Apply constraints.
+5. Solve the linear system.
+6. Recover internal forces, stresses, and strains.
+
+That sequence is easier to understand if you look at the actual helper calls:
+
+```python
+import numpy as np
+import femlabpy as fp
+
+K, p, q = fp.init(nn, dof)
+K = fp.kq4e(K, T, X, G)
+p = fp.setload(p, P)
+K_bc, p_bc, _ = fp.setbc(K, p, C, dof)
+u = np.linalg.solve(K_bc, p_bc)
+q, S, E = fp.qq4e(np.zeros_like(p), T, X, G, u)
+```
+
+The important point is not the syntax. It is the data flow:
+
+- `init()` creates a system of the correct size.
+- `kq4e()` reads `X`, `T`, and `G`, builds one element matrix at a time, and
+  scatters those contributions into `K`.
+- `setload()` writes the forces into the right rows of `p`.
+- `setbc()` modifies `K` and `p` in place so the prescribed values are enforced.
+- `qq4e()` evaluates the element response after the displacement vector is known.
+
+## 1.5 Worked Example
+
+This example shows the same data flow using a single Q4 element. The goal is not
+to solve a large model. The goal is to show exactly how the arrays are shaped
+and how the indexing works.
+
+### 1.5.1 Build the tables
 
 ```{code-block} python
 import numpy as np
 import femlabpy as fp
-```
 
-#### The Node Coordinates Matrix (`X`)
-We define a single 4-node quadrilateral element of size 2x2. 
-
-```{code-block} python
 X = np.array([
-    [0.0, 0.0],  # Node 1
-    [2.0, 0.0],  # Node 2
-    [2.0, 2.0],  # Node 3
-    [0.0, 2.0]   # Node 4
+    [0.0, 0.0],
+    [2.0, 0.0],
+    [2.0, 2.0],
+    [0.0, 2.0],
 ])
-```
-* **Line-by-line breakdown:** We instantiate `X` as a 2D `numpy.ndarray`. The index in Python corresponds to the node ID offset by 1. For instance, `X[0]` gives `[0.0, 0.0]`, which represents global Node 1. 
 
-#### The Topology Matrix (`T`)
-Next, we define how these nodes are connected to form an element.
-
-```{code-block} python
 T = np.array([
-    [1, 2, 3, 4, 1]  # Element 1: Nodes 1-2-3-4, Material Property 1
+    [1, 2, 3, 4, 1],
 ])
-```
-* **Line-by-line breakdown:** `T` is defined with five columns. The first four values `1, 2, 3, 4` are the **1-based global node IDs** ordered counter-clockwise. The last value `1` points to the first row of our material properties matrix `G`. *Crucially, `femlabpy` assumes user-facing topology uses 1-based indices to match traditional engineering literature.*
 
-#### The Material Matrix (`G`)
-We assign standard steel properties to our plane-stress problem.
-
-```{code-block} python
 G = np.array([
-    [200e9, 0.3, 1, 0.1, 7850]  # Prop 1: E, nu, Plane Stress (1), t=0.1, rho
+    [200e9, 0.3, 1, 0.1, 7850.0],
 ])
-```
-* **Line-by-line breakdown:** `G` represents physical constants. Since element 1 references property ID `1` in matrix `T`, the solver will read `G[0]` to obtain Young's modulus, Poisson's ratio, and element thickness.
 
-#### Boundary Constraints (`C`) and Loads (`P`)
-We clamp the left edge (Nodes 1 and 4) in both directions, and apply a 10 kN downward load on Node 3.
-
-```{code-block} python
 C = np.array([
-    [1, 1, 0.0],  # Node 1, u_x = 0
-    [1, 2, 0.0],  # Node 1, u_y = 0
-    [4, 1, 0.0],  # Node 4, u_x = 0
-    [4, 2, 0.0]   # Node 4, u_y = 0
+    [1, 1, 0.0],
+    [1, 2, 0.0],
+    [4, 1, 0.0],
+    [4, 2, 0.0],
 ])
 
 P = np.array([
-    [3, 2, -10000.0] # Node 3, F_y = -10 kN
+    [3, 2, -10000.0],
 ])
 ```
 
-### 1.4.2 Slicing and Querying the Arrays
+`X` stores coordinates row by row. `T` says that the single element uses nodes
+1, 2, 3, and 4, and that it should read material row 1 from `G`. `C` and `P`
+use the same one-based node numbering, which keeps the input tables readable and
+compatible with the legacy FemLab conventions.
 
-To understand how `femlabpy` accesses node coordinates internally, let's explore slicing the topology array.
-
-If we want to extract the coordinates of the nodes belonging to the first element, we might be tempted to use `X[T[0]]`. However, because `T` includes the material ID in the last column, we must first **slice** the array to exclude it.
+### 1.5.2 Read the element coordinates
 
 ```{code-block} python
-element_0_nodes = T[0, :4] 
-# returns array([1, 2, 3, 4])
+element_nodes = T[0, :4]
+element_coords = X[element_nodes - 1]
 ```
-* **Line-by-line breakdown:** `T[0, :4]` accesses the first row (index `0`) and slices the columns from index `0` up to, but not including, `4`. This isolates the node IDs.
 
-Because `T` uses **1-based** node numbering (as is standard in finite element literature), but Python arrays are **0-indexed**, we must subtract `1` before querying `X`.
+`T[0, :4]` extracts the four node ids of the first element. The subtraction by
+`1` is the only translation between the user-facing table and the Python array.
+Once the indices are zero-based, `X[element_nodes - 1]` returns the coordinates
+needed by the element kernel.
+
+### 1.5.3 Assemble the global system
 
 ```{code-block} python
-zero_indexed_nodes = element_0_nodes - 1
-# returns array([0, 1, 2, 3])
+nn = X.shape[0]
+dof = 2
+K, p, q = fp.init(nn, dof)
 
-element_coords = X[zero_indexed_nodes]
-# returns array([[0., 0.], [2., 0.], [2., 2.], [0., 2.]])
-```
-* **Line-by-line breakdown:** Advanced `numpy` indexing allows us to pass the array `[0, 1, 2, 3]` directly into `X`. `numpy` elegantly returns a sub-array containing exactly the spatial coordinates for the nodes of Element 1. This pattern—`X[T[e, :4]-1]`—is the exact mathematical maneuver `femlabpy` employs internally to compute element Jacobian matrices.
-
-### 1.4.3 Executing the Solution Workflow
-
-Now, let us examine the analysis phase. Each function manipulates the system sequentially.
-
-#### 1. Initialization (`init`)
-```{code-block} python
-nn = X.shape[0]  # Number of nodes = 4
-dof = 2          # Degrees of freedom per node
-K, p = fp.init(nn, dof)
-```
-* **Why it is called:** Before we can assemble our system, we need containers of the correct size. The global stiffness matrix must be $N_{\text{dof}} \times N_{\text{dof}}$, where $N_{\text{dof}} = 4 \times 2 = 8$. 
-* **What it does:** `fp.init` creates an $8 \times 8$ zero matrix for `K` and an $8 \times 1$ zero vector for `p`.
-
-#### 2. Element Assembly (`kq4e`)
-```{code-block} python
 K = fp.kq4e(K, T, X, G)
-```
-* **Why it is called:** The global stiffness matrix currently contains zeros. We must calculate the $8 \times 8$ element stiffness matrix $K_e$ for our quadrilateral and add it to the global matrix.
-* **What it does:** `fp.kq4e` iterates over the rows of `T`. For each element, it looks up the coordinates in `X` and the material in `G`, performs Gaussian quadrature to integrate the stiffness terms, and scatters the values into the global `K` matrix.
-
-#### 3. Loading (`setload`)
-```{code-block} python
-p = fp.setload(p, P, dof)
-```
-* **Why it is called:** External forces must be registered in the right-hand side vector.
-* **What it does:** It iterates over `P`. For the load at Node 3, direction $y$ (DOF 2), it calculates the global index: `(3 - 1) * 2 + (2 - 1) = 5`. It then adds `-10000.0` to `p[5]`.
-
-#### 4. Boundary Conditions (`setbc`)
-```{code-block} python
-K_bc, p_bc, _ = fp.setbc(K, p, C, dof)
-```
-* **Why it is called:** A stiffness matrix without supports is singular (its determinant is zero, meaning rigid body motion is possible). We cannot invert it. We must enforce the clamp at the left edge.
-* **What it does:** `fp.setbc` uses the penalty method. For each constrained DOF in `C`, it places an enormously large number (e.g., $10^{15}$) on the corresponding diagonal entry of `K`. It also sets the corresponding entry in `p` to $\text{penalty} \times \bar{u}$. This mathematically coerces the solver to yield exactly $\bar{u}$ for that DOF without changing the matrix size.
-
-#### 5. Solving the System
-```{code-block} python
+p = fp.setload(p, P)
+K_bc, p_bc, ks = fp.setbc(K, p, C, dof)
 u = np.linalg.solve(K_bc, p_bc)
+q, S, E = fp.qq4e(np.zeros_like(p), T, X, G, u)
 ```
-* **Why it is called:** With a properly conditioned `K_bc` and an applied load vector `p_bc`, the system of linear algebraic equations $\mathbf{K}\mathbf{u} = \mathbf{p}$ is complete.
-* **What it does:** We utilize `numpy.linalg.solve`, an efficient LAPACK-based routine, to invert the system and find the nodal displacement vector `u`.
+
+`init()` creates an 8-by-8 stiffness matrix and 8-by-1 vectors because there are
+4 nodes and 2 DOFs per node. `setload()` writes the downward force into the
+global load vector using the flattened index
+
+$$
+(node - 1) \times dof + (local\_dof - 1)
+$$
+
+so the force at node 3 in the `y` direction lands in the correct slot. `setbc()`
+then modifies the global system so the constrained DOFs behave as fixed
+supports. Finally, `qq4e()` recovers the internal response from the solved
+displacement field.
+
+### 1.5.4 Inspect the flattened indices
+
+```{code-block} python
+from femlabpy._helpers import node_dof_indices
+
+global_dofs = node_dof_indices([1, 4], dof=2)
+```
+
+For nodes 1 and 4 in a 2D model, `global_dofs` becomes `[0, 1, 6, 7]`. That is
+the exact index set used by the low-level assembly and constraint routines. The
+important pattern is that node numbering stays one-based in the input tables,
+but every time the library touches a NumPy array it converts the table to
+zero-based flattened DOFs.
+
+## 1.6 What To Read Next
+
+Once the array model is clear, the next chapters build on it directly:
+
+- Chapter 2 explains the element kernels and how their local matrices are
+  formed.
+- Chapter 3 shows how local matrices become global systems through assembly.
+- Chapter 5 extends the same data structures to dynamic analysis.

@@ -1,8 +1,20 @@
 """
-Modal analysis — eigenvalue solver for natural frequencies and mode shapes.
+Modal-analysis tools for natural frequencies, mode shapes, and participation.
 
-Solves the generalized eigenvalue problem  K phi = omega^2 M phi
-using SciPy's sparse eigensolvers (shift-invert for smallest modes).
+Workflow role
+-------------
+This module reduces the assembled free-degree-of-freedom system, solves the
+generalized eigenvalue problem, expands the modes back to the full structural
+space, and computes participation and effective modal mass. It is the bridge
+between assembly and later dynamics work such as Rayleigh damping, modal
+superposition, and frequency-response calculations.
+
+Public entry points
+-------------------
+- ``solve_modal`` is the main solver and returns a ``ModalResult`` dataclass.
+- ``plot_modes`` gives a quick visual inspection of the extracted shapes.
+- The private helpers show the exact sequence used internally: free-DOF
+  masking, system reduction, and modal participation recovery.
 """
 
 from __future__ import annotations

@@ -1,283 +1,140 @@
-# Chapter 7: Constitutive Models & Plasticity
+---
+jupytext:
+  text_representation:
+    extension: .md
+    format_name: myst
+    format_version: 0.13
+    jupytext_version: 1.16.1
+kernelspec:
+  display_name: Python 3
+  language: python
+  name: python3
+---
 
-Constitutive models define the macroscopic relationship between stress and strain for various materials. While linear elasticity is sufficient for small deformations in many metals and ceramics, modeling the permanent deformation that occurs after the elastic limit requires the mathematical theory of plasticity. 
+# Constitutive Models and Plasticity
 
-In this chapter, we rigorously derive the fundamental concepts of $J_2$ (von Mises) plasticity and Drucker-Prager plasticity, detailing the numerical algorithms required for robust finite element implementation.
+This chapter tracks the current `femlabpy.materials` implementation. The important idea is not just the formulas, but how the code carries state through a local update. The module uses small, explicit helper functions for invariants and return mapping, and each solver call works on copied arrays so the trial state, corrected state, and plastic increment stay separate.
 
-## 1. Linear Elasticity
+## 1. Elasticity and invariant helpers
 
-For isotropic linear elastic materials, generalized Hooke's Law relates the stress tensor $\boldsymbol{\sigma}$ to the small strain tensor $\boldsymbol{\varepsilon}$:
+The public material API is built from a few small functions:
 
-$$
-\boldsymbol{\sigma} = \mathbf{D} \boldsymbol{\varepsilon}
-$$
+`devstress`, `devstres`, `eqstress`, `yieldvm`, `dyieldvm`, `stressvm`, and `stressdp`
 
-where $\mathbf{D}$ is the fourth-order elasticity tensor, which can be represented in Voigt notation as a $6 \times 6$ matrix. In 2D finite element formulations, we typically invoke either **Plane Stress** or **Plane Strain** assumptions, reducing $\mathbf{D}$ to a $3 \times 3$ matrix relating the in-plane components: $\boldsymbol{\sigma} = [\sigma_{xx}, \sigma_{yy}, \tau_{xy}]^T$ and $\boldsymbol{\varepsilon} = [\varepsilon_{xx}, \varepsilon_{yy}, \gamma_{xy}]^T$.
+`devstres` is only an alias for `devstress`. The helpers in `invariants.py` do not mutate their inputs. They reshape the stress vector, compute the deviatoric part, and return the mean stress or equivalent stress as needed.
 
-### 1.1 Plane Stress
-Plane stress applies to thin bodies where the stress components normal to the plane are zero ($\sigma_{zz} = \tau_{xz} = \tau_{yz} = 0$). The constitutive matrix is:
+### 1.1 Stress splitting
 
-$$
-\mathbf{D}_{stress} = \frac{E}{1 - \nu^2} 
-\begin{bmatrix}
-1 & \nu & 0 \\
-\nu & 1 & 0 \\
-0 & 0 & \frac{1-\nu}{2}
-\end{bmatrix}
-$$
+`devstress(S)` accepts either plane-stress style input `[sxx, syy, sxy]` or 3D input `[sxx, syy, szz, syz, sxz, sxy]`. The function copies the data, subtracts the hydrostatic mean from the normal components, and returns:
 
-where $E$ is Young's modulus and $\nu$ is Poisson's ratio.
+1. The deviatoric stress vector.
+2. The mean stress as a scalar.
 
-### 1.2 Plane Strain
-Plane strain applies to thick bodies where the strain components normal to the plane are constrained ($\varepsilon_{zz} = \gamma_{xz} = \gamma_{yz} = 0$). The constitutive matrix is:
+That split is reused by the Drucker-Prager return mapping.
 
-$$
-\mathbf{D}_{strain} = \frac{E}{(1+\nu)(1-2\nu)}
-\begin{bmatrix}
-1-\nu & \nu & 0 \\
-\nu & 1-\nu & 0 \\
-0 & 0 & \frac{1-2\nu}{2}
-\end{bmatrix}
-$$
+`eqstress(S)` computes the von Mises equivalent stress for both the 2D and 3D layouts. In the code, it is a scalar post-processing helper, not a stateful object.
 
-## 2. Rate-Independent Plasticity: von Mises ($J_2$) Flow Theory
+### 1.2 Material row layout
 
-Once the stress state reaches the yield surface, the material undergoes permanent (plastic) deformation. We assume an additive decomposition of the total strain rate into elastic and plastic parts:
-$$
-\dot{\boldsymbol{\varepsilon}} = \dot{\boldsymbol{\varepsilon}}^e + \dot{\boldsymbol{\varepsilon}}^p
-$$
+The plasticity routines expect a flat material row. The code reads:
 
-### 2.1 The Yield Criterion
-The von Mises yield criterion assumes that plastic yielding begins when the $J_2$ invariant of the deviatoric stress tensor $\mathbf{s} = \boldsymbol{\sigma} - p\mathbf{I}$ reaches a critical value. The equivalent (von Mises) stress is defined as:
-$$
-\sigma_{eq} = \sqrt{\frac{3}{2} \mathbf{s} : \mathbf{s}} = \sqrt{3 J_2}
-$$
+`[E, nu, Sy0, H, ...]`
 
-With isotropic hardening, the yield surface expands uniformly. The yield function $f$ is given by:
-$$
-f(\boldsymbol{\sigma}, \bar{\varepsilon}^p) = \sigma_{eq} - (\sigma_{y0} + H \bar{\varepsilon}^p) \le 0
-$$
-where $\sigma_{y0}$ is the initial yield stress, $H$ is the isotropic hardening modulus, and $\bar{\varepsilon}^p$ is the equivalent plastic strain.
+for von Mises plasticity, and
 
-### 2.2 The Flow Rule
-The evolution of plastic strain is governed by the associative flow rule, meaning the plastic strain rate is normal to the yield surface:
-$$
-\dot{\boldsymbol{\varepsilon}}^p = \dot{\gamma} \frac{\partial f}{\partial \boldsymbol{\sigma}} = \dot{\gamma} \mathbf{n}
-$$
-where $\dot{\gamma} \ge 0$ is the plastic multiplier (consistency parameter), and $\mathbf{n} = \frac{3}{2} \frac{\mathbf{s}}{\sigma_{eq}}$ is the normal vector to the von Mises yield surface.
+`[E, nu, Sy0, H, phi]`
 
-### 2.3 Hardening Law and KKT Conditions
-The evolution of the equivalent plastic strain matches the plastic multiplier for von Mises plasticity:
-$$
-\dot{\bar{\varepsilon}}^p = \sqrt{\frac{2}{3} \dot{\boldsymbol{\varepsilon}}^p : \dot{\boldsymbol{\varepsilon}}^p} = \dot{\gamma}
-$$
+for Drucker-Prager. The functions only use the entries they need, so the state passed in by the caller must stay consistent with those conventions.
 
-The loading/unloading conditions are governed by the Karush-Kuhn-Tucker (KKT) complementarity conditions:
-$$
-\dot{\gamma} \ge 0, \quad f \le 0, \quad \dot{\gamma} f = 0
-$$
-Furthermore, during plastic loading, the stress state must remain on the yield surface, requiring the consistency condition: $\dot{\gamma} \dot{f} = 0$.
+## 2. Plane-stress von Mises plasticity
 
-## 3. Computational Plasticity: Radial Return Mapping
+The plane-stress path is implemented by `yieldvm`, `dyieldvm`, and `stressvm`. These functions are tightly coupled: `yieldvm` defines the scalar consistency equation, `dyieldvm` gives its derivative, and `stressvm` runs the Newton loop that updates the plastic multiplier.
 
-In a non-linear finite element context, we must integrate the rate equations over a discrete time step $[t_n, t_{n+1}]$. Given the state at $t_n$ ($\boldsymbol{\varepsilon}_n^p, \bar{\varepsilon}_n^p$) and a given strain increment $\Delta \boldsymbol{\varepsilon}$, we must compute the updated stress $\boldsymbol{\sigma}_{n+1}$ and internal variables. 
+### 2.1 Consistency residual
 
-We use the unconditionally stable **Backward Euler** integration scheme, resulting in the classical **Radial Return Mapping** algorithm.
+`yieldvm(S, G, dL, Sy)` evaluates the plane-stress return-mapping residual for a candidate plastic increment `dL`. The function unpacks `E`, `nu`, and `H`, builds the transformed moduli `E1` and `E2`, and then evaluates the scalar residual
 
-### 3.1 Elastic Predictor
-We first assume the step is purely elastic. The trial elastic stress is:
-$$
-\boldsymbol{\sigma}^{trial}_{n+1} = \boldsymbol{\sigma}_n + \mathbf{D} \Delta \boldsymbol{\varepsilon}
-$$
-The trial deviatoric stress is $\mathbf{s}^{trial}_{n+1}$ and the trial equivalent stress is $\sigma^{trial}_{eq}$. We evaluate the yield function:
-$$
-f^{trial} = \sigma^{trial}_{eq} - (\sigma_{y0} + H \bar{\varepsilon}^p_n)
-$$
-If $f^{trial} \le 0$, the step is indeed elastic. We set $\boldsymbol{\sigma}_{n+1} = \boldsymbol{\sigma}^{trial}_{n+1}$ and exit.
+`f(dL) = 0`
 
-### 3.2 Plastic Corrector
-If $f^{trial} > 0$, plastic flow occurs. Because the flow direction $\mathbf{n}$ for von Mises plasticity purely depends on the deviatoric stress, and the plastic strain is incompressible, the return direction in deviatoric space is exactly radial toward the origin.
+for the trial stress vector. The routine does not update the stress state itself. It only answers the question: "for this stress and this plastic multiplier, are we on the yield surface yet?"
 
-The update equations are:
-$$
-\Delta \gamma = \frac{f^{trial}}{3G + H}
-$$
-where $G$ is the shear modulus. The internal variables are updated:
-$$
-\bar{\varepsilon}^p_{n+1} = \bar{\varepsilon}^p_n + \Delta \gamma
-$$
-And the stress is radially projected:
-$$
-\boldsymbol{\sigma}_{n+1} = \mathbf{s}^{trial}_{n+1} \left( 1 - \frac{3G \Delta \gamma}{\sigma^{trial}_{eq}} \right) + p^{trial} \mathbf{I}
-$$
+### 2.2 Analytical derivative
 
-### 3.3 Plane Stress Radial Return Mapping in Python
+`dyieldvm(S, G, dL, Sy)` differentiates the same residual with respect to `dL`. That is what makes the Newton loop in `stressvm` stable and compact. The derivative is computed directly from the same `E1`, `E2`, and stress terms used by `yieldvm`, so the two functions stay consistent.
 
-For plane stress conditions, the out-of-plane stress $\sigma_{zz}$ is zero, but the out-of-plane plastic strain $\varepsilon_{zz}^p$ is not. This coupling destroys the simple volumetric-deviatoric decoupling used in 3D. The return mapping must be solved iteratively, usually using a local Newton-Raphson scheme on the constraint equations.
+### 2.3 Return mapping loop
 
-#### Derivation of $E_1$ and $E_2$
-To simplify the local iteration for von Mises plane stress, we cast the equations in terms of transformed stress variables. The total strain increment is assumed purely elastic for the trial state: $\boldsymbol{\sigma}^{trial} = \mathbf{D} \boldsymbol{\varepsilon}^{trial}$.
-By projecting the plane stress elasticity matrix $\mathbf{D}_{stress}$ onto the spectral directions and incorporating the isotropic hardening $H$, we obtain two coupled stiffness moduli for the projection:
+`stressvm(S, G, Sy)` is where the state actually changes. The implementation:
 
-*   **Volumetric-like part:** $E_1 = 2H + \frac{E}{1 - \nu}$
-*   **Deviatoric-like part:** $E_2 = 2H + \frac{3E}{1 + \nu}$
+1. Copies the trial stress into a local `stress` array.
+2. Sets `dL = 0.0`.
+3. Evaluates the residual with `yieldvm`.
+4. Repeats Newton updates until `abs(f) <= 1.0e-6`.
+5. Updates the yield stress with `Sy = Sy + H * dL`.
+6. Projects the stress components back onto the plane-stress yield surface.
 
-These transformed moduli $E_1$ and $E_2$ represent the characteristic resistance of the material to generalized hydrostatic and deviatoric plastic corrections under the plane stress constraint.
+That loop is the whole local state machine. The function returns the corrected stress as a column vector and the converged plastic increment as a float. Nothing is stored globally.
 
-#### Python Implementation snippet
-Below is the core plane-stress Newton-Raphson mapping for von Mises found in the `stressvm` function:
+The key design point is that plane-stress plasticity is not handled by a closed-form radial return in the same way as the 3D model. The `sigma_zz = 0` constraint forces the code to iterate on the transformed residual instead.
+
+## 3. Drucker-Prager plasticity
+
+`stressdp(S, G, Sy0, dE, dS)` handles the pressure-dependent model. This function is more explicit about state because it keeps track of the stress correction `deltaS`, the plastic multiplier `dL`, and the local residual vector `R` at the same time.
+
+### 3.1 Local state variables
+
+The routine begins by reshaping the inputs into column vectors:
+
+`stress`, `dE`, and `dS`
+
+It then builds the elastic compliance-like matrix `C` from `E` and `nu`, splits the trial stress into deviatoric and mean parts with `devstress`, and evaluates the equivalent stress with `eqstress`. The yield function is initialized as
+
+`f = Seq + phi * Sm - Sy0`
+
+where `phi` is the friction parameter stored in the material row.
+
+### 3.2 Newton system
+
+The return mapping is driven by a small local Newton solve. At each iteration the code computes:
+
+1. `d2f`, the second derivative of the yield function.
+2. A 4 x 4 tangent matrix built from `C`, `df`, `d2f`, and `H`.
+3. The Newton correction `delta` from `np.linalg.solve`.
+
+The state update is explicit:
 
 ```python
-import numpy as np
-
-def yieldvm(S, G, dL, Sy):
-    """Legacy von Mises consistency function for plane stress."""
-    stress = np.asarray(S).reshape(-1)
-    material = np.asarray(G).reshape(-1)
-    E, nu, Sy0, H = material[0], material[1], material[2], material[3]
-
-    E1 = 2.0 * H + E / (1.0 - nu)
-    E2 = 2.0 * H + 3.0 * E / (1.0 + nu)
-
-    s1 = stress[0] + stress[1]
-    s2 = stress[0] - stress[1]
-    s3 = stress[2]
-    xi1 = 2.0 * Sy + dL * E1
-    xi2 = 2.0 * Sy + dL * E2
-    return float(s1**2 / xi1**2 + 3.0 * s2**2 / xi2**2 + 12.0 * s3**2 / xi2**2 - 1.0)
-    
-def stressvm(S, G, Sy0, dE, dS):
-    # Setup initial variables, elastic trial stress, etc.
-    # ...
-    f = yieldvm(S_trial, G, 0.0, Sy)
-    if f <= 0:
-        return S_trial, 0.0 # Elastic step
-        
-    # Plastic correction loop
-    dL = 0.0
-    while abs(f) > 1e-6:
-        # Evaluate derivative df/d(dL)
-        df_ddL = (yieldvm(S_trial, G, dL + 1e-6, Sy) - f) / 1e-6 # Numerical or analytical derivative
-        
-        # Update plastic multiplier
-        dL = dL - f / df_ddL
-        
-        # Update yield function
-        f = yieldvm(S_trial, G, dL, Sy)
-        
-    # Reconstruct final stress from dL
-    # ...
-    return stress_final, dL
-```
-This loop (`while abs(f) > 1e-6:`) repeatedly refines the plastic multiplier `dL` using Newton's method until the stress state converges exactly onto the yield surface ($f \approx 0$).
-
-## 4. Algorithmic Consistent Tangent Modulus ($\mathbf{D}^{ep}$)
-
-To maintain quadratic convergence of the global Newton-Raphson equilibrium iterations in the finite element solver, we must linearize the algorithmic stress update, not the continuous rate equations. This yields the **algorithmic consistent tangent modulus**, $\mathbf{D}^{ep} = \frac{\partial \boldsymbol{\sigma}_{n+1}}{\partial \boldsymbol{\varepsilon}_{n+1}}$.
-
-Differentiating the discrete return mapping equations gives:
-$$
-\mathbf{D}^{ep} = \kappa \mathbf{I} \otimes \mathbf{I} + 2G \theta_1 \left( \mathbb{I}_{sym} - \frac{1}{3}\mathbf{I} \otimes \mathbf{I} \right) - 2G \theta_2 \mathbf{n} \otimes \mathbf{n}
-$$
-where $\kappa$ is the bulk modulus, $\mathbb{I}_{sym}$ is the symmetric fourth-order identity tensor, and the algorithmic scalars are:
-$$
-\theta_1 = 1 - \frac{3G \Delta \gamma}{\sigma^{trial}_{eq}}, \quad \theta_2 = \frac{3G}{3G + H} - \frac{3G \Delta \gamma}{\sigma^{trial}_{eq}}
-$$
-As $\Delta t \to 0$ ($\Delta \gamma \to 0$), $\theta_1 \to 1$ and $\mathbf{D}^{ep}$ reduces to the classical continuum elasto-plastic tangent modulus. However, for finite steps, $\mathbf{D}^{ep}$ is strictly required for optimal convergence.
-
-### 4.1 Consistent Tangent Modulus calculation in Python
-In the code, $\mathbf{D}^{ep}$ is constructed by differentiating the plane stress return map. Here is a runnable script demonstrating the entire process for a single stress state past the yield point:
-
-```python
-import numpy as np
-
-def get_Dep(S, G, Sy0, dL, stress_final):
-    """Calculates Consistent Tangent Modulus for plane stress von Mises"""
-    E, nu, Sy0_val, H = G[0], G[1], G[2], G[3]
-    
-    # Elastic plane stress matrix
-    D = E / (1 - nu**2) * np.array([
-        [1, nu, 0],
-        [nu, 1, 0],
-        [0, 0, (1-nu)/2]
-    ])
-    
-    if dL <= 1e-12:
-        return D
-        
-    # Flow direction and coefficients
-    # In a full implementation, this uses the exact derivatives of the algorithmic map
-    # Here we show a simplified continuum elasto-plastic tangent for demonstration:
-    s = stress_final
-    p = (s[0] + s[1]) / 3.0
-    dev_s = np.array([s[0] - p, s[1] - p, s[2]])
-    seq = np.sqrt(1.5 * (dev_s[0]**2 + dev_s[1]**2 + 2*dev_s[2]**2 + (-dev_s[0]-dev_s[1])**2))
-    
-    n = 1.5 * dev_s / seq
-    # Transform to Voigt notation for strain
-    n_voigt = np.array([n[0], n[1], 2*n[2]])
-    
-    A = n_voigt @ D @ n_voigt + H
-    Dep = D - np.outer(D @ n_voigt, n_voigt @ D) / A
-    
-    return Dep
-
-if __name__ == "__main__":
-    # Material: E, nu, Sy0, H
-    G = np.array([200e3, 0.3, 250.0, 10e3])
-    
-    # Pre-yield stress state
-    S_n = np.array([200.0, 50.0, 0.0]) 
-    
-    # Large strain increment pushing it past yield
-    dE = np.array([0.005, -0.001, 0.0])
-    
-    # Trial stress
-    E, nu = G[0], G[1]
-    D = E / (1 - nu**2) * np.array([[1, nu, 0], [nu, 1, 0], [0, 0, (1-nu)/2]])
-    S_trial = S_n + D @ dE
-    
-    print(f"Trial stress: {S_trial}")
-    
-    # Mocking the return map for demonstration
-    # In reality, this calls `stressvm`
-    dL = 0.0045 # found via return map
-    S_final = np.array([260.0, 60.0, 0.0]) # Projected stress
-    
-    print(f"Final stress: {S_final}")
-    
-    Dep = get_Dep(S_trial, G, G[2], dL, S_final)
-    print("Consistent Tangent Modulus Dep:\n", Dep)
+deltaS += delta[0:3]
+dL += float(delta[3, 0])
 ```
 
-## 5. The Drucker-Prager Yield Criterion
+Then the code recomputes `Sd`, `Sm`, `Seq`, `Sy`, `f`, `df`, and the residual
 
-While von Mises plasticity models metals (which yield independent of hydrostatic pressure), geomaterials like concrete, soil, and rock exhibit pressure-dependent yielding and volumetric dilation. 
+`R = dE - C @ (dS + deltaS) - dL * df`
 
-The Drucker-Prager yield criterion is a smooth cone approximation of the Mohr-Coulomb pyramid, taking the form:
-$$
-f = \sigma_{eq} + \phi p - \sigma_y \le 0
-$$
-where $p = \frac{1}{3} \text{tr}(\boldsymbol{\sigma})$ is the hydrostatic pressure (mean stress, $S_m$), and $\phi$ is the material friction angle parameter.
+That last line is the main difference from the simpler von Mises path. The Drucker-Prager routine solves for both the stress correction and the multiplier together, so the code keeps them as separate evolving variables until convergence.
 
-In `femlabpy`, the Drucker-Prager return mapping is solved via a local Newton-Raphson iteration. The tangent matrix for the local iterations includes the second derivative of the yield function to rapidly find the stress correction $\delta \mathbf{S}$ and plastic multiplier increment $dL$.
+### 3.3 What the function returns
 
-```python
-def stressdp(S, G, Sy0, dE, dS):
-    # Setup variables, C matrix
-    # ...
-    # Local Newton Iteration
-    while np.linalg.norm(R) > rtol or abs(f) > ftol:
-        d2f1 = 3.0 / (2.0 * Seq) * np.diag([1.0, 1.0, 2.0])
-        d2f2 = 9.0 / (4.0 * Seq**3) * (sd @ sd.T)
-        d2f = d2f1 - d2f2
-        tangent = np.block([[C + dL * d2f, df], [df.T, np.array([[-H]], dtype=float)]])
-        delta = np.linalg.solve(tangent, np.vstack([R, [[-f]]]))
-        
-        deltaS += delta[0:3]
-        dL += float(delta[3, 0])
-        # Update residuals
-    # ...
-    return stress + deltaS, float(dL)
-```
-This local implicit loop guarantees the stress returns exactly to the updated yield surface while adhering to the specific flow rules governing the Drucker-Prager cone.
+`stressdp` returns the corrected stress vector and the converged plastic increment. Like the other material helpers, it does not cache any history internally. The caller must supply the current state every time and must store the returned result if it needs the updated stress for the next increment.
+
+## 4. Consistent tangent in the solver flow
+
+The material module stops at the local stress update. It does not expose a dedicated tangent helper. That is a deliberate boundary: the return map is the state update, while the consistent tangent belongs to the global Newton solver or a higher-level wrapper that differentiates the local update.
+
+In practice, that means `stressvm` and `stressdp` are the functions you call inside a constitutive loop, and the solver decides whether it needs the algorithmic modulus for convergence control. The important point for readers is that the local routines already carry the full history needed for a single increment:
+
+1. Trial state comes in through the function arguments.
+2. The local Newton loop updates the plastic multiplier and corrected stress.
+3. The corrected state is returned to the caller.
+4. Any tangent used by the global solve is derived from that returned state.
+
+## 5. How to read the module
+
+The shortest path through the source is:
+
+1. `invariants.py` for `devstress` and `eqstress`.
+2. `plasticity.py` for the plane-stress von Mises and Drucker-Prager updates.
+3. `materials/__init__.py` for the public export names and the `devstres` alias.
+
+That split is intentional. The invariant helpers are reusable primitives, while the plasticity routines are local solvers with clear input-output boundaries. If you extend the module, keep that separation: pure invariants first, state updates second.

@@ -1,3 +1,22 @@
+"""
+Quadrilateral element kernels for elastic, plastic, scalar, and dynamic cases.
+
+Workflow role
+-------------
+This is the largest element module in the project. It contains the bilinear Q4
+family used in most two-dimensional examples, including elastic plane-stress
+and plane-strain kernels, scalar diffusion kernels, elastoplastic updates, and
+consistent or lumped mass matrices.
+
+Public entry points
+-------------------
+- ``keq4e`` and ``qeq4e`` are the core elastic structural kernels.
+- ``keq4p`` and ``qeq4p`` cover the scalar potential form.
+- ``keq4eps`` and ``keq4epe`` with their matching ``q`` functions implement
+  plane-stress and plane-strain plasticity.
+- ``kq4*``, ``qq4*``, and ``mq4e`` are the assembled global wrappers.
+"""
+
 from __future__ import annotations
 
 import numpy as np
@@ -933,30 +952,6 @@ def keq4epe(Xe, Ge, Se, Ee, mtype: int = 1):
 
     Mathematical Formulation
     ------------------------
-    The global elastoplastic tangent stiffness matrix is assembled from element contributions:
-    $$ K_{IJ} = \sum_{e} \left( L_e^T K_e L_e \right)_{IJ} $$
-
-    Algorithm
-    ---------
-    1. Ensure the history arrays are properly sized.
-    2. Iterate over each element in the topology array.
-    3. Compute the element tangent stiffness matrix using `keq4eps`.
-    4. Assemble the local tangent into the global matrix $K$.
-
-    Mathematical Formulation
-    ------------------------
-    The global internal force vector and updated history variables are computed by assembling element contributions:
-    $$ q_{I} = \sum_{e} \left( L_e^T q_e \right)_{I} $$
-
-    Algorithm
-    ---------
-    1. Ensure the history arrays are properly sized.
-    2. Iterate over each element in the topology array.
-    3. Compute the element internal forces and update history using `qeq4eps`.
-    4. Assemble into the global force vector $q$.
-
-    Mathematical Formulation
-    ------------------------
     The consistent tangent stiffness matrix for a plane-strain elastoplastic Q4 element is:
     $$ K_e = \sum_{i=1}^2 \sum_{j=1}^2 w_i w_j \bar{B}^T D_{ep} \bar{B} |J| t $$
     utilizing a $\bar{B}$ (B-bar) formulation to prevent volumetric locking.
@@ -1274,35 +1269,6 @@ def qq4epe(q, T, X, G, u, S, E, mtype: int = 1):
 def meq4e(Xe, Ge, *, lumped: bool = False):
     """
     Compute the element mass matrix for a 4-node quadrilateral (Q4) element.
-
-    Consistent (8x8) via 2x2 Gauss quadrature:
-        M = sum_gp  rho * t * N^T N * det(J) * w
-
-    Lumped via row-sum with total-mass preservation.
-
-    Mathematical Formulation
-    ------------------------
-    The global elastoplastic tangent stiffness matrix for plane strain is assembled as:
-    $$ K_{IJ} = \sum_{e} \left( L_e^T K_e L_e \right)_{IJ} $$
-
-    Algorithm
-    ---------
-    1. Ensure the history arrays are properly sized (width 20 for plane strain).
-    2. Iterate over each element.
-    3. Compute the element tangent stiffness matrix using `keq4epe`.
-    4. Assemble the local tangent into the global matrix $K$.
-
-    Mathematical Formulation
-    ------------------------
-    The global internal forces for plane-strain elastoplastic analysis are assembled from elements:
-    $$ q_{I} = \sum_{e} \left( L_e^T q_e \right)_{I} $$
-
-    Algorithm
-    ---------
-    1. Ensure the history arrays are correctly sized.
-    2. Iterate over each element.
-    3. Compute the element internal forces and update history using `qeq4epe`.
-    4. Assemble into the global force vector $q$.
 
     Mathematical Formulation
     ------------------------

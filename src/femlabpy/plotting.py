@@ -1,3 +1,22 @@
+"""
+Lightweight Matplotlib plotting helpers for quick FEM inspection.
+
+Workflow role
+-------------
+These functions are not a full visualization subsystem. They are compact,
+teaching-oriented helpers for checking meshes, supports, nodal loads,
+deformed shapes, and contour-like stress fields directly from the FemLab-style
+tables used throughout the package.
+
+Public entry points
+-------------------
+- ``plotelem`` draws the undeformed mesh and optional labels.
+- ``plotforces`` and ``plotbc`` overlay external loads and constraints.
+- ``plotq4`` and ``plott3`` reconstruct scalar fields for quadrilateral and
+  triangular meshes.
+- ``plotu`` draws the displaced mesh.
+"""
+
 from __future__ import annotations
 
 import numpy as np

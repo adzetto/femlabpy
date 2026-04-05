@@ -1,3 +1,21 @@
+"""
+Gmsh mesh import and normalization for femlabpy workflows.
+
+Workflow role
+-------------
+This module reads ``.msh`` files and converts them into a normalized
+``GmshMesh`` structure that the rest of the library can consume without caring
+about Gmsh version differences. It handles both the older ASCII layout and newer
+4.x meshes when the optional official SDK is installed.
+
+Public entry points
+-------------------
+- ``load_gmsh`` returns a rich normalized mesh object with convenient element
+  groups and compatibility aliases.
+- ``load_gmsh2`` preserves the older FemLab-facing calling style while still
+  building on the same parser and normalized data model.
+"""
+
 from __future__ import annotations
 
 from importlib import import_module

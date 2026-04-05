@@ -1,56 +1,138 @@
 # femlabpy
 
-Welcome to the **femlabpy** documentation!
+::::{container} fp-home-intro
+:::{container} fp-kicker
+Finite element workflows, theory, and source-level reference
+:::
 
-femlabpy is a pure-Python finite element library. It brings the array-based approach of MATLAB/Scilab FemLab into the Python scientific ecosystem.
+:::{container} fp-lead
+`femlabpy` is a finite element teaching and research library built around
+explicit NumPy arrays, compact element kernels, and workflows that stay close
+to the original FemLab MATLAB and Scilab material while using modern Python
+tooling.
+:::
+::::
 
 ```{toctree}
 :maxdepth: 2
 :hidden:
 
-tutorials
-manual/index
-theory/index
-api
+Tutorials <tutorials>
+Guide <manual/index>
+Theory <theory/index>
+API <api>
+MATLAB Mapping <matlab_python_mapping>
 ```
 
-```{toctree}
-:maxdepth: 2
-:caption: Theory & Reference Manual
-:hidden:
+::::{container} fp-card-grid
+:::{container} fp-card
+## User Guide
 
-theory/01_core_assembly
-theory/02_boundary_loads
-theory/03_1d_bars
-theory/04_2d_triangles
-theory/05_2d_quads
-theory/06_3d_solids
-theory/07_plasticity
-theory/08_dynamics
-theory/09_modal_periodic
-theory/10_io_mesh
-```
+Practical, end-to-end reading for model setup, assembly, materials, dynamics,
+periodic workflows, and extension points.
 
-```{toctree}
-:maxdepth: 2
-:caption: API Reference
-:hidden:
+[Open the guide](manual/index.md)
+:::
 
-api
-```
+:::{container} fp-card
+## Theory and Reference
 
-## Quick Installation
+Implementation-aligned derivations for assembly, elements, plasticity,
+time integration, periodic constraints, and mesh import.
 
-```bash
-pip install femlabpy
-```
+[Open the theory manual](theory/index.md)
+:::
 
-## Features
+:::{container} fp-card
+## API Reference
 
-- **Elements:** Truss, Plane Stress/Strain (T3, Q4), 3D Solids (T4, H8).
-- **Material Models:** Elastic, von Mises Plasticity, Drucker-Prager.
-- **Dynamic Analysis:** Modal extraction, Newmark-beta, HHT-alpha time-history integration.
-- **Boundary Conditions:** Standard fixities and periodic boundaries for homogenization.
-- **I/O:** `gmsh` support for loading 2D and 3D meshes.
+Module-level documentation that explains ownership, reading order, and the full
+function and class reference generated from the source code.
 
-Check out the [Tutorials](tutorials.md) or the [API Reference](api.rst) to get started.
+[Open the API reference](api.rst)
+:::
+
+:::{container} fp-card
+## MATLAB Mapping
+
+Cross-reference notes for readers moving from the original classroom scripts to
+the Python port and its public API.
+
+[Open the mapping notes](matlab_python_mapping.md)
+:::
+::::
+
+## What This Documentation Covers
+
+::::{container} fp-stat-grid
+:::{container} fp-stat
+**9 manual chapters**
+
+Practical workflows from array layout to dynamic post-processing.
+:::
+
+:::{container} fp-stat
+**13 theory chapters**
+
+Derivations and implementation notes matched to the actual source tree.
+:::
+
+:::{container} fp-stat
+**18 API modules**
+
+Core workflow, element kernels, dynamics, periodicity, plotting, and mesh I/O.
+:::
+
+:::{container} fp-stat
+**Static to transient**
+
+Linear statics, modal analysis, periodic RVEs, and Newmark-family solvers.
+:::
+::::
+
+## Reading Order
+
+::::{container} fp-card-grid
+:::{container} fp-card
+### 1. Start With Tutorials
+
+Read [tutorials](tutorials.md) for a compact orientation before diving into the
+module pages.
+:::
+
+:::{container} fp-card
+### 2. Learn The Workflow
+
+Use the [User Guide](manual/index.md) to understand how `X`, `T`, `G`, `C`,
+and `P` move through assembly and solution.
+:::
+
+:::{container} fp-card
+### 3. Match Equations To Code
+
+Use the [Theory manual](theory/index.md) when you want the mathematical meaning
+behind the actual vectorized implementation.
+:::
+
+:::{container} fp-card
+### 4. Look Up Exact Behavior
+
+Use the [API reference](api.rst) when you need precise call signatures, return
+types, module ownership, and the full reference text.
+:::
+::::
+
+:::{important}
+This documentation is intentionally split into layers.
+
+- The guide explains how to use the library in a realistic workflow.
+- The theory pages explain why the kernels and solvers are written that way.
+- The API reference explains exactly which module owns which part of the code.
+:::
+
+:::{note}
+Many public tables in `femlabpy` use one-based node or property numbering to
+preserve FemLab compatibility, while the underlying NumPy operations remain
+zero-based. That convention is repeated throughout the guide and theory pages
+because it is one of the main things to understand before reading the kernels.
+:::

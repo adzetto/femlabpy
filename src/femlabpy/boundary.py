@@ -1,3 +1,22 @@
+"""
+Boundary-condition application and constrained linear-system solvers.
+
+Workflow role
+-------------
+This module sits between assembly and solution. ``setbc`` applies prescribed
+displacements by direct elimination, while ``solve_lag_general`` and
+``solve_lag`` build augmented systems for exact linear constraints using
+Lagrange multipliers.
+
+What to read first
+------------------
+- ``setbc`` for the standard fixed-support workflow.
+- ``solve_lag_general`` for constraint equations such as periodicity or multi-
+  point conditions.
+- ``solve_lag`` for the legacy wrapper that keeps the original FemLab calling
+  convention.
+"""
+
 from __future__ import annotations
 
 import numpy as np

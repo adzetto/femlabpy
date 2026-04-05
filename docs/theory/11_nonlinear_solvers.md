@@ -11,98 +11,122 @@ kernelspec:
 
 # Chapter 11: Nonlinear Solvers
 
-Welcome to Chapter 11. As a computational mechanics professor, I will guide you through the intricate world of nonlinear solvers, focusing on two pivotal methods utilized in our `femlab-python` repository: the Orthogonal Residual Method (often referred to as Arc-Length) in `solve_nlbar`, and the standard Newton-Raphson scheme in `solve_plastic`.
+This chapter covers the two nonlinear control flows implemented in the codebase:
+the orthogonal-residual load-stepping path for nonlinear bars and the Newton
+style elastoplastic solve for Q4 elements. Both routines are legacy-compatible
+wrappers around the actual element kernels and constraint helpers.
 
-## 11.1 The Orthogonal Residual Method (`solve_nlbar`)
+## Orthogonal Residual Solver
 
-When structures undergo severe nonlinearities, such as snap-through or snap-back buckling, load-control and displacement-control methods fail. We must allow both the load parameter, $\lambda$, and the displacement vector, $\mathbf{u}$, to vary simultaneously. This is where Arc-Length methods come into play.
+`solve_nlbar(X, T, G, C, P, ...)` reproduces the nonlinear bar workflow used by
+the old FemLab classroom examples. The function is not a generic arc-length
+framework. It is a concrete solver with a specific data flow:
 
-In our `solve_nlbar` implementation, we employ the Orthogonal Residual Method. The equilibrium equation is:
-$$ \mathbf{r}(\mathbf{u}, \lambda) = \mathbf{f}_{int}(\mathbf{u}) - \lambda \mathbf{f}_{ext} = \mathbf{0} $$
+1. start from zero displacement, zero internal force, and the applied nodal load
+   table;
+2. build a tangent stiffness matrix with `kbar`;
+3. apply displacement constraints with `setbc`;
+4. solve a reference increment `du0`;
+5. iterate with an orthogonal residual correction until convergence;
+6. commit the load and displacement path;
+7. recover reactions with `reaction`.
 
-For a given iteration, the change in displacement is decomposed into two parts:
-$$ \Delta \mathbf{u} = \Delta \mathbf{u}_r + \Delta \lambda \Delta \mathbf{u}_f $$
-where:
-* $\Delta \mathbf{u}_r = \mathbf{K}_T^{-1} (-\mathbf{r})$ is the residual displacement due to out-of-balance forces.
-* $\Delta \mathbf{u}_f = \mathbf{K}_T^{-1} \mathbf{f}_{ext}$ is the forward displacement due to external loads.
+The returned dictionary contains the converged fields and the load path:
 
-### Enforcing Orthogonality
+- `u`
+- `q`
+- `S`
+- `E`
+- `R`
+- `f`
+- `U_path`
+- `F_path`
 
-To solve for the unknown load increment $\Delta \lambda$, we constrain the iterative change in displacement to be orthogonal to the previous step displacement. That is, we enforce:
-$$ \Delta \mathbf{u}_i^T \Delta \mathbf{u}_{i+1} = 0 $$
+### What the loop actually does
 
-In Python, this constraint allows us to predict the load increment factor `dlambda` ($\Delta \lambda$) and the updated displacement `du` ($\Delta \mathbf{u}$):
+The solver keeps three vectors in play:
 
-```python
-# Tangent stiffness matrix K_T, internal forces f_int, external load f_ext
-# Compute residual
-residual = f_int - lambda_current * f_ext
+- `u`, the accumulated displacement state,
+- `du`, the current incremental step,
+- `f`, the accumulated external force state.
 
-# Solve for the two displacement components
-du_r = np.linalg.solve(K_T, -residual)
-du_f = np.linalg.solve(K_T, f_ext)
+For each load step it computes a fresh tangent matrix, solves a reference
+increment, then corrects that increment using the residual from
+`qbar(..., u + du)`. The ratio
 
-# Predict dlambda by enforcing the orthogonality condition: du_prev.T @ du_new = 0
-# where du_new = du_r + dlambda * du_f
-# Therefore: du_prev.T @ (du_r + dlambda * du_f) = 0
-dlambda = -(du_prev.T @ du_r) / (du_prev.T @ du_f)
+`((dq.T @ du) / (df.T @ du))`
 
-# Predict updated displacement increment
-du_new = du_r + dlambda * du_f
+is the scalar update that moves the step along the orthogonal-residual path.
+If the corrector does not converge before `i_max`, the solver restarts with a
+smaller step.
 
-# Update totals
-lambda_current += dlambda
-u_current += du_new
-```
+### Why the residual norm matters
 
-## 11.2 The Standard Newton-Raphson Scheme (`solve_plastic`)
+The helper `rnorm()` measures the residual on the constrained system in the same
+legacy convention as the old code. That means the convergence test is tied to the
+active degrees of freedom rather than a raw global vector norm.
 
-For material nonlinearities such as plasticity (without path-instabilities), the standard Newton-Raphson algorithm remains our workhorse, as seen in `solve_plastic`.
+### Practical meaning of the inputs
 
-We seek to find $\mathbf{u}$ such that the residual vanishes:
-$$ \mathbf{R}(\mathbf{u}) = \mathbf{F}_{int}(\mathbf{u}) - \mathbf{F}_{ext} = \mathbf{0} $$
+- `X` is the node coordinate table.
+- `T` is the bar topology table.
+- `G` stores material and section data.
+- `C` stores prescribed displacements.
+- `P` stores nodal loads.
+- `plotdof` is one-based, because the original benchmark scripts were one-based.
 
-Using a Taylor series expansion, the update equation is:
-$$ \mathbf{K}_T \Delta \mathbf{u} = -\mathbf{R}(\mathbf{u}) $$
+## Elastoplastic Solver
 
-where $\mathbf{K}_T = \frac{\partial \mathbf{F}_{int}}{\partial \mathbf{u}}$ is the algorithmic tangent stiffness matrix.
+`solve_plastic(X, T, G, C, P, ...)` handles the legacy Q4 elastoplastic cases.
+The code keeps the constitutive update inside the element routines and uses the
+solver only for load stepping and equilibrium enforcement.
 
-### 1D Nonlinear Spring Example
+The solver supports two geometric branches:
 
-To crystallize this concept, here is a runnable Python script of a 1D nonlinear spring with stiffness $k(x) = k_0 + \alpha x^2$. The internal force is $F_{int}(x) = k_0 x + \frac{1}{3}\alpha x^3$.
+- plane stress through `kq4eps` and `qq4eps`;
+- plane strain through `kq4epe` and `qq4epe`.
 
-``` python
-import numpy as np
+It also supports two material laws selected by `material_type`:
 
-def solve_1d_spring(F_ext, k0=10.0, alpha=5.0, tol=1e-6, max_iter=20):
-    """Solves a 1D nonlinear spring using Newton-Raphson."""
-    x = 0.0  # Initial guess
-    
-    print(f"Solving for F_ext = {F_ext}")
-    print("-" * 30)
-    
-    for i in range(max_iter):
-        # Internal force and Tangent stiffness
-        F_int = k0 * x + (1.0/3.0) * alpha * x**3
-        K_T = k0 + alpha * x**2
-        
-        # Residual
-        R = F_int - F_ext
-        
-        print(f"Iter {i}: x = {x:.6f}, R = {R:.2e}")
-        
-        if abs(R) < tol:
-            print(f"Converged in {i} iterations.\n")
-            return x
-            
-        # Newton-Raphson update
-        dx = -R / K_T
-        x += dx
-        
-    raise RuntimeError("Newton-Raphson failed to converge.")
+- `1` for von Mises;
+- `2` for Drucker-Prager.
 
-# Run the script
-if __name__ == "__main__":
-    final_x = solve_1d_spring(F_ext=25.0)
-    print(f"Final displacement: x = {final_x:.6f}")
-```
+### Plane strain and plane stress
+
+The `_solve_plastic_system()` helper chooses a symmetry-aware dense fallback for
+plane strain and the generic linear solver otherwise. That is a compatibility
+choice, not a new constitutive model.
+
+### State flow
+
+The plastic driver keeps the following state arrays:
+
+- `u` and `du` for the displacement history,
+- `f` and `df` for the external force state,
+- `S` and `E` for the committed element stress and strain-like history values.
+
+Inside each corrector iteration it:
+
+1. rebuilds the tangent matrix from the current state;
+2. applies the boundary conditions;
+3. computes the internal force vector with the Q4 stress update routine;
+4. forms the residual `dq = q - f`;
+5. updates the step with the orthogonal residual correction;
+6. commits the element state when the step converges.
+
+The returned dictionary mirrors the bar solver and includes the same path
+vectors together with the element state arrays.
+
+### What to read in the source
+
+If you want to modify this solver, read the code in this order:
+
+1. `solve_nlbar()`
+2. `solve_plastic()`
+3. `_solve_plastic_system()`
+4. `kbar`, `qbar`, `kq4epe`, `kq4eps`, `qq4epe`, `qq4eps`
+5. `setbc()`, `setload()`, and `reaction()`
+
+That order matches the actual control flow and makes the restart behavior much
+easier to follow.
+

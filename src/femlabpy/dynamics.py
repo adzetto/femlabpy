@@ -1,8 +1,23 @@
 """
-Time integration solvers for structural dynamics.
+Time-history solvers, load builders, and response utilities for dynamics.
 
-Provides Newmark-beta (implicit), central difference (explicit),
-HHT-alpha, and nonlinear Newmark solvers with load function builders.
+Workflow role
+-------------
+This module owns the transient-analysis part of ``femlabpy``. It contains the
+load callables that turn a spatial force pattern into a function of time, the
+time integrators that advance the structural state, and the plotting helpers
+used to inspect histories, energy balance, and frequency-response functions.
+
+Public entry points
+-------------------
+- ``NewmarkParams`` and ``TimeHistory`` hold solver settings and results.
+- ``constant_load``, ``ramp_load``, ``harmonic_load``, ``pulse_load``,
+  ``tabulated_load``, and ``seismic_load`` create time-dependent forcing
+  functions.
+- ``solve_newmark``, ``solve_hht``, ``solve_central_diff``, and
+  ``solve_newmark_nl`` advance the dynamic equilibrium equations.
+- ``compute_frf``, ``plot_time_history``, ``plot_energy``, and ``plot_frf``
+  support interpretation after the solve.
 """
 
 from __future__ import annotations

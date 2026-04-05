@@ -1,360 +1,284 @@
-# Chapter 5: Structural Dynamics Theory & Time Integration
+---
+jupytext:
+  text_representation:
+    extension: .md
+    format_name: myst
+kernelspec:
+  display_name: Python 3
+  language: python
+  name: python3
+---
 
-Structural dynamics extends standard static analysis by incorporating inertial (mass) and damping forces into the global equations of motion. While statics solves $\mathbf{K} \mathbf{u} = \mathbf{P}$, dynamics considers the time-varying equilibrium:
+# Structural Dynamics and Time Integration
 
-$$ \mathbf{M} \ddot{\mathbf{u}}(t) + \mathbf{C} \dot{\mathbf{u}}(t) + \mathbf{K} \mathbf{u}(t) = \mathbf{P}(t) $$
+This chapter explains how `femlabpy` moves from static equilibrium to time-dependent response. The library follows the standard semi-discrete form
 
-where $\mathbf{M}$ is the global mass matrix, $\mathbf{C}$ is the viscous damping matrix, and $\ddot{\mathbf{u}}$, $\dot{\mathbf{u}}$, $\mathbf{u}$ are the nodal acceleration, velocity, and displacement vectors, respectively.
+$$
+\mathbf{M}\ddot{\mathbf{u}}(t) + \mathbf{C}\dot{\mathbf{u}}(t) + \mathbf{K}\mathbf{u}(t) = \mathbf{p}(t)
+$$
 
-## 5.1 Mass Matrices
+but the important part for users is how the code is organized: loads are passed in as callables, constrained degrees of freedom are handled explicitly, and the solver results are stored in a `TimeHistory` container with arrays shaped as `(nsteps + 1, ndof)`.
 
-The global mass matrix $\mathbf{M}$ represents the inertial distribution of the structure. `femlabpy` provides two distinct formulations, each with specific computational advantages.
+The code in this chapter matches the actual `femlabpy.dynamics`, `femlabpy.damping`, and `femlabpy.modal` modules, so the narrative below is written around the real API rather than a textbook-only presentation.
 
-### 5.1.1 Consistent Mass Matrix
-The consistent mass matrix is derived using the exact same shape functions $\mathbf{N}$ used to formulate the stiffness matrix. This ensures that the kinetic energy of the element is represented consistently with the strain energy.
+## 5.1 Data layout and solver conventions
 
-$$ \mathbf{M}_e^c = \int_V \rho \mathbf{N}^T \mathbf{N} \, dV $$
+`femlabpy` uses the same indexing conventions across assembly, modal analysis, and time integration:
 
-For an isoparametric quadrilateral element (Q4), this integral is evaluated using $2 \times 2$ Gauss-Legendre quadrature:
-$$ \mathbf{M}_e^c \approx \sum_{i=1}^{2} \sum_{j=1}^{2} w_i w_j \rho t \mathbf{N}^T(\xi_i, \eta_j) \mathbf{N}(\xi_i, \eta_j) |\mathbf{J}(\xi_i, \eta_j)| $$
+- Node numbering in user-facing tables is one-based.
+- DOF indices returned by the dynamic solvers are zero-based.
+- Constraint tables such as `C_bc` are interpreted with one-based node and local-DOF columns.
+- Load functions return column vectors with shape `(ndof, 1)`.
 
-*Advantages:* Highly accurate for modal analysis and implicit time integration. It perfectly preserves the off-diagonal coupling between degrees of freedom.
+The `TimeHistory` dataclass stores:
 
-### 5.1.2 Lumped Mass Matrix
-A lumped mass matrix $\mathbf{M}_e^l$ is a strictly diagonal matrix. It assumes that the mass of the element is concentrated directly at the nodes, eliminating any inertial coupling between different DOFs.
+- `t`: time stamps with shape `(nsteps + 1,)`
+- `u`: displacement history with shape `(nsteps + 1, ndof)`
+- `v`: velocity history with shape `(nsteps + 1, ndof)`
+- `a`: acceleration history with shape `(nsteps + 1, ndof)`
+- `energy`: optional dictionary with the keys `kinetic`, `strain`, and `total`
 
-In `femlabpy`, lumping is often achieved using the **Row-Sum Technique**, where the off-diagonal terms of the consistent mass matrix are summed and added to the diagonal:
-$$ M_{ii}^l = \sum_{j=1}^{n} M_{ij}^c $$
-
-*Advantages:* Diagonal mass matrices are computationally cheap to invert ($\mathbf{M}^{-1}$ is simply $1/M_{ii}$). They are strictly required for explicit time-integration algorithms like the Central Difference method.
-
-## 5.2 Modal Analysis Theory
-
-Free, undamped vibration is governed by the homogeneous equation:
-$$ \mathbf{M} \ddot{\mathbf{u}}(t) + \mathbf{K} \mathbf{u}(t) = \mathbf{0} $$
-
-Assuming a harmonic solution of the form $\mathbf{u}(t) = \mathbf{\phi} \sin(\omega t)$, we arrive at the generalized eigenvalue problem:
-$$ \mathbf{K} \mathbf{\phi}_n = \omega_n^2 \mathbf{M} \mathbf{\phi}_n $$
-
-`femlabpy` abstracts this inside `solve_modal()`.
-
-- **Natural Circular Frequencies ($\omega_n$):** The square roots of the eigenvalues.
-- **Natural Frequencies ($f_n$):** $f_n = \frac{\omega_n}{2\pi}$ (in Hertz).
-- **Mode Shapes ($\mathbf{\phi}_n$):** The eigenvectors, which are **mass-normalized** by the solver such that:
-  $$ \mathbf{\phi}_m^T \mathbf{M} \mathbf{\phi}_n = \delta_{mn} = \begin{cases} 1 & \text{if } m = n \\ 0 & \text{if } m \neq n \end{cases} $$
-
-### Using `solve_modal` in Python
-
-Here is an extensive example of extracting modes and calculating participation factors using `femlabpy`:
+That shape choice is deliberate. Each row is one time step, which makes slicing and plotting straightforward:
 
 ```python
-import numpy as np
-from scipy.linalg import eigh
-import matplotlib.pyplot as plt
-
-def solve_modal(K, M, num_modes=3):
-    """
-    Extracts the lowest `num_modes` natural frequencies and mode shapes.
-    Uses `scipy.linalg.eigh` tailored for symmetric matrices.
-    """
-    # eigh returns eigenvalues and eigenvectors in ascending order
-    # Because M is positive definite, we can solve K * phi = lambda * M * phi
-    eigenvalues, eigenvectors = eigh(K, M, subset_by_index=[0, num_modes - 1])
-    
-    # Calculate circular frequencies (omega) and frequencies (f)
-    omega = np.sqrt(np.maximum(eigenvalues, 0.0))  # Avoid tiny negative numerical artifacts
-    frequencies = omega / (2 * np.pi)
-    
-    # Mode shapes (phi) are usually automatically mass-normalized by eigh,
-    # but let's ensure normalization explicitly:
-    for i in range(num_modes):
-        phi_i = eigenvectors[:, i]
-        modal_mass = phi_i.T @ M @ phi_i
-        eigenvectors[:, i] = phi_i / np.sqrt(modal_mass)
-        
-    return omega, frequencies, eigenvectors
-
-# Usage Example:
-# Assuming K and M have already been assembled and boundary conditions applied
-omega, freqs, phi = solve_modal(K, M, num_modes=3)
-
-for i in range(3):
-    print(f"Mode {i+1}: f = {freqs[i]:.3f} Hz, omega = {omega[i]:.3f} rad/s")
+roof_history = result.u[:, roof_dof]
 ```
 
-### Effective Modal Mass and Participation Factors
-To understand how much of the total structural mass is mobilized by a specific mode $n$ in a spatial direction $j$ (e.g., the X-direction), we compute the participation factor $\Gamma_{nj}$:
-$$ \Gamma_{nj} = \frac{\mathbf{\phi}_n^T \mathbf{M} \mathbf{r}_j}{\mathbf{\phi}_n^T \mathbf{M} \mathbf{\phi}_n} $$
+## 5.2 Mass matrices
 
-where $\mathbf{r}_j$ is the influence vector (a vector of 1s and 0s indicating which DOFs are active in direction $j$). If the mode shapes are mass-normalized, the denominator is exactly 1.
+The mass matrix controls inertia. In practice, the choice is not only mathematical but also algorithmic.
 
-The effective modal mass $m_{eff,nj}$ is then:
-$$ m_{eff,nj} = \Gamma_{nj}^2 \times (\mathbf{\phi}_n^T \mathbf{M} \mathbf{\phi}_n) = \Gamma_{nj}^2 $$
+### Consistent mass
 
-This is crucial for ensuring that enough modes are extracted in Response Spectrum analysis (typically requiring $\ge 90\%$ mass participation).
+The consistent mass matrix uses the same shape functions as the stiffness matrix:
 
-## 5.3 Damping Models
+$$
+\mathbf{M}_e = \int_{\Omega_e} \rho \mathbf{N}^T \mathbf{N}\, d\Omega
+$$
 
-Damping $\mathbf{C}$ represents energy dissipation (e.g., internal friction, micro-cracking). It is rarely derived explicitly from element geometry; instead, it is formulated at the global system level.
+This formulation is the better choice for modal analysis and implicit transient analysis because it preserves coupling between DOFs. It is also what you want when the accuracy of the first few modes matters.
 
-### 5.3.1 Rayleigh (Proportional) Damping
-The most common approach in civil and mechanical engineering is Rayleigh damping, which constructs $\mathbf{C}$ as a linear combination of the mass and stiffness matrices:
-$$ \mathbf{C} = \alpha \mathbf{M} + \beta \mathbf{K} $$
+### Lumped mass
 
-Given two target critical damping ratios $\zeta_1, \zeta_2$ at specific circular natural frequencies $\omega_1, \omega_2$, the multipliers $\alpha$ (mass-proportional, affecting low frequencies) and $\beta$ (stiffness-proportional, affecting high frequencies) are found by solving the $2 \times 2$ system:
-$$ \begin{bmatrix} \frac{1}{2\omega_1} & \frac{\omega_1}{2} \\ \frac{1}{2\omega_2} & \frac{\omega_2}{2} \end{bmatrix} \begin{Bmatrix} \alpha \\ \beta \end{Bmatrix} = \begin{Bmatrix} \zeta_1 \\ \zeta_2 \end{Bmatrix} $$
+The lumped mass matrix is diagonal. In `femlabpy`, that matters for two reasons:
 
-### Implementing `rayleigh_damping` in Python
+- `solve_central_diff` requires a diagonal mass matrix and rejects a non-diagonal input.
+- The diagonal form makes explicit updates cheap because each DOF can be updated independently.
 
-Below is the code block explaining exactly how to compute the coefficients and matrix:
+The code accepts either a diagonal vector or a full diagonal matrix. Internally it extracts the diagonal and checks that the off-diagonal norm is negligible before continuing.
+
+For example, a lumped mass is the right choice when the model is used with very small time steps and the goal is speed rather than spectral fidelity.
+
+## 5.3 Modal analysis and damping
+
+### Modal analysis
+
+`solve_modal(K, M, ...)` solves the generalized eigenvalue problem
+
+$$
+\mathbf{K}\boldsymbol{\phi} = \omega^2 \mathbf{M}\boldsymbol{\phi}
+$$
+
+but the implementation has a few practical steps that are easy to miss:
+
+- Constrained DOFs are removed before the eigensolve.
+- Small systems use dense `scipy.linalg.eigh`.
+- Larger systems switch to `scipy.sparse.linalg.eigsh`.
+- Mode shapes are mass-normalized after the eigensolve.
+- The returned mode shapes are expanded back to the full DOF size with zeros at fixed DOFs.
+
+That means the output is ready to use directly in plotting or in downstream response calculations.
+
+The returned `ModalResult` also includes participation factors and effective modal mass. Those are computed from the full mass matrix and the full-size mode shapes, not from the reduced eigensystem. This is important because the influence vectors are built per active direction, and the modal mass calculation must respect the actual global numbering.
+
+### Rayleigh damping
+
+`rayleigh_coefficients(omega1, omega2, zeta1, zeta2)` solves the two-point calibration problem for
+
+$$
+\mathbf{C} = \alpha \mathbf{M} + \beta \mathbf{K}
+$$
+
+The solver is just a `2 x 2` linear system, but the implementation has a useful interpretation:
+
+- `alpha` controls low-frequency damping.
+- `beta` controls high-frequency damping.
+- Frequencies between the calibration points get intermediate damping.
+
+`rayleigh_damping(M, K, alpha, beta)` then assembles the matrix. It preserves sparsity when either input is sparse, which keeps the transient solvers practical on larger models.
+
+### Modal damping
+
+`modal_damping(M, omega, phi, zeta)` is a denser, more explicit alternative. It is useful for small reduced systems or validation cases where you want to prescribe damping mode by mode. The function constructs the damping matrix directly from mass-normalized modes, so it is not the first choice for large production models.
+
+## 5.4 Load functions and frequency response
+
+The transient solvers in `femlabpy` do not take a fixed load vector. They take a callable, which keeps the API simple and makes time interpolation local to the load generator.
+
+### Load builders
+
+`constant_load`, `ramp_load`, `harmonic_load`, `pulse_load`, and `tabulated_load` all return a function with the signature `p(t) -> (ndof, 1)` column vector.
+
+This design avoids rebuilding the load array outside the time loop and makes the solver code read naturally:
 
 ```python
-import numpy as np
-
-def rayleigh_coefficients(w1, w2, zeta1=0.05, zeta2=0.05):
-    """
-    Computes Rayleigh damping coefficients alpha and beta.
-    
-    Parameters:
-    w1, w2: Target circular frequencies (rad/s)
-    zeta1, zeta2: Damping ratios at w1 and w2 (default: 5%)
-    """
-    # Set up the transformation matrix for the 2x2 system
-    A = 0.5 * np.array([
-        [1/w1, w1],
-        [1/w2, w2]
-    ])
-    rhs = np.array([zeta1, zeta2])
-    
-    # Solve for [alpha, beta]
-    alpha, beta = np.linalg.solve(A, rhs)
-    return alpha, beta
-
-def rayleigh_damping(M, K, alpha, beta):
-    """
-    Assembles the global Rayleigh damping matrix.
-    """
-    return alpha * M + beta * K
-
-# Example Workflow:
-# Assume we extracted natural frequencies w1 and w2 from solve_modal
-alpha, beta = rayleigh_coefficients(omega[0], omega[1], zeta1=0.05, zeta2=0.05)
-C = rayleigh_damping(M, K, alpha, beta)
-print(f"Computed Rayleigh coefficients: alpha = {alpha:.4f}, beta = {beta:.4e}")
+p_next = p_func(t_next)
 ```
 
-## 5.4 Time Integration Schemes
+`tabulated_load` uses `numpy.interp` so the input can be a sampled history. `seismic_load` does the same thing for base excitation, but first multiplies the mass matrix by the influence vector:
 
-To solve the differential equations under arbitrary transient loads $\mathbf{P}(t)$, we use step-by-step numerical integration. `femlabpy` provides three primary solvers.
+$$
+\mathbf{p}_{eff}(t) = -\mathbf{M}\mathbf{r} a_g(t)
+$$
 
-### 5.4.1 Newmark-$\beta$ Method (Implicit)
+This matters because `seismic_load` is not a generic force wrapper. It is specifically a base-excitation generator for relative-motion formulations.
 
-The Newmark method approximates the displacement and velocity at time $t+\Delta t$ using parameters $\gamma$ and $\beta$:
-$$ \mathbf{u}_{t+\Delta t} = \mathbf{u}_t + \Delta t \dot{\mathbf{u}}_t + \Delta t^2 \left[ (0.5 - \beta)\ddot{\mathbf{u}}_t + \beta \ddot{\mathbf{u}}_{t+\Delta t} \right] $$
-$$ \dot{\mathbf{u}}_{t+\Delta t} = \dot{\mathbf{u}}_t + \Delta t \left[ (1-\gamma)\ddot{\mathbf{u}}_t + \gamma \ddot{\mathbf{u}}_{t+\Delta t} \right] $$
+### Frequency response function
 
-This leads to an effective static linear system solved at each time step:
-$$ \mathbf{K}_{eff} \mathbf{u}_{t+\Delta t} = \mathbf{P}_{eff, t+\Delta t} $$
-where:
-$$ \mathbf{K}_{eff} = \mathbf{K} + a_0 \mathbf{M} + a_1 \mathbf{C} $$
-$$ \mathbf{P}_{eff} = \mathbf{P}_{t+\Delta t} + \mathbf{M}(a_0 \mathbf{u}_t + a_2 \dot{\mathbf{u}}_t + a_3 \ddot{\mathbf{u}}_t) + \mathbf{C}(a_1 \mathbf{u}_t + a_4 \dot{\mathbf{u}}_t + a_5 \ddot{\mathbf{u}}_t) $$
+`compute_frf(M, C, K, input_dof, output_dof, freq_range, n_points=500)` evaluates the complex dynamic stiffness
 
-*Note: Using $\beta=0.25$ and $\gamma=0.5$ results in the Unconditionally Stable Average Acceleration method (Trapezoidal Rule), meaning the time step $\Delta t$ is chosen for accuracy, not stability.*
+$$
+\mathbf{Z}(\omega) = \mathbf{K} - \omega^2\mathbf{M} + i\omega\mathbf{C}
+$$
 
-#### The $K_{eff}$ Factorization Strategy using `scipy.linalg.lu_factor`
+and solves a dense linear system at each sampled frequency.
 
-A critical optimization in linear implicit dynamics (where $\mathbf{M}$, $\mathbf{C}$, $\mathbf{K}$, and $\Delta t$ are constant) is how $\mathbf{K}_{eff}$ is handled. 
+The practical consequences are:
 
-Because $\mathbf{K}_{eff}$ does not change from one time step to the next, **we do not need to invert or solve it from scratch every step.** Doing so would cost $\mathcal{O}(N^3)$ operations per time step. 
+- it is useful for small and medium systems;
+- it returns the scalar transfer function between one input DOF and one output DOF;
+- `plot_frf` then visualizes magnitude and phase, and can annotate peaks with `scipy.signal.find_peaks` when SciPy is available.
 
-Instead, we factorize $\mathbf{K}_{eff}$ **exactly once** outside the time integration loop using `scipy.linalg.lu_factor`. LU decomposition splits the matrix into Lower and Upper triangular matrices: $\mathbf{K}_{eff} = \mathbf{L}\mathbf{U}$. Inside the loop, we simply perform forward and backward substitution using `scipy.linalg.lu_solve`. This drops the per-step cost from $\mathcal{O}(N^3)$ to just $\mathcal{O}(N^2)$!
+## 5.5 Newmark beta method
 
-#### Line-by-Line Python Explanation of the Newmark Loop
+`solve_newmark` is the main implicit solver in the module. Its implementation is close to the textbook derivation, but a few code-level choices make it usable:
 
-Below is the complete implementation of `solve_newmark`. Pay close attention to how the inner loop iteratively updates vectors.
+- The input load is a callable `p_func`.
+- Initial acceleration is computed from equilibrium at `t = 0`.
+- The effective stiffness matrix is formed once as `K + a0*M + a1*C`.
+- If SciPy is available, the solver factorizes that matrix once with LU and reuses the factorization at every step.
+- Boundary conditions are applied by zeroing the constrained rows and columns in the effective stiffness and by zeroing the constrained entries in the time histories.
+
+The update formulas are the standard Newmark recurrences:
+
+$$
+\mathbf{u}_{n+1} = \mathbf{u}_n + \Delta t\,\mathbf{v}_n + \Delta t^2\left[\left(\frac{1}{2}-\beta\right)\mathbf{a}_n + \beta \mathbf{a}_{n+1}\right]
+$$
+
+$$
+\mathbf{v}_{n+1} = \mathbf{v}_n + \Delta t\left[(1-\gamma)\mathbf{a}_n + \gamma \mathbf{a}_{n+1}\right]
+$$
+
+What the code adds on top of that is the efficient matrix handling:
 
 ```python
-import numpy as np
-from scipy.linalg import lu_factor, lu_solve
-
-def solve_newmark(M, C, K, P_history, dt, u0, v0, beta=0.25, gamma=0.5):
-    """
-    Solves dynamic structural response using the implicit Newmark-beta method.
-    """
-    n_dofs = M.shape[0]
-    n_steps = P_history.shape[1]
-    
-    # 1. Integration constants
-    a0 = 1.0 / (beta * dt**2)
-    a1 = gamma / (beta * dt)
-    a2 = 1.0 / (beta * dt)
-    a3 = 1.0 / (2.0 * beta) - 1.0
-    a4 = gamma / beta - 1.0
-    a5 = (dt / 2.0) * (gamma / beta - 2.0)
-    
-    # 2. Form effective stiffness matrix
-    K_eff = K + a0 * M + a1 * C
-    
-    # 3. LU Factorization (Done ONCE outside the loop!)
-    # This stores the L and U matrices and pivot indices.
-    # Tremendous performance gain for constant dt linear systems.
-    lu_piv = lu_factor(K_eff)
-    
-    # 4. Initialize response arrays
-    U = np.zeros((n_dofs, n_steps))
-    V = np.zeros((n_dofs, n_steps))
-    A = np.zeros((n_dofs, n_steps))
-    
-    # Initial conditions
-    U[:, 0] = u0
-    V[:, 0] = v0
-    
-    # Solve for initial acceleration A0 from equilibrium: M*A0 = P0 - C*V0 - K*U0
-    # Assuming initial external load P[:, 0] is provided
-    rhs_0 = P_history[:, 0] - C @ v0 - K @ u0
-    A[:, 0] = np.linalg.solve(M, rhs_0) 
-    
-    # 5. Time Integration Loop
-    for n in range(0, n_steps - 1):
-        # Extract variables from time t (step n)
-        u_t = U[:, n]
-        v_t = V[:, n]
-        a_t = A[:, n]
-        
-        # External load at time t + dt (step n+1)
-        p_next = P_history[:, n+1]
-        
-        # Form effective load vector for t + dt
-        # This vector captures the external force plus the inertial and damping memory 
-        # from the previous timestep.
-        p_eff = (p_next 
-                 + M @ (a0 * u_t + a2 * v_t + a3 * a_t) 
-                 + C @ (a1 * u_t + a4 * v_t + a5 * a_t))
-        
-        # Solve for next displacement u_{n+1} using the pre-computed LU factorization.
-        # This is extremely fast (O(N^2)).
-        u_next = lu_solve(lu_piv, p_eff)
-        
-        # Update next acceleration a_{n+1} and velocity v_{n+1}
-        # using the Newmark difference equations.
-        a_next = a0 * (u_next - u_t) - a2 * v_t - a3 * a_t
-        v_next = v_t + a4 * v_t + a5 * a_t + a1 * (u_next - u_t) - a4 * v_t - a5 * a_t # Simplified form:
-        v_next = v_t + dt * ((1.0 - gamma) * a_t + gamma * a_next)
-        
-        # Store results for this timestep
-        U[:, n+1] = u_next
-        V[:, n+1] = v_next
-        A[:, n+1] = a_next
-        
-    return U, V, A
+K_eff = K + a0 * M + a1 * C
+K_factor = lu_factor(K_eff)
+u_next = lu_solve(K_factor, p_eff)
 ```
 
-### 5.4.2 Central Difference Method (Explicit)
-For high-speed impact, blast, or wave propagation, the explicit central difference method is used. It evaluates equilibrium entirely at time $t$:
-$$ \mathbf{M} \ddot{\mathbf{u}}_t + \mathbf{C} \dot{\mathbf{u}}_t + \mathbf{K} \mathbf{u}_t = \mathbf{P}_t $$
-Using finite difference approximations:
-$$ \ddot{\mathbf{u}}_t = \frac{\mathbf{u}_{t+\Delta t} - 2\mathbf{u}_t + \mathbf{u}_{t-\Delta t}}{\Delta t^2} $$
-Substituting this yields a system where $\mathbf{u}_{t+\Delta t}$ can be solved trivially **without matrix inversion**, provided $\mathbf{M}$ is a lumped (diagonal) matrix and $\mathbf{C}$ is zero or diagonal.
+That is the right implementation for a linear system with fixed `dt`, fixed matrices, and a load that changes only through `p_func(t)`.
 
-*Stability Limit:* Explicit methods are conditionally stable. The time step must strictly obey the Courant-Friedrichs-Lewy (CFL) condition:
-$$ \Delta t \le \frac{2}{\omega_{max}} $$
-where $\omega_{max}$ is the highest natural frequency of the mesh. `femlabpy` provides `critical_timestep(K, M)` to estimate this limit via power iteration.
+### Parameter presets
 
-## 5.5 Runnable Example: Implicit vs Explicit on a SDOF System
+`NewmarkParams` provides a few named presets that are worth documenting in the chapter:
 
-To truly understand the difference between implicit (Newmark) and explicit (Central Difference) methods, consider a 1-Degree-of-Freedom (SDOF) spring-mass system subjected to a step load. 
+- `average_acceleration()` corresponds to `beta = 0.25`, `gamma = 0.5`
+- `linear_acceleration()` uses `beta = 1/6`, `gamma = 0.5`
+- `central_difference()` encodes the explicit limit `beta = 0`, `gamma = 0.5`
+- `fox_goodwin()` is included as a higher-order preset for undamped SDOF reference cases
 
-The implicit method is unconditionally stable regardless of the time step, while the explicit method will violently blow up if the timestep $\Delta t > 2/\omega$.
+These presets are useful as named intent, even when you still pass the scalar values into the solver.
+
+### Energy tracking
+
+When `compute_energy=True`, the solver records kinetic and strain energy at each step and stores them in `result.energy`. The current implementation does not try to reconstruct full work balance terms inside the solver; it keeps the energy output intentionally small and stable.
+
+## 5.6 HHT alpha method
+
+`solve_hht` is the same basic time-integration pipeline as Newmark, but with an extra high-frequency filter.
+
+The code enforces `alpha` in the interval `[-1/3, 0]`, derives `beta` and `gamma` from it, and then modifies the effective stiffness and load so that the equilibrium equation is evaluated with the HHT weighting. In practice:
+
+- `alpha = 0` reduces to standard Newmark average acceleration
+- more negative values add more numerical dissipation at high frequencies
+- the method is still second-order accurate for the low-frequency response
+
+This is a good default when the model is stiff enough that spurious high-frequency oscillations are visible but you do not want to fully switch to an explicit formulation.
+
+## 5.7 Central difference method
+
+`solve_central_diff` is the explicit solver. Its implementation is stricter than the implicit solvers for a reason: it needs a diagonal mass matrix.
+
+The code path does the following:
+
+- extracts the lumped mass diagonal from a vector or diagonal matrix;
+- checks that the matrix is actually diagonal;
+- computes initial acceleration from the initial equilibrium state;
+- forms the backward extrapolated displacement `u_{-1}`;
+- steps forward using the explicit recurrence.
+
+The main point is that the mass appears only as a diagonal scaling. That is why `solve_central_diff` can remain fast, but also why it is not a drop-in replacement for a consistent-mass transient analysis.
+
+The stability limit is estimated with `critical_timestep(K, M)`, which uses power iteration on `M^{-1}K` to approximate the highest circular frequency and returns `2 / omega_max`.
+
+## 5.8 Nonlinear Newmark
+
+`solve_newmark_nl` extends the implicit Newmark pipeline with a Newton loop at every time step. Instead of assuming a fixed tangent stiffness, it accepts:
+
+- `tangent_func(u, state)`
+- `internal_force_func(u, state)`
+
+That split is the right design for nonlinear materials or geometric nonlinearity because the element state can evolve during iteration.
+
+The algorithm is:
+
+1. Predict displacement and velocity.
+2. Evaluate internal force and tangent stiffness at the trial state.
+3. Form the residual `p - M a - C v - q`.
+4. Solve the linear correction problem.
+5. Update the trial state until the residual is below tolerance.
+
+This is the part of the module to read if you want to understand how the library handles nonlinear dynamics without hiding the Newton iteration inside a black box.
+
+## 5.9 Plotting and postprocessing
+
+The plotting helpers are small but important because they match the solver output layout:
+
+- `plot_time_history` plots displacement, velocity, or acceleration for selected DOFs
+- `plot_energy` expects `compute_energy=True` and visualizes the energy channels in `TimeHistory.energy`
+- `plot_modes` from `modal.py` plots deformed meshes from the modal result
+
+These helpers are not just convenience wrappers. They encode the same data conventions as the solvers, so the examples in the manual can use them directly without reshaping the outputs by hand.
+
+## 5.10 Example workflow
+
+The following pattern is the one this repository is optimized for:
 
 ```python
-import numpy as np
-import matplotlib.pyplot as plt
+from femlabpy.damping import rayleigh_coefficients, rayleigh_damping
+from femlabpy.dynamics import seismic_load, solve_newmark
+from femlabpy.modal import solve_modal
 
-# SDOF Properties
-m = 1.0       # Mass (kg)
-k = 39.478    # Stiffness (N/m) -> natural freq f = 1.0 Hz, w = 2*pi
-c = 0.0       # Undamped
-omega = np.sqrt(k/m)
-critical_dt = 2.0 / omega
-print(f"Critical time step: {critical_dt:.4f} s")
+# Assemble K, M, and boundary conditions first.
+result = solve_modal(K, M, n_modes=5, C_bc=C, dof=2)
+alpha, beta = rayleigh_coefficients(result.omega[0], result.omega[1], 0.05, 0.05)
+C_damp = rayleigh_damping(M, K, alpha, beta)
 
-# Time vectors
-t_end = 5.0
-dt_stable = 0.05    # Stable for both
-dt_unstable = 0.35  # Unstable for Explicit! (0.35 > 0.318)
-
-def solve_sdof_explicit(m, k, c, p_func, dt, t_end):
-    """ Central Difference Explicit Solver for SDOF """
-    times = np.arange(0, t_end, dt)
-    u = np.zeros(len(times))
-    v = np.zeros(len(times))
-    a = np.zeros(len(times))
-    
-    # Initial conditions
-    u[0], v[0] = 0.0, 0.0
-    a[0] = (p_func(0) - c*v[0] - k*u[0]) / m
-    
-    # Step -1 calculation
-    u_prev = u[0] - dt*v[0] + 0.5*dt**2*a[0]
-    
-    # Effective mass (scalar)
-    m_eff = m / dt**2 + c / (2*dt)
-    
-    for i in range(len(times)-1):
-        p_t = p_func(times[i])
-        
-        # Effective force
-        if i == 0:
-            p_eff = p_t - (k - 2*m/dt**2)*u[i] - (m/dt**2 - c/(2*dt))*u_prev
-        else:
-            p_eff = p_t - (k - 2*m/dt**2)*u[i] - (m/dt**2 - c/(2*dt))*u[i-1]
-            
-        u[i+1] = p_eff / m_eff
-        
-    return times, u
-
-def solve_sdof_implicit(m, k, c, p_func, dt, t_end):
-    """ Newmark-beta Implicit Solver for SDOF (beta=0.25, gamma=0.5) """
-    times = np.arange(0, t_end, dt)
-    u, v, a = np.zeros(len(times)), np.zeros(len(times)), np.zeros(len(times))
-    
-    u[0], v[0] = 0.0, 0.0
-    a[0] = (p_func(0) - c*v[0] - k*u[0]) / m
-    
-    beta, gamma = 0.25, 0.5
-    a0 = 1/(beta*dt**2)
-    a1 = gamma/(beta*dt)
-    a2 = 1/(beta*dt)
-    a3 = 1/(2*beta) - 1
-    
-    k_eff = k + a0*m + a1*c
-    
-    for i in range(len(times)-1):
-        p_next = p_func(times[i+1])
-        p_eff = p_next + m*(a0*u[i] + a2*v[i] + a3*a[i])
-        
-        u[i+1] = p_eff / k_eff
-        a[i+1] = a0*(u[i+1] - u[i]) - a2*v[i] - a3*a[i]
-        v[i+1] = v[i] + dt*((1-gamma)*a[i] + gamma*a[i+1])
-        
-    return times, u
-
-# Step Load function
-def step_load(t):
-    return 10.0 if t >= 0 else 0.0
-
-# 1. Run Stable Case
-t_imp, u_imp = solve_sdof_implicit(m, k, c, step_load, dt_stable, t_end)
-t_exp, u_exp = solve_sdof_explicit(m, k, c, step_load, dt_stable, t_end)
-
-# 2. Run Unstable Case (Explicit will blow up)
-t_imp_unstable, u_imp_unstable = solve_sdof_implicit(m, k, c, step_load, dt_unstable, t_end)
-try:
-    t_exp_unstable, u_exp_unstable = solve_sdof_explicit(m, k, c, step_load, dt_unstable, t_end)
-except OverflowError:
-    pass # Expected blow up
-
-# Plotting could be done here showing the perfectly stable Newmark curve vs the exponentially exploding Central Difference curve.
+# Build a time-dependent load and solve the transient response.
+p_func = seismic_load(M, influence_vector, accel_record, dt_record)
+history = solve_newmark(
+    M,
+    C_damp,
+    K,
+    p_func,
+    u0,
+    v0,
+    dt=dt_record,
+    nsteps=len(accel_record) - 1,
+    C_bc=C,
+    dof=2,
+)
 ```
 
-This demonstrates why implicit solvers are preferred for long-duration structural dynamics (like earthquake engineering), whereas explicit solvers are reserved for extremely short-duration blast/impact problems.
+That sequence mirrors the intended workflow in `femlabpy`: modal inspection first, damping calibration second, and transient analysis last.

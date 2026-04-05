@@ -1,181 +1,232 @@
-# Chapter 6: Periodic Boundaries & I/O
+# Chapter 6: Periodic Boundaries and Gmsh I/O
 
-Advanced finite element analyses often require specialized boundary condition enforcement and integration with industrial meshing tools. In composite material modeling and computational micromechanics, these techniques are essential for capturing accurate physical responses across different scales.
+Periodic boundary conditions are the part of the workflow that turns a small unit cell into a usable representation of a repeating material. In `femlabpy`, that means three separate jobs have to work together:
 
-## 6.1 Periodic Boundary Conditions (Homogenization)
+1. Pair the nodes on opposite faces of the mesh.
+2. Build constraint equations that express the macro strain.
+3. Read meshes from Gmsh in a way that preserves node order, element tags, and explicit topology tables.
 
-When simulating the mechanical response of a heterogeneous or composite material, we typically analyze a Representative Volume Element (RVE). An RVE is a small sub-volume that statistically represents the entire macroscopic material. To ensure that the micro-scale deformations within this unit cell seamlessly represent a continuous macro-scale material without boundary effects, Periodic Boundary Conditions (PBCs) must be applied.
+This chapter follows that flow from geometry checks to homogenization and mesh import.
 
-PBCs enforce that the deformation on opposite faces of the RVE are identical, offset only by the applied macroscopic strain tensor $\bar{\mathbf{\epsilon}}$. For two corresponding nodes $A^+$ (on the positive face) and $A^-$ (on the negative face), the displacement mapping is mathematically expressed as:
+## 6.1 Periodic boundary conditions
 
-$$ \mathbf{u}^+ - \mathbf{u}^- = \bar{\mathbf{\epsilon}} \Delta \mathbf{x} $$
+Periodic conditions are used when a representative volume element, or RVE, should deform like one tile in an infinite repeating pattern. The idea is simple: nodes on opposing boundaries must move in a compatible way, with the difference between the two sides driven by the imposed macro strain.
 
-where $\Delta \mathbf{x} = \mathbf{x}^+ - \mathbf{x}^-$ is the physical distance vector between the paired nodes in the undeformed configuration. This relationship ensures that when RVEs are tiled infinitely in space, the material does not overlap or open gaps at the boundaries.
+In `femlabpy`, the public API is axis-based. That matters because periodicity is not inferred from left and right boundary lists supplied by the caller. Instead, the library inspects the coordinates directly and pairs nodes along a chosen axis.
 
-In a finite element framework, this is mathematically imposed as a set of linear constraint equations:
+### Pairing nodes
 
-$$ \mathbf{G} \mathbf{u} = \mathbf{Q} $$
+The main entry point is `find_periodic_pairs(X, axis, tol=1e-6)`.
 
-where $\mathbf{G}$ is the constraint matrix mapping the degrees of freedom, and $\mathbf{Q}$ is the constraint vector that introduces the macroscopic strain effect.
+- `X` is the node coordinate array.
+- `axis` selects the periodic direction: `0` for x, `1` for y, `2` for z.
+- `tol` is scaled by the domain size, which keeps the matching rule stable when the mesh is large or very small.
 
-### Understanding the Python Logic in `femlabpy`
+The function finds nodes on the minimum and maximum boundary of the chosen axis, compares their transverse coordinates, and returns 1-based node pairs. If the mesh is 2D, the returned array has two columns: `[left_node, right_node]`.
 
-The implementation of PBCs in `femlabpy` relies on a few critical functions that handle the geometry matching, constraint generation, and solution process.
+That is the practical point to remember: the code does not need manually curated node lists. It needs a mesh that is actually aligned on opposite faces.
 
-#### 1. Node Pairing Logic: `find_periodic_pairs`
-The first step is identifying which nodes on opposite boundaries correspond to each other. The `find_periodic_pairs(X, left_nodes, right_nodes, tol)` function accomplishes this. 
+If you want to check more than one periodic axis, use `find_all_periodic_pairs(X, periodic_axes, tol=1e-6)`. In 2D, the common pattern is to request axes `[0, 1]` and then stack the returned pair arrays before building the constraint matrix.
 
-**How it works under the hood:**
-The function uses coordinate matching to pair nodes. If we are matching the Left boundary (where $X=0$) to the Right boundary (where $X=L$), the corresponding nodes must have the exact same Y-coordinate (and Z-coordinate in 3D). 
+### Mesh checks before solving
+
+Before assembling constraints, call `check_periodic_mesh(X, axis, tol=1e-6)`.
+
+The returned report tells you whether the opposite boundaries are structurally compatible:
+
+- `valid` indicates whether the mesh passed the periodic check.
+- `n_left` and `n_right` report how many nodes were found on each side.
+- `max_mismatch` gives the worst pairing mismatch seen during validation.
+- `message` explains the failure or confirms that pairing succeeded.
+
+Use this as a fast guardrail. A mismatch in node counts usually means the meshing strategy is not periodic enough for an RVE solve, even if the geometry itself looks symmetric.
+
+### Constraint matrix and macro strain
+
+`periodic_constraints(X, pairs, dof, eps_macro=None)` converts paired nodes into the linear constraint system used by the solver.
+
+The function builds two objects:
+
+- `G`, the constraint matrix.
+- `Q`, the right-hand-side vector.
+
+For each pair and each degree of freedom, one row is created in `G`. The right node receives a `+1` and the left node receives a `-1`. If a macro strain is supplied, `Q` carries the displacement jump implied by that strain.
+
+For 2D problems, the Voigt order is `[exx, eyy, gxy]`. Inside the implementation, the engineering shear strain is converted to tensor form by splitting it equally across the off-diagonal terms. That keeps the constraint consistent with the strain tensor used in the rest of the library.
+
+`apply_macro_strain(X, pairs, eps_macro, dof)` is just a convenience wrapper when you only want `Q`.
+
+### Stabilizing the rigid mode
+
+Purely periodic systems still have a rigid translation unless you pin one corner or add an equivalent reference constraint. `fix_corner(X, C_existing, dof)` handles that by finding the node closest to the minimum coordinate corner and adding zero-displacement rows for the active DOFs.
+
+That step is not cosmetic. Without it, the augmented system can remain singular even if the periodic equations are correct.
+
+### Solving the periodic system
+
+`solve_periodic(K, p, X, pairs, dof, eps_macro=None, return_lagrange=False)` wraps the constraint build and the augmented solve.
+
+The solver is built around the block system
+
+$$
+\begin{bmatrix}
+\mathbf{K} & \mathbf{G}^T \\
+\mathbf{G} & \mathbf{0}
+\end{bmatrix}
+\begin{bmatrix}
+\mathbf{u} \\
+\boldsymbol{\lambda}
+\end{bmatrix}
+=
+\begin{bmatrix}
+\mathbf{p} \\
+\mathbf{Q}
+\end{bmatrix}
+$$
+
+In practice, `femlabpy` uses this for both direct periodic solves and homogenization. The Lagrange multipliers are useful if you want boundary reactions or if you want to inspect how strongly the constraints are being enforced.
+
+### Homogenization workflow
+
+`homogenize(K, T, X, G_mat, pairs, dof, element_type="q4")` computes the effective stiffness matrix of the RVE.
+
+The function applies unit macro strain cases one by one, solves the constrained system, averages the resulting stress, and assembles the effective constitutive matrix column by column. For 2D, that matrix is `3 x 3`; for 3D, it is `6 x 6`.
+
+The implementation is deliberately straightforward:
+
+- Build a unit macro strain vector.
+- Solve the periodic system for that strain.
+- Compute the volume-averaged stress.
+- Insert the result into one column of `C_eff`.
+
+That is the right mental model for reading the code. The homogenizer is not doing anything mysterious. It is repeating one constrained solve per canonical strain state.
+
+### Practical 2D workflow
+
+The following pattern matches the current API and is the safest way to work with a periodic quadrilateral RVE:
 
 ```python
-# Conceptual logic inside find_periodic_pairs
-pairs = []
-for n_left in left_nodes:
-    y_left = X[n_left - 1, 1]
-    for n_right in right_nodes:
-        y_right = X[n_right - 1, 1]
-        
-        # We use np.isclose instead of exact equality '==' 
-        # to avoid floating-point precision errors
-        if np.isclose(y_left, y_right, atol=tol):
-            pairs.append((n_left, n_right))
-            break
-```
-
-The use of `numpy.isclose` is critical here. Meshing software (like Gmsh) outputs coordinates as floating-point numbers. Due to machine precision, a node on the right face might have a Y-coordinate of `0.5000000000000001` while the left face has `0.4999999999999999`. A strict equality check `y_left == y_right` would fail to match these nodes, breaking the periodic boundary. By using `np.isclose` with a defined absolute tolerance (e.g., `tol=1e-5`), the function robustly identifies pairs even with slight numerical noise.
-
-#### 2. Generating Constraints: `periodic_constraints`
-Once the pairs are established, `periodic_constraints(X, all_pairs, macro_strain)` converts these node tuples into the global $\mathbf{G}$ matrix and $\mathbf{Q}$ vector. For every pair, it adds entries $+1$ and $-1$ in the appropriate columns of $\mathbf{G}$ for the paired DOFs, and computes $\bar{\mathbf{\epsilon}} \Delta \mathbf{x}$ to populate $\mathbf{Q}$.
-
-#### 3. Homogenization Driver: `homogenize`
-The `homogenize` function wraps these steps. It computes the effective stiffness $\mathbf{C}_{eff}$ by running three independent load cases (pure X-tension, pure Y-tension, and pure shear). For each case, it applies the strain, solves the saddle-point system via `solve_lag_general` (using Lagrange multipliers to enforce the $\mathbf{G}$ constraints), extracts the resulting stress field, and computes the volume-averaged stress $\langle \sigma \rangle$. 
-
----
-
-### Complete Code: Homogenizing a Porous Unit Cell & Micro-Stress Extraction
-
-This script generates a $1 \times 1$ square unit cell with a central hole, applies PBCs to the Left/Right and Top/Bottom faces, calculates the effective macroscopic stiffness matrix $\mathbf{C}_{eff}$, and finally extracts and plots the micro-stress field over the RVE.
-
-```python
-import gmsh
 import numpy as np
-import matplotlib.pyplot as plt
 import femlabpy as fp
-from femlabpy.periodic import find_periodic_pairs, homogenize
 
-# ==========================================
-# 1. Generate the RVE Mesh using Gmsh
-# ==========================================
-gmsh.initialize()
-gmsh.model.add("unit_cell")
-
-L = 1.0  # Side length
-R = 0.2  # Hole radius
-
-# Create the square (tag 1) and hole (tag 2)
-gmsh.model.occ.addRectangle(0, 0, 0, L, L, tag=1)
-gmsh.model.occ.addDisk(L/2, L/2, 0, R, R, tag=2)
-gmsh.model.occ.cut([(2, 1)], [(2, 2)])
-gmsh.model.occ.synchronize()
-
-# Force structured meshing on boundaries to ensure perfectly aligned nodes
-gmsh.model.mesh.setRecombine(2, 1)
-gmsh.model.mesh.generate(2)
-gmsh.write("rve.msh")
-gmsh.finalize()
-
-# ==========================================
-# 2. Load Mesh into femlabpy
-# ==========================================
 mesh = fp.load_gmsh2("rve.msh")
-T = mesh.quads.astype(int)
 X = mesh.positions[:, :2]
+T = mesh.quads.astype(int)
 
-# ==========================================
-# 3. Material Properties (Base Material)
-# ==========================================
-E = 210e9     # Young's Modulus (Pa)
-nu = 0.3      # Poisson's Ratio
-t = 1.0       # Thickness
-# G format: [E, nu, plane_stress(1)/strain(2), thickness]
-G = np.array([[E, nu, 1, t]])
+report_x = fp.check_periodic_mesh(X, axis=0, tol=1e-6)
+report_y = fp.check_periodic_mesh(X, axis=1, tol=1e-6)
+if not report_x["valid"] or not report_y["valid"]:
+    raise ValueError(report_x["message"] if not report_x["valid"] else report_y["message"])
 
-# ==========================================
-# 4. Identify Boundary Nodes
-# ==========================================
-tol = 1e-5
-left_nodes   = np.where(X[:, 0] < tol)[0] + 1
-right_nodes  = np.where(X[:, 0] > L - tol)[0] + 1
-bottom_nodes = np.where(X[:, 1] < tol)[0] + 1
-top_nodes    = np.where(X[:, 1] > L - tol)[0] + 1
+pairs_x = fp.find_periodic_pairs(X, axis=0, tol=1e-6)
+pairs_y = fp.find_periodic_pairs(X, axis=1, tol=1e-6)
+pairs = np.vstack([pairs_x, pairs_y])
 
-# ==========================================
-# 5. Link Opposite Boundaries (Periodic Pairs)
-# ==========================================
-lr_pairs = find_periodic_pairs(X, left_nodes, right_nodes, tol=tol)
-bt_pairs = find_periodic_pairs(X, bottom_nodes, top_nodes, tol=tol)
-all_pairs = lr_pairs + bt_pairs
+nn = mesh.nbNod
+K, p, q = fp.init(nn, dof=2)
 
-# ==========================================
-# 6. Execute Homogenization
-# ==========================================
-C_eff = homogenize(T, X, G, all_pairs, dof=2)
+G = np.array([[210e9, 0.30, 1, 1.0]])
+K = fp.kq4e(K, T, X, G)
 
-print("--- EFFECTIVE HOMOGENIZED STIFFNESS MATRIX (Pa) ---")
-print(np.array2string(C_eff, formatter={'float_kind':lambda x: f"{x:.2e}"}))
-
-# ==========================================
-# 7. Extracting & Plotting the Micro-Stress Field
-# ==========================================
-# While C_eff gives the macro response, we often want to inspect the 
-# internal stress distribution under a specific loading state.
-
-# Define a pure macroscopic X-tension strain state: [exx, eyy, exy]
-macro_strain = np.array([0.01, 0.0, 0.0])
-
-# Generate constraint matrices for this specific strain
-G_mat, Q_vec = fp.periodic_constraints(X, all_pairs, macro_strain)
-
-# Assemble global stiffness matrix
-K = fp.kasm(T, X, G, dof=2)
-
-# Solve the constrained system using Lagrange multipliers
-F_ext = np.zeros(K.shape[0])
-U, _ = fp.solve_lag_general(K, F_ext, G_mat, Q_vec)
-
-# Extract element-level stresses using qq4e (Quadrilateral 4-node Stress/Strain)
-stress, strain = fp.qq4e(T, X, U, G)
-
-# Plot the sigma_xx component of the micro-stress field
-plt.figure(figsize=(8, 6))
-# stress[:, 0] corresponds to the XX stress component
-fp.plot_trimesh(T, X, stress[:, 0], title="Micro-Stress Field ($\sigma_{xx}$) under X-Tension")
-plt.show()
+eps_macro = np.array([0.01, 0.0, 0.0])
+u = fp.solve_periodic(K, p, X, pairs, dof=2, eps_macro=eps_macro)
 ```
 
-When you run this script, you not only get the homogenized macroscopic behavior of the porous unit cell, but you can visually inspect the stress concentrations around the central hole on the micro-scale!
+The same node pairs are reused for both constraint generation and homogenization. Once the pairing is correct, the rest of the workflow is just matrix assembly and solving.
 
----
+## 6.2 Gmsh import workflow
 
-## 6.2 Gmsh I/O Integration
+`femlabpy` uses `io.gmsh` to convert `.msh` files into a normalized `GmshMesh` object. That object carries both the Python-friendly fields used internally and the legacy names expected by older FemLab examples.
 
-`femlabpy` interfaces seamlessly with the open-source mesh generator [Gmsh](https://gmsh.info/). The `io.gmsh` module reads `.msh` files (versions 2.2 and 4.1) natively without requiring complex external dependencies. This acts as the crucial bridge between complex CAD geometry and raw finite element array operations.
+### Choosing a loader
 
-### How `load_gmsh2` Extracts Geometry and Topology
+Two loaders are available:
 
-The `load_gmsh2(filepath)` function is a dedicated parser for the ASCII `.msh` format. 
+- `load_gmsh(filename)` follows the legacy semantics and materializes all explicit element arrays.
+- `load_gmsh2(filename, which=None)` is more flexible and lets you control which explicit topology arrays are created.
 
-**1. Extracting Node Positions:**
-The parser scans the file for the `$Nodes` block. Gmsh stores nodes with their global IDs and their X, Y, Z coordinates. `load_gmsh2` processes this block, strips out the IDs, and populates the `mesh.positions` array. This results in a dense $N \times 3$ NumPy array, where the row index corresponds to the node ID minus one.
+Use `load_gmsh2` when you want to keep the mesh object smaller. If `which` is `None`, all explicit arrays are loaded. If `which` is `-1` or an empty iterable, the explicit arrays are skipped.
 
-**2. Extracting Elements and Mapping Tags:**
-Next, it looks for the `$Elements` block. This is where element topologies (connectivity) and Physical Group tags reside.
-- If you assigned a surface as a Physical Group in Gmsh (e.g., `gmsh.model.addPhysicalGroup(2, [surf1], tag=1)`), this `tag=1` is written into the element data.
-- `load_gmsh2` sorts the elements by type (triangles vs. quadrilaterals). 
-- Crucially, it appends the Gmsh Physical Tag as the **last column** of the output topology arrays. 
+### What the mesh object contains
 
-This means that if you have an $E \times 4$ array for `triangles` (CST elements), the first 3 columns are the node indices $[n_1, n_2, n_3]$, and the 4th column is the `prop_id` (the physical tag from Gmsh). For `quads` (Q4 elements), it is an $E \times 5$ array, with the 5th column holding the property ID.
+The returned `GmshMesh` includes:
 
-### Multi-Material Workflows
-Because the physical tags are inherently mapped to the last column of the topology matrix `T`, configuring multi-material composites is incredibly simple. You can mesh a domain with multiple regions in Gmsh, assign them different Physical Groups (e.g., tag 1 for matrix, tag 2 for fiber). In `femlabpy`, you simply define a material property matrix `G` with two rows. During assembly (like calling `fp.kasm(T, X, G)`), the solver automatically looks at that last column of `T` to fetch the corresponding material properties from `G` for each element!
+- `positions`, the node coordinates.
+- `element_infos`, a compact per-element summary.
+- `element_tags` and `element_nodes`, the generalized tag and node tables.
+- `triangles`, `quads`, `tets`, `hexa`, and related explicit topology arrays.
+- `bounds_min` and `bounds_max`, which are useful for quick domain checks.
+
+The object also keeps legacy aliases such as `POS`, `TRIANGLES`, `QUADS`, `nbTriangles`, and similar names. That makes it easier to reuse older scripts while still using the modern Python fields.
+
+### Physical tags and topology columns
+
+The loader preserves Gmsh physical groups. For explicit topology arrays, the last column stores the first tag for that element. In other words, a quadrilateral row looks like this:
+
+```text
+[n1, n2, n3, n4, prop_id]
+```
+
+That convention is what lets the assembly routines map each element to the correct material row without extra bookkeeping.
+
+### Version handling
+
+The loader accepts legacy ASCII meshes directly. For modern Gmsh 4.x meshes, the code can convert through the official Gmsh SDK when the optional mesh extra is installed. If that package is missing, the loader raises a clear error instead of silently misreading the file.
+
+That behavior is important. Periodic boundary workflows depend on exact node ordering and consistent element connectivity, so a partial parse would be worse than a hard failure.
+
+### Practical import example
+
+```python
+import femlabpy as fp
+
+mesh = fp.load_gmsh2("rve.msh")
+
+print(mesh.nbNod)
+print(mesh.nbElm)
+print(mesh.quads.shape)
+print(mesh.bounds_min, mesh.bounds_max)
+```
+
+If you only need a subset of explicit element tables, request them up front:
+
+```python
+mesh = fp.load_gmsh2("rve.msh", which=[3, 4])
+```
+
+That is useful when the mesh contains many element types but the analysis only uses quads and tets.
+
+### Gmsh generation tips for periodic models
+
+The loader can only preserve periodic compatibility if the mesh itself was built compatibly. For RVEs, the safest pattern in Gmsh is:
+
+1. Build the geometry with opposite edges derived from the same parameterization.
+2. Use a structured or transfinite mesh where possible.
+3. Recombine when you want quads instead of triangles.
+4. Check both periodic axes with `check_periodic_mesh` before solving.
+
+If the boundary discretization is inconsistent, no amount of post-processing in Python will repair the pairing.
+
+### End-to-end example
+
+```python
+import numpy as np
+import femlabpy as fp
+
+mesh = fp.load_gmsh2("unit_cell.msh")
+X = mesh.positions[:, :2]
+T = mesh.quads.astype(int)
+
+left_right = fp.find_periodic_pairs(X, axis=0, tol=1e-6)
+bottom_top = fp.find_periodic_pairs(X, axis=1, tol=1e-6)
+pairs = np.vstack([left_right, bottom_top])
+
+K, p, q = fp.init(mesh.nbNod, dof=2)
+G = np.array([[70e9, 0.25, 1, 1.0]])
+K = fp.kq4e(K, T, X, G)
+
+C_eff = fp.homogenize(K, T, X, G, pairs, dof=2, element_type="q4")
+print(C_eff)
+```
+
+This is the cleanest mental model for the whole chapter: verify the mesh, pair the boundaries, build the constraints, solve once for each macro strain state, and let the averaging routines assemble the effective response.

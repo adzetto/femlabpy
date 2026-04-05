@@ -1,3 +1,22 @@
+"""
+Packaged legacy benchmark decks and MATLAB-style convenience wrappers.
+
+Workflow role
+-------------
+This module preserves the original classroom problem names and data layouts so
+existing FemLab examples remain easy to recognize. Some functions simply return
+the benchmark data, while others keep the old wrapper behavior for users who
+want the Python port to feel close to the source MATLAB material.
+
+What lives here
+---------------
+- benchmark data loaders such as ``bar01``, ``square``, ``hole``, and
+  ``canti``,
+- compatibility wrappers such as ``nlbar``, ``plastps``, and ``plastpe``,
+- small translation helpers that normalize the old tables into typed Python
+  dictionaries.
+"""
+
 from __future__ import annotations
 
 from typing import Any

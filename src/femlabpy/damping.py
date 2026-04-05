@@ -1,7 +1,21 @@
 """
-Damping models for structural dynamics.
+Damping-matrix builders for structural dynamics.
 
-Provides Rayleigh (proportional) damping and modal damping construction.
+Workflow role
+-------------
+This module converts modal targets into an explicit damping matrix after the
+mass and stiffness matrices are available. It is usually read together with
+``femlabpy.modal`` and ``femlabpy.dynamics`` because those modules supply the
+frequencies, mode shapes, and time integrators that consume the damping model.
+
+Public entry points
+-------------------
+- ``rayleigh_coefficients`` fits the two proportional damping constants from
+  two target frequencies and damping ratios.
+- ``rayleigh_damping`` assembles the physical damping matrix from ``M`` and
+  ``K``.
+- ``modal_damping`` builds a dense damping matrix from explicit modal targets
+  for reduced or teaching-scale problems.
 """
 
 from __future__ import annotations
@@ -23,8 +37,7 @@ def rayleigh_coefficients(
     Compute Rayleigh damping mass and stiffness proportional multipliers.
 
     Rayleigh damping constructs the damping matrix as a linear combination
-    of the mass and stiffness matrices:
-        C = alpha * M + beta * K
+    of the mass and stiffness matrices, ``C = alpha * M + beta * K``.
 
     This function computes the coefficients `alpha` and `beta` such that
     the specified modal damping ratios (`zeta1`, `zeta2`) are achieved at
@@ -32,8 +45,8 @@ def rayleigh_coefficients(
 
     Mathematical Formulation
     ------------------------
-    The modal damping ratio zeta_n for mode n with circular frequency omega_n is:
-        zeta_n = (alpha / (2 * omega_n)) + (beta * omega_n / 2)
+    The modal damping ratio for a mode with circular frequency ``omega_n`` is
+    ``zeta_n = alpha / (2 * omega_n) + beta * omega_n / 2``.
 
     Given two frequencies and desired damping ratios, this forms a 2x2 linear system.
     Solving this system yields the exact mass and stiffness multipliers needed to
@@ -85,10 +98,10 @@ def rayleigh_damping(M, K, alpha: float, beta: float):
 
     Mathematical Formulation
     ------------------------
-    C = alpha * M + beta * K
+    ``C = alpha * M + beta * K``
 
-    The damping ratio for mode n with circular frequency omega_n is:
-    zeta_n = alpha / (2 * omega_n) + beta * omega_n / 2
+    The damping ratio for a mode with circular frequency ``omega_n`` is
+    ``zeta_n = alpha / (2 * omega_n) + beta * omega_n / 2``.
 
     Parameters
     ----------

@@ -2,7 +2,13 @@ import os
 import sys
 import inspect
 
-sys.path.insert(0, os.path.abspath("../src"))
+from numpydoc.docscrape import NumpyDocString
+from numpydoc.docscrape_sphinx import SphinxDocString
+
+DOCS_DIR = os.path.abspath(os.path.dirname(__file__))
+SRC_DIR = os.path.abspath(os.path.join(DOCS_DIR, "..", "src"))
+
+sys.path.insert(0, SRC_DIR)
 
 project = "femlabpy"
 copyright = "2026, femlabpy contributors"
@@ -18,6 +24,15 @@ extensions = [
     "numpydoc",
     "myst_parser",
 ]
+
+CUSTOM_NUMPYDOC_SECTIONS = {
+    "Mathematical Formulation": [],
+    "Algorithm": [],
+}
+
+for _section_name, _section_default in CUSTOM_NUMPYDOC_SECTIONS.items():
+    NumpyDocString.sections.setdefault(_section_name, _section_default.copy())
+    SphinxDocString.sections.setdefault(_section_name, _section_default.copy())
 
 
 # GitHub linkcode resolution
@@ -60,7 +75,7 @@ def linkcode_resolve(domain, info):
 
     # Make path relative to the root src directory
     try:
-        rel_fn = os.path.relpath(fn, start=os.path.abspath("../src"))
+        rel_fn = os.path.relpath(fn, start=SRC_DIR)
         # Clean path separators for URL
         rel_fn = rel_fn.replace("\\", "/")
     except ValueError:
@@ -70,7 +85,7 @@ def linkcode_resolve(domain, info):
 
 
 templates_path = ["_templates"]
-exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "EDITABLE_TARGETS.md"]
 
 # MyST setup
 myst_enable_extensions = [
@@ -84,6 +99,7 @@ myst_enable_extensions = [
 # Theme setup (PyData)
 html_theme = "pydata_sphinx_theme"
 html_static_path = ["_static"]
+html_css_files = ["custom.css"]
 
 html_theme_options = {
     "github_url": "https://github.com/adzetto/femlabpy",
@@ -96,12 +112,12 @@ html_theme_options = {
 
 # Auto API generation
 autosummary_generate = True
+autosummary_imported_members = True
+autosummary_ignore_module_all = False
+autodoc_member_order = "bysource"
 numpydoc_show_class_members = False
 numpydoc_show_inherited_class_members = False
 numpydoc_class_members_toctree = False
 
 # Allow custom sections in numpydoc
-numpydoc_custom_sections = [
-    "Mathematical Formulation",
-    "Algorithm",
-]
+numpydoc_custom_sections = list(CUSTOM_NUMPYDOC_SECTIONS)

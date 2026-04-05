@@ -1,43 +1,121 @@
-# Plotting and Post-Processing
+# Plotting and Postprocessing
 
-In finite element analysis, visualizing the results and calculating reaction forces are crucial steps after solving the global system of equations. This document details the procedures used in our software.
+This chapter explains how `femlabpy` turns solved arrays into figures and how it
+extracts support reactions from the internal force vector. The code is small, but
+the conventions matter.
 
-## Mesh Plotting with `PolyCollection`
+## Mesh and Field Plotting
 
-In `plotting.py`, rendering the finite element mesh element-by-element using standard plot commands is extremely slow for large meshes. Instead, it uses `matplotlib.collections.PolyCollection`.
+The plotting helpers in `plotting.py` work directly on the topology and
+coordinate arrays used elsewhere in the package.
 
-A `PolyCollection` allows `matplotlib` to draw a large number of polygons in a single efficient step. The implementation works as follows:
-1. The global coordinates of the nodes for each element are gathered into a 3D NumPy array of shape `(num_elements, num_nodes_per_element, 2)`.
-2. This array is passed directly into the `PolyCollection` constructor.
-3. The resulting collection is then added to the plot's `Axes` object. This allows for fast and seamless rendering of the entire mesh, as well as easy mapping of scalar arrays (like extrapolated nodal values) to a colormap for contour plotting.
+### `plotelem`
 
-## Stress Extrapolation in `plotq4`
+`plotelem(T, X, ...)` draws the undeformed mesh. It reads each element row,
+subtracts one from the one-based node ids, and plots the resulting polygon or
+polyline.
 
-In a displacement-based Q4 (bilinear quadrilateral) element formulation, stresses and strains are evaluated at the integration points (Gauss points) inside the element. For a 2x2 Gauss quadrature rule, there are 4 Gauss points.
+The helper also supports optional node and element labels. That is useful when
+you are checking topology ordering or debugging a bad mesh import.
 
-However, continuous contour plotting (Gouraud shading) requires scalar values at the element nodes. In `plotq4`, this is achieved by extrapolating the Gauss point stresses to the corner nodes:
-1. A local coordinate system is defined where the 4 Gauss points are treated as the "corners" of an auxiliary square ($\xi, \eta = \pm 1/\sqrt{3}$).
-2. An extrapolation matrix $\mathbf{E}$ is constructed using standard bilinear shape functions evaluated at the actual node locations ($\xi, \eta = \pm 1$) relative to the auxiliary square.
-3. The Gauss point stresses for each element, $\boldsymbol{\sigma}_{GP}$, are multiplied by this matrix to yield the nodal stresses: 
-   $$ \boldsymbol{\sigma}_{node} = \mathbf{E} \boldsymbol{\sigma}_{GP} $$
-4. Because multiple elements share the same node, the extrapolated stress values from all elements meeting at a node are averaged to produce a smooth, continuous field for contour plotting.
+### `plotforces`
 
-## Reaction Forces Calculation
+`plotforces(T, X, P, ...)` draws nodal loads as arrows. The element table is not
+used directly; it is accepted only for a consistent plotting signature.
 
-To compute the reaction forces at the constrained degrees of freedom (the supports), `postprocess.py` applies the global equilibrium equation:
+The arrow size is scaled from the mesh span so a small model and a large model
+remain readable with the same function call.
 
-$$ \mathbf{R} = \mathbf{K} \mathbf{u} - \mathbf{P} $$
+### `plotbc`
 
-Where:
-*   $\mathbf{K}$ is the global stiffness matrix.
-*   $\mathbf{u}$ is the full global displacement vector.
-*   $\mathbf{P}$ is the vector of applied external nodal forces.
-*   $\mathbf{R}$ is the vector of reaction forces.
+`plotbc(T, X, C, ...)` visualizes prescribed displacements. Zero-valued
+constraints are shown as markers, while nonzero prescribed values are drawn as
+arrows.
 
-Since external forces and internal forces balance out at free degrees of freedom, $\mathbf{R}$ will be zero at the free nodes and will contain the actual support reactions at the constrained nodes.
+That distinction matches the actual solver behavior:
 
-The exact Python code used to calculate the reaction forces is:
+- zero values are fixed degrees of freedom;
+- nonzero values are enforced displacements.
+
+### `plotu`
+
+`plotu(T, X, u, ...)` draws a scalar nodal field over a 2D or 3D mesh. In 2D it
+uses `PolyCollection`. In 3D it uses `Poly3DCollection`.
+
+The function does not attempt to infer the meaning of the scalar field. It just
+colors each element by the mean value of its nodal samples.
+
+## Element Contours
+
+### `plotq4`
+
+`plotq4(T, X, S, scomp, ...)` reconstructs a nodal contour from Q4 Gauss-point
+results. The code expects the Q4 storage layout used by the Q4 recovery
+functions: each component is stored at four Gauss points per element.
+
+The implementation does three things:
+
+1. it extracts the requested component with one-based `scomp`;
+2. it maps the four Gauss-point values to corner values with a small
+   extrapolation matrix;
+3. it averages contributions from adjacent elements at each node.
+
+The final contour is displayed with `tripcolor(..., shading="gouraud")` so the
+result looks smooth across the mesh.
+
+### `plott3`
+
+`plott3(T, X, S, scomp, ...)` follows the same idea for T3 output. The recovery
+is simpler because the T3 storage is already element-centered in the form used
+by the rest of the codebase.
+
+## Reactions
+
+The `reaction()` function in `postprocess.py` reads the internal force vector
+and extracts the support reactions associated with constrained degrees of
+freedom.
+
+It does not recompute the finite element solution. It assumes you already have
+the assembled internal force vector `q` and the constraint table `C`.
+
+### Inputs and outputs
+
+- `q` is the global internal force vector.
+- `C` is the constraint table.
+- `dof` tells the helper how to flatten node and local DOF ids.
+- `comp` optionally filters the returned rows by a single constrained
+  component.
+
+The output is either:
+
+- `[node, local_dof, reaction]`, or
+- `[constraint_row, reaction]` when `comp` is supplied.
+
+### Why this helper is small
+
+Support reactions are a recovery task, not a solve task. The helper exists so
+the solve path can stay focused on matrix assembly while the postprocess layer
+handles the bookkeeping required to report reactions cleanly.
+
+## Typical Workflow
 
 ```python
-R = K @ u - P
+import numpy as np
+import femlabpy as fp
+
+K, p, q = fp.init(nn, dof)
+K = fp.kq4e(K, T, X, G)
+p = fp.setload(p, P)
+K, p, _ = fp.setbc(K, p, C, dof)
+u = np.linalg.solve(K, p)
+q, S, E = fp.qq4e(q, T, X, G, u)
+R = fp.reaction(q, C, dof)
 ```
+
+Then use the plotting helpers to inspect the result:
+
+- `plotelem` for geometry,
+- `plotforces` for loads,
+- `plotbc` for constraints,
+- `plotu` for scalar nodal fields,
+- `plotq4` or `plott3` for stress or strain contours.

@@ -1,8 +1,22 @@
 """
-Periodic boundary conditions for RVE/unit cell analysis.
+Periodic-boundary and homogenization utilities for unit-cell workflows.
 
-Provides node pairing, constraint matrix construction, macro strain
-application, volume averaging, and computational homogenization.
+Workflow role
+-------------
+This module takes a mesh that already exists and turns it into a periodic
+analysis problem. It finds matching boundary nodes, builds the multi-point
+constraint system, applies macro strain terms, solves the constrained system,
+and computes volume-averaged stress or strain for homogenization studies.
+
+Public entry points
+-------------------
+- ``find_periodic_pairs`` and ``find_all_periodic_pairs`` identify matching
+  nodes on opposing faces.
+- ``periodic_constraints`` and ``apply_macro_strain`` build the constraint
+  equations and their right-hand side terms.
+- ``solve_periodic`` wraps the constrained solution path.
+- ``volume_average_stress``, ``volume_average_strain``, and ``homogenize``
+  provide the post-processing layer for effective-property calculations.
 """
 
 from __future__ import annotations

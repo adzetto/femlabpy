@@ -1,3 +1,14 @@
+"""
+Small post-processing helpers for assembled FEM results.
+
+Workflow role
+-------------
+This module currently focuses on one task: extracting support reactions from
+the global internal-force vector once the solution is complete. Keeping that
+logic isolated makes the MATLAB-compatible return tables easier to test and
+reuse across the static, nonlinear, and legacy wrapper workflows.
+"""
+
 from __future__ import annotations
 
 import numpy as np

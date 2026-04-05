@@ -1,3 +1,21 @@
+"""
+Legacy nonlinear driver routines built from the lower-level femlabpy modules.
+
+Workflow role
+-------------
+Most of the library is organized as reusable kernels and assembly helpers. This
+module packages those pieces into larger legacy workflows, especially the
+nonlinear bar and elastoplastic benchmark drivers that reproduce the original
+teaching scripts.
+
+Public entry points
+-------------------
+- ``solve_nlbar`` executes the nonlinear bar load-stepping procedure and
+  returns the full response history.
+- ``solve_plastic`` runs the quadrilateral elastoplastic examples using the
+  updated element kernels, load handling, and reaction extraction helpers.
+"""
+
 from __future__ import annotations
 
 import numpy as np

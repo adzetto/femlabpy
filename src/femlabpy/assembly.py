@@ -1,3 +1,21 @@
+"""
+Scatter-assembly helpers that map element-level results into global arrays.
+
+Workflow role
+-------------
+Element kernels in :mod:`femlabpy.elements` compute local matrices and vectors
+for one element at a time. This module converts the one-based topology row into
+global degree-of-freedom indices and adds those local contributions into the
+global stiffness matrix or internal-force vector in place.
+
+Reading guide
+-------------
+Read ``assmk`` first if you want to understand matrix assembly and ``assmq``
+second for force-vector assembly. Both functions share the same indexing path,
+so once the topology-to-DOF mapping is clear the rest of the global workflow is
+much easier to follow.
+"""
+
 from __future__ import annotations
 
 import numpy as np

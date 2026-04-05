@@ -1,3 +1,21 @@
+"""
+Geometrically nonlinear bar and truss element kernels.
+
+Workflow role
+-------------
+This module contains both element-level routines and assembled global wrappers
+for bar-like members. It is the main reference for one-dimensional axial
+behavior, geometric nonlinearity, and the simplest mass-matrix construction in
+the codebase.
+
+Public entry points
+-------------------
+- ``kebar`` and ``qebar`` work at single-element level.
+- ``kbar`` and ``qbar`` assemble those contributions over a full topology table.
+- ``mebar`` and ``mbar`` provide consistent or lumped mass matrices for
+  dynamic analyses.
+"""
+
 from __future__ import annotations
 
 import numpy as np

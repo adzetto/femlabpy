@@ -1,3 +1,21 @@
+"""
+Triangular element kernels for constant-strain and scalar diffusion problems.
+
+Workflow role
+-------------
+This module covers the three-node triangle family in both structural and
+potential-flow style settings. It includes single-element stiffness and force
+evaluations, batch-friendly assembly wrappers, and the triangular mass matrix
+used in dynamic problems.
+
+Public entry points
+-------------------
+- ``ket3e`` and ``qet3e`` implement the structural constant-strain triangle.
+- ``ket3p`` and ``qet3p`` implement the scalar potential variant.
+- ``kt3e``, ``qt3e``, ``kt3p``, and ``qt3p`` assemble those kernels globally.
+- ``met3e`` and ``mt3e`` provide mass-matrix support for structural triangles.
+"""
+
 from __future__ import annotations
 
 import numpy as np
@@ -160,12 +178,9 @@ def ket3e(Xe, Ge):
         Node ordering: counter-clockwise.
 
     Ge : array_like
-        Material properties vector:
-        - Ge[0] : E (Young's modulus)
-        - Ge[1] : nu (Poisson's ratio)
-        - Ge[2] : type flag (optional)
-            - 1 or omitted: plane stress
-            - 2: plane strain
+        Material properties vector. ``Ge[0]`` is Young's modulus, ``Ge[1]`` is
+        Poisson's ratio, and the optional ``Ge[2]`` selects the formulation:
+        ``1`` or omitted for plane stress and ``2`` for plane strain.
 
     Returns
     -------

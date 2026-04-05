@@ -9,17 +9,17 @@ kernelspec:
   name: python3
 ---
 
-# Chapter 3: 1D Bar Elements (Linear & Nonlinear)
+# 1D bar elements
 
-This chapter introduces the formulation of 1D bar elements (trusses), which are fundamental building blocks in computational mechanics. We will start with the basic linear assumption and extend the theory to encompass large deformations using the Green-Lagrange strain. 
+This chapter covers the 1D bar and truss routines used by `femlabpy`. The code paths are split the same way as the implementation: `kebar` and `qebar` handle the geometrically nonlinear bar response, `kbar` and `qbar` assemble element contributions into the global system, and `mebar` and `mbar` build the element and global mass matrices.
 
-By the end of this chapter, you will understand the underlying physics and mathematics, and see exactly how the tangent stiffness matrices and internal force vectors are implemented in Python.
+The goal here is not to repeat a textbook derivation. It is to show how the strain measure, internal force, tangent stiffness, and mass matrix are carried through the Python functions that the rest of the library actually calls.
 
 ## 3.1 Linear 1D Bar Formulation
 
 The simplest finite element is the 2-node linear bar element. A bar can only transmit axial loads—meaning it has no bending or shear stiffness.
 
-### 3.1.1 Kinematics and Strain
+### Kinematics and strain
 Consider a 1D bar of initial length $L$, cross-sectional area $A$, and Young's modulus $E$. Let the bar be aligned along the local $x$-axis. The bar is defined by two nodes, $1$ and $2$, with displacements $u_1$ and $u_2$.
 
 The axial strain $\varepsilon$ under the assumption of small deformations is simply the change in length divided by the original length:
@@ -32,7 +32,7 @@ $$ \varepsilon = \mathbf{B} \mathbf{d}^e = \begin{bmatrix} -\frac{1}{L} & \frac{
 
 where $\mathbf{B}$ is the strain-displacement matrix.
 
-### 3.1.2 The Linear Stiffness Matrix
+### Linear stiffness matrix
 The principle of virtual work or minimizing the total potential energy yields the element stiffness matrix $\mathbf{K}^e$:
 
 $$ \mathbf{K}^e = \int_V \mathbf{B}^T E \mathbf{B} \, dV $$
@@ -43,13 +43,13 @@ $$ \mathbf{K}^e = E A L \left( \begin{bmatrix} -\frac{1}{L} \\ \frac{1}{L} \end{
 
 This is the canonical local linear stiffness matrix for a 2-node bar element. 
 
-## 3.2 Geometric Nonlinear Formulation
+## 3.2 Geometric nonlinear formulation
 
 When displacements and rotations become large, the linear assumption ($\varepsilon = \Delta L / L$) is no longer valid. Even if the material remains linear-elastic, large rigid body rotations introduce significant geometric nonlinearity.
 
 To capture large deformations, we must use an objective measure of strain, such as the Green-Lagrange strain.
 
-### 3.2.1 Green-Lagrange Strain ($\epsilon$)
+### Green-Lagrange strain
 For 1D problems where displacement is given by $u(x)$, the true Green-Lagrange strain measures the stretch and includes higher-order deformation terms:
 
 $$ \epsilon = \frac{du}{dx} + \frac{1}{2}\left(\frac{du}{dx}\right)^2 $$
@@ -60,7 +60,7 @@ $$ \epsilon = \frac{l_1^2 - l_0^2}{2 l_0^2} $$
 
 This strain measure is invariant under rigid body translations and rotations because it strictly depends on the squared lengths. 
 
-### 3.2.2 Internal Force Response ($\mathbf{q}^e$)
+### Internal force response
 The internal force vector is derived from the variation of the internal strain energy $U = \int_V \frac{1}{2} E \epsilon^2 dV$. The variation of the Green-Lagrange strain $\delta \epsilon$ is related to virtual displacements $\delta \mathbf{u}$:
 
 $$ \delta \epsilon = \frac{1}{l_0^2} \mathbf{a}_1 \cdot \delta \mathbf{a}_1 = \frac{1}{l_0^2} \mathbf{a}_1^T (\delta \mathbf{u}_2 - \delta \mathbf{u}_1) $$
@@ -70,7 +70,7 @@ Defining the normal stress as $S = E \epsilon$ and the normal force as $N = A S 
 $$ \mathbf{q}^e = \frac{N}{l_0} \begin{bmatrix} -\mathbf{a}_1 \\ \mathbf{a}_1 \end{bmatrix} $$
 
 #### Implementation: `qebar`
-Here is the exact NumPy implementation for evaluating the internal force of a nonlinear bar.
+`qebar` returns the element force vector together with the scalar stress and strain values used by the nonlinear solvers and postprocessing code.
 
 ```python
 import numpy as np
@@ -98,7 +98,7 @@ def qebar(Xe0, Xe1, Ge):
     return qe, float(stress), float(strain)
 ```
 
-### 3.2.3 Tangent Stiffness Matrix ($\mathbf{K}^e_{tan}$)
+### Tangent stiffness matrix
 For nonlinear solvers like the Newton-Raphson method, we require the tangent stiffness matrix, which is the derivative of the internal force vector with respect to the nodal displacements:
 
 $$ \mathbf{K}_{tan}^e = \frac{\partial \mathbf{q}^e}{\partial \mathbf{d}^e} $$
@@ -107,12 +107,12 @@ Taking the derivative of the internal force vector with respect to displacement 
 
 $$ \mathbf{K}_{tan}^e = \mathbf{K}_m + \mathbf{K}_g $$
 
-#### 1. Material Stiffness Matrix ($\mathbf{K}_m$)
+#### Material stiffness
 The material stiffness arises from taking the variation of the normal force $N$ itself (which depends on the strain variation). It projects the axial stiffness into the current spatial configuration:
 
 $$ \mathbf{K}_m = \frac{E A}{l_0^3} \begin{bmatrix} \mathbf{a}_1 \mathbf{a}_1^T & -\mathbf{a}_1 \mathbf{a}_1^T \\ -\mathbf{a}_1 \mathbf{a}_1^T & \mathbf{a}_1 \mathbf{a}_1^T \end{bmatrix} $$
 
-#### 2. Geometric Stiffness Matrix ($\mathbf{K}_g$)
+#### Geometric stiffness
 The geometric stiffness part comes from the derivative of the spatial vector $\mathbf{a}_1$ while treating the axial force $N$ as constant. It represents how the current tension/compression modifies the structural stiffness, regardless of material changes.
 
 In a purely 1D local context, this evaluates strictly as:
@@ -122,7 +122,7 @@ For 2D or 3D trusses, it generalizes to:
 $$ \mathbf{K}_g = \frac{N}{l_0} \begin{bmatrix} \mathbf{I} & -\mathbf{I} \\ -\mathbf{I} & \mathbf{I} \end{bmatrix} $$
 
 #### Implementation: `kebar`
-Here is the exact NumPy implementation for generating the local nonlinear tangent stiffness matrix. Note how $K_g$ uses the Identity matrix to expand the local 1D $K_g$ equation across dimensions.
+`kebar` builds the tangent matrix from the same current and reference coordinates used in `qebar`, so the solver sees a consistent force-stiffness pair at every Newton iteration.
 
 ```python
 def kebar(Xe0, Xe1, Ge):
@@ -161,7 +161,7 @@ def kebar(Xe0, Xe1, Ge):
     return K_m + K_g
 ```
 
-## 3.4 The Newton-Raphson Iteration Scheme & Example
+## 3.4 Newton-Raphson iteration and example
 
 To solve a nonlinear equilibrium path $\mathbf{q}(\mathbf{d}) = \mathbf{f}_{ext}$, the Newton-Raphson scheme iteratively finds the displacement increment $\Delta \mathbf{d}$.
 
