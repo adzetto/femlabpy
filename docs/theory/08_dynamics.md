@@ -11,180 +11,125 @@ kernelspec:
 
 # Structural Dynamics and Time Integration
 
-This chapter explains the solver side of `femlabpy`: mass and damping models,
-load histories, time integration, frequency response functions, and the
-post-processing helpers that operate on the resulting time histories.
+This chapter provides a rigorous mathematical foundation for the solver side of `femlabpy`: mass and damping models, time integration algorithms (Newmark-$\beta$, HHT-$\alpha$, Central Difference), and frequency response analysis.
 
-The semidiscrete equation of motion is
+The semidiscrete equation of motion for a linear structural system is given by the second-order ordinary differential equation:
 
 $$
 \mathbf{M}\ddot{\mathbf{u}}(t) + \mathbf{C}\dot{\mathbf{u}}(t) + \mathbf{K}\mathbf{u}(t) = \mathbf{p}(t)
 $$
 
-where `M`, `C`, and `K` are the global mass, damping, and stiffness matrices,
-and `p(t)` is a load vector returned by one of the load callables in
-`femlabpy.dynamics`. The time-history solvers all return the same container,
-`TimeHistory`, with rows ordered by time:
+where $\mathbf{M}$, $\mathbf{C}$, and $\mathbf{K}$ are the global mass, damping, and stiffness matrices respectively; $\mathbf{u}(t)$, $\dot{\mathbf{u}}(t)$, and $\ddot{\mathbf{u}}(t)$ are the displacement, velocity, and acceleration vectors; and $\mathbf{p}(t)$ is the external load vector.
 
-- `t`: `(nsteps + 1,)`
-- `u`: `(nsteps + 1, ndof)`
-- `v`: `(nsteps + 1, ndof)`
-- `a`: `(nsteps + 1, ndof)`
-- `energy`: `None` or a dictionary with `kinetic`, `strain`, and `total`
+## 1. Mass and Damping Models
 
-## 1. Mass and damping models
+### 1.1. Mass Matrices (Consistent vs. Lumped)
 
-The mass matrix controls inertia, and the damping matrix controls dissipation.
-The implementation keeps both concepts close to the global algebraic system so
-the same routines can be used for dense and sparse workflows.
+**Consistent Mass Matrix ($\mathbf{M}_c$):**
+Derived using the same shape functions $\mathbf{N}(\mathbf{x})$ used for the stiffness matrix. It is full (non-diagonal) and kinematically coupled:
 
-### Consistent and lumped mass
+$$
+\mathbf{M}_c = \int_{\Omega^e} \rho \mathbf{N}^T \mathbf{N} \, d\Omega
+$$
 
-`femlabpy` uses the two mass patterns that are standard in structural
-dynamics:
+**Lumped Mass Matrix ($\mathbf{M}_L$):**
+A diagonal matrix that decouples inertial forces. It is strictly required for explicit time integration (e.g., Central Difference). Lumping is typically achieved via row-summation or the HRZ (Hinton-Rock-Zienkiewicz) scaling method:
 
-- consistent mass, which follows the same interpolation as the stiffness
-  kernels;
-- lumped mass, which compresses the row sums onto the diagonal.
+$$
+M_{L, ii} = \alpha \int_{\Omega^e} \rho N_i^2 \, d\Omega \quad \text{where} \quad \alpha = \frac{\int \rho \, d\Omega}{\sum \int \rho N_j^2 \, d\Omega}
+$$
 
-The distinction matters because `solve_central_diff()` requires a diagonal mass
-matrix. The helper `_get_lumped_diagonal()` in `src/femlabpy/dynamics.py`
-checks this explicitly and raises an error if the matrix is not diagonal.
+### 1.2. Rayleigh Damping
 
-For stability estimates, `critical_timestep()` uses a power iteration on
-`M^-1 K` and returns approximately `2 / omega_max`. That is the practical
-quantity you want when deciding whether an explicit scheme is safe.
-
-### Rayleigh and modal damping
-
-`rayleigh_coefficients(omega1, omega2, zeta1, zeta2)` solves the 2-by-2 system
-that matches two target modal damping ratios. The coefficients are then fed to
-`rayleigh_damping(M, K, alpha, beta)`, which returns
+Rayleigh damping constructs the global damping matrix as a linear combination of the mass and stiffness matrices:
 
 $$
 \mathbf{C} = \alpha \mathbf{M} + \beta \mathbf{K}
 $$
 
-If you want a damping matrix that exactly matches a selected set of modal
-damping ratios, `modal_damping(M, omega, phi, zeta)` builds the dense Caughey
-form
+The coefficients $\alpha$ (mass-proportional) and $\beta$ (stiffness-proportional) are determined by specifying desired damping ratios $\zeta_1$ and $\zeta_2$ at two target natural frequencies $\omega_1$ and $\omega_2$:
 
 $$
-\mathbf{C} = \mathbf{M}\Phi \operatorname{diag}(2\zeta_i\omega_i)\Phi^T\mathbf{M}
+\begin{bmatrix} \alpha \\ \beta \end{bmatrix} = \frac{2}{\omega_2^2 - \omega_1^2} \begin{bmatrix} \omega_2 & -\omega_1 \\ -1/\omega_2 & 1/\omega_1 \end{bmatrix} \begin{bmatrix} \omega_1 \zeta_1 \\ \omega_2 \zeta_2 \end{bmatrix}
 $$
 
-using mass-normalized mode shapes.
+## 2. Implicit Time Integration: Newmark-$\beta$ Method
 
-## 2. Load histories
+The Newmark method relies on the following finite difference expansions for displacement and velocity:
 
-The load builders all return callables with the same shape convention:
-`p(t) -> (ndof, 1)`.
+$$
+\mathbf{u}_{n+1} = \mathbf{u}_n + \Delta t \dot{\mathbf{u}}_n + \frac{\Delta t^2}{2} \left[ (1 - 2\beta)\ddot{\mathbf{u}}_n + 2\beta \ddot{\mathbf{u}}_{n+1} \right]
+$$
 
-- `constant_load(P)` returns a fixed vector.
-- `ramp_load(P, t_ramp)` linearly ramps until the target time.
-- `harmonic_load(P, omega, phase=0.0)` evaluates a sinusoid.
-- `pulse_load(P, t_start, t_duration)` returns a rectangular pulse.
-- `tabulated_load(P, time_table, value_table)` interpolates a scalar history
-  with `np.interp`.
-- `seismic_load(M, direction, accel_record, dt_record)` precomputes `-M @ r`
-  once, then interpolates the ground acceleration record at runtime.
+$$
+\dot{\mathbf{u}}_{n+1} = \dot{\mathbf{u}}_n + \Delta t \left[ (1 - \gamma)\ddot{\mathbf{u}}_n + \gamma \ddot{\mathbf{u}}_{n+1} \right]
+$$
 
-The seismic loader is worth calling out because it avoids repeated matrix-vector
-products inside the time loop. The returned callable only interpolates the
-record and scales the precomputed influence vector.
+By substituting these into the equation of motion at time $t_{n+1}$, we form the **effective stiffness matrix** $\mathbf{\hat{K}}$ and **effective load vector** $\mathbf{\hat{p}}_{n+1}$:
 
-## 3. Newmark beta
+$$
+\mathbf{\hat{K}} = \mathbf{K} + \frac{1}{\beta \Delta t^2}\mathbf{M} + \frac{\gamma}{\beta \Delta t}\mathbf{C}
+$$
 
-`NewmarkParams` is a small convenience container for the integration constants.
-The named constructors document the standard choices:
+$$
+\mathbf{\hat{p}}_{n+1} = \mathbf{p}_{n+1} + \mathbf{M} \left[ \frac{1}{\beta \Delta t^2}\mathbf{u}_n + \frac{1}{\beta \Delta t}\dot{\mathbf{u}}_n + \left(\frac{1}{2\beta} - 1\right)\ddot{\mathbf{u}}_n \right] + \mathbf{C} \left[ \frac{\gamma}{\beta \Delta t}\mathbf{u}_n + \left(\frac{\gamma}{\beta} - 1\right)\dot{\mathbf{u}}_n + \Delta t \left(\frac{\gamma}{2\beta} - 1\right)\ddot{\mathbf{u}}_n \right]
+$$
 
-- `average_acceleration()` for the unconditionally stable trapezoidal rule,
-- `linear_acceleration()` for the classical second-order variant,
-- `central_difference()` for the explicit limiting case,
-- `fox_goodwin()` for the higher-order SDOF variant.
+The system $\mathbf{\hat{K}} \mathbf{u}_{n+1} = \mathbf{\hat{p}}_{n+1}$ is solved for $\mathbf{u}_{n+1}$, and the velocities and accelerations are subsequently updated. 
 
-`solve_newmark()` is the main implicit integrator. The implementation follows a
-fixed sequence:
+**Common Parameter Sets:**
+*   **Average Acceleration:** $\beta = 1/4, \gamma = 1/2$ (Unconditionally stable, no numerical dissipation).
+*   **Linear Acceleration:** $\beta = 1/6, \gamma = 1/2$ (Conditionally stable $\Delta t \le 0.551 T_n$).
 
-1. reshape `u0` and `v0` to column vectors,
-2. determine constrained DOFs from `C_bc`,
-3. build the effective stiffness matrix `K_eff = K + a0*M + a1*C`,
-4. factorize `K_eff` once when SciPy is available,
-5. compute the initial acceleration from `p(0) - C v0 - K u0`,
-6. march forward in time, updating `u`, `v`, and `a`,
-7. optionally compute kinetic and strain energy histories.
+## 3. Explicit Time Integration: Central Difference Method
 
-The solver writes history arrays in time-major order, so `result.u[n, i]` is the
-displacement of DOF `i` at time step `n`. That is the layout used by the
-plotting helpers and by downstream post-processing.
+The Central Difference method is explicit and strictly conditionally stable ($\Delta t \le \frac{T_n}{\pi}$). It requires a lumped (diagonal) mass matrix $\mathbf{M}_L$.
 
-When `compute_energy=True`, the returned `TimeHistory.energy` dictionary stores
-only the keys that the implementation currently computes: `kinetic`, `strain`,
-and `total`. `plot_energy()` expects exactly that layout.
+The finite difference approximations are:
 
-`solve_newmark_nl()` follows the same time-history pattern, but the update is
-wrapped in a Newton iteration. It accepts a tangent stiffness callback and an
-internal-force callback, then iterates until the residual satisfies the
-specified tolerance or `max_iter` is reached.
+$$
+\ddot{\mathbf{u}}_n = \frac{1}{\Delta t^2} (\mathbf{u}_{n+1} - 2\mathbf{u}_n + \mathbf{u}_{n-1})
+$$
+$$
+\dot{\mathbf{u}}_n = \frac{1}{2\Delta t} (\mathbf{u}_{n+1} - \mathbf{u}_{n-1})
+$$
 
-## 4. Central difference and HHT alpha
+Yielding the explicit update equation:
 
-`solve_central_diff()` is the explicit companion to Newmark beta. It requires a
-lumped mass matrix, reconstructs the first step through backward extrapolation,
-and then advances using the central difference formula. If a damping matrix is
-present, the solver only uses its diagonal contribution.
+$$
+\left( \frac{1}{\Delta t^2}\mathbf{M}_L + \frac{1}{2\Delta t}\mathbf{C} \right) \mathbf{u}_{n+1} = \mathbf{p}_n - \left( \mathbf{K} - \frac{2}{\Delta t^2}\mathbf{M}_L \right)\mathbf{u}_n - \left( \frac{1}{\Delta t^2}\mathbf{M}_L - \frac{1}{2\Delta t}\mathbf{C} \right)\mathbf{u}_{n-1}
+$$
 
-This is the routine that pairs naturally with `critical_timestep()`: if the mass
-is not diagonal or the time step is too large, the explicit scheme is not a good
-fit.
+Because the effective mass matrix is diagonal, the solution is purely vectorial (no matrix factorization required), making it extremely fast per time step for wave propagation and impact problems.
 
-`solve_hht()` implements the Hilber-Hughes-Taylor method. The parameter `alpha`
-must stay in `[-1/3, 0]`; the solver derives
+## 4. Dissipative Integration: HHT-$\alpha$ Method
+
+The Hilber-Hughes-Taylor (HHT) method introduces numerical dissipation for high-frequency noise while retaining second-order accuracy. It modifies the equation of motion by averaging the stiffness, damping, and external force terms over the step:
+
+$$
+\mathbf{M}\ddot{\mathbf{u}}_{n+1} + (1+\alpha)\mathbf{C}\dot{\mathbf{u}}_{n+1} - \alpha\mathbf{C}\dot{\mathbf{u}}_n + (1+\alpha)\mathbf{K}\mathbf{u}_{n+1} - \alpha\mathbf{K}\mathbf{u}_n = (1+\alpha)\mathbf{p}_{n+1} - \alpha\mathbf{p}_n
+$$
+
+The Newmark parameters are strictly tied to $\alpha \in [-1/3, 0]$ to ensure unconditional stability and second-order accuracy:
 
 $$
 \beta = \frac{(1 - \alpha)^2}{4}, \qquad \gamma = \frac{1}{2} - \alpha
 $$
 
-and then forms the modified effective stiffness and load. Compared with Newmark
-average acceleration, the HHT method damps high-frequency content more
-aggressively while keeping second-order accuracy for the low-frequency response.
+Setting $\alpha = 0$ recovers the standard Newmark Average Acceleration method.
 
-## 5. Frequency response and plots
+## 5. Frequency Response Function (FRF)
 
-`compute_frf(M, C, K, input_dof, output_dof, freq_range, n_points=500)` sweeps a
-frequency band in Hertz, converts each sample to angular frequency, and solves
+For steady-state harmonic analysis under a load $\mathbf{p}(t) = \mathbf{f} e^{i\omega t}$, the response is $\mathbf{u}(t) = \mathbf{u}_0 e^{i\omega t}$. Substituting this into the EOM yields the complex dynamic stiffness:
 
 $$
-\left(\mathbf{K} - \omega^2\mathbf{M} + i\omega\mathbf{C}\right)\mathbf{u} = \mathbf{f}
+\left(-\omega^2\mathbf{M} + i\omega\mathbf{C} + \mathbf{K}\right)\mathbf{u}_0 = \mathbf{f}
 $$
 
-for a unit force applied at `input_dof`. The function returns the frequency grid
-and the complex scalar transfer function at `output_dof`.
+The Frequency Response Function (FRF) matrix $\mathbf{H}(\omega)$ is the inverse of the dynamic stiffness:
 
-`plot_frf()` renders magnitude and phase in a two-panel figure and can mark
-resonance peaks. `plot_time_history()` plots displacement, velocity, or
-acceleration history for one or more DOFs. `plot_energy()` draws the current
-`energy` dictionary and raises a clear error if the solver was not run with
-energy tracking enabled.
+$$
+\mathbf{H}(\omega) = \left(\mathbf{K} - \omega^2\mathbf{M} + i\omega\mathbf{C}\right)^{-1}
+$$
 
-## 6. Practical use
-
-The standard workflow is short:
-
-```python
-from femlabpy.dynamics import (
-    rayleigh_coefficients,
-    rayleigh_damping,
-    solve_newmark,
-    plot_time_history,
-)
-
-alpha, beta = rayleigh_coefficients(omega1, omega2, 0.05, 0.05)
-C = rayleigh_damping(M, K, alpha, beta)
-history = solve_newmark(M, C, K, p_func, u0, v0, dt=0.01, nsteps=1000)
-plot_time_history(history, dof_index=0, quantity="displacement")
-```
-
-The important part is the data flow: the load builder returns `p(t)`, the solver
-turns it into a `TimeHistory`, and the plotting helpers read that object without
-needing to know how the matrices were assembled.
+`compute_frf()` evaluates this directly over a frequency vector to construct Bode plots (magnitude and phase vs. frequency).

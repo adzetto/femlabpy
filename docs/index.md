@@ -8,6 +8,11 @@
   <div class="fp-hero-subtitle">
     A modern finite element teaching and research library built around explicit NumPy arrays, compact element kernels, and source-level transparency.
   </div>
+
+  <div class="fp-naming-anim-container" id="fp-naming-anim">
+    <!-- JS will populate the naming animation here -->
+  </div>
+
   <div class="fp-hero-actions">
     <a href="tutorials.html" class="fp-btn fp-btn-primary">Get Started with Tutorials</a>
     <a href="manual/index.html" class="fp-btn fp-btn-secondary">Read the User Guide</a>
