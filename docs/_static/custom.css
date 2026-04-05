@@ -9,6 +9,7 @@ html[data-theme="light"], :root {
   /* Typography */
   --pst-font-family-base: "Google Sans Text", "Google Sans", "Product Sans", "Aptos", "Segoe UI", "Roboto", sans-serif;
   --pst-font-family-heading: "Google Sans Display", "Google Sans", "Product Sans", "Aptos", "Segoe UI", "Roboto", sans-serif;
+  --pst-font-family-monospace: "Google Sans Mono", "JetBrains Mono", "Fira Code", "Roboto Mono", monospace;
   
   /* Primary Colors */
   --pst-color-primary: #1a73e8; /* Google Blue */
@@ -26,22 +27,45 @@ html[data-theme="light"], :root {
   /* Custom Variables for Components */
   --fp-ink: #202124;
   --fp-muted: #5f6368;
-  --fp-surface: #f1f3f4; /* Subtle gray background for stat blocks */
+  --fp-surface: #f1f3f4; 
   --fp-accent: #1a73e8;
   --fp-accent-soft: #e8f0fe; /* Google Blue 50 */
   --fp-accent-text: #1a73e8;
   
   /* Stitch Card Design Variables */
-  --fp-card-bg: #f8f9fa; /* Google Gray 50 - no more plain white boxes! */
-  --fp-card-hover-bg: #ffffff; /* Turn white on hover to pop out */
-  --fp-card-border: transparent; /* Flat look without hard borders */
-  --fp-card-border-hover: #dadce0; /* Show a subtle border on hover */
+  --fp-card-bg: #f8f9fa; /* Google Gray 50 */
+  --fp-card-hover-bg: #ffffff; 
+  --fp-card-border: transparent; 
+  --fp-card-border-hover: #dadce0; 
   
   /* Shadows */
-  --fp-shadow: none; /* Flat default state */
-  --fp-shadow-hover: 0 4px 12px rgba(60,64,67,0.1), 0 1px 3px rgba(60,64,67,0.15); /* Float effect */
+  --fp-shadow: none; 
+  --fp-shadow-hover: 0 4px 12px rgba(60,64,67,0.1), 0 1px 3px rgba(60,64,67,0.15); 
   
   --fp-header-bg: rgba(255, 255, 255, 0.95);
+  
+  /* Code & Math Blocks */
+  --fp-code-bg: #f8f9fa;
+  --fp-code-border: #dadce0;
+  --fp-math-bg: #ffffff;
+  --fp-math-border: #e8eaed;
+  
+  /* Admonition Colors */
+  --fp-adm-note-bg: #e8f0fe; /* Blue */
+  --fp-adm-note-border: #1a73e8;
+  --fp-adm-note-text: #1967d2;
+  
+  --fp-adm-warning-bg: #fef7e0; /* Yellow/Amber */
+  --fp-adm-warning-border: #f9ab00;
+  --fp-adm-warning-text: #ea8600;
+  
+  --fp-adm-tip-bg: #e6f4ea; /* Green */
+  --fp-adm-tip-border: #1e8e3e;
+  --fp-adm-tip-text: #137333;
+  
+  --fp-adm-danger-bg: #fce8e6; /* Red */
+  --fp-adm-danger-border: #d93025;
+  --fp-adm-danger-text: #c5221f;
 }
 
 /* Dark Mode Variables */
@@ -68,7 +92,7 @@ html[data-theme="dark"] {
   --fp-accent-text: #8ab4f8;
   
   /* Stitch Card Design Variables */
-  --fp-card-bg: #28292c; /* Slightly lighter than pure background */
+  --fp-card-bg: #28292c; 
   --fp-card-hover-bg: #303134; 
   --fp-card-border: transparent;
   --fp-card-border-hover: #5f6368;
@@ -78,6 +102,29 @@ html[data-theme="dark"] {
   --fp-shadow-hover: 0 4px 12px rgba(0,0,0,0.5), 0 1px 3px rgba(0,0,0,0.3);
   
   --fp-header-bg: rgba(32, 33, 36, 0.95);
+  
+  /* Code & Math Blocks */
+  --fp-code-bg: #28292c;
+  --fp-code-border: #3c4043;
+  --fp-math-bg: #202124;
+  --fp-math-border: #3c4043;
+  
+  /* Admonition Colors */
+  --fp-adm-note-bg: rgba(138, 180, 248, 0.1); 
+  --fp-adm-note-border: #8ab4f8;
+  --fp-adm-note-text: #aecbfa;
+  
+  --fp-adm-warning-bg: rgba(253, 214, 99, 0.1);
+  --fp-adm-warning-border: #fdd663;
+  --fp-adm-warning-text: #fde293;
+  
+  --fp-adm-tip-bg: rgba(129, 201, 149, 0.1);
+  --fp-adm-tip-border: #81c995;
+  --fp-adm-tip-text: #a8dab5;
+  
+  --fp-adm-danger-bg: rgba(242, 139, 130, 0.1);
+  --fp-adm-danger-border: #f28b82;
+  --fp-adm-danger-text: #f6aea9;
 }
 
 /* Global Typography & Body */
@@ -116,19 +163,22 @@ body {
 }
 
 /* Headings */
+.bd-content h1, .bd-content h2, .bd-content h3, .bd-content h4, .bd-content h5 {
+  font-family: var(--pst-font-family-heading);
+  color: var(--fp-ink);
+}
+
 .bd-content h1 {
   font-size: clamp(2.5rem, 4vw, 3.5rem);
   letter-spacing: -0.02em;
   font-weight: 700;
   margin-bottom: 1.5rem;
-  color: var(--fp-ink);
 }
 
 .bd-content h2 {
   margin-top: 3.5rem;
   letter-spacing: -0.01em;
   font-weight: 500;
-  color: var(--fp-ink);
 }
 
 /* Homepage Hero Components */
@@ -140,7 +190,7 @@ body {
   display: inline-block;
   margin-bottom: 1.25rem;
   padding: 0.4rem 1rem;
-  border-radius: 999px; /* Pill shape */
+  border-radius: 999px;
   background: var(--fp-accent-soft);
   color: var(--fp-accent-text);
   font-size: 0.85rem;
@@ -172,15 +222,15 @@ body {
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
 }
 
-/* Cards (Stitch Style: large radius, flat background, no harsh border) */
+/* Cards */
 .fp-card {
   height: 100%;
   padding: 2rem;
   border: 1px solid var(--fp-card-border);
-  border-radius: 24px; /* Stitch uses 24px heavily */
+  border-radius: 24px;
   background: var(--fp-card-bg);
   box-shadow: var(--fp-shadow);
-  transition: all 0.3s cubic-bezier(0.2, 0, 0, 1); /* Snappy Google motion */
+  transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
   display: flex;
   flex-direction: column;
 }
@@ -192,25 +242,21 @@ body {
   transform: translateY(-4px);
 }
 
-.fp-card h2,
-.fp-card h3,
-.fp-card h4 {
+.fp-card h2, .fp-card h3, .fp-card h4 {
   margin-top: 0;
   margin-bottom: 1rem;
   font-size: 1.35rem;
   font-weight: 500;
-  color: var(--fp-ink);
 }
 
 .fp-card p {
   color: var(--fp-muted);
-  flex-grow: 1; /* Push the link to the bottom */
+  flex-grow: 1;
   line-height: 1.6;
   font-size: 1.05rem;
 }
 
-.fp-card p:last-child,
-.fp-card ul:last-child {
+.fp-card p:last-child, .fp-card ul:last-child {
   margin-bottom: 0;
 }
 
@@ -228,18 +274,17 @@ body {
   text-decoration: underline;
 }
 
-/* Stats (Stitch Style) */
+/* Stats */
 .fp-stat {
   padding: 1.5rem;
   background: var(--fp-surface);
   border-radius: 16px;
-  box-shadow: none; /* Flat */
+  box-shadow: none;
   border: none;
   position: relative;
   overflow: hidden;
 }
 
-/* Add a subtle accent bar to the stat without using borders */
 .fp-stat::before {
   content: "";
   position: absolute;
@@ -256,7 +301,6 @@ body {
   margin-bottom: 0.5rem;
   font-size: 1.75rem;
   font-weight: 500;
-  color: var(--fp-ink);
 }
 
 .fp-stat p {
@@ -266,30 +310,89 @@ body {
   line-height: 1.5;
 }
 
-/* Admonitions, Note blocks */
-.fp-section-note,
+/* Admonitions (Material 3 Style) */
 .bd-content .admonition {
   margin: 2rem 0;
+  padding: 1.25rem 1.5rem;
   border-radius: 16px;
-  background: var(--fp-surface);
-  border: none; /* Removed hard borders */
+  border: none;
   box-shadow: none;
-}
-
-.fp-section-note {
-  padding: 1.5rem;
   position: relative;
   overflow: hidden;
+  background: var(--fp-adm-note-bg); /* Default fallback */
 }
 
-.fp-section-note::before {
+/* Add colored left bar */
+.bd-content .admonition::before {
   content: "";
   position: absolute;
   top: 0;
   left: 0;
-  width: 4px;
+  width: 6px;
   height: 100%;
-  background: var(--fp-accent);
+  background: var(--fp-adm-note-border);
+}
+
+.bd-content .admonition > .admonition-title {
+  font-family: var(--pst-font-family-heading);
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+  color: var(--fp-adm-note-text);
+  background: transparent;
+  padding: 0;
+  border: none;
+}
+
+.bd-content .admonition p {
+  margin-bottom: 0.5rem;
+  color: var(--fp-ink);
+}
+
+.bd-content .admonition p:last-child {
+  margin-bottom: 0;
+}
+
+/* Specific Admonition Types */
+.bd-content .admonition.note, .bd-content .admonition.seealso {
+  background: var(--fp-adm-note-bg);
+}
+.bd-content .admonition.note::before, .bd-content .admonition.seealso::before {
+  background: var(--fp-adm-note-border);
+}
+.bd-content .admonition.note > .admonition-title, .bd-content .admonition.seealso > .admonition-title {
+  color: var(--fp-adm-note-text);
+}
+
+.bd-content .admonition.warning, .bd-content .admonition.attention {
+  background: var(--fp-adm-warning-bg);
+}
+.bd-content .admonition.warning::before, .bd-content .admonition.attention::before {
+  background: var(--fp-adm-warning-border);
+}
+.bd-content .admonition.warning > .admonition-title, .bd-content .admonition.attention > .admonition-title {
+  color: var(--fp-adm-warning-text);
+}
+
+.bd-content .admonition.tip, .bd-content .admonition.hint {
+  background: var(--fp-adm-tip-bg);
+}
+.bd-content .admonition.tip::before, .bd-content .admonition.hint::before {
+  background: var(--fp-adm-tip-border);
+}
+.bd-content .admonition.tip > .admonition-title, .bd-content .admonition.hint > .admonition-title {
+  color: var(--fp-adm-tip-text);
+}
+
+.bd-content .admonition.danger, .bd-content .admonition.important, .bd-content .admonition.error {
+  background: var(--fp-adm-danger-bg);
+}
+.bd-content .admonition.danger::before, .bd-content .admonition.important::before, .bd-content .admonition.error::before {
+  background: var(--fp-adm-danger-border);
+}
+.bd-content .admonition.danger > .admonition-title, .bd-content .admonition.important > .admonition-title, .bd-content .admonition.error > .admonition-title {
+  color: var(--fp-adm-danger-text);
 }
 
 /* Table styling */
@@ -297,17 +400,57 @@ body {
   border-radius: 12px;
   overflow: hidden;
   border: 1px solid var(--pst-color-border);
+  margin: 2rem 0;
+  width: 100%;
 }
 
 .bd-content table.docutils th {
   background-color: var(--fp-surface);
   font-weight: 600;
+  text-align: left;
 }
 
-.bd-content table.docutils td, 
-.bd-content table.docutils th {
+.bd-content table.docutils td, .bd-content table.docutils th {
   border-color: var(--pst-color-border);
   padding: 1rem;
+}
+
+/* Math blocks (LaTeX) */
+div.math {
+  background: var(--fp-math-bg);
+  border: 1px solid var(--fp-math-border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  overflow-x: auto;
+}
+
+/* Code blocks (Pygments/Highlight) */
+div.highlight {
+  background: var(--fp-code-bg);
+  border: 1px solid var(--fp-code-border);
+  border-radius: 12px;
+  padding: 1rem;
+  margin: 1.5rem 0;
+}
+
+div.highlight pre {
+  margin: 0;
+  background: transparent;
+  border: none;
+  font-family: var(--pst-font-family-monospace);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+/* Inline code styling */
+code {
+  font-family: var(--pst-font-family-monospace);
+  background: var(--fp-surface);
+  color: var(--fp-ink);
+  padding: 0.2rem 0.4rem;
+  border-radius: 6px;
+  font-size: 0.85em;
 }
 
 /* Details/Summary */
@@ -331,6 +474,19 @@ body {
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
   border-bottom: 1px solid var(--pst-color-border);
+}
+
+/* Animations Classes (Controlled by custom.js) */
+.fp-animate-hidden {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s cubic-bezier(0.2, 0, 0, 1), transform 0.6s cubic-bezier(0.2, 0, 0, 1);
+  will-change: opacity, transform;
+}
+
+.fp-animate-visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 /* Responsive adjustments */
