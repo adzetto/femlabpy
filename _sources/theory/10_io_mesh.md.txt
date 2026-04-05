@@ -1,165 +1,86 @@
 # Mesh I/O and Gmsh Import
 
-This chapter explains how `femlabpy` turns a `.msh` file into the array
-structures used by the rest of the library. The important part is not the file
-format itself. The important part is how node coordinates, element topology, and
-physical tags become NumPy arrays that the element kernels can consume directly.
+This chapter explains how `femlabpy` mathematically and structurally turns a `.msh` file into the primary array structures used by the element kernels: the coordinate matrix $\mathbf{X}$ and the topology matrix $\mathbf{T}$.
 
-## Mesh Formats
+## 1. The Core Data Structures
 
-`femlabpy` supports the older Gmsh 2.2 ASCII layout and the newer 4.x family.
-The implementation prefers a single normalized parsing path instead of two
-different loaders.
+In `femlabpy`, the finite element geometry is entirely defined by two globally ordered matrices:
 
-### Legacy ASCII meshes
+1.  **Coordinate Matrix ($\mathbf{X}$):** A floating-point array of shape `(nn, ndim)` where `nn` is the total number of nodes and `ndim` is the spatial dimension (2 or 3). The $i$-th row $\mathbf{X}[i, :]$ contains the $[x, y, z]$ coordinates of the $i$-th node.
+2.  **Topology Matrix ($\mathbf{T}$):** An integer array representing element connectivity. For a specific element type with $k$ nodes (e.g., $k=4$ for Q4 elements), $\mathbf{T}$ has shape `(ne, k+1)` where `ne` is the number of elements of that type. The first $k$ columns contain the zero-based node indices that make up the element, and the final column contains the physical property tag/material ID assigned to that element.
 
-Legacy 2.2 meshes are simple to parse because nodes and elements are stored in
-plain text blocks. The parser reads the `$Nodes` block into a coordinate array
-with shape `(nn, 3)` and the `$Elements` block into normalized element records.
+## 2. Parsing the Mesh File
 
-The key convention is that Gmsh writes one-based node ids, while the Python
-arrays inside `femlabpy` are zero-based. The loader resolves that mismatch as
-part of parsing, so later assembly code can use direct NumPy indexing.
+`femlabpy` supports both Gmsh 2.2 ASCII layout and modern 4.x binary/ASCII layouts. Modern meshes are converted into the 2.2 legacy layout in memory using the `gmsh` Python SDK if available.
 
-### Modern Gmsh meshes
+### 2.1. Nodal Transformation ($\$Nodes \to \mathbf{X}$)
 
-Modern 4.x meshes use block-based storage. `femlabpy` handles those files by
-using the optional official `gmsh` SDK when it is installed, then re-emitting
-the mesh into the legacy ASCII layout expected by the parser. That keeps the
-rest of the code path identical.
+In the Gmsh file, the `$Nodes` block defines the mesh nodes:
 
-The practical effect is simple:
+```text
+$Nodes
+nn
+node_id_1  x_1  y_1  z_1
+node_id_2  x_2  y_2  z_2
+...
+$EndNodes
+```
 
-1. if the file is already compatible, it is parsed directly;
-2. if the file is a modern mesh and the SDK is available, it is converted to a
-   legacy ASCII view first;
-3. if the SDK is missing, the loader fails early instead of guessing.
+**Transformation:**
+Gmsh `node_id`s are generally 1-based and not necessarily contiguous. `femlabpy` reads these into a dense NumPy array $\mathbf{X}$. During this process, node IDs are normalized to a strict `0` to `nn-1` zero-based index system.
 
-## Loader Functions
+$$
+\text{Gmsh Node } i \implies \mathbf{X}[i-1, :] = [x_i, y_i, z_i]
+$$
 
-`femlabpy.io.gmsh` exposes two public loaders.
+### 2.2. Element Transformation ($\$Elements \to \mathbf{T}$)
 
-### `load_gmsh`
+The `$Elements` block defines the mesh connectivity and physical grouping:
 
-`load_gmsh(filename)` reproduces the legacy `load_gmsh.m` semantics. It loads
-all explicit element tables for the supported element families and returns a
-fully populated `GmshMesh` object.
+```text
+$Elements
+ne
+elm_id_1  elm_type  num_tags  tag_1  tag_2  ...  node_1  node_2  ...  node_k
+...
+$EndElements
+```
 
-Use this when you want the closest behavior to the original MATLAB loader and do
-not mind carrying all explicit arrays.
+**Transformation:**
+1.  **Filtering:** Elements are filtered and grouped by their `elm_type` (e.g., type 2 = 3-node triangle, type 3 = 4-node quad).
+2.  **Node Index Normalization:** The 1-based `node_i` values are decremented by 1 to match the normalized row indices of $\mathbf{X}$.
+3.  **Property Tagging:** Gmsh allows multiple tags per element. `femlabpy` extracts the *first* physical tag (`tag_1`) and treats it as the material/property ID index.
+4.  **Assembly:** For a specific element group, the topology matrix $\mathbf{T}$ is assembled such that row $e$ is:
 
-### `load_gmsh2`
+$$
+\mathbf{T}[e, :] = [ (\text{node}_1 - 1), (\text{node}_2 - 1), \dots, (\text{node}_k - 1), \text{tag}_1 ]
+$$
 
-`load_gmsh2(filename, which=None)` is the more flexible loader. It returns the
-same `GmshMesh` container, but it lets you choose which explicit element tables
-should be materialized.
+This structure ensures that when iterating over elements, `femlabpy` can simultaneously extract the geometry via `Xe = X[T[e, :-1], :]` and the material row via `Ge = G[T[e, -1] - 1, :]`.
 
-- `which=None` loads all explicit arrays.
-- `which=-1` or an empty iterable skips the explicit arrays.
-- a list such as `[2, 3, 4]` loads only the requested element types.
+## 3. Loader Functions
 
-This matters when you only need one topology table, because the mesh object can
-stay much smaller.
+`femlabpy.io.gmsh` exposes two public loaders that construct the `GmshMesh` container object containing these $\mathbf{X}$ and $\mathbf{T}$ matrices:
 
-### What the loader returns
+### 3.1. `load_gmsh`
+`load_gmsh(filename)` reproduces the legacy `load_gmsh.m` semantics. It loads all explicit element tables for all supported element families.
 
-Both loaders return a `GmshMesh` object. The object keeps the normalized Python
-fields used internally by `femlabpy` and the legacy aliases used by the old
-FemLab scripts.
+### 3.2. `load_gmsh2`
+`load_gmsh2(filename, which=None)` allows selective loading. You can pass a list of element types `which=[2, 3]` to only extract topology matrices for triangles and quads, saving memory for large meshes containing unused bounding elements.
 
-The most important fields are:
+## 4. Practical Extraction
 
-- `positions`: node coordinates, always stored as `(nn, 3)`.
-- `element_infos`: a compact summary of each parsed element.
-- `element_tags`: the element tag table.
-- `element_nodes`: the element connectivity table.
-- `nb_type`: counts per Gmsh element type.
-- `bounds_min` and `bounds_max`: axis-aligned bounds of the mesh.
-
-The explicit topology arrays are the ones most users care about:
-
-- `triangles`, `quads`, `tets`, `hexa`, and the higher-order variants.
-- each row stores the node ids for one element and the first element tag in the
-  last column.
-
-## GmshMesh Structure
-
-`GmshMesh` is the normalization layer between the mesh file and the FEM code.
-It is defined in `src/femlabpy/types.py` and is intentionally opinionated.
-
-### Python fields
-
-The lowercase fields are the stable API:
-
-- `positions`
-- `element_infos`
-- `element_tags`
-- `element_nodes`
-- `nb_type`
-- the explicit topology arrays such as `triangles` and `quads`
-
-The class also stores `legacy_element_infos`, `legacy_element_tags`,
-`loader_name`, `explicit_types`, and `nodes_per_type_of_element`. Those fields
-help preserve the behavior of the original classroom loaders.
-
-### Legacy aliases
-
-The class implements `__getattr__` so older scripts can still use names such as
-`POS`, `TRIANGLES`, `QUADS`, `nbTriangles`, `MIN`, and `MAX`.
-
-That is not cosmetic. It lets the wrapper layer and the tutorial code keep the
-old FemLab naming while the internals stay consistent with Python conventions.
-
-## Parsing Flow
-
-The private helpers in `io/gmsh.py` are worth understanding even if you never
-call them directly.
-
-### File version detection
-
-`_mesh_format_version()` reads the `$MeshFormat` header and returns the declared
-version when possible.
-
-### Legacy view creation
-
-`_legacy_view_path()` either returns the original file path or creates a
-temporary 2.2-style ASCII view through the `gmsh` SDK. That is the compatibility
-bridge for modern meshes.
-
-### Normalized parsing
-
-`_parse_gmsh_file()` converts the mesh into node arrays, bounds, and parsed
-element dictionaries. `_build_normalized_mesh()` then turns those parsed records
-into the final `GmshMesh` object.
-
-The important point is that the parser keeps the connectivity and
-the physical tags separate. That allows the explicit topology arrays to carry the
-first physical tag in the last column, while the more general tables still keep
-the full metadata.
-
-## Practical Usage
+Once loaded, the `GmshMesh` object exposes the parsed matrices natively:
 
 ```python
 import femlabpy as fp
 
-mesh = fp.load_gmsh2("model.msh", which=[2, 3, 4])
+mesh = fp.load_gmsh2("model.msh", which=[3]) # Load only Q4 elements
 
-print(mesh.nbNod)
-print(mesh.nbElm)
-print(mesh.triangles.shape)
-print(mesh.quads.shape)
-print(mesh.bounds_min, mesh.bounds_max)
+# The coordinate matrix X (nn x 3)
+X = mesh.positions
+
+# The topology matrix T for quads (ne x 5)
+T_q4 = mesh.quads 
 ```
 
-For code that needs to inspect the physical group associated with an element
-row, use `mesh.property_numbers(...)` or read `mesh.element_tags` directly.
-
-## Reading Checklist
-
-If you are editing the loader, keep these rules in mind:
-
-1. preserve one-based ids at the file boundary;
-2. convert to zero-based NumPy indexing as soon as the data enters the mesh
-   object;
-3. keep the physical tag in the last column of the explicit topology arrays;
-4. do not silently reinterpret malformed meshes.
+This clean separation ensures that `femlabpy`'s assembly routines (like `assmk()`) remain completely decoupled from the file format, operating purely on dense, vectorized NumPy arrays.

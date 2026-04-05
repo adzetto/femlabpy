@@ -31,7 +31,7 @@
 <link href="_static/styles/pydata-sphinx-theme.css?digest=7f76b32a3354e82990f2" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
-    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=d2a6dfa1" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=985dfaa0" />
   
   <!-- So that users can add custom icons -->
   <script defer src="_static/scripts/fontawesome.js?digest=7f76b32a3354e82990f2"></script>
@@ -396,7 +396,27 @@
                   
   <section class="tex2jax_ignore mathjax_ignore" id="tutorials-usage-manual">
 <h1>Tutorials &amp; Usage Manual<a class="headerlink" href="#tutorials-usage-manual" title="Link to this heading">#</a></h1>
-<p>This manual explains how to build and solve finite element models using femlabpy. The workflow follows standard finite element procedures. We focus on how to define the model, assemble the matrices, and solve the equations.</p>
+<div class="fp-hide-title"></div>
+<div class="fp-hero" style="padding: 3rem 1.5rem; margin-bottom: 3rem; background: linear-gradient(180deg, var(--fp-surface) 0%, transparent 100%);">
+  <div class="fp-hero-title" style="font-size: 3rem;">Tutorials</div>
+  <div class="fp-hero-subtitle">
+    Step-by-step guides to building, assembling, and solving finite element models using standard arrays.
+  </div>
+</div>
+<div class="fp-card-grid" style="margin-bottom: 4rem;">
+  <div class="fp-card" style="padding: 1.5rem;">
+    <h3 style="margin-bottom: 0.5rem;"><a href="#linear-static-analysis" style="text-decoration: none; color: var(--fp-ink);">1. Linear Static Analysis</a></h3>
+    <p style="font-size: 0.95rem;">Model a 2D cantilever beam, apply point loads, and solve for displacement using the Q4 element driver.</p>
+  </div>
+  <div class="fp-card" style="padding: 1.5rem;">
+    <h3 style="margin-bottom: 0.5rem;"><a href="#dynamic-analysis" style="text-decoration: none; color: var(--fp-ink);">2. Dynamic Analysis</a></h3>
+    <p style="font-size: 0.95rem;">Perform free vibration (modal) analysis and time-history earthquake simulations using Newmark-beta.</p>
+  </div>
+  <div class="fp-card" style="padding: 1.5rem;">
+    <h3 style="margin-bottom: 0.5rem;"><a href="#periodic-boundaries-homogenization" style="text-decoration: none; color: var(--fp-ink);">3. Periodic Boundaries</a></h3>
+    <p style="font-size: 0.95rem;">Enforce periodic BCs on an RVE and compute the effective homogenized stiffness matrix.</p>
+  </div>
+</div>
 <section id="core-variables">
 <h2>Core Variables<a class="headerlink" href="#core-variables" title="Link to this heading">#</a></h2>
 <p>All model data in femlabpy is stored in standard arrays. To use the library effectively, you should understand these five core matrices:</p>
@@ -411,6 +431,7 @@
 <hr class="docutils" />
 <section id="linear-static-analysis">
 <h2>1. Linear Static Analysis<a class="headerlink" href="#linear-static-analysis" title="Link to this heading">#</a></h2>
+<p><a id="linear-static-analysis"></a></p>
 <p>We will model a 2D cantilever beam. The beam is fixed on the left and subjected to a downward point load on the right.</p>
 <section id="model-generation">
 <h3>Model Generation<a class="headerlink" href="#model-generation" title="Link to this heading">#</a></h3>
@@ -502,6 +523,7 @@
 <hr class="docutils" />
 <section id="dynamic-analysis">
 <h2>2. Dynamic Analysis<a class="headerlink" href="#dynamic-analysis" title="Link to this heading">#</a></h2>
+<p><a id="dynamic-analysis"></a></p>
 <p>femlabpy supports free vibration (modal) and forced vibration (time-history) analysis.</p>
 <section id="modal-analysis">
 <h3>Modal Analysis<a class="headerlink" href="#modal-analysis" title="Link to this heading">#</a></h3>
@@ -557,6 +579,7 @@
 <hr class="docutils" />
 <section id="periodic-boundaries-homogenization">
 <h2>3. Periodic Boundaries (Homogenization)<a class="headerlink" href="#periodic-boundaries-homogenization" title="Link to this heading">#</a></h2>
+<p><a id="periodic-boundaries-homogenization"></a></p>
 <p>If you are modeling a repeating unit cell (RVE) of a material, you must enforce periodic boundary conditions. This ensures that the opposite edges of the cell deform in exactly the same way.</p>
 <p>femlabpy provides tools to automatically find matching nodes on opposite boundaries and apply the necessary constraint equations.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">femlabpy.periodic</span><span class="w"> </span><span class="kn">import</span> <span class="n">find_periodic_pairs</span><span class="p">,</span> <span class="n">homogenize</span>

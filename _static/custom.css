@@ -267,6 +267,82 @@ body {
 }
 
 /* -----------------------------------------
+   Hero Naming Animation 
+----------------------------------------- */
+.fp-naming-anim-container {
+  margin: 2rem auto 3rem;
+  max-width: 500px;
+  background: var(--fp-card-bg);
+  border: 1px solid var(--pst-color-border);
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: var(--fp-shadow);
+  text-align: left;
+}
+
+.fp-code-window {
+  font-family: var(--pst-font-family-monospace);
+  font-size: 1.75rem;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: var(--fp-ink);
+  letter-spacing: 0.05em;
+}
+
+.fp-token {
+  padding: 0.2rem 0.4rem;
+  border-radius: 8px;
+  transition: all 0.4s ease;
+}
+
+.fp-naming-labels {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.fp-label {
+  font-family: var(--pst-font-family-base);
+  font-size: 1.1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  background: var(--fp-surface);
+  border-left: 4px solid transparent;
+  color: var(--fp-muted);
+  opacity: 0.4;
+  transform: translateX(-10px);
+  animation: fp-label-fade 9s infinite;
+}
+
+/* Colors for tokens & labels */
+.fp-token-k, .fp-label-k { --anim-color: #ea4335; }
+.fp-token-t3, .fp-label-t3 { --anim-color: #1a73e8; }
+.fp-token-e, .fp-label-e { --anim-color: #34a853; }
+
+/* Keyframes for the sequence */
+@keyframes fp-label-fade {
+  0%, 10% { opacity: 0.4; transform: translateX(-10px); border-left-color: transparent; color: var(--fp-muted); }
+  15%, 30% { opacity: 1; transform: translateX(0); border-left-color: var(--anim-color); color: var(--fp-ink); background: color-mix(in srgb, var(--anim-color) 15%, transparent); }
+  35%, 100% { opacity: 0.4; transform: translateX(-10px); border-left-color: transparent; color: var(--fp-muted); }
+}
+
+@keyframes fp-token-highlight {
+  0%, 10% { background: transparent; color: var(--fp-ink); }
+  15%, 30% { background: var(--anim-color); color: #fff; }
+  35%, 100% { background: transparent; color: var(--fp-ink); }
+}
+
+.fp-label-k { animation-delay: 0s; }
+.fp-token-k { animation: fp-token-highlight 9s infinite; animation-delay: 0s; }
+
+.fp-label-t3 { animation-delay: 3s; }
+.fp-token-t3 { animation: fp-token-highlight 9s infinite; animation-delay: 3s; }
+
+.fp-label-e { animation-delay: 6s; }
+.fp-token-e { animation: fp-token-highlight 9s infinite; animation-delay: 6s; }
+
+/* -----------------------------------------
    Grids & Cards
 ----------------------------------------- */
 .fp-card-grid {

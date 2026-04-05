@@ -31,7 +31,7 @@
 <link href="../_static/styles/pydata-sphinx-theme.css?digest=7f76b32a3354e82990f2" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
-    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=d2a6dfa1" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=985dfaa0" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../_static/scripts/fontawesome.js?digest=7f76b32a3354e82990f2"></script>
@@ -42,6 +42,8 @@
     <script src="../_static/documentation_options.js?v=8fa8b3e9"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'theory/10_io_mesh';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <script src="../_static/custom.js?v=35c928a7"></script>
@@ -412,164 +414,87 @@
                   
   <section class="tex2jax_ignore mathjax_ignore" id="mesh-i-o-and-gmsh-import">
 <h1>Mesh I/O and Gmsh Import<a class="headerlink" href="#mesh-i-o-and-gmsh-import" title="Link to this heading">#</a></h1>
-<p>This chapter explains how <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> turns a <code class="docutils literal notranslate"><span class="pre">.msh</span></code> file into the array
-structures used by the rest of the library. The important part is not the file
-format itself. The important part is how node coordinates, element topology, and
-physical tags become NumPy arrays that the element kernels can consume directly.</p>
-<section id="mesh-formats">
-<h2>Mesh Formats<a class="headerlink" href="#mesh-formats" title="Link to this heading">#</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> supports the older Gmsh 2.2 ASCII layout and the newer 4.x family.
-The implementation prefers a single normalized parsing path instead of two
-different loaders.</p>
-<section id="legacy-ascii-meshes">
-<h3>Legacy ASCII meshes<a class="headerlink" href="#legacy-ascii-meshes" title="Link to this heading">#</a></h3>
-<p>Legacy 2.2 meshes are simple to parse because nodes and elements are stored in
-plain text blocks. The parser reads the <code class="docutils literal notranslate"><span class="pre">$Nodes</span></code> block into a coordinate array
-with shape <code class="docutils literal notranslate"><span class="pre">(nn,</span> <span class="pre">3)</span></code> and the <code class="docutils literal notranslate"><span class="pre">$Elements</span></code> block into normalized element records.</p>
-<p>The key convention is that Gmsh writes one-based node ids, while the Python
-arrays inside <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> are zero-based. The loader resolves that mismatch as
-part of parsing, so later assembly code can use direct NumPy indexing.</p>
-</section>
-<section id="modern-gmsh-meshes">
-<h3>Modern Gmsh meshes<a class="headerlink" href="#modern-gmsh-meshes" title="Link to this heading">#</a></h3>
-<p>Modern 4.x meshes use block-based storage. <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> handles those files by
-using the optional official <code class="docutils literal notranslate"><span class="pre">gmsh</span></code> SDK when it is installed, then re-emitting
-the mesh into the legacy ASCII layout expected by the parser. That keeps the
-rest of the code path identical.</p>
-<p>The practical effect is simple:</p>
+<p>This chapter explains how <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> mathematically and structurally turns a <code class="docutils literal notranslate"><span class="pre">.msh</span></code> file into the primary array structures used by the element kernels: the coordinate matrix <span class="math notranslate nohighlight">\(\mathbf{X}\)</span> and the topology matrix <span class="math notranslate nohighlight">\(\mathbf{T}\)</span>.</p>
+<section id="the-core-data-structures">
+<h2>1. The Core Data Structures<a class="headerlink" href="#the-core-data-structures" title="Link to this heading">#</a></h2>
+<p>In <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code>, the finite element geometry is entirely defined by two globally ordered matrices:</p>
 <ol class="arabic simple">
-<li><p>if the file is already compatible, it is parsed directly;</p></li>
-<li><p>if the file is a modern mesh and the SDK is available, it is converted to a
-legacy ASCII view first;</p></li>
-<li><p>if the SDK is missing, the loader fails early instead of guessing.</p></li>
+<li><p><strong>Coordinate Matrix (<span class="math notranslate nohighlight">\(\mathbf{X}\)</span>):</strong> A floating-point array of shape <code class="docutils literal notranslate"><span class="pre">(nn,</span> <span class="pre">ndim)</span></code> where <code class="docutils literal notranslate"><span class="pre">nn</span></code> is the total number of nodes and <code class="docutils literal notranslate"><span class="pre">ndim</span></code> is the spatial dimension (2 or 3). The <span class="math notranslate nohighlight">\(i\)</span>-th row <span class="math notranslate nohighlight">\(\mathbf{X}[i, :]\)</span> contains the <span class="math notranslate nohighlight">\([x, y, z]\)</span> coordinates of the <span class="math notranslate nohighlight">\(i\)</span>-th node.</p></li>
+<li><p><strong>Topology Matrix (<span class="math notranslate nohighlight">\(\mathbf{T}\)</span>):</strong> An integer array representing element connectivity. For a specific element type with <span class="math notranslate nohighlight">\(k\)</span> nodes (e.g., <span class="math notranslate nohighlight">\(k=4\)</span> for Q4 elements), <span class="math notranslate nohighlight">\(\mathbf{T}\)</span> has shape <code class="docutils literal notranslate"><span class="pre">(ne,</span> <span class="pre">k+1)</span></code> where <code class="docutils literal notranslate"><span class="pre">ne</span></code> is the number of elements of that type. The first <span class="math notranslate nohighlight">\(k\)</span> columns contain the zero-based node indices that make up the element, and the final column contains the physical property tag/material ID assigned to that element.</p></li>
 </ol>
+</section>
+<section id="parsing-the-mesh-file">
+<h2>2. Parsing the Mesh File<a class="headerlink" href="#parsing-the-mesh-file" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> supports both Gmsh 2.2 ASCII layout and modern 4.x binary/ASCII layouts. Modern meshes are converted into the 2.2 legacy layout in memory using the <code class="docutils literal notranslate"><span class="pre">gmsh</span></code> Python SDK if available.</p>
+<section id="nodal-transformation-nodes-to-mathbf-x">
+<h3>2.1. Nodal Transformation (<span class="math notranslate nohighlight">\(\$Nodes \to \mathbf{X}\)</span>)<a class="headerlink" href="#nodal-transformation-nodes-to-mathbf-x" title="Link to this heading">#</a></h3>
+<p>In the Gmsh file, the <code class="docutils literal notranslate"><span class="pre">$Nodes</span></code> block defines the mesh nodes:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$Nodes
+nn
+node_id_1  x_1  y_1  z_1
+node_id_2  x_2  y_2  z_2
+...
+$EndNodes
+</pre></div>
+</div>
+<p><strong>Transformation:</strong>
+Gmsh <code class="docutils literal notranslate"><span class="pre">node_id</span></code>s are generally 1-based and not necessarily contiguous. <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> reads these into a dense NumPy array <span class="math notranslate nohighlight">\(\mathbf{X}\)</span>. During this process, node IDs are normalized to a strict <code class="docutils literal notranslate"><span class="pre">0</span></code> to <code class="docutils literal notranslate"><span class="pre">nn-1</span></code> zero-based index system.</p>
+<div class="math notranslate nohighlight">
+\[
+\text{Gmsh Node } i \implies \mathbf{X}[i-1, :] = [x_i, y_i, z_i]
+\]</div>
+</section>
+<section id="element-transformation-elements-to-mathbf-t">
+<h3>2.2. Element Transformation (<span class="math notranslate nohighlight">\(\$Elements \to \mathbf{T}\)</span>)<a class="headerlink" href="#element-transformation-elements-to-mathbf-t" title="Link to this heading">#</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">$Elements</span></code> block defines the mesh connectivity and physical grouping:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$Elements
+ne
+elm_id_1  elm_type  num_tags  tag_1  tag_2  ...  node_1  node_2  ...  node_k
+...
+$EndElements
+</pre></div>
+</div>
+<p><strong>Transformation:</strong></p>
+<ol class="arabic simple">
+<li><p><strong>Filtering:</strong> Elements are filtered and grouped by their <code class="docutils literal notranslate"><span class="pre">elm_type</span></code> (e.g., type 2 = 3-node triangle, type 3 = 4-node quad).</p></li>
+<li><p><strong>Node Index Normalization:</strong> The 1-based <code class="docutils literal notranslate"><span class="pre">node_i</span></code> values are decremented by 1 to match the normalized row indices of <span class="math notranslate nohighlight">\(\mathbf{X}\)</span>.</p></li>
+<li><p><strong>Property Tagging:</strong> Gmsh allows multiple tags per element. <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> extracts the <em>first</em> physical tag (<code class="docutils literal notranslate"><span class="pre">tag_1</span></code>) and treats it as the material/property ID index.</p></li>
+<li><p><strong>Assembly:</strong> For a specific element group, the topology matrix <span class="math notranslate nohighlight">\(\mathbf{T}\)</span> is assembled such that row <span class="math notranslate nohighlight">\(e\)</span> is:</p></li>
+</ol>
+<div class="math notranslate nohighlight">
+\[
+\mathbf{T}[e, :] = [ (\text{node}_1 - 1), (\text{node}_2 - 1), \dots, (\text{node}_k - 1), \text{tag}_1 ]
+\]</div>
+<p>This structure ensures that when iterating over elements, <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> can simultaneously extract the geometry via <code class="docutils literal notranslate"><span class="pre">Xe</span> <span class="pre">=</span> <span class="pre">X[T[e,</span> <span class="pre">:-1],</span> <span class="pre">:]</span></code> and the material row via <code class="docutils literal notranslate"><span class="pre">Ge</span> <span class="pre">=</span> <span class="pre">G[T[e,</span> <span class="pre">-1]</span> <span class="pre">-</span> <span class="pre">1,</span> <span class="pre">:]</span></code>.</p>
 </section>
 </section>
 <section id="loader-functions">
-<h2>Loader Functions<a class="headerlink" href="#loader-functions" title="Link to this heading">#</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">femlabpy.io.gmsh</span></code> exposes two public loaders.</p>
+<h2>3. Loader Functions<a class="headerlink" href="#loader-functions" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">femlabpy.io.gmsh</span></code> exposes two public loaders that construct the <code class="docutils literal notranslate"><span class="pre">GmshMesh</span></code> container object containing these <span class="math notranslate nohighlight">\(\mathbf{X}\)</span> and <span class="math notranslate nohighlight">\(\mathbf{T}\)</span> matrices:</p>
 <section id="load-gmsh">
-<h3><code class="docutils literal notranslate"><span class="pre">load_gmsh</span></code><a class="headerlink" href="#load-gmsh" title="Link to this heading">#</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">load_gmsh(filename)</span></code> reproduces the legacy <code class="docutils literal notranslate"><span class="pre">load_gmsh.m</span></code> semantics. It loads
-all explicit element tables for the supported element families and returns a
-fully populated <code class="docutils literal notranslate"><span class="pre">GmshMesh</span></code> object.</p>
-<p>Use this when you want the closest behavior to the original MATLAB loader and do
-not mind carrying all explicit arrays.</p>
+<h3>3.1. <code class="docutils literal notranslate"><span class="pre">load_gmsh</span></code><a class="headerlink" href="#load-gmsh" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">load_gmsh(filename)</span></code> reproduces the legacy <code class="docutils literal notranslate"><span class="pre">load_gmsh.m</span></code> semantics. It loads all explicit element tables for all supported element families.</p>
 </section>
 <section id="load-gmsh2">
-<h3><code class="docutils literal notranslate"><span class="pre">load_gmsh2</span></code><a class="headerlink" href="#load-gmsh2" title="Link to this heading">#</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">load_gmsh2(filename,</span> <span class="pre">which=None)</span></code> is the more flexible loader. It returns the
-same <code class="docutils literal notranslate"><span class="pre">GmshMesh</span></code> container, but it lets you choose which explicit element tables
-should be materialized.</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">which=None</span></code> loads all explicit arrays.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">which=-1</span></code> or an empty iterable skips the explicit arrays.</p></li>
-<li><p>a list such as <code class="docutils literal notranslate"><span class="pre">[2,</span> <span class="pre">3,</span> <span class="pre">4]</span></code> loads only the requested element types.</p></li>
-</ul>
-<p>This matters when you only need one topology table, because the mesh object can
-stay much smaller.</p>
-</section>
-<section id="what-the-loader-returns">
-<h3>What the loader returns<a class="headerlink" href="#what-the-loader-returns" title="Link to this heading">#</a></h3>
-<p>Both loaders return a <code class="docutils literal notranslate"><span class="pre">GmshMesh</span></code> object. The object keeps the normalized Python
-fields used internally by <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> and the legacy aliases used by the old
-FemLab scripts.</p>
-<p>The most important fields are:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">positions</span></code>: node coordinates, always stored as <code class="docutils literal notranslate"><span class="pre">(nn,</span> <span class="pre">3)</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">element_infos</span></code>: a compact summary of each parsed element.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">element_tags</span></code>: the element tag table.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">element_nodes</span></code>: the element connectivity table.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">nb_type</span></code>: counts per Gmsh element type.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">bounds_min</span></code> and <code class="docutils literal notranslate"><span class="pre">bounds_max</span></code>: axis-aligned bounds of the mesh.</p></li>
-</ul>
-<p>The explicit topology arrays are the ones most users care about:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">triangles</span></code>, <code class="docutils literal notranslate"><span class="pre">quads</span></code>, <code class="docutils literal notranslate"><span class="pre">tets</span></code>, <code class="docutils literal notranslate"><span class="pre">hexa</span></code>, and the higher-order variants.</p></li>
-<li><p>each row stores the node ids for one element and the first element tag in the
-last column.</p></li>
-</ul>
+<h3>3.2. <code class="docutils literal notranslate"><span class="pre">load_gmsh2</span></code><a class="headerlink" href="#load-gmsh2" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">load_gmsh2(filename,</span> <span class="pre">which=None)</span></code> allows selective loading. You can pass a list of element types <code class="docutils literal notranslate"><span class="pre">which=[2,</span> <span class="pre">3]</span></code> to only extract topology matrices for triangles and quads, saving memory for large meshes containing unused bounding elements.</p>
 </section>
 </section>
-<section id="gmshmesh-structure">
-<h2>GmshMesh Structure<a class="headerlink" href="#gmshmesh-structure" title="Link to this heading">#</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">GmshMesh</span></code> is the normalization layer between the mesh file and the FEM code.
-It is defined in <code class="docutils literal notranslate"><span class="pre">src/femlabpy/types.py</span></code> and is intentionally opinionated.</p>
-<section id="python-fields">
-<h3>Python fields<a class="headerlink" href="#python-fields" title="Link to this heading">#</a></h3>
-<p>The lowercase fields are the stable API:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">positions</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">element_infos</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">element_tags</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">element_nodes</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">nb_type</span></code></p></li>
-<li><p>the explicit topology arrays such as <code class="docutils literal notranslate"><span class="pre">triangles</span></code> and <code class="docutils literal notranslate"><span class="pre">quads</span></code></p></li>
-</ul>
-<p>The class also stores <code class="docutils literal notranslate"><span class="pre">legacy_element_infos</span></code>, <code class="docutils literal notranslate"><span class="pre">legacy_element_tags</span></code>,
-<code class="docutils literal notranslate"><span class="pre">loader_name</span></code>, <code class="docutils literal notranslate"><span class="pre">explicit_types</span></code>, and <code class="docutils literal notranslate"><span class="pre">nodes_per_type_of_element</span></code>. Those fields
-help preserve the behavior of the original classroom loaders.</p>
-</section>
-<section id="legacy-aliases">
-<h3>Legacy aliases<a class="headerlink" href="#legacy-aliases" title="Link to this heading">#</a></h3>
-<p>The class implements <code class="docutils literal notranslate"><span class="pre">__getattr__</span></code> so older scripts can still use names such as
-<code class="docutils literal notranslate"><span class="pre">POS</span></code>, <code class="docutils literal notranslate"><span class="pre">TRIANGLES</span></code>, <code class="docutils literal notranslate"><span class="pre">QUADS</span></code>, <code class="docutils literal notranslate"><span class="pre">nbTriangles</span></code>, <code class="docutils literal notranslate"><span class="pre">MIN</span></code>, and <code class="docutils literal notranslate"><span class="pre">MAX</span></code>.</p>
-<p>That is not cosmetic. It lets the wrapper layer and the tutorial code keep the
-old FemLab naming while the internals stay consistent with Python conventions.</p>
-</section>
-</section>
-<section id="parsing-flow">
-<h2>Parsing Flow<a class="headerlink" href="#parsing-flow" title="Link to this heading">#</a></h2>
-<p>The private helpers in <code class="docutils literal notranslate"><span class="pre">io/gmsh.py</span></code> are worth understanding even if you never
-call them directly.</p>
-<section id="file-version-detection">
-<h3>File version detection<a class="headerlink" href="#file-version-detection" title="Link to this heading">#</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">_mesh_format_version()</span></code> reads the <code class="docutils literal notranslate"><span class="pre">$MeshFormat</span></code> header and returns the declared
-version when possible.</p>
-</section>
-<section id="legacy-view-creation">
-<h3>Legacy view creation<a class="headerlink" href="#legacy-view-creation" title="Link to this heading">#</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">_legacy_view_path()</span></code> either returns the original file path or creates a
-temporary 2.2-style ASCII view through the <code class="docutils literal notranslate"><span class="pre">gmsh</span></code> SDK. That is the compatibility
-bridge for modern meshes.</p>
-</section>
-<section id="normalized-parsing">
-<h3>Normalized parsing<a class="headerlink" href="#normalized-parsing" title="Link to this heading">#</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">_parse_gmsh_file()</span></code> converts the mesh into node arrays, bounds, and parsed
-element dictionaries. <code class="docutils literal notranslate"><span class="pre">_build_normalized_mesh()</span></code> then turns those parsed records
-into the final <code class="docutils literal notranslate"><span class="pre">GmshMesh</span></code> object.</p>
-<p>The important point is that the parser keeps the connectivity and
-the physical tags separate. That allows the explicit topology arrays to carry the
-first physical tag in the last column, while the more general tables still keep
-the full metadata.</p>
-</section>
-</section>
-<section id="practical-usage">
-<h2>Practical Usage<a class="headerlink" href="#practical-usage" title="Link to this heading">#</a></h2>
+<section id="practical-extraction">
+<h2>4. Practical Extraction<a class="headerlink" href="#practical-extraction" title="Link to this heading">#</a></h2>
+<p>Once loaded, the <code class="docutils literal notranslate"><span class="pre">GmshMesh</span></code> object exposes the parsed matrices natively:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">femlabpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">fp</span>
 
-<span class="n">mesh</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">load_gmsh2</span><span class="p">(</span><span class="s2">&quot;model.msh&quot;</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">load_gmsh2</span><span class="p">(</span><span class="s2">&quot;model.msh&quot;</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span> <span class="c1"># Load only Q4 elements</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="n">mesh</span><span class="o">.</span><span class="n">nbNod</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">mesh</span><span class="o">.</span><span class="n">nbElm</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">mesh</span><span class="o">.</span><span class="n">triangles</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">mesh</span><span class="o">.</span><span class="n">quads</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">mesh</span><span class="o">.</span><span class="n">bounds_min</span><span class="p">,</span> <span class="n">mesh</span><span class="o">.</span><span class="n">bounds_max</span><span class="p">)</span>
+<span class="c1"># The coordinate matrix X (nn x 3)</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">positions</span>
+
+<span class="c1"># The topology matrix T for quads (ne x 5)</span>
+<span class="n">T_q4</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">quads</span> 
 </pre></div>
 </div>
-<p>For code that needs to inspect the physical group associated with an element
-row, use <code class="docutils literal notranslate"><span class="pre">mesh.property_numbers(...)</span></code> or read <code class="docutils literal notranslate"><span class="pre">mesh.element_tags</span></code> directly.</p>
-</section>
-<section id="reading-checklist">
-<h2>Reading Checklist<a class="headerlink" href="#reading-checklist" title="Link to this heading">#</a></h2>
-<p>If you are editing the loader, keep these rules in mind:</p>
-<ol class="arabic simple">
-<li><p>preserve one-based ids at the file boundary;</p></li>
-<li><p>convert to zero-based NumPy indexing as soon as the data enters the mesh
-object;</p></li>
-<li><p>keep the physical tag in the last column of the explicit topology arrays;</p></li>
-<li><p>do not silently reinterpret malformed meshes.</p></li>
-</ol>
+<p>This clean separation ensures that <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code>’s assembly routines (like <code class="docutils literal notranslate"><span class="pre">assmk()</span></code>) remain completely decoupled from the file format, operating purely on dense, vectorized NumPy arrays.</p>
 </section>
 </section>
 
@@ -620,30 +545,18 @@ object;</p></li>
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mesh-formats">Mesh Formats</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#legacy-ascii-meshes">Legacy ASCII meshes</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#modern-gmsh-meshes">Modern Gmsh meshes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-core-data-structures">1. The Core Data Structures</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#parsing-the-mesh-file">2. Parsing the Mesh File</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nodal-transformation-nodes-to-mathbf-x">2.1. Nodal Transformation (<span class="math notranslate nohighlight">\(\$Nodes \to \mathbf{X}\)</span>)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#element-transformation-elements-to-mathbf-t">2.2. Element Transformation (<span class="math notranslate nohighlight">\(\$Elements \to \mathbf{T}\)</span>)</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#loader-functions">Loader Functions</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#load-gmsh"><code class="docutils literal notranslate"><span class="pre">load_gmsh</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#load-gmsh2"><code class="docutils literal notranslate"><span class="pre">load_gmsh2</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-the-loader-returns">What the loader returns</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#loader-functions">3. Loader Functions</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#load-gmsh">3.1. <code class="docutils literal notranslate"><span class="pre">load_gmsh</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#load-gmsh2">3.2. <code class="docutils literal notranslate"><span class="pre">load_gmsh2</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gmshmesh-structure">GmshMesh Structure</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#python-fields">Python fields</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#legacy-aliases">Legacy aliases</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#parsing-flow">Parsing Flow</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#file-version-detection">File version detection</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#legacy-view-creation">Legacy view creation</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#normalized-parsing">Normalized parsing</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#practical-usage">Practical Usage</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reading-checklist">Reading Checklist</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#practical-extraction">4. Practical Extraction</a></li>
 </ul>
   </nav></div>
 

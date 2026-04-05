@@ -1,6 +1,28 @@
 # Tutorials & Usage Manual
 
-This manual explains how to build and solve finite element models using femlabpy. The workflow follows standard finite element procedures. We focus on how to define the model, assemble the matrices, and solve the equations.
+<div class="fp-hide-title"></div>
+
+<div class="fp-hero" style="padding: 3rem 1.5rem; margin-bottom: 3rem; background: linear-gradient(180deg, var(--fp-surface) 0%, transparent 100%);">
+  <div class="fp-hero-title" style="font-size: 3rem;">Tutorials</div>
+  <div class="fp-hero-subtitle">
+    Step-by-step guides to building, assembling, and solving finite element models using standard arrays.
+  </div>
+</div>
+
+<div class="fp-card-grid" style="margin-bottom: 4rem;">
+  <div class="fp-card" style="padding: 1.5rem;">
+    <h3 style="margin-bottom: 0.5rem;"><a href="#linear-static-analysis" style="text-decoration: none; color: var(--fp-ink);">1. Linear Static Analysis</a></h3>
+    <p style="font-size: 0.95rem;">Model a 2D cantilever beam, apply point loads, and solve for displacement using the Q4 element driver.</p>
+  </div>
+  <div class="fp-card" style="padding: 1.5rem;">
+    <h3 style="margin-bottom: 0.5rem;"><a href="#dynamic-analysis" style="text-decoration: none; color: var(--fp-ink);">2. Dynamic Analysis</a></h3>
+    <p style="font-size: 0.95rem;">Perform free vibration (modal) analysis and time-history earthquake simulations using Newmark-beta.</p>
+  </div>
+  <div class="fp-card" style="padding: 1.5rem;">
+    <h3 style="margin-bottom: 0.5rem;"><a href="#periodic-boundaries-homogenization" style="text-decoration: none; color: var(--fp-ink);">3. Periodic Boundaries</a></h3>
+    <p style="font-size: 0.95rem;">Enforce periodic BCs on an RVE and compute the effective homogenized stiffness matrix.</p>
+  </div>
+</div>
 
 ## Core Variables
 
@@ -15,6 +37,7 @@ All model data in femlabpy is stored in standard arrays. To use the library effe
 ---
 
 ## 1. Linear Static Analysis
+<a id="linear-static-analysis"></a>
 
 We will model a 2D cantilever beam. The beam is fixed on the left and subjected to a downward point load on the right. 
 
@@ -111,6 +134,7 @@ fp.plotelem(T, X)
 ---
 
 ## 2. Dynamic Analysis
+<a id="dynamic-analysis"></a>
 
 femlabpy supports free vibration (modal) and forced vibration (time-history) analysis.
 
@@ -169,6 +193,7 @@ print("Maximum dynamic roof displacement:", np.max(np.abs(history.u)))
 ---
 
 ## 3. Periodic Boundaries (Homogenization)
+<a id="periodic-boundaries-homogenization"></a>
 
 If you are modeling a repeating unit cell (RVE) of a material, you must enforce periodic boundary conditions. This ensures that the opposite edges of the cell deform in exactly the same way.
 

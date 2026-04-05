@@ -1,65 +1,47 @@
 # User Guide
 
-::::{container} fp-home-intro
-:::{container} fp-kicker
-Practical reading path
-:::
+<div class="fp-hide-title"></div>
 
-:::{container} fp-lead
-This guide is the hands-on entry point for `femlabpy`. It focuses on how to
-prepare arrays, call the library in the right order, and understand what each
-stage of the workflow is doing.
-:::
-::::
-
-::::{container} fp-card-grid
-:::{container} fp-card
-## Who This Section Is For
-
-- Users coming from MATLAB, Scilab, NumPy, or a course FEM codebase.
-- Readers who want implementation-aware tutorials rather than black-box examples.
-- Anyone trying to connect the raw `X`, `T`, `G`, `C`, and `P` tables to the
-  global matrices and solver outputs.
-:::
-
-:::{container} fp-card
-## Recommended Path
-
-1. Start with Chapter 1 for the array layout and the global workflow.
-2. Read Chapter 2 before touching element kernels directly.
-3. Read Chapters 3 and 4 for statics, constraints, and material conventions.
-4. Read Chapters 5, 6, and 9 for dynamics, periodicity, and Gmsh-driven work.
-5. Read Chapters 7 and 8 when extending the library or adapting examples.
-:::
-::::
+<div class="fp-hero" style="padding: 3rem 1.5rem; margin-bottom: 3rem; background: linear-gradient(180deg, var(--fp-surface) 0%, transparent 100%);">
+  <div class="fp-hero-title" style="font-size: 3rem;">User Guide</div>
+  <div class="fp-hero-subtitle">
+    Practical reading path for model setup, assembly, materials, dynamics, periodic workflows, and extension points.
+  </div>
+  <div class="fp-hero-actions">
+    <a href="ch01_fundamentals.html" class="fp-btn fp-btn-primary">Start Reading Chapter 1 →</a>
+  </div>
+</div>
 
 ## Chapter Map
 
-::::{container} fp-card-grid
-:::{container} fp-card
-### Setup and Core Tables
-
-- **Chapter 1:** Core data tables, indexing rules, and the basic solve sequence.
-- **Chapter 2:** Element-family overview for bars, triangles, quads, and solids.
-:::
-
-:::{container} fp-card
-### Assembly and Materials
-
-- **Chapter 3:** Global assembly, loads, supports, and constrained solves.
-- **Chapter 4:** Material-table structure and constitutive helper routines.
-:::
-
-:::{container} fp-card
-### Dynamics and Extensions
-
-- **Chapter 5:** Modal analysis, damping, load callables, and time integration.
-- **Chapter 6:** Periodic workflows, homogenization, and Gmsh import.
-- **Chapter 7:** Packaged examples and bundled driver organization.
-- **Chapter 8:** Custom element development and integration.
-- **Chapter 9:** Dynamic response, FRF, seismic loading, and history data.
-:::
-::::
+<div class="fp-card-grid">
+  <div class="fp-card">
+    <h2><span style="font-size: 1.5em; vertical-align: middle;">1️⃣</span> Setup & Core Tables</h2>
+    <p>Understand the raw <code>X</code>, <code>T</code>, <code>G</code>, <code>C</code>, and <code>P</code> tables. Learn the indexing rules and the basic solve sequence.</p>
+    <ul style="margin-top: 1rem; color: var(--fp-accent); list-style: none; padding: 0; font-weight: 500;">
+      <li style="margin-bottom: 0.5rem;"><a href="ch01_fundamentals.html">Chapter 1: Fundamentals</a></li>
+      <li><a href="ch02_elements.html">Chapter 2: Elements</a></li>
+    </ul>
+  </div>
+  <div class="fp-card">
+    <h2><span style="font-size: 1.5em; vertical-align: middle;">2️⃣</span> Assembly & Materials</h2>
+    <p>Connect element kernels to global matrices. Define materials, boundary conditions, and loads.</p>
+    <ul style="margin-top: 1rem; color: var(--fp-accent); list-style: none; padding: 0; font-weight: 500;">
+      <li style="margin-bottom: 0.5rem;"><a href="ch03_assembly_statics.html">Chapter 3: Assembly & Statics</a></li>
+      <li><a href="ch04_materials.html">Chapter 4: Materials</a></li>
+    </ul>
+  </div>
+  <div class="fp-card">
+    <h2><span style="font-size: 1.5em; vertical-align: middle;">3️⃣</span> Dynamics & Extensions</h2>
+    <p>Advance to modal analysis, time integration, periodicity, and building custom element kernels.</p>
+    <ul style="margin-top: 1rem; color: var(--fp-accent); list-style: none; padding: 0; font-weight: 500;">
+      <li style="margin-bottom: 0.5rem;"><a href="ch05_dynamics.html">Chapter 5: Dynamics</a></li>
+      <li style="margin-bottom: 0.5rem;"><a href="ch06_periodic_io.html">Chapter 6: Periodic I/O</a></li>
+      <li style="margin-bottom: 0.5rem;"><a href="ch08_custom_elements.html">Chapter 8: Custom Elements</a></li>
+      <li><a href="ch09_dynamic_workflows.html">Chapter 9: Dynamic Workflows</a></li>
+    </ul>
+  </div>
+</div>
 
 :::{container} fp-section-note
 If you are reading the source code while using this manual, keep
@@ -70,6 +52,7 @@ implementation modules.
 
 ```{toctree}
 :maxdepth: 2
+:hidden:
 
 ch01_fundamentals
 ch02_elements

@@ -31,7 +31,7 @@
 <link href="../_static/styles/pydata-sphinx-theme.css?digest=7f76b32a3354e82990f2" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
-    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=d2a6dfa1" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=985dfaa0" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../_static/scripts/fontawesome.js?digest=7f76b32a3354e82990f2"></script>
@@ -414,169 +414,117 @@
                   
   <section class="tex2jax_ignore mathjax_ignore" id="structural-dynamics-and-time-integration">
 <h1>Structural Dynamics and Time Integration<a class="headerlink" href="#structural-dynamics-and-time-integration" title="Link to this heading">#</a></h1>
-<p>This chapter explains the solver side of <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code>: mass and damping models,
-load histories, time integration, frequency response functions, and the
-post-processing helpers that operate on the resulting time histories.</p>
-<p>The semidiscrete equation of motion is</p>
+<p>This chapter provides a rigorous mathematical foundation for the solver side of <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code>: mass and damping models, time integration algorithms (Newmark-<span class="math notranslate nohighlight">\(\beta\)</span>, HHT-<span class="math notranslate nohighlight">\(\alpha\)</span>, Central Difference), and frequency response analysis.</p>
+<p>The semidiscrete equation of motion for a linear structural system is given by the second-order ordinary differential equation:</p>
 <div class="math notranslate nohighlight">
 \[
 \mathbf{M}\ddot{\mathbf{u}}(t) + \mathbf{C}\dot{\mathbf{u}}(t) + \mathbf{K}\mathbf{u}(t) = \mathbf{p}(t)
 \]</div>
-<p>where <code class="docutils literal notranslate"><span class="pre">M</span></code>, <code class="docutils literal notranslate"><span class="pre">C</span></code>, and <code class="docutils literal notranslate"><span class="pre">K</span></code> are the global mass, damping, and stiffness matrices,
-and <code class="docutils literal notranslate"><span class="pre">p(t)</span></code> is a load vector returned by one of the load callables in
-<code class="docutils literal notranslate"><span class="pre">femlabpy.dynamics</span></code>. The time-history solvers all return the same container,
-<code class="docutils literal notranslate"><span class="pre">TimeHistory</span></code>, with rows ordered by time:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">t</span></code>: <code class="docutils literal notranslate"><span class="pre">(nsteps</span> <span class="pre">+</span> <span class="pre">1,)</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">u</span></code>: <code class="docutils literal notranslate"><span class="pre">(nsteps</span> <span class="pre">+</span> <span class="pre">1,</span> <span class="pre">ndof)</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">v</span></code>: <code class="docutils literal notranslate"><span class="pre">(nsteps</span> <span class="pre">+</span> <span class="pre">1,</span> <span class="pre">ndof)</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">a</span></code>: <code class="docutils literal notranslate"><span class="pre">(nsteps</span> <span class="pre">+</span> <span class="pre">1,</span> <span class="pre">ndof)</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">energy</span></code>: <code class="docutils literal notranslate"><span class="pre">None</span></code> or a dictionary with <code class="docutils literal notranslate"><span class="pre">kinetic</span></code>, <code class="docutils literal notranslate"><span class="pre">strain</span></code>, and <code class="docutils literal notranslate"><span class="pre">total</span></code></p></li>
-</ul>
+<p>where <span class="math notranslate nohighlight">\(\mathbf{M}\)</span>, <span class="math notranslate nohighlight">\(\mathbf{C}\)</span>, and <span class="math notranslate nohighlight">\(\mathbf{K}\)</span> are the global mass, damping, and stiffness matrices respectively; <span class="math notranslate nohighlight">\(\mathbf{u}(t)\)</span>, <span class="math notranslate nohighlight">\(\dot{\mathbf{u}}(t)\)</span>, and <span class="math notranslate nohighlight">\(\ddot{\mathbf{u}}(t)\)</span> are the displacement, velocity, and acceleration vectors; and <span class="math notranslate nohighlight">\(\mathbf{p}(t)\)</span> is the external load vector.</p>
 <section id="mass-and-damping-models">
-<h2>1. Mass and damping models<a class="headerlink" href="#mass-and-damping-models" title="Link to this heading">#</a></h2>
-<p>The mass matrix controls inertia, and the damping matrix controls dissipation.
-The implementation keeps both concepts close to the global algebraic system so
-the same routines can be used for dense and sparse workflows.</p>
-<section id="consistent-and-lumped-mass">
-<h3>Consistent and lumped mass<a class="headerlink" href="#consistent-and-lumped-mass" title="Link to this heading">#</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> uses the two mass patterns that are standard in structural
-dynamics:</p>
-<ul class="simple">
-<li><p>consistent mass, which follows the same interpolation as the stiffness
-kernels;</p></li>
-<li><p>lumped mass, which compresses the row sums onto the diagonal.</p></li>
-</ul>
-<p>The distinction matters because <code class="docutils literal notranslate"><span class="pre">solve_central_diff()</span></code> requires a diagonal mass
-matrix. The helper <code class="docutils literal notranslate"><span class="pre">_get_lumped_diagonal()</span></code> in <code class="docutils literal notranslate"><span class="pre">src/femlabpy/dynamics.py</span></code>
-checks this explicitly and raises an error if the matrix is not diagonal.</p>
-<p>For stability estimates, <code class="docutils literal notranslate"><span class="pre">critical_timestep()</span></code> uses a power iteration on
-<code class="docutils literal notranslate"><span class="pre">M^-1</span> <span class="pre">K</span></code> and returns approximately <code class="docutils literal notranslate"><span class="pre">2</span> <span class="pre">/</span> <span class="pre">omega_max</span></code>. That is the practical
-quantity you want when deciding whether an explicit scheme is safe.</p>
+<h2>1. Mass and Damping Models<a class="headerlink" href="#mass-and-damping-models" title="Link to this heading">#</a></h2>
+<section id="mass-matrices-consistent-vs-lumped">
+<h3>1.1. Mass Matrices (Consistent vs. Lumped)<a class="headerlink" href="#mass-matrices-consistent-vs-lumped" title="Link to this heading">#</a></h3>
+<p><strong>Consistent Mass Matrix (<span class="math notranslate nohighlight">\(\mathbf{M}_c\)</span>):</strong>
+Derived using the same shape functions <span class="math notranslate nohighlight">\(\mathbf{N}(\mathbf{x})\)</span> used for the stiffness matrix. It is full (non-diagonal) and kinematically coupled:</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbf{M}_c = \int_{\Omega^e} \rho \mathbf{N}^T \mathbf{N} \, d\Omega
+\]</div>
+<p><strong>Lumped Mass Matrix (<span class="math notranslate nohighlight">\(\mathbf{M}_L\)</span>):</strong>
+A diagonal matrix that decouples inertial forces. It is strictly required for explicit time integration (e.g., Central Difference). Lumping is typically achieved via row-summation or the HRZ (Hinton-Rock-Zienkiewicz) scaling method:</p>
+<div class="math notranslate nohighlight">
+\[
+M_{L, ii} = \alpha \int_{\Omega^e} \rho N_i^2 \, d\Omega \quad \text{where} \quad \alpha = \frac{\int \rho \, d\Omega}{\sum \int \rho N_j^2 \, d\Omega}
+\]</div>
 </section>
-<section id="rayleigh-and-modal-damping">
-<h3>Rayleigh and modal damping<a class="headerlink" href="#rayleigh-and-modal-damping" title="Link to this heading">#</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">rayleigh_coefficients(omega1,</span> <span class="pre">omega2,</span> <span class="pre">zeta1,</span> <span class="pre">zeta2)</span></code> solves the 2-by-2 system
-that matches two target modal damping ratios. The coefficients are then fed to
-<code class="docutils literal notranslate"><span class="pre">rayleigh_damping(M,</span> <span class="pre">K,</span> <span class="pre">alpha,</span> <span class="pre">beta)</span></code>, which returns</p>
+<section id="rayleigh-damping">
+<h3>1.2. Rayleigh Damping<a class="headerlink" href="#rayleigh-damping" title="Link to this heading">#</a></h3>
+<p>Rayleigh damping constructs the global damping matrix as a linear combination of the mass and stiffness matrices:</p>
 <div class="math notranslate nohighlight">
 \[
 \mathbf{C} = \alpha \mathbf{M} + \beta \mathbf{K}
 \]</div>
-<p>If you want a damping matrix that exactly matches a selected set of modal
-damping ratios, <code class="docutils literal notranslate"><span class="pre">modal_damping(M,</span> <span class="pre">omega,</span> <span class="pre">phi,</span> <span class="pre">zeta)</span></code> builds the dense Caughey
-form</p>
+<p>The coefficients <span class="math notranslate nohighlight">\(\alpha\)</span> (mass-proportional) and <span class="math notranslate nohighlight">\(\beta\)</span> (stiffness-proportional) are determined by specifying desired damping ratios <span class="math notranslate nohighlight">\(\zeta_1\)</span> and <span class="math notranslate nohighlight">\(\zeta_2\)</span> at two target natural frequencies <span class="math notranslate nohighlight">\(\omega_1\)</span> and <span class="math notranslate nohighlight">\(\omega_2\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{bmatrix} \alpha \\ \beta \end{bmatrix} = \frac{2}{\omega_2^2 - \omega_1^2} \begin{bmatrix} \omega_2 &amp; -\omega_1 \\ -1/\omega_2 &amp; 1/\omega_1 \end{bmatrix} \begin{bmatrix} \omega_1 \zeta_1 \\ \omega_2 \zeta_2 \end{bmatrix}
+\end{split}\]</div>
+</section>
+</section>
+<section id="implicit-time-integration-newmark-beta-method">
+<h2>2. Implicit Time Integration: Newmark-<span class="math notranslate nohighlight">\(\beta\)</span> Method<a class="headerlink" href="#implicit-time-integration-newmark-beta-method" title="Link to this heading">#</a></h2>
+<p>The Newmark method relies on the following finite difference expansions for displacement and velocity:</p>
 <div class="math notranslate nohighlight">
 \[
-\mathbf{C} = \mathbf{M}\Phi \operatorname{diag}(2\zeta_i\omega_i)\Phi^T\mathbf{M}
+\mathbf{u}_{n+1} = \mathbf{u}_n + \Delta t \dot{\mathbf{u}}_n + \frac{\Delta t^2}{2} \left[ (1 - 2\beta)\ddot{\mathbf{u}}_n + 2\beta \ddot{\mathbf{u}}_{n+1} \right]
 \]</div>
-<p>using mass-normalized mode shapes.</p>
-</section>
-</section>
-<section id="load-histories">
-<h2>2. Load histories<a class="headerlink" href="#load-histories" title="Link to this heading">#</a></h2>
-<p>The load builders all return callables with the same shape convention:
-<code class="docutils literal notranslate"><span class="pre">p(t)</span> <span class="pre">-&gt;</span> <span class="pre">(ndof,</span> <span class="pre">1)</span></code>.</p>
+<div class="math notranslate nohighlight">
+\[
+\dot{\mathbf{u}}_{n+1} = \dot{\mathbf{u}}_n + \Delta t \left[ (1 - \gamma)\ddot{\mathbf{u}}_n + \gamma \ddot{\mathbf{u}}_{n+1} \right]
+\]</div>
+<p>By substituting these into the equation of motion at time <span class="math notranslate nohighlight">\(t_{n+1}\)</span>, we form the <strong>effective stiffness matrix</strong> <span class="math notranslate nohighlight">\(\mathbf{\hat{K}}\)</span> and <strong>effective load vector</strong> <span class="math notranslate nohighlight">\(\mathbf{\hat{p}}_{n+1}\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbf{\hat{K}} = \mathbf{K} + \frac{1}{\beta \Delta t^2}\mathbf{M} + \frac{\gamma}{\beta \Delta t}\mathbf{C}
+\]</div>
+<div class="math notranslate nohighlight">
+\[
+\mathbf{\hat{p}}_{n+1} = \mathbf{p}_{n+1} + \mathbf{M} \left[ \frac{1}{\beta \Delta t^2}\mathbf{u}_n + \frac{1}{\beta \Delta t}\dot{\mathbf{u}}_n + \left(\frac{1}{2\beta} - 1\right)\ddot{\mathbf{u}}_n \right] + \mathbf{C} \left[ \frac{\gamma}{\beta \Delta t}\mathbf{u}_n + \left(\frac{\gamma}{\beta} - 1\right)\dot{\mathbf{u}}_n + \Delta t \left(\frac{\gamma}{2\beta} - 1\right)\ddot{\mathbf{u}}_n \right]
+\]</div>
+<p>The system <span class="math notranslate nohighlight">\(\mathbf{\hat{K}} \mathbf{u}_{n+1} = \mathbf{\hat{p}}_{n+1}\)</span> is solved for <span class="math notranslate nohighlight">\(\mathbf{u}_{n+1}\)</span>, and the velocities and accelerations are subsequently updated.</p>
+<p><strong>Common Parameter Sets:</strong></p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">constant_load(P)</span></code> returns a fixed vector.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">ramp_load(P,</span> <span class="pre">t_ramp)</span></code> linearly ramps until the target time.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">harmonic_load(P,</span> <span class="pre">omega,</span> <span class="pre">phase=0.0)</span></code> evaluates a sinusoid.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">pulse_load(P,</span> <span class="pre">t_start,</span> <span class="pre">t_duration)</span></code> returns a rectangular pulse.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">tabulated_load(P,</span> <span class="pre">time_table,</span> <span class="pre">value_table)</span></code> interpolates a scalar history
-with <code class="docutils literal notranslate"><span class="pre">np.interp</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">seismic_load(M,</span> <span class="pre">direction,</span> <span class="pre">accel_record,</span> <span class="pre">dt_record)</span></code> precomputes <code class="docutils literal notranslate"><span class="pre">-M</span> <span class="pre">&#64;</span> <span class="pre">r</span></code>
-once, then interpolates the ground acceleration record at runtime.</p></li>
+<li><p><strong>Average Acceleration:</strong> <span class="math notranslate nohighlight">\(\beta = 1/4, \gamma = 1/2\)</span> (Unconditionally stable, no numerical dissipation).</p></li>
+<li><p><strong>Linear Acceleration:</strong> <span class="math notranslate nohighlight">\(\beta = 1/6, \gamma = 1/2\)</span> (Conditionally stable <span class="math notranslate nohighlight">\(\Delta t \le 0.551 T_n\)</span>).</p></li>
 </ul>
-<p>The seismic loader is worth calling out because it avoids repeated matrix-vector
-products inside the time loop. The returned callable only interpolates the
-record and scales the precomputed influence vector.</p>
 </section>
-<section id="newmark-beta">
-<h2>3. Newmark beta<a class="headerlink" href="#newmark-beta" title="Link to this heading">#</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">NewmarkParams</span></code> is a small convenience container for the integration constants.
-The named constructors document the standard choices:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">average_acceleration()</span></code> for the unconditionally stable trapezoidal rule,</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">linear_acceleration()</span></code> for the classical second-order variant,</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">central_difference()</span></code> for the explicit limiting case,</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">fox_goodwin()</span></code> for the higher-order SDOF variant.</p></li>
-</ul>
-<p><code class="docutils literal notranslate"><span class="pre">solve_newmark()</span></code> is the main implicit integrator. The implementation follows a
-fixed sequence:</p>
-<ol class="arabic simple">
-<li><p>reshape <code class="docutils literal notranslate"><span class="pre">u0</span></code> and <code class="docutils literal notranslate"><span class="pre">v0</span></code> to column vectors,</p></li>
-<li><p>determine constrained DOFs from <code class="docutils literal notranslate"><span class="pre">C_bc</span></code>,</p></li>
-<li><p>build the effective stiffness matrix <code class="docutils literal notranslate"><span class="pre">K_eff</span> <span class="pre">=</span> <span class="pre">K</span> <span class="pre">+</span> <span class="pre">a0*M</span> <span class="pre">+</span> <span class="pre">a1*C</span></code>,</p></li>
-<li><p>factorize <code class="docutils literal notranslate"><span class="pre">K_eff</span></code> once when SciPy is available,</p></li>
-<li><p>compute the initial acceleration from <code class="docutils literal notranslate"><span class="pre">p(0)</span> <span class="pre">-</span> <span class="pre">C</span> <span class="pre">v0</span> <span class="pre">-</span> <span class="pre">K</span> <span class="pre">u0</span></code>,</p></li>
-<li><p>march forward in time, updating <code class="docutils literal notranslate"><span class="pre">u</span></code>, <code class="docutils literal notranslate"><span class="pre">v</span></code>, and <code class="docutils literal notranslate"><span class="pre">a</span></code>,</p></li>
-<li><p>optionally compute kinetic and strain energy histories.</p></li>
-</ol>
-<p>The solver writes history arrays in time-major order, so <code class="docutils literal notranslate"><span class="pre">result.u[n,</span> <span class="pre">i]</span></code> is the
-displacement of DOF <code class="docutils literal notranslate"><span class="pre">i</span></code> at time step <code class="docutils literal notranslate"><span class="pre">n</span></code>. That is the layout used by the
-plotting helpers and by downstream post-processing.</p>
-<p>When <code class="docutils literal notranslate"><span class="pre">compute_energy=True</span></code>, the returned <code class="docutils literal notranslate"><span class="pre">TimeHistory.energy</span></code> dictionary stores
-only the keys that the implementation currently computes: <code class="docutils literal notranslate"><span class="pre">kinetic</span></code>, <code class="docutils literal notranslate"><span class="pre">strain</span></code>,
-and <code class="docutils literal notranslate"><span class="pre">total</span></code>. <code class="docutils literal notranslate"><span class="pre">plot_energy()</span></code> expects exactly that layout.</p>
-<p><code class="docutils literal notranslate"><span class="pre">solve_newmark_nl()</span></code> follows the same time-history pattern, but the update is
-wrapped in a Newton iteration. It accepts a tangent stiffness callback and an
-internal-force callback, then iterates until the residual satisfies the
-specified tolerance or <code class="docutils literal notranslate"><span class="pre">max_iter</span></code> is reached.</p>
+<section id="explicit-time-integration-central-difference-method">
+<h2>3. Explicit Time Integration: Central Difference Method<a class="headerlink" href="#explicit-time-integration-central-difference-method" title="Link to this heading">#</a></h2>
+<p>The Central Difference method is explicit and strictly conditionally stable (<span class="math notranslate nohighlight">\(\Delta t \le \frac{T_n}{\pi}\)</span>). It requires a lumped (diagonal) mass matrix <span class="math notranslate nohighlight">\(\mathbf{M}_L\)</span>.</p>
+<p>The finite difference approximations are:</p>
+<div class="math notranslate nohighlight">
+\[
+\ddot{\mathbf{u}}_n = \frac{1}{\Delta t^2} (\mathbf{u}_{n+1} - 2\mathbf{u}_n + \mathbf{u}_{n-1})
+\]</div>
+<div class="math notranslate nohighlight">
+\[
+\dot{\mathbf{u}}_n = \frac{1}{2\Delta t} (\mathbf{u}_{n+1} - \mathbf{u}_{n-1})
+\]</div>
+<p>Yielding the explicit update equation:</p>
+<div class="math notranslate nohighlight">
+\[
+\left( \frac{1}{\Delta t^2}\mathbf{M}_L + \frac{1}{2\Delta t}\mathbf{C} \right) \mathbf{u}_{n+1} = \mathbf{p}_n - \left( \mathbf{K} - \frac{2}{\Delta t^2}\mathbf{M}_L \right)\mathbf{u}_n - \left( \frac{1}{\Delta t^2}\mathbf{M}_L - \frac{1}{2\Delta t}\mathbf{C} \right)\mathbf{u}_{n-1}
+\]</div>
+<p>Because the effective mass matrix is diagonal, the solution is purely vectorial (no matrix factorization required), making it extremely fast per time step for wave propagation and impact problems.</p>
 </section>
-<section id="central-difference-and-hht-alpha">
-<h2>4. Central difference and HHT alpha<a class="headerlink" href="#central-difference-and-hht-alpha" title="Link to this heading">#</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">solve_central_diff()</span></code> is the explicit companion to Newmark beta. It requires a
-lumped mass matrix, reconstructs the first step through backward extrapolation,
-and then advances using the central difference formula. If a damping matrix is
-present, the solver only uses its diagonal contribution.</p>
-<p>This is the routine that pairs naturally with <code class="docutils literal notranslate"><span class="pre">critical_timestep()</span></code>: if the mass
-is not diagonal or the time step is too large, the explicit scheme is not a good
-fit.</p>
-<p><code class="docutils literal notranslate"><span class="pre">solve_hht()</span></code> implements the Hilber-Hughes-Taylor method. The parameter <code class="docutils literal notranslate"><span class="pre">alpha</span></code>
-must stay in <code class="docutils literal notranslate"><span class="pre">[-1/3,</span> <span class="pre">0]</span></code>; the solver derives</p>
+<section id="dissipative-integration-hht-alpha-method">
+<h2>4. Dissipative Integration: HHT-<span class="math notranslate nohighlight">\(\alpha\)</span> Method<a class="headerlink" href="#dissipative-integration-hht-alpha-method" title="Link to this heading">#</a></h2>
+<p>The Hilber-Hughes-Taylor (HHT) method introduces numerical dissipation for high-frequency noise while retaining second-order accuracy. It modifies the equation of motion by averaging the stiffness, damping, and external force terms over the step:</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbf{M}\ddot{\mathbf{u}}_{n+1} + (1+\alpha)\mathbf{C}\dot{\mathbf{u}}_{n+1} - \alpha\mathbf{C}\dot{\mathbf{u}}_n + (1+\alpha)\mathbf{K}\mathbf{u}_{n+1} - \alpha\mathbf{K}\mathbf{u}_n = (1+\alpha)\mathbf{p}_{n+1} - \alpha\mathbf{p}_n
+\]</div>
+<p>The Newmark parameters are strictly tied to <span class="math notranslate nohighlight">\(\alpha \in [-1/3, 0]\)</span> to ensure unconditional stability and second-order accuracy:</p>
 <div class="math notranslate nohighlight">
 \[
 \beta = \frac{(1 - \alpha)^2}{4}, \qquad \gamma = \frac{1}{2} - \alpha
 \]</div>
-<p>and then forms the modified effective stiffness and load. Compared with Newmark
-average acceleration, the HHT method damps high-frequency content more
-aggressively while keeping second-order accuracy for the low-frequency response.</p>
+<p>Setting <span class="math notranslate nohighlight">\(\alpha = 0\)</span> recovers the standard Newmark Average Acceleration method.</p>
 </section>
-<section id="frequency-response-and-plots">
-<h2>5. Frequency response and plots<a class="headerlink" href="#frequency-response-and-plots" title="Link to this heading">#</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">compute_frf(M,</span> <span class="pre">C,</span> <span class="pre">K,</span> <span class="pre">input_dof,</span> <span class="pre">output_dof,</span> <span class="pre">freq_range,</span> <span class="pre">n_points=500)</span></code> sweeps a
-frequency band in Hertz, converts each sample to angular frequency, and solves</p>
+<section id="frequency-response-function-frf">
+<h2>5. Frequency Response Function (FRF)<a class="headerlink" href="#frequency-response-function-frf" title="Link to this heading">#</a></h2>
+<p>For steady-state harmonic analysis under a load <span class="math notranslate nohighlight">\(\mathbf{p}(t) = \mathbf{f} e^{i\omega t}\)</span>, the response is <span class="math notranslate nohighlight">\(\mathbf{u}(t) = \mathbf{u}_0 e^{i\omega t}\)</span>. Substituting this into the EOM yields the complex dynamic stiffness:</p>
 <div class="math notranslate nohighlight">
 \[
-\left(\mathbf{K} - \omega^2\mathbf{M} + i\omega\mathbf{C}\right)\mathbf{u} = \mathbf{f}
+\left(-\omega^2\mathbf{M} + i\omega\mathbf{C} + \mathbf{K}\right)\mathbf{u}_0 = \mathbf{f}
 \]</div>
-<p>for a unit force applied at <code class="docutils literal notranslate"><span class="pre">input_dof</span></code>. The function returns the frequency grid
-and the complex scalar transfer function at <code class="docutils literal notranslate"><span class="pre">output_dof</span></code>.</p>
-<p><code class="docutils literal notranslate"><span class="pre">plot_frf()</span></code> renders magnitude and phase in a two-panel figure and can mark
-resonance peaks. <code class="docutils literal notranslate"><span class="pre">plot_time_history()</span></code> plots displacement, velocity, or
-acceleration history for one or more DOFs. <code class="docutils literal notranslate"><span class="pre">plot_energy()</span></code> draws the current
-<code class="docutils literal notranslate"><span class="pre">energy</span></code> dictionary and raises a clear error if the solver was not run with
-energy tracking enabled.</p>
-</section>
-<section id="practical-use">
-<h2>6. Practical use<a class="headerlink" href="#practical-use" title="Link to this heading">#</a></h2>
-<p>The standard workflow is short:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">femlabpy.dynamics</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">rayleigh_coefficients</span><span class="p">,</span>
-    <span class="n">rayleigh_damping</span><span class="p">,</span>
-    <span class="n">solve_newmark</span><span class="p">,</span>
-    <span class="n">plot_time_history</span><span class="p">,</span>
-<span class="p">)</span>
-
-<span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span> <span class="o">=</span> <span class="n">rayleigh_coefficients</span><span class="p">(</span><span class="n">omega1</span><span class="p">,</span> <span class="n">omega2</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">)</span>
-<span class="n">C</span> <span class="o">=</span> <span class="n">rayleigh_damping</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">)</span>
-<span class="n">history</span> <span class="o">=</span> <span class="n">solve_newmark</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">p_func</span><span class="p">,</span> <span class="n">u0</span><span class="p">,</span> <span class="n">v0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">nsteps</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
-<span class="n">plot_time_history</span><span class="p">(</span><span class="n">history</span><span class="p">,</span> <span class="n">dof_index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">quantity</span><span class="o">=</span><span class="s2">&quot;displacement&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>The important part is the data flow: the load builder returns <code class="docutils literal notranslate"><span class="pre">p(t)</span></code>, the solver
-turns it into a <code class="docutils literal notranslate"><span class="pre">TimeHistory</span></code>, and the plotting helpers read that object without
-needing to know how the matrices were assembled.</p>
+<p>The Frequency Response Function (FRF) matrix <span class="math notranslate nohighlight">\(\mathbf{H}(\omega)\)</span> is the inverse of the dynamic stiffness:</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbf{H}(\omega) = \left(\mathbf{K} - \omega^2\mathbf{M} + i\omega\mathbf{C}\right)^{-1}
+\]</div>
+<p><code class="docutils literal notranslate"><span class="pre">compute_frf()</span></code> evaluates this directly over a frequency vector to construct Bode plots (magnitude and phase vs. frequency).</p>
 </section>
 </section>
 
@@ -627,16 +575,15 @@ needing to know how the matrices were assembled.</p>
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mass-and-damping-models">1. Mass and damping models</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#consistent-and-lumped-mass">Consistent and lumped mass</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#rayleigh-and-modal-damping">Rayleigh and modal damping</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mass-and-damping-models">1. Mass and Damping Models</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mass-matrices-consistent-vs-lumped">1.1. Mass Matrices (Consistent vs. Lumped)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#rayleigh-damping">1.2. Rayleigh Damping</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#load-histories">2. Load histories</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#newmark-beta">3. Newmark beta</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#central-difference-and-hht-alpha">4. Central difference and HHT alpha</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#frequency-response-and-plots">5. Frequency response and plots</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#practical-use">6. Practical use</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#implicit-time-integration-newmark-beta-method">2. Implicit Time Integration: Newmark-<span class="math notranslate nohighlight">\(\beta\)</span> Method</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#explicit-time-integration-central-difference-method">3. Explicit Time Integration: Central Difference Method</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dissipative-integration-hht-alpha-method">4. Dissipative Integration: HHT-<span class="math notranslate nohighlight">\(\alpha\)</span> Method</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#frequency-response-function-frf">5. Frequency Response Function (FRF)</a></li>
 </ul>
   </nav></div>
 
