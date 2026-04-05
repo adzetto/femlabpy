@@ -7,8 +7,8 @@
 /* Base Theme Variables (Light Mode) */
 html[data-theme="light"], :root {
   /* Typography */
-  --pst-font-family-base: "Google Sans", "Product Sans", "Aptos", "Segoe UI", "Roboto", "Helvetica Neue", sans-serif;
-  --pst-font-family-heading: "Google Sans Display", "Product Sans", "Aptos", "Segoe UI", "Roboto", "Helvetica Neue", sans-serif;
+  --pst-font-family-base: "Google Sans Text", "Google Sans", "Product Sans", "Aptos", "Segoe UI", "Roboto", sans-serif;
+  --pst-font-family-heading: "Google Sans Display", "Google Sans", "Product Sans", "Aptos", "Segoe UI", "Roboto", sans-serif;
   
   /* Primary Colors */
   --pst-color-primary: #1a73e8; /* Google Blue */
@@ -20,21 +20,28 @@ html[data-theme="light"], :root {
 
   /* Surfaces & Backgrounds */
   --pst-color-background: #ffffff;
-  --pst-color-surface: #f8f9fa; /* Google Gray 50 */
+  --pst-color-surface: #f1f3f4; /* Google Gray 100 */
   --pst-color-border: #dadce0; /* Google Gray 300 */
   
   /* Custom Variables for Components */
   --fp-ink: #202124;
   --fp-muted: #5f6368;
-  --fp-surface: #f8f9fa;
+  --fp-surface: #f1f3f4; /* Subtle gray background for stat blocks */
   --fp-accent: #1a73e8;
   --fp-accent-soft: #e8f0fe; /* Google Blue 50 */
   --fp-accent-text: #1a73e8;
-  --fp-border: #dadce0;
-  --fp-shadow: 0 1px 2px 0 rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15);
-  --fp-shadow-hover: 0 1px 3px 0 rgba(60,64,67,0.3), 0 4px 8px 3px rgba(60,64,67,0.15);
+  
+  /* Stitch Card Design Variables */
+  --fp-card-bg: #f8f9fa; /* Google Gray 50 - no more plain white boxes! */
+  --fp-card-hover-bg: #ffffff; /* Turn white on hover to pop out */
+  --fp-card-border: transparent; /* Flat look without hard borders */
+  --fp-card-border-hover: #dadce0; /* Show a subtle border on hover */
+  
+  /* Shadows */
+  --fp-shadow: none; /* Flat default state */
+  --fp-shadow-hover: 0 4px 12px rgba(60,64,67,0.1), 0 1px 3px rgba(60,64,67,0.15); /* Float effect */
+  
   --fp-header-bg: rgba(255, 255, 255, 0.95);
-  --fp-card-bg: #ffffff;
 }
 
 /* Dark Mode Variables */
@@ -59,11 +66,18 @@ html[data-theme="dark"] {
   --fp-accent: #8ab4f8;
   --fp-accent-soft: rgba(138, 180, 248, 0.12);
   --fp-accent-text: #8ab4f8;
-  --fp-border: #5f6368;
-  --fp-shadow: 0 1px 2px 0 rgba(0,0,0,0.3), 0 1px 3px 1px rgba(0,0,0,0.15);
-  --fp-shadow-hover: 0 1px 3px 0 rgba(0,0,0,0.3), 0 4px 8px 3px rgba(0,0,0,0.15);
+  
+  /* Stitch Card Design Variables */
+  --fp-card-bg: #28292c; /* Slightly lighter than pure background */
+  --fp-card-hover-bg: #303134; 
+  --fp-card-border: transparent;
+  --fp-card-border-hover: #5f6368;
+  
+  /* Shadows */
+  --fp-shadow: none;
+  --fp-shadow-hover: 0 4px 12px rgba(0,0,0,0.5), 0 1px 3px rgba(0,0,0,0.3);
+  
   --fp-header-bg: rgba(32, 33, 36, 0.95);
-  --fp-card-bg: #28292c;
 }
 
 /* Global Typography & Body */
@@ -77,13 +91,13 @@ body {
 .bd-header {
   backdrop-filter: blur(12px);
   background: var(--fp-header-bg);
-  border-bottom: 1px solid var(--fp-border);
-  box-shadow: none; /* Let the border do the work, Google style */
+  border-bottom: 1px solid var(--pst-color-border);
+  box-shadow: none; 
 }
 
 .navbar-nav > .nav-item > .nav-link {
   font-size: 0.96rem;
-  font-weight: 500; /* Medium weight for Google style */
+  font-weight: 500; 
   color: var(--fp-muted);
 }
 
@@ -94,7 +108,7 @@ body {
 
 /* Content Container */
 .bd-main .bd-content .bd-article-container {
-  max-width: 980px; /* Keep it readable */
+  max-width: 980px; 
 }
 
 .bd-content .bd-article-container .bd-article {
@@ -111,7 +125,7 @@ body {
 }
 
 .bd-content h2 {
-  margin-top: 3rem;
+  margin-top: 3.5rem;
   letter-spacing: -0.01em;
   font-weight: 500;
   color: var(--fp-ink);
@@ -124,8 +138,8 @@ body {
 
 .fp-kicker {
   display: inline-block;
-  margin-bottom: 1rem;
-  padding: 0.35rem 0.85rem;
+  margin-bottom: 1.25rem;
+  padding: 0.4rem 1rem;
   border-radius: 999px; /* Pill shape */
   background: var(--fp-accent-soft);
   color: var(--fp-accent-text);
@@ -138,7 +152,7 @@ body {
 .fp-lead {
   max-width: 54rem;
   color: var(--fp-muted);
-  font-size: 1.25rem;
+  font-size: 1.35rem;
   line-height: 1.6;
   font-weight: 400;
 }
@@ -146,42 +160,44 @@ body {
 /* Grids */
 .fp-card-grid {
   display: grid;
-  gap: 1.25rem;
-  margin: 2rem 0;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+  margin: 2.5rem 0;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 }
 
 .fp-stat-grid {
   display: grid;
-  gap: 1.25rem;
-  margin: 1.5rem 0 2.5rem;
+  gap: 1.5rem;
+  margin: 2rem 0 3rem;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
 }
 
-/* Cards */
+/* Cards (Stitch Style: large radius, flat background, no harsh border) */
 .fp-card {
   height: 100%;
-  padding: 1.5rem;
-  border: 1px solid var(--fp-border);
-  border-radius: 12px;
+  padding: 2rem;
+  border: 1px solid var(--fp-card-border);
+  border-radius: 24px; /* Stitch uses 24px heavily */
   background: var(--fp-card-bg);
   box-shadow: var(--fp-shadow);
-  transition: box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1), transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s cubic-bezier(0.2, 0, 0, 1); /* Snappy Google motion */
   display: flex;
   flex-direction: column;
 }
 
 .fp-card:hover {
+  background: var(--fp-card-hover-bg);
+  border-color: var(--fp-card-border-hover);
   box-shadow: var(--fp-shadow-hover);
-  transform: translateY(-2px);
+  transform: translateY(-4px);
 }
 
 .fp-card h2,
 .fp-card h3,
 .fp-card h4 {
   margin-top: 0;
-  margin-bottom: 0.75rem;
-  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  font-size: 1.35rem;
   font-weight: 500;
   color: var(--fp-ink);
 }
@@ -189,6 +205,8 @@ body {
 .fp-card p {
   color: var(--fp-muted);
   flex-grow: 1; /* Push the link to the bottom */
+  line-height: 1.6;
+  font-size: 1.05rem;
 }
 
 .fp-card p:last-child,
@@ -197,32 +215,46 @@ body {
 }
 
 .fp-card a {
-  font-weight: 500;
+  font-weight: 600;
   color: var(--fp-accent);
   text-decoration: none;
   display: inline-flex;
   align-items: center;
-  margin-top: 1rem;
+  margin-top: 1.5rem;
+  font-size: 1rem;
 }
 
 .fp-card a:hover {
   text-decoration: underline;
 }
 
-/* Stats */
+/* Stats (Stitch Style) */
 .fp-stat {
-  padding: 1.25rem;
-  border-top: 4px solid var(--fp-accent);
+  padding: 1.5rem;
   background: var(--fp-surface);
-  border-radius: 8px;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.05); /* Very subtle flat shadow */
-  border-left: none; /* Overriding previous custom.css */
+  border-radius: 16px;
+  box-shadow: none; /* Flat */
+  border: none;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Add a subtle accent bar to the stat without using borders */
+.fp-stat::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: var(--fp-accent);
+  opacity: 0.8;
 }
 
 .fp-stat strong {
   display: block;
   margin-bottom: 0.5rem;
-  font-size: 1.5rem;
+  font-size: 1.75rem;
   font-weight: 500;
   color: var(--fp-ink);
 }
@@ -230,30 +262,41 @@ body {
 .fp-stat p {
   margin: 0;
   color: var(--fp-muted);
-  font-size: 0.95rem;
-  line-height: 1.4;
+  font-size: 1rem;
+  line-height: 1.5;
 }
 
 /* Admonitions, Note blocks */
 .fp-section-note,
 .bd-content .admonition {
   margin: 2rem 0;
-  border-radius: 12px;
+  border-radius: 16px;
   background: var(--fp-surface);
-  border: 1px solid var(--fp-border);
-  box-shadow: none; /* Modern Google style often removes shadows from static inline elements */
+  border: none; /* Removed hard borders */
+  box-shadow: none;
 }
 
 .fp-section-note {
-  padding: 1.25rem 1.5rem;
-  border-left: 4px solid var(--fp-accent);
+  padding: 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.fp-section-note::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--fp-accent);
 }
 
 /* Table styling */
 .bd-content table.docutils {
-  border-radius: 8px;
+  border-radius: 12px;
   overflow: hidden;
-  border: 1px solid var(--fp-border);
+  border: 1px solid var(--pst-color-border);
 }
 
 .bd-content table.docutils th {
@@ -263,23 +306,31 @@ body {
 
 .bd-content table.docutils td, 
 .bd-content table.docutils th {
-  border-color: var(--fp-border);
-  padding: 0.75rem 1rem;
+  border-color: var(--pst-color-border);
+  padding: 1rem;
 }
 
 /* Details/Summary */
 .bd-content details {
-  border-radius: 8px;
-  border: 1px solid var(--fp-border);
-  background: var(--fp-surface);
+  border-radius: 12px;
+  border: 1px solid var(--pst-color-border);
+  background: transparent;
   box-shadow: none;
   margin-bottom: 1rem;
 }
 
 .bd-content details summary {
-  padding: 1rem;
+  padding: 1rem 1.25rem;
   font-weight: 500;
   cursor: pointer;
+  background: var(--fp-surface);
+  border-radius: 12px;
+}
+
+.bd-content details[open] summary {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  border-bottom: 1px solid var(--pst-color-border);
 }
 
 /* Responsive adjustments */
@@ -293,6 +344,6 @@ body {
   }
 
   .fp-lead {
-    font-size: 1.1rem;
+    font-size: 1.15rem;
   }
 }
