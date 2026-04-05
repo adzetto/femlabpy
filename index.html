@@ -31,7 +31,7 @@
 <link href="_static/styles/pydata-sphinx-theme.css?digest=7f76b32a3354e82990f2" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
-    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=9498b191" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=d2a6dfa1" />
   
   <!-- So that users can add custom icons -->
   <script defer src="_static/scripts/fontawesome.js?digest=7f76b32a3354e82990f2"></script>
@@ -46,7 +46,7 @@
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'index';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
-    <script src="_static/custom.js?v=6995151f"></script>
+    <script src="_static/custom.js?v=35c928a7"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Tutorials &amp; Usage Manual" href="tutorials.html" />
@@ -163,6 +163,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="matlab_python_mapping.html">
     MATLAB Mapping
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="roadmap.html">
+    Roadmap & Arch
   </a>
 </li>
 
@@ -283,6 +290,13 @@
   </a>
 </li>
 
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="roadmap.html">
+    Roadmap & Arch
+  </a>
+</li>
+
   </ul>
 </nav></div>
           
@@ -342,90 +356,87 @@
                 <article class="bd-article">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="femlabpy">
-<h1>femlabpy<a class="headerlink" href="#femlabpy" title="Link to this heading">#</a></h1>
-<div class="fp-home-intro docutils container">
-<div class="fp-kicker docutils container">
-<p>Finite element workflows, theory, and source-level reference</p>
-</div>
-<div class="fp-lead docutils container">
-<p><code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> is a finite element teaching and research library built around
-explicit NumPy arrays, compact element kernels, and workflows that stay close
-to the original FemLab MATLAB and Scilab material while using modern Python
-tooling.</p>
-</div>
+<span id="index"></span><h1>femlabpy<a class="headerlink" href="#femlabpy" title="Link to this heading">#</a></h1>
+<div class="fp-hide-title"></div>
+<div class="fp-hero">
+  <div class="fp-hero-title">femlabpy</div>
+  <div class="fp-hero-subtitle">
+    A modern finite element teaching and research library built around explicit NumPy arrays, compact element kernels, and source-level transparency.
+  </div>
+  <div class="fp-hero-actions">
+    <a href="tutorials.html" class="fp-btn fp-btn-primary">Get Started with Tutorials</a>
+    <a href="manual/index.html" class="fp-btn fp-btn-secondary">Read the User Guide</a>
+  </div>
 </div>
 <div class="toctree-wrapper compound">
 </div>
-<div class="fp-card-grid docutils container">
-<div class="fp-card docutils container">
-<p class="rubric" id="user-guide">User Guide</p>
-<p>Practical, end-to-end reading for model setup, assembly, materials, dynamics,
-periodic workflows, and extension points.</p>
-<p><a class="reference internal" href="manual/index.html"><span class="std std-doc">Open the guide</span></a></p>
-</div>
-<div class="fp-card docutils container">
-<p class="rubric" id="theory-and-reference">Theory and Reference</p>
-<p>Implementation-aligned derivations for assembly, elements, plasticity,
-time integration, periodic constraints, and mesh import.</p>
-<p><a class="reference internal" href="theory/index.html"><span class="std std-doc">Open the theory manual</span></a></p>
-</div>
-<div class="fp-card docutils container">
-<p class="rubric" id="api-reference">API Reference</p>
-<p>Module-level documentation that explains ownership, reading order, and the full
-function and class reference generated from the source code.</p>
-<p><a class="reference internal" href="api.html"><span class="std std-doc">Open the API reference</span></a></p>
-</div>
-<div class="fp-card docutils container">
-<p class="rubric" id="matlab-mapping">MATLAB Mapping</p>
-<p>Cross-reference notes for readers moving from the original classroom scripts to
-the Python port and its public API.</p>
-<p><a class="reference internal" href="matlab_python_mapping.html"><span class="std std-doc">Open the mapping notes</span></a></p>
-</div>
+<div class="fp-card-grid">
+  <div class="fp-card">
+    <h2><span style="font-size: 1.5em; vertical-align: middle;">📚</span> User Guide</h2>
+    <p>Practical, end-to-end reading for model setup, assembly, materials, dynamics, periodic workflows, and extension points.</p>
+    <a href="manual/index.html">Open the guide →</a>
+  </div>
+  <div class="fp-card">
+    <h2><span style="font-size: 1.5em; vertical-align: middle;">📐</span> Theory and Reference</h2>
+    <p>Implementation-aligned derivations for assembly, elements, plasticity, time integration, periodic constraints, and mesh import.</p>
+    <a href="theory/index.html">Open the theory manual →</a>
+  </div>
+  <div class="fp-card">
+    <h2><span style="font-size: 1.5em; vertical-align: middle;">⚙️</span> API Reference</h2>
+    <p>Module-level documentation that explains ownership, reading order, and the full function and class reference generated from the source code.</p>
+    <a href="api.html">Open the API reference →</a>
+  </div>
+  <div class="fp-card">
+    <h2><span style="font-size: 1.5em; vertical-align: middle;">🔄</span> MATLAB Mapping</h2>
+    <p>Cross-reference notes for readers moving from the original classroom scripts to the Python port and its public API.</p>
+    <a href="matlab_python_mapping.html">Open the mapping notes →</a>
+  </div>
+  <div class="fp-card">
+    <h2><span style="font-size: 1.5em; vertical-align: middle;">🚀</span> Roadmap & Architecture</h2>
+    <p>View the implementation plans, development roadmap, and deep architectural comparisons with other solvers like OpenSees.</p>
+    <a href="roadmap.html">View the roadmap →</a>
+  </div>
 </div>
 <section id="what-this-documentation-covers">
 <h2>What This Documentation Covers<a class="headerlink" href="#what-this-documentation-covers" title="Link to this heading">#</a></h2>
-<div class="fp-stat-grid docutils container">
-<div class="fp-stat docutils container">
-<p><strong>9 manual chapters</strong></p>
-<p>Practical workflows from array layout to dynamic post-processing.</p>
-</div>
-<div class="fp-stat docutils container">
-<p><strong>13 theory chapters</strong></p>
-<p>Derivations and implementation notes matched to the actual source tree.</p>
-</div>
-<div class="fp-stat docutils container">
-<p><strong>18 API modules</strong></p>
-<p>Core workflow, element kernels, dynamics, periodicity, plotting, and mesh I/O.</p>
-</div>
-<div class="fp-stat docutils container">
-<p><strong>Static to transient</strong></p>
-<p>Linear statics, modal analysis, periodic RVEs, and Newmark-family solvers.</p>
-</div>
+<div class="fp-stat-grid">
+  <div class="fp-stat">
+    <strong>9 manual chapters</strong>
+    <p>Practical workflows from array layout to dynamic post-processing.</p>
+  </div>
+  <div class="fp-stat">
+    <strong>13 theory chapters</strong>
+    <p>Derivations and implementation notes matched to the actual source tree.</p>
+  </div>
+  <div class="fp-stat">
+    <strong>18 API modules</strong>
+    <p>Core workflow, element kernels, dynamics, periodicity, plotting, and mesh I/O.</p>
+  </div>
+  <div class="fp-stat">
+    <strong>Static to transient</strong>
+    <p>Linear statics, modal analysis, periodic RVEs, and Newmark-family solvers.</p>
+  </div>
 </div>
 </section>
 <section id="reading-order">
 <h2>Reading Order<a class="headerlink" href="#reading-order" title="Link to this heading">#</a></h2>
-<div class="fp-card-grid docutils container">
-<div class="fp-card docutils container">
-<p class="rubric" id="start-with-tutorials">1. Start With Tutorials</p>
-<p>Read <a class="reference internal" href="tutorials.html"><span class="std std-doc">tutorials</span></a> for a compact orientation before diving into the
-module pages.</p>
-</div>
-<div class="fp-card docutils container">
-<p class="rubric" id="learn-the-workflow">2. Learn The Workflow</p>
-<p>Use the <a class="reference internal" href="manual/index.html"><span class="std std-doc">User Guide</span></a> to understand how <code class="docutils literal notranslate"><span class="pre">X</span></code>, <code class="docutils literal notranslate"><span class="pre">T</span></code>, <code class="docutils literal notranslate"><span class="pre">G</span></code>, <code class="docutils literal notranslate"><span class="pre">C</span></code>,
-and <code class="docutils literal notranslate"><span class="pre">P</span></code> move through assembly and solution.</p>
-</div>
-<div class="fp-card docutils container">
-<p class="rubric" id="match-equations-to-code">3. Match Equations To Code</p>
-<p>Use the <a class="reference internal" href="theory/index.html"><span class="std std-doc">Theory manual</span></a> when you want the mathematical meaning
-behind the actual vectorized implementation.</p>
-</div>
-<div class="fp-card docutils container">
-<p class="rubric" id="look-up-exact-behavior">4. Look Up Exact Behavior</p>
-<p>Use the <a class="reference internal" href="api.html"><span class="std std-doc">API reference</span></a> when you need precise call signatures, return
-types, module ownership, and the full reference text.</p>
-</div>
+<div class="fp-card-grid">
+  <div class="fp-card">
+    <h3>1. Start With Tutorials</h3>
+    <p>Read the <a href="tutorials.html">tutorials</a> for a compact orientation before diving into the module pages.</p>
+  </div>
+  <div class="fp-card">
+    <h3>2. Learn The Workflow</h3>
+    <p>Use the <a href="manual/index.html">User Guide</a> to understand how `X`, `T`, `G`, `C`, and `P` move through assembly and solution.</p>
+  </div>
+  <div class="fp-card">
+    <h3>3. Match Equations To Code</h3>
+    <p>Use the <a href="theory/index.html">Theory manual</a> when you want the mathematical meaning behind the actual vectorized implementation.</p>
+  </div>
+  <div class="fp-card">
+    <h3>4. Look Up Exact Behavior</h3>
+    <p>Use the <a href="api.html">API reference</a> when you need precise call signatures, return types, module ownership, and the full reference text.</p>
+  </div>
 </div>
 <div class="admonition important">
 <p class="admonition-title">Important</p>

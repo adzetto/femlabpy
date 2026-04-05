@@ -8,6 +8,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     // Selectors for elements we want to animate
     const animateSelectors = [
+        '.fp-hero',
         '.fp-card',
         '.fp-stat',
         '.fp-section-note',
