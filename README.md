@@ -5,7 +5,7 @@
 [![Tests](https://img.shields.io/github/actions/workflow/status/adzetto/femlabpy/tests.yml?branch=main&label=tests)](https://github.com/adzetto/femlabpy/actions/workflows/tests.yml)
 [![License](https://img.shields.io/github/license/adzetto/femlabpy)](LICENSE)
 
-Python FEM library for teaching. Based on MATLAB/Scilab FemLab.
+Python FEM library for teaching. Based on MATLAB/Scilab FemLab. Visit: https://adzetto.github.io/femlabpy
 
 <br>
 <p align="center">
@@ -32,7 +32,7 @@ pip install "femlabpy[mesh]"  # Gmsh 4.x support
 pip install "femlabpy[gui]"   # GUI tools
 ```
 
-## Complete Workflow Example
+## Workflow Example
 
 ### Step 1: Create mesh with Gmsh
 
