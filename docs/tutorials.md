@@ -2,25 +2,30 @@
 
 <div class="fp-hide-title"></div>
 
-<div class="fp-hero" style="padding: 3rem 1.5rem; margin-bottom: 3rem; background: linear-gradient(180deg, var(--fp-surface) 0%, transparent 100%);">
-  <div class="fp-hero-title" style="font-size: 3rem;">Tutorials</div>
+<div class="fp-hero fp-hero--compact">
+  <div class="fp-hero-title">Tutorials</div>
   <div class="fp-hero-subtitle">
     Step-by-step guides to building, assembling, and solving finite element models using standard arrays.
   </div>
+  <div class="fp-badge-bar">
+    <span class="fp-badge">Requires: NumPy</span>
+    <span class="fp-badge">Gmsh (for meshing)</span>
+    <span class="fp-badge">Python &ge; 3.9</span>
+  </div>
 </div>
 
-<div class="fp-card-grid" style="margin-bottom: 4rem;">
-  <div class="fp-card" style="padding: 1.5rem;">
-    <h3 style="margin-bottom: 0.5rem;"><a href="#linear-static-analysis" style="text-decoration: none; color: var(--fp-ink);">1. Linear Static Analysis</a></h3>
-    <p style="font-size: 0.95rem;">Model a 2D cantilever beam, apply point loads, and solve for displacement using the Q4 element driver.</p>
+<div class="fp-card-grid fp-card-grid--primary">
+  <div class="fp-card fp-card--compact">
+    <h3><a href="#linear-static-analysis">1. Linear Static Analysis</a></h3>
+    <p>Model a 2D cantilever beam, apply point loads, and solve for displacement using the Q4 element driver.</p>
   </div>
-  <div class="fp-card" style="padding: 1.5rem;">
-    <h3 style="margin-bottom: 0.5rem;"><a href="#dynamic-analysis" style="text-decoration: none; color: var(--fp-ink);">2. Dynamic Analysis</a></h3>
-    <p style="font-size: 0.95rem;">Perform free vibration (modal) analysis and time-history earthquake simulations using Newmark-beta.</p>
+  <div class="fp-card fp-card--compact">
+    <h3><a href="#dynamic-analysis">2. Dynamic Analysis</a></h3>
+    <p>Perform free vibration (modal) analysis and time-history earthquake simulations using Newmark-beta.</p>
   </div>
-  <div class="fp-card" style="padding: 1.5rem;">
-    <h3 style="margin-bottom: 0.5rem;"><a href="#periodic-boundaries-homogenization" style="text-decoration: none; color: var(--fp-ink);">3. Periodic Boundaries</a></h3>
-    <p style="font-size: 0.95rem;">Enforce periodic BCs on an RVE and compute the effective homogenized stiffness matrix.</p>
+  <div class="fp-card fp-card--compact">
+    <h3><a href="#periodic-boundaries-homogenization">3. Periodic Boundaries</a></h3>
+    <p>Enforce periodic BCs on an RVE and compute the effective homogenized stiffness matrix.</p>
   </div>
 </div>
 
@@ -28,11 +33,11 @@
 
 All model data in femlabpy is stored in standard arrays. To use the library effectively, you should understand these five core matrices:
 
-*   **`X` (Node Coordinates):** Each row represents a node. For 2D problems, a row is `[x, y]`. The row index (1-based) is the global node number.
-*   **`T` (Topology):** Each row represents an element. It contains the node numbers that make up the element, followed by a material property ID. For a 4-node quad, a row is `[node1, node2, node3, node4, prop_id]`.
-*   **`G` (Material Properties):** Each row defines a set of material properties. The `prop_id` in the topology matrix points to a row in `G`.
-*   **`C` (Constraints):** Defines prescribed displacements. A row is `[node_id, dof_index, prescribed_value]`.
-*   **`P` (Loads):** Defines point loads. A row is `[node_id, dof_index, force_value]`.
+*   **$\mathbf{X}$ (Node Coordinates):** Each row represents a node. For 2D problems, a row is `[x, y]`. The row index (1-based) is the global node number.
+*   **$\mathbf{T}$ (Topology):** Each row represents an element. It contains the node numbers that make up the element, followed by a material property ID. For a 4-node quad, a row is `[node1, node2, node3, node4, prop_id]`.
+*   **$\mathbf{G}$ (Material Properties):** Each row defines a set of material properties. The `prop_id` in the topology matrix points to a row in $\mathbf{G}$.
+*   **$\mathbf{C}$ (Constraints):** Defines prescribed displacements. A row is `[node_id, dof_index, prescribed_value]`.
+*   **$\mathbf{P}$ (Loads):** Defines point loads. A row is `[node_id, dof_index, force_value]`.
 
 ---
 

@@ -13,15 +13,87 @@ kernelspec:
 
 ## Introduction
 
-Finite element assembly is the step that turns element-level quantities into the global linear system solved by `femlabpy`. Each element contributes a local stiffness matrix, a local internal-force vector, and sometimes a local mass matrix. The job of the assembly code is to place those contributions into the correct global rows and columns without losing the node ordering or the degree-of-freedom layout.
-
-The implementation in this repository follows the standard FEM pattern but keeps the indexing explicit. `core.init` allocates the global arrays, `assembly.assmk` scatters element matrices into the global stiffness matrix, and `assembly.assmq` scatters element vectors into the global force vector. That separation matters: it keeps the data flow easy to inspect and makes it clear where each contribution enters the solve.
-
-This chapter explains the algebra behind that mapping and then connects it to the actual NumPy and SciPy calls used in the codebase. The main point is simple: the math says "assemble by connectivity," and the Python code does that with explicit index arrays instead of constructing large Boolean matrices.
+Finite element assembly is the step that turns element-level quantities into the global linear system solved by `femlabpy`. This chapter provides the rigorous mathematical foundation for the assembly process, deriving it from variational principles.
 
 ---
 
-## Assembly identity and meaning
+## 1. Variational Foundation
+
+### 1.1 Principle of minimum potential energy
+
+The finite element method is rooted in the principle of minimum potential energy. For an elastic body, the total potential energy functional is:
+
+$$
+\Pi(\mathbf{u}) = U(\mathbf{u}) - W(\mathbf{u})
+$$
+
+where:
+- $U(\mathbf{u}) = \frac{1}{2}\int_\Omega \boldsymbol{\varepsilon}^T \mathbf{D} \boldsymbol{\varepsilon} \, dV$ is the strain energy
+- $W(\mathbf{u}) = \int_\Omega \mathbf{u}^T \mathbf{b} \, dV + \int_{\Gamma_t} \mathbf{u}^T \mathbf{t} \, dS$ is the work of external forces
+
+The equilibrium configuration minimizes $\Pi$:
+
+$$
+\delta \Pi = 0 \quad \forall \, \delta\mathbf{u} \text{ admissible}
+$$
+
+### 1.2 Weak form derivation
+
+Taking the first variation of the potential energy:
+
+$$
+\delta\Pi = \int_\Omega \delta\boldsymbol{\varepsilon}^T \boldsymbol{\sigma} \, dV - \int_\Omega \delta\mathbf{u}^T \mathbf{b} \, dV - \int_{\Gamma_t} \delta\mathbf{u}^T \mathbf{t} \, dS = 0
+$$
+
+This is the **weak form** or **principle of virtual work**:
+
+$$
+\int_\Omega \delta\boldsymbol{\varepsilon}^T \boldsymbol{\sigma} \, dV = \int_\Omega \delta\mathbf{u}^T \mathbf{b} \, dV + \int_{\Gamma_t} \delta\mathbf{u}^T \mathbf{t} \, dS
+$$
+
+**Proof of equivalence to strong form:**
+
+Using the relation $\delta\boldsymbol{\varepsilon} = \mathbf{L}\delta\mathbf{u}$ where $\mathbf{L}$ is the differential operator, and integrating by parts:
+
+$$
+\int_\Omega \delta\mathbf{u}^T \mathbf{L}^T \boldsymbol{\sigma} \, dV = -\int_\Omega \delta\mathbf{u}^T (\nabla \cdot \boldsymbol{\sigma}) \, dV + \int_{\Gamma} \delta\mathbf{u}^T (\boldsymbol{\sigma} \cdot \mathbf{n}) \, dS
+$$
+
+Since $\delta\mathbf{u}$ is arbitrary, this implies:
+- $\nabla \cdot \boldsymbol{\sigma} + \mathbf{b} = \mathbf{0}$ in $\Omega$ (equilibrium)
+- $\boldsymbol{\sigma} \cdot \mathbf{n} = \mathbf{t}$ on $\Gamma_t$ (traction BC)
+
+### 1.3 Galerkin discretization
+
+We approximate the displacement field using shape functions:
+
+$$
+\mathbf{u}(\mathbf{x}) \approx \mathbf{u}^h(\mathbf{x}) = \sum_{i=1}^{n} N_i(\mathbf{x}) \mathbf{d}_i = \mathbf{N}(\mathbf{x}) \mathbf{d}
+$$
+
+The Galerkin method requires:
+
+$$
+\delta\mathbf{u}^h \in \text{span}\{N_1, N_2, \ldots, N_n\}
+$$
+
+Substituting into the weak form and using $\delta\boldsymbol{\varepsilon} = \mathbf{B}\delta\mathbf{d}$:
+
+$$
+\delta\mathbf{d}^T \left[ \int_\Omega \mathbf{B}^T \mathbf{D} \mathbf{B} \, dV \right] \mathbf{d} = \delta\mathbf{d}^T \left[ \int_\Omega \mathbf{N}^T \mathbf{b} \, dV + \int_{\Gamma_t} \mathbf{N}^T \mathbf{t} \, dS \right]
+$$
+
+Since this must hold for all $\delta\mathbf{d}$:
+
+$$
+\mathbf{K}\mathbf{d} = \mathbf{F}
+$$
+
+where $\mathbf{K} = \int_\Omega \mathbf{B}^T \mathbf{D} \mathbf{B} \, dV$ and $\mathbf{F}$ is the load vector.
+
+---
+
+## 2. Assembly Identity and Derivation
 
 The global stiffness matrix $\mathbf{K}$ and global internal force vector $\mathbf{q}$ are constructed by summing the contributions from all $N_e$ elements in the mesh. Let the global displacement vector be $\mathbf{U}$ (size $N \times 1$) and the local displacement vector for element $e$ be $\mathbf{u}_e$ (size $n_e \times 1$).
 

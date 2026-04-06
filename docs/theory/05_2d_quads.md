@@ -26,6 +26,13 @@ uses a consistent set of array conventions:
 
 ## Bilinear shape functions
 
+```{figure} ../_static/figures/fig_q4_isoparametric.png
+:align: center
+:width: 600px
+
+**Figure 5.1:** Isoparametric mapping from parent domain [−1,1]² to physical Q4 element. Gauss points shown as red dots.
+```
+
 The parent domain is the square `[-1, 1] x [-1, 1]`. The four bilinear shape
 functions are the tensor product of 1D linear Lagrange polynomials:
 
@@ -46,36 +53,51 @@ module.
 
 ## Isoparametric mapping and the Jacobian
 
-For a given Gauss point `(xi, eta)`, the physical coordinates and field values
-are interpolated with the same shape functions:
+For a given point $(\xi, \eta)$ in the parent domain, the physical coordinates are interpolated using the same shape functions:
 
 $$
-x(\xi, \eta) = \sum_i N_i x_i, \quad y(\xi, \eta) = \sum_i N_i y_i
+x(\xi, \eta) = \sum_{i=1}^{4} N_i(\xi, \eta) x_i, \quad y(\xi, \eta) = \sum_{i=1}^{4} N_i(\xi, \eta) y_i
 $$
 
-The source evaluates the Jacobian transpose directly as
+### Jacobian matrix derivation
 
-```python
-dN = _q4_dN(r[i], r[j], nnodes)
-Jt = dN @ Xe
-```
+To relate parent and physical derivatives, we use the chain rule:
 
-Here `dN` has shape `(2, 4)`:
+$$
+\begin{bmatrix} \frac{\partial N_i}{\partial x} \\ \frac{\partial N_i}{\partial y} \end{bmatrix} = \mathbf{J}^{-1} \begin{bmatrix} \frac{\partial N_i}{\partial \xi} \\ \frac{\partial N_i}{\partial \eta} \end{bmatrix}
+$$
 
-- row 0 contains `dN/dxi`
-- row 1 contains `dN/deta`
+where the Jacobian matrix is:
 
-and `Jt` is a `2 x 2` matrix that maps parent-space derivatives to physical
-derivatives.
+$$
+\mathbf{J} = \begin{bmatrix} \frac{\partial x}{\partial \xi} & \frac{\partial y}{\partial \xi} \\ \frac{\partial x}{\partial \eta} & \frac{\partial y}{\partial \eta} \end{bmatrix} = \begin{bmatrix} \sum_i \frac{\partial N_i}{\partial \xi} x_i & \sum_i \frac{\partial N_i}{\partial \xi} y_i \\ \sum_i \frac{\partial N_i}{\partial \eta} x_i & \sum_i \frac{\partial N_i}{\partial \eta} y_i \end{bmatrix}
+$$
 
-The implementation intentionally uses `np.linalg.solve(Jt, dN)` instead of
-`np.linalg.inv(Jt) @ dN`. That is the right choice for two reasons:
+In matrix form: $\mathbf{J}^T = \frac{\partial \mathbf{N}}{\partial \boldsymbol{\xi}} \cdot \mathbf{X}_e$
 
-- it avoids forming an explicit inverse
-- it is numerically safer when the element is distorted
+where $\frac{\partial \mathbf{N}}{\partial \boldsymbol{\xi}}$ is the $2 \times 4$ matrix of parent derivatives.
 
-The determinant of `Jt` is the area scaling factor that converts parent-space
-quadrature weights into physical area weights.
+### Computing physical derivatives
+
+The shape function derivatives in physical coordinates are found by solving:
+
+$$
+\frac{\partial \mathbf{N}}{\partial \mathbf{x}} = \mathbf{J}^{-T} \frac{\partial \mathbf{N}}{\partial \boldsymbol{\xi}}
+$$
+
+The source uses `np.linalg.solve(Jt, dN)` where `Jt = dN @ Xe`, which:
+- Avoids explicit inverse computation
+- Is numerically stable for distorted elements
+
+### Area transformation
+
+The determinant $|\mathbf{J}|$ transforms area elements:
+
+$$
+dx \, dy = |\mathbf{J}| \, d\xi \, d\eta
+$$
+
+This scaling factor appears in all integration formulas.
 
 ## Strain-displacement matrix
 
@@ -116,25 +138,69 @@ element math stays in one place.
 
 ## Gauss-Legendre integration
 
-The Q4 element uses the standard `2 x 2` Gauss rule. The source stores the
-abscissas and weights in `_q4_gauss_points()`:
+```{figure} ../_static/figures/fig_gauss_2x2.png
+:align: center
+:width: 400px
+
+**Figure 5.2:** The $2 \times 2$ Gauss-Legendre quadrature points in the parent domain $[-1,1]^2$.
+```
+
+### Mathematical foundation
+
+The element integrals cannot be evaluated analytically for general quadrilaterals, so we use Gauss-Legendre quadrature:
+
+$$
+\int_{-1}^{1} \int_{-1}^{1} f(\xi, \eta) \, d\xi \, d\eta \approx \sum_{i=1}^{n} \sum_{j=1}^{m} w_i w_j f(\xi_i, \eta_j)
+$$
+
+The Gauss points $\xi_i$ are the roots of Legendre polynomials, and the weights $w_i$ are chosen to integrate polynomials of degree $2n-1$ exactly.
+
+### 2-point rule derivation
+
+For the 2-point rule, we require exact integration of cubic polynomials. The points and weights are:
+
+$$
+\xi_1 = -\frac{1}{\sqrt{3}}, \quad \xi_2 = +\frac{1}{\sqrt{3}}, \quad w_1 = w_2 = 1
+$$
+
+**Proof:** These values can be derived by requiring exact integration of $1, \xi, \xi^2, \xi^3$:
+
+From $\int_{-1}^{1} 1 \, d\xi = 2$: $w_1 + w_2 = 2$
+
+From $\int_{-1}^{1} \xi \, d\xi = 0$: $w_1 \xi_1 + w_2 \xi_2 = 0$
+
+From $\int_{-1}^{1} \xi^2 \, d\xi = \frac{2}{3}$: $w_1 \xi_1^2 + w_2 \xi_2^2 = \frac{2}{3}$
+
+From $\int_{-1}^{1} \xi^3 \, d\xi = 0$: $w_1 \xi_1^3 + w_2 \xi_2^3 = 0$
+
+Solving with symmetry ($\xi_2 = -\xi_1$, $w_1 = w_2$): $\xi_1 = -1/\sqrt{3}$, $w_1 = 1$.
+
+### Application to element stiffness
+
+The Q4 stiffness matrix is:
+
+$$
+\mathbf{K}^e = \int_{\Omega^e} \mathbf{B}^T \mathbf{D} \mathbf{B} \, t \, dA
+$$
+
+Transforming to parent coordinates:
+
+$$
+\mathbf{K}^e = \int_{-1}^{1} \int_{-1}^{1} \mathbf{B}^T(\xi,\eta) \mathbf{D} \mathbf{B}(\xi,\eta) \, t \, |\mathbf{J}(\xi,\eta)| \, d\xi \, d\eta
+$$
+
+With $2 \times 2$ Gauss quadrature (4 points total):
+
+$$
+\mathbf{K}^e = \sum_{i=1}^{2} \sum_{j=1}^{2} w_i w_j \, \mathbf{B}_{ij}^T \mathbf{D} \mathbf{B}_{ij} \, t \, |\mathbf{J}_{ij}|
+$$
+
+The source stores the Gauss points in `_q4_gauss_points()`:
 
 ```python
 r = np.array([-1.0, 1.0], dtype=float) / np.sqrt(3.0)
 w = np.array([1.0, 1.0], dtype=float)
 ```
-
-Each of the four integration points is visited in a nested loop. The helper
-`_q4_gp_index(i, j)` flattens the tensor-product indexing into the row order
-used by the returned Gauss-point tables.
-
-For a linear elastic problem, the stiffness matrix is accumulated as
-
-$$
-\mathbf{K}^e = \sum w_i w_j \mathbf{B}^T \mathbf{D} \mathbf{B} |\mathbf{J}| t
-$$
-
-where `t` is the thickness stored in `Ge[3]` when provided, otherwise `1.0`.
 
 ## Implementation in femlabpy
 
@@ -237,3 +303,136 @@ style:
 
 That split keeps the code readable and makes it easier to reason about the
 exact shape of each array at every stage.
+
+---
+
+## Appendix: Mathematical Foundations
+
+### B.1 Shape function tensor product construction
+
+The bilinear shape functions are constructed as tensor products of 1D linear Lagrange polynomials:
+
+$$
+N_i(\xi, \eta) = L_{I}^{\xi}(\xi) \cdot L_{J}^{\eta}(\eta)
+$$
+
+where $(I, J)$ is the 1D index pair corresponding to node $i$.
+
+**1D linear Lagrange polynomials:**
+
+$$
+L_1^{\xi}(\xi) = \frac{1-\xi}{2}, \quad L_2^{\xi}(\xi) = \frac{1+\xi}{2}
+$$
+
+**Verification of partition of unity:**
+
+$$
+\sum_{i=1}^{4} N_i = \frac{1}{4}\left[(1-\xi)(1-\eta) + (1+\xi)(1-\eta) + (1+\xi)(1+\eta) + (1-\xi)(1+\eta)\right]
+$$
+
+$$
+= \frac{1}{4}\left[(1-\eta)(2) + (1+\eta)(2)\right] = \frac{1}{4}(4) = 1 \quad \checkmark
+$$
+
+**Verification of Kronecker delta property:**
+
+At node 1 ($\xi=-1, \eta=-1$):
+
+$$
+N_1 = \frac{1}{4}(2)(2) = 1, \quad N_2 = \frac{1}{4}(0)(2) = 0, \quad N_3 = \frac{1}{4}(0)(0) = 0, \quad N_4 = \frac{1}{4}(2)(0) = 0 \quad \checkmark
+$$
+
+### B.2 Jacobian positive definiteness
+
+For a valid element, the Jacobian determinant must be positive at all Gauss points:
+
+$$
+|\mathbf{J}| > 0
+$$
+
+**Physical interpretation:** The Jacobian determinant represents the ratio of physical to parent area:
+
+$$
+|\mathbf{J}| = \frac{\partial(x,y)}{\partial(\xi,\eta)}
+$$
+
+If $|\mathbf{J}| \leq 0$ at any point, the element is either inverted or has zero area, making it invalid.
+
+**For a rectangular element** with corners at $(0,0), (a,0), (a,b), (0,b)$:
+
+$$
+\mathbf{J} = \begin{bmatrix} a/2 & 0 \\ 0 & b/2 \end{bmatrix}, \quad |\mathbf{J}| = \frac{ab}{4}
+$$
+
+The total area is:
+
+$$
+A = \int_{-1}^{1}\int_{-1}^{1} |\mathbf{J}| \, d\xi \, d\eta = \frac{ab}{4} \cdot 4 = ab \quad \checkmark
+$$
+
+### B.3 Gauss quadrature error analysis
+
+For $n$-point Gauss-Legendre quadrature, the integration is exact for polynomials up to degree $2n-1$.
+
+**Error bound:** For a function $f \in C^{2n}[-1,1]$:
+
+$$
+E_n = \int_{-1}^{1} f(x) dx - \sum_{i=1}^{n} w_i f(x_i) = \frac{2^{2n+1}(n!)^4}{(2n+1)[(2n)!]^3} f^{(2n)}(\xi)
+$$
+
+for some $\xi \in (-1, 1)$.
+
+**For Q4 with 2×2 integration:**
+
+The integrand $\mathbf{B}^T \mathbf{D} \mathbf{B} |\mathbf{J}|$ involves:
+- $\mathbf{B}$: linear in $\xi, \eta$ (from shape function derivatives)
+- $|\mathbf{J}|$: bilinear in $\xi, \eta$
+
+Product degree: $1 + 1 + 2 = 4$ (approximately)
+
+The 2-point rule integrates degree 3 exactly, so there is a small integration error for distorted elements. This is acceptable for most practical applications.
+
+### B.4 Rank and eigenvalue analysis
+
+The Q4 stiffness matrix has:
+- Size: $8 \times 8$
+- Rank: 5 (for 2D elasticity)
+- Null space: 3 rigid body modes (2 translations + 1 rotation)
+
+**Eigenvalue structure:**
+
+For a unit square with $E=1$, $\nu=0.3$, the stiffness eigenvalues are:
+
+$$
+\lambda_1 = \lambda_2 = \lambda_3 = 0 \quad \text{(rigid body modes)}
+$$
+
+$$
+\lambda_4, \ldots, \lambda_8 > 0 \quad \text{(deformation modes)}
+$$
+
+This confirms proper element formulation—exactly 3 zero eigenvalues for 2D.
+
+### B.5 Patch test verification
+
+The element must pass the constant strain patch test, which verifies that a mesh of elements can exactly represent a constant strain field.
+
+**Conditions:** For a mesh under prescribed boundary displacements that produce constant strain $\boldsymbol{\varepsilon}_0$:
+
+1. All elements should compute $\boldsymbol{\varepsilon} = \boldsymbol{\varepsilon}_0$
+2. Internal nodal forces should cancel at shared nodes
+3. Reaction forces should equal applied loads
+
+**Mathematical requirement:** The shape functions must be able to reproduce linear displacement fields exactly:
+
+$$
+u(x,y) = a_0 + a_1 x + a_2 y
+$$
+
+For bilinear Q4 elements, this is satisfied since:
+
+$$
+\sum_i N_i = 1, \quad \sum_i N_i x_i = x, \quad \sum_i N_i y_i = y
+$$
+
+These are the completeness conditions for first-order accuracy.

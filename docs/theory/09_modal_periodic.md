@@ -23,66 +23,114 @@ and one-based legacy tables. `solve_modal()` works with reduced free-DOF blocks;
 the periodic module builds a constraint system and solves the resulting
 saddle-point problem with Lagrange multipliers.
 
-## 1. Modal analysis
+## 1. Modal Analysis
 
-The modal solver works on the generalized eigenvalue problem
+### 1.1 Generalized eigenvalue problem
+
+The free vibration equation without damping is:
+
+$$
+\mathbf{M}\ddot{\mathbf{u}} + \mathbf{K}\mathbf{u} = \mathbf{0}
+$$
+
+Assuming harmonic motion $\mathbf{u}(t) = \boldsymbol{\phi} e^{i\omega t}$:
+
+$$
+-\omega^2 \mathbf{M}\boldsymbol{\phi} e^{i\omega t} + \mathbf{K}\boldsymbol{\phi} e^{i\omega t} = \mathbf{0}
+$$
+
+This yields the generalized eigenvalue problem:
 
 $$
 \mathbf{K}\boldsymbol{\phi} = \omega^2 \mathbf{M}\boldsymbol{\phi}
 $$
 
-where `omega` is the circular natural frequency and `phi` is the mode shape.
-`solve_modal(K, M, n_modes=10, C_bc=None, dof=2, sigma=0.0)` returns a
-`ModalResult` dataclass with these fields:
+where $\omega$ is the circular natural frequency and $\boldsymbol{\phi}$ is the mode shape.
 
-- `eigenvalues`: the squared frequencies, `omega^2`,
-- `omega`: circular frequencies in rad/s,
-- `freq_hz`: frequencies in Hz,
-- `period`: modal periods in seconds,
-- `mode_shapes`: full-size mode shape vectors with zeros at constrained DOFs,
-- `participation`: modal participation factors per direction,
-- `effective_mass`: effective modal mass per direction.
+### 1.2 Orthogonality of modes
 
-### How the solver reduces the system
-
-The implementation does not solve the full constrained system directly. It
-first builds a boolean mask of free DOFs from `C_bc` with `_get_free_dofs()`,
-then extracts the reduced matrices with `_reduce_system()`. The reduction uses
-`np.ix_` so both the stiffness and mass matrices are sliced consistently:
-
-```python
-free_idx = np.where(free_mask)[0]
-K_red = K[np.ix_(free_idx, free_idx)]
-M_red = M[np.ix_(free_idx, free_idx)]
-```
-
-That matters because the solver is preserving the generalized eigenvalue
-structure, not just deleting rows and columns arbitrarily.
-
-For small systems, `solve_modal()` uses dense `scipy.linalg.eigh`. For larger
-systems it switches to `scipy.sparse.linalg.eigsh` with shift-invert. After the
-eigensolve, the eigenvectors are mass-normalized on the reduced system and then
-expanded back to the full DOF space.
-
-### Participation factors and effective mass
-
-The internal helper `_modal_participation()` builds a unit influence vector for
-each spatial direction and evaluates
+For distinct eigenvalues $\omega_m^2 \neq \omega_n^2$, the mode shapes satisfy:
 
 $$
-\Gamma_{n,j} = \frac{\phi_n^T \mathbf{M} r_j}{\phi_n^T \mathbf{M}\phi_n}
+\boldsymbol{\phi}_m^T \mathbf{M} \boldsymbol{\phi}_n = 0, \quad \boldsymbol{\phi}_m^T \mathbf{K} \boldsymbol{\phi}_n = 0 \quad (m \neq n)
 $$
 
-For mass-normalized modes, the denominator is one, so the effective modal mass
-reduces to the square of the participation factor. The code uses the full mass
-matrix after expansion so the returned arrays are aligned with the original DOF
-numbering.
+**Proof:** From the eigenvalue equations:
+$$
+\mathbf{K}\boldsymbol{\phi}_m = \omega_m^2 \mathbf{M}\boldsymbol{\phi}_m, \quad \mathbf{K}\boldsymbol{\phi}_n = \omega_n^2 \mathbf{M}\boldsymbol{\phi}_n
+$$
 
-### Plotting modes
+Pre-multiply the first by $\boldsymbol{\phi}_n^T$ and the second by $\boldsymbol{\phi}_m^T$:
+$$
+\boldsymbol{\phi}_n^T \mathbf{K}\boldsymbol{\phi}_m = \omega_m^2 \boldsymbol{\phi}_n^T \mathbf{M}\boldsymbol{\phi}_m
+$$
+$$
+\boldsymbol{\phi}_m^T \mathbf{K}\boldsymbol{\phi}_n = \omega_n^2 \boldsymbol{\phi}_m^T \mathbf{M}\boldsymbol{\phi}_n
+$$
 
-`plot_modes(T, X, phi, dof, mode_indices=None, scale=1.0)` deforms the mesh for
-one or more modes and is intentionally separate from the solver. The solver is
-responsible for modal data; the plotting helper is responsible for presenting
+Since $\mathbf{K}$ and $\mathbf{M}$ are symmetric, transposing gives equal LHS. Subtracting:
+$$
+(\omega_m^2 - \omega_n^2) \boldsymbol{\phi}_n^T \mathbf{M}\boldsymbol{\phi}_m = 0
+$$
+
+For $\omega_m \neq \omega_n$: $\boldsymbol{\phi}_n^T \mathbf{M}\boldsymbol{\phi}_m = 0$ ∎
+
+### 1.3 Mass normalization
+
+Modes are typically normalized such that:
+
+$$
+\boldsymbol{\phi}_n^T \mathbf{M} \boldsymbol{\phi}_n = 1
+$$
+
+This implies:
+$$
+\boldsymbol{\phi}_n^T \mathbf{K} \boldsymbol{\phi}_n = \omega_n^2
+$$
+
+### 1.4 Modal participation factors
+
+The participation factor for mode $n$ in direction $j$ quantifies how much the mode contributes to the response under uniform excitation:
+
+$$
+\Gamma_{n,j} = \frac{\boldsymbol{\phi}_n^T \mathbf{M} \mathbf{r}_j}{\boldsymbol{\phi}_n^T \mathbf{M}\boldsymbol{\phi}_n}
+$$
+
+where $\mathbf{r}_j$ is a unit influence vector (ones for DOFs in direction $j$, zeros elsewhere).
+
+For mass-normalized modes ($\boldsymbol{\phi}_n^T \mathbf{M}\boldsymbol{\phi}_n = 1$):
+
+$$
+\Gamma_{n,j} = \boldsymbol{\phi}_n^T \mathbf{M} \mathbf{r}_j
+$$
+
+### 1.5 Effective modal mass
+
+The effective modal mass in direction $j$ is:
+
+$$
+M_{eff,n,j} = \Gamma_{n,j}^2 \cdot (\boldsymbol{\phi}_n^T \mathbf{M}\boldsymbol{\phi}_n) = \Gamma_{n,j}^2
+$$
+
+The sum of effective masses equals the total mass:
+
+$$
+\sum_{n=1}^{N} M_{eff,n,j} = \mathbf{r}_j^T \mathbf{M} \mathbf{r}_j = M_{total,j}
+$$
+
+### 1.6 Implementation details
+
+`solve_modal(K, M, n_modes=10, C_bc=None, dof=2, sigma=0.0)` returns a `ModalResult` with:
+
+- `eigenvalues`: $\omega^2$
+- `omega`: circular frequencies (rad/s)
+- `freq_hz`: $f = \omega/(2\pi)$ (Hz)
+- `period`: $T = 1/f$ (seconds)
+- `mode_shapes`: mass-normalized eigenvectors
+- `participation`: $\Gamma_{n,j}$ per direction
+- `effective_mass`: $M_{eff,n,j}$ per direction
+
+The solver reduces the system by removing constrained DOFs before solving, then expands results back to full size.
 it.
 
 ## 2. Periodic boundaries

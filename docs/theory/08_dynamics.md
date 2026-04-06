@@ -26,31 +26,73 @@ where $\mathbf{M}$, $\mathbf{C}$, and $\mathbf{K}$ are the global mass, damping,
 ### 1.1. Mass Matrices (Consistent vs. Lumped)
 
 **Consistent Mass Matrix ($\mathbf{M}_c$):**
-Derived using the same shape functions $\mathbf{N}(\mathbf{x})$ used for the stiffness matrix. It is full (non-diagonal) and kinematically coupled:
+
+The consistent mass matrix is derived from the kinetic energy expression:
 
 $$
-\mathbf{M}_c = \int_{\Omega^e} \rho \mathbf{N}^T \mathbf{N} \, d\Omega
+T = \frac{1}{2} \int_{\Omega} \rho \dot{\mathbf{u}}^T \dot{\mathbf{u}} \, dV
+$$
+
+Substituting the FEM interpolation $\mathbf{u} = \mathbf{N} \mathbf{d}$:
+
+$$
+T = \frac{1}{2} \dot{\mathbf{d}}^T \underbrace{\int_{\Omega} \rho \mathbf{N}^T \mathbf{N} \, dV}_{\mathbf{M}_c} \dot{\mathbf{d}}
+$$
+
+For a T3 element, the consistent mass matrix is:
+
+$$
+\mathbf{M}_c^{T3} = \frac{\rho A}{12} \begin{bmatrix} 2 & 1 & 1 \\ 1 & 2 & 1 \\ 1 & 1 & 2 \end{bmatrix} \otimes \mathbf{I}_2
+$$
+
+For a Q4 element, numerical integration is used:
+
+$$
+\mathbf{M}_c^{Q4} = \sum_{g} w_g \rho \mathbf{N}_g^T \mathbf{N}_g |\mathbf{J}_g| t
 $$
 
 **Lumped Mass Matrix ($\mathbf{M}_L$):**
-A diagonal matrix that decouples inertial forces. It is strictly required for explicit time integration (e.g., Central Difference). Lumping is typically achieved via row-summation or the HRZ (Hinton-Rock-Zienkiewicz) scaling method:
 
+A diagonal approximation that decouples inertial forces. Two common methods:
+
+*Row-sum lumping:*
 $$
-M_{L, ii} = \alpha \int_{\Omega^e} \rho N_i^2 \, d\Omega \quad \text{where} \quad \alpha = \frac{\int \rho \, d\Omega}{\sum \int \rho N_j^2 \, d\Omega}
+M_{L,ii} = \sum_j M_{c,ij}
 $$
+
+*HRZ (Hinton-Rock-Zienkiewicz) scaling:*
+$$
+M_{L, ii} = \alpha \int_{\Omega^e} \rho N_i^2 \, d\Omega \quad \text{where} \quad \alpha = \frac{\int \rho \, dV}{\sum_j \int \rho N_j^2 \, dV}
+$$
+
+Lumped mass is required for explicit time integration (Central Difference).
 
 ### 1.2. Rayleigh Damping
 
-Rayleigh damping constructs the global damping matrix as a linear combination of the mass and stiffness matrices:
+**Derivation:**
+
+For mode $n$ with natural frequency $\omega_n$, the modal damping ratio is:
+
+$$
+\zeta_n = \frac{\alpha}{2\omega_n} + \frac{\beta \omega_n}{2}
+$$
+
+Given target damping ratios $\zeta_1, \zeta_2$ at frequencies $\omega_1, \omega_2$:
+
+$$
+\begin{bmatrix} \frac{1}{2\omega_1} & \frac{\omega_1}{2} \\ \frac{1}{2\omega_2} & \frac{\omega_2}{2} \end{bmatrix} \begin{bmatrix} \alpha \\ \beta \end{bmatrix} = \begin{bmatrix} \zeta_1 \\ \zeta_2 \end{bmatrix}
+$$
+
+Solving:
+
+$$
+\begin{bmatrix} \alpha \\ \beta \end{bmatrix} = \frac{2\omega_1\omega_2}{\omega_2^2 - \omega_1^2} \begin{bmatrix} \omega_2\zeta_1 - \omega_1\zeta_2 \\ \frac{\zeta_2 - \zeta_1}{\omega_1\omega_2}(\omega_2 - \omega_1) \end{bmatrix}
+$$
+
+The global damping matrix is:
 
 $$
 \mathbf{C} = \alpha \mathbf{M} + \beta \mathbf{K}
-$$
-
-The coefficients $\alpha$ (mass-proportional) and $\beta$ (stiffness-proportional) are determined by specifying desired damping ratios $\zeta_1$ and $\zeta_2$ at two target natural frequencies $\omega_1$ and $\omega_2$:
-
-$$
-\begin{bmatrix} \alpha \\ \beta \end{bmatrix} = \frac{2}{\omega_2^2 - \omega_1^2} \begin{bmatrix} \omega_2 & -\omega_1 \\ -1/\omega_2 & 1/\omega_1 \end{bmatrix} \begin{bmatrix} \omega_1 \zeta_1 \\ \omega_2 \zeta_2 \end{bmatrix}
 $$
 
 ## 2. Implicit Time Integration: Newmark-$\beta$ Method
@@ -133,3 +175,205 @@ $$
 $$
 
 `compute_frf()` evaluates this directly over a frequency vector to construct Bode plots (magnitude and phase vs. frequency).
+
+---
+
+## Appendix: Mathematical Foundations
+
+### C.1 Newmark-β derivation from Taylor series
+
+The Newmark method can be derived by considering Taylor series expansions and introducing a weighted average of accelerations.
+
+**Taylor expansion of displacement:**
+
+$$
+\mathbf{u}_{n+1} = \mathbf{u}_n + \Delta t \dot{\mathbf{u}}_n + \frac{\Delta t^2}{2} \ddot{\mathbf{u}}_n + \frac{\Delta t^3}{6} \dddot{\mathbf{u}}_n + O(\Delta t^4)
+$$
+
+**Newmark assumption:** Replace the unknown third derivative term with a weighted average:
+
+$$
+\frac{\Delta t^2}{2} \ddot{\mathbf{u}}_n + \frac{\Delta t^3}{6} \dddot{\mathbf{u}}_n \approx \frac{\Delta t^2}{2} \left[ (1-2\beta)\ddot{\mathbf{u}}_n + 2\beta \ddot{\mathbf{u}}_{n+1} \right]
+$$
+
+This gives the Newmark displacement equation. The velocity equation follows similarly:
+
+$$
+\dot{\mathbf{u}}_{n+1} = \dot{\mathbf{u}}_n + \Delta t \ddot{\mathbf{u}}_n + \frac{\Delta t^2}{2} \dddot{\mathbf{u}}_n + O(\Delta t^3)
+$$
+
+Approximating:
+
+$$
+\ddot{\mathbf{u}}_n + \frac{\Delta t}{2} \dddot{\mathbf{u}}_n \approx (1-\gamma)\ddot{\mathbf{u}}_n + \gamma \ddot{\mathbf{u}}_{n+1}
+$$
+
+### C.2 Stability analysis via amplification matrix
+
+The stability of Newmark integration is analyzed through the amplification matrix. For a single DOF system:
+
+$$
+m\ddot{u} + c\dot{u} + ku = p(t)
+$$
+
+Define the state vector $\mathbf{x} = [u, \dot{u}]^T$. The recurrence relation is:
+
+$$
+\mathbf{x}_{n+1} = \mathbf{A} \mathbf{x}_n + \mathbf{L} p_{n+1}
+$$
+
+**Spectral radius condition:** For unconditional stability:
+
+$$
+\rho(\mathbf{A}) \leq 1 \quad \forall \, \Omega = \omega \Delta t
+$$
+
+**Proof for average acceleration ($\beta = 1/4$, $\gamma = 1/2$):**
+
+The amplification matrix for the undamped case is:
+
+$$
+\mathbf{A} = \begin{bmatrix} 
+\frac{1 - \Omega^2/4}{1 + \Omega^2/4} & \frac{\Delta t}{1 + \Omega^2/4} \\
+-\frac{\Omega^2}{\Delta t(1 + \Omega^2/4)} & \frac{1 - \Omega^2/4}{1 + \Omega^2/4}
+\end{bmatrix}
+$$
+
+The eigenvalues are:
+
+$$
+\lambda_{1,2} = \frac{(1 - \Omega^2/4) \pm i\Omega}{1 + \Omega^2/4}
+$$
+
+The spectral radius:
+
+$$
+\rho = |\lambda| = \sqrt{\frac{(1 - \Omega^2/4)^2 + \Omega^2}{(1 + \Omega^2/4)^2}} = 1
+$$
+
+for all $\Omega > 0$. This proves unconditional stability with no amplitude decay. ∎
+
+### C.3 Accuracy order analysis
+
+**Local truncation error:** For the Newmark displacement equation:
+
+$$
+\tau = \mathbf{u}(t_{n+1}) - \mathbf{u}_n - \Delta t \dot{\mathbf{u}}_n - \frac{\Delta t^2}{2}\left[(1-2\beta)\ddot{\mathbf{u}}_n + 2\beta \ddot{\mathbf{u}}_{n+1}\right]
+$$
+
+Expanding $\ddot{\mathbf{u}}_{n+1}$ in Taylor series:
+
+$$
+\ddot{\mathbf{u}}_{n+1} = \ddot{\mathbf{u}}_n + \Delta t \dddot{\mathbf{u}}_n + O(\Delta t^2)
+$$
+
+Substituting:
+
+$$
+\tau = \frac{\Delta t^3}{6}\dddot{\mathbf{u}}_n - \beta \Delta t^3 \dddot{\mathbf{u}}_n + O(\Delta t^4) = \Delta t^3 \left(\frac{1}{6} - \beta\right)\dddot{\mathbf{u}}_n + O(\Delta t^4)
+$$
+
+For $\gamma = 1/2$, the method is **second-order accurate** regardless of $\beta$.
+
+For $\gamma \neq 1/2$, artificial damping is introduced:
+
+$$
+\zeta_{num} = \frac{\gamma - 1/2}{2} \omega \Delta t
+$$
+
+### C.4 Critical time step for explicit methods
+
+For the central difference method, the critical time step is:
+
+$$
+\Delta t_{cr} = \frac{2}{\omega_{max}}
+$$
+
+where $\omega_{max}$ is the highest natural frequency of the system.
+
+**Derivation:** For the undamped recurrence:
+
+$$
+u_{n+1} = \left(2 - \Omega^2\right)u_n - u_{n-1}
+$$
+
+The characteristic equation is:
+
+$$
+\lambda^2 - (2 - \Omega^2)\lambda + 1 = 0
+$$
+
+For stability, we need $|\lambda| \leq 1$, which requires:
+
+$$
+|2 - \Omega^2| \leq 2 \implies 0 \leq \Omega^2 \leq 4 \implies \omega \Delta t \leq 2
+$$
+
+Therefore: $\Delta t \leq \frac{2}{\omega_{max}}$ ∎
+
+**Practical estimate:** For FEM meshes:
+
+$$
+\omega_{max} \approx \frac{2c}{h_{min}}
+$$
+
+where $c = \sqrt{E/\rho}$ is the wave speed and $h_{min}$ is the smallest element dimension.
+
+Thus:
+
+$$
+\Delta t_{cr} \approx \frac{h_{min}}{c}
+$$
+
+### C.5 Modal superposition
+
+For large systems, direct integration is expensive. Modal superposition reduces the problem size.
+
+**Transformation:** Using mass-normalized modes $\boldsymbol{\Phi}$:
+
+$$
+\mathbf{u} = \boldsymbol{\Phi} \mathbf{q}
+$$
+
+The equations decouple:
+
+$$
+\ddot{q}_n + 2\zeta_n \omega_n \dot{q}_n + \omega_n^2 q_n = \phi_n^T \mathbf{p}(t)
+$$
+
+Each modal equation is a SDOF system that can be solved analytically or numerically.
+
+**Truncation:** Only modes with $\omega_n \leq \omega_{cut}$ are retained. The error is bounded by:
+
+$$
+\|\mathbf{u} - \mathbf{u}_{approx}\| \leq \frac{\|\mathbf{p}\|}{\omega_{cut}^2 m_{eff}}
+$$
+
+where $m_{eff}$ is the effective modal mass of neglected modes.
+
+### C.6 Energy conservation
+
+For conservative systems ($\mathbf{C} = 0$, $\mathbf{p} = 0$), the total energy should be preserved.
+
+**Definition:**
+
+$$
+E_n = \frac{1}{2}\dot{\mathbf{u}}_n^T \mathbf{M} \dot{\mathbf{u}}_n + \frac{1}{2}\mathbf{u}_n^T \mathbf{K} \mathbf{u}_n
+$$
+
+**Energy behavior:**
+
+| Method | Energy |
+|--------|--------|
+| Average acceleration | Conserved exactly |
+| Linear acceleration | Grows (unstable for large $\Delta t$) |
+| Central difference | Bounded oscillation |
+| HHT-α | Dissipated (by design) |
+
+The average acceleration method satisfies:
+
+$$
+E_{n+1} = E_n \quad \forall n
+$$
+
+This is why it's preferred for long-duration simulations where energy drift is unacceptable.

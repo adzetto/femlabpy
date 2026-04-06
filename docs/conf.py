@@ -98,6 +98,7 @@ myst_enable_extensions = [
 
 # Theme setup (PyData)
 html_theme = "pydata_sphinx_theme"
+html_title = "femlabpy"
 html_static_path = ["_static"]
 html_css_files = ["custom.css"]
 html_js_files = ["custom.js"]

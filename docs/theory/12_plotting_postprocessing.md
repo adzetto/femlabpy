@@ -1,10 +1,82 @@
 # Plotting and Postprocessing
 
-This chapter explains how `femlabpy` turns solved arrays into figures and how it
-extracts support reactions from the internal force vector. The code is small, but
-the conventions matter.
+This chapter covers stress recovery, reaction extraction, and visualization in `femlabpy`.
 
-## Mesh and Field Plotting
+## 1. Stress Recovery Mathematics
+
+### 1.1 Gauss point to node extrapolation
+
+For isoparametric elements, stresses are most accurate at Gauss points. To obtain nodal values, we extrapolate using the inverse of the shape function matrix evaluated at Gauss points.
+
+For a Q4 element with $2 \times 2$ Gauss integration, the Gauss point coordinates are $(\pm 1/\sqrt{3}, \pm 1/\sqrt{3})$. The extrapolation uses the shape functions evaluated at corner nodes ($\xi, \eta = \pm 1$):
+
+$$
+\boldsymbol{\sigma}^{nodal} = \mathbf{E} \boldsymbol{\sigma}^{GP}
+$$
+
+where $\mathbf{E}$ is the $4 \times 4$ extrapolation matrix:
+
+$$
+E_{ij} = N_i(\xi_j^{GP}, \eta_j^{GP})
+$$
+
+evaluated with corner shape functions at Gauss point locations.
+
+### 1.2 Nodal averaging
+
+When multiple elements share a node, the extrapolated values are averaged:
+
+$$
+\sigma_i^{avg} = \frac{\sum_{e \in \text{elements at } i} \sigma_i^{(e)}}{n_{\text{elements at } i}}
+$$
+
+This smoothing reduces discontinuities between elements.
+
+### 1.3 Stress components
+
+The Voigt notation stress vector contains:
+
+**2D (plane stress/strain):**
+$$
+\boldsymbol{\sigma} = [\sigma_{xx}, \sigma_{yy}, \sigma_{xy}]^T
+$$
+
+**3D:**
+$$
+\boldsymbol{\sigma} = [\sigma_{xx}, \sigma_{yy}, \sigma_{zz}, \sigma_{xy}, \sigma_{yz}, \sigma_{zx}]^T
+$$
+
+---
+
+## 2. Reaction Forces
+
+### 2.1 Theory
+
+At constrained DOFs, the reaction force equals the internal force:
+
+$$
+R_i = F_i^{int} = \sum_e \int_{\Omega^e} \mathbf{B}^T \boldsymbol{\sigma} \, dV \bigg|_{\text{DOF } i}
+$$
+
+For equilibrium: $\mathbf{R} + \mathbf{F}^{ext} = \mathbf{F}^{int}$
+
+At free DOFs: $R_i = 0$ (by definition)
+
+At constrained DOFs: $R_i = F_i^{int} - F_i^{ext}$
+
+### 2.2 Implementation
+
+The `reaction()` function extracts reactions from the assembled internal force vector:
+
+```python
+R = fp.reaction(q, C, dof)
+```
+
+Returns `[node, local_dof, reaction]` for each constrained DOF.
+
+---
+
+## 3. Mesh and Field Plotting
 
 The plotting helpers in `plotting.py` work directly on the topology and
 coordinate arrays used elsewhere in the package.

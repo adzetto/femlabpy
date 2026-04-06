@@ -48,89 +48,114 @@ Dirichlet boundary conditions specify known values of the primary field variable
 
 $$ u_i = \bar{u}_i \quad \forall i \in \mathcal{C} $$
 
-The code uses a direct-elimination strategy with a scaled diagonal entry. That is close to the textbook "large spring" idea, but the implementation is more careful: before a constrained row is overwritten, its coupling terms are moved to the right-hand side so non-zero prescribed values are handled correctly.
+### Mathematical formulation
 
-The active helper is `setbc(K, p, C, dof)`. The constraint table `C` follows the same legacy layout used throughout the repository:
+Consider the partitioned system:
 
-`[node, value]` for scalar problems.
-`[node, local_dof, value]` for vector problems.
+$$
+\begin{bmatrix} \mathbf{K}_{ff} & \mathbf{K}_{fc} \\ \mathbf{K}_{cf} & \mathbf{K}_{cc} \end{bmatrix} \begin{bmatrix} \mathbf{u}_f \\ \mathbf{u}_c \end{bmatrix} = \begin{bmatrix} \mathbf{P}_f \\ \mathbf{P}_c \end{bmatrix}
+$$
 
-### How `setbc` works
+where subscript $f$ denotes free DOFs and $c$ denotes constrained DOFs with $\mathbf{u}_c = \bar{\mathbf{u}}_c$.
 
-The implementation in `src/femlabpy/boundary.py` does four things in order:
+**Condensed system:** The free DOFs satisfy:
 
-1. It computes a diagonal scale `ks` from the current stiffness matrix.
-2. It converts the 1-based node/component pairs into global DOF indices.
-3. It subtracts the coupling contribution of each constrained DOF from the global load vector.
-4. It zeros the row and column, then places `ks` on the diagonal and `ks * value` in the load vector.
+$$
+\mathbf{K}_{ff} \mathbf{u}_f = \mathbf{P}_f - \mathbf{K}_{fc} \bar{\mathbf{u}}_c
+$$
 
-```python
-    ks = 0.1 * max_abs_diagonal(K)
-    if ks == 0.0:
-        ks = 1.0
+The term $\mathbf{K}_{fc} \bar{\mathbf{u}}_c$ transfers the effect of prescribed displacements to the right-hand side.
 
-    # ... (DOF parsing omitted for brevity) ...
+**Reaction forces:** After solving for $\mathbf{u}_f$:
 
-    for k in range(len(cdofs)):
-        j = int(cdofs[k])
-        val = cvals[k]
-        # Transfer coupling forces to RHS *before* zeroing the column.
-        if val != 0.0:
-            if sparse:
-                col_j = np.asarray(K[:, j].toarray()).ravel()
-            else:
-                col_j = K[:, j].copy()
-            p[:, 0] -= col_j * val
-            
-        # Zero row and column, set diagonal spring.
-        K[j, :] = 0
-        K[:, j] = 0
-        K[j, j] = ks
-        p[j, 0] = ks * val
-```
+$$
+\mathbf{R}_c = \mathbf{K}_{cf} \mathbf{u}_f + \mathbf{K}_{cc} \bar{\mathbf{u}}_c - \mathbf{P}_c
+$$
 
-This procedure keeps the constrained value exactly visible in the modified system and avoids leaving stale coupling terms in the matrix.
+### Penalty method alternative
+
+Instead of elimination, constrained DOFs can be enforced with a large spring:
+
+$$
+K_{ii} \leftarrow K_{ii} + k_s, \quad P_i \leftarrow P_i + k_s \bar{u}_i
+$$
+
+where $k_s \gg \max(K_{ii})$. This approximately enforces $u_i \approx \bar{u}_i$.
+
+### Implementation in `setbc`
+
+The code uses a hybrid approach that maintains matrix symmetry:
+
+1. Compute scale: $k_s = 0.1 \cdot \max_i |K_{ii}|$
+2. Transfer coupling to RHS: $\mathbf{P} \leftarrow \mathbf{P} - \mathbf{K}_{:,j} \bar{u}_j$
+3. Zero row and column: $K_{j,:} = 0$, $K_{:,j} = 0$
+4. Set diagonal and load: $K_{jj} = k_s$, $P_j = k_s \bar{u}_j$
+
+This preserves symmetry and gives exact constraint enforcement.
 
 ---
 
-## 2.3 General constraints
+## 2.3 Multi-point constraints (Lagrange multipliers)
 
-Some problems need multi-point constraints instead of single-node fixities. In that case the condition has the form:
+Multi-point constraints couple multiple DOFs:
 
 $$ \mathbf{G} \mathbf{u} = \mathbf{Q} $$
 
-where $\mathbf{G}$ is the constraint matrix and $\mathbf{Q}$ is the constraint right-hand side. `femlabpy` handles this with Lagrange multipliers through `solve_lag_general`.
+where $\mathbf{G}$ is the $m \times n$ constraint matrix and $\mathbf{Q}$ is the $m \times 1$ constraint RHS.
 
-### Building the saddle-point system
+### Variational formulation
 
-The augmented system couples the unknown displacements and the multipliers:
+The constrained minimization problem:
+
+$$
+\min_{\mathbf{u}} \frac{1}{2}\mathbf{u}^T\mathbf{K}\mathbf{u} - \mathbf{u}^T\mathbf{P} \quad \text{subject to} \quad \mathbf{G}\mathbf{u} = \mathbf{Q}
+$$
+
+The Lagrangian is:
+
+$$
+\mathcal{L}(\mathbf{u}, \boldsymbol{\lambda}) = \frac{1}{2}\mathbf{u}^T\mathbf{K}\mathbf{u} - \mathbf{u}^T\mathbf{P} + \boldsymbol{\lambda}^T(\mathbf{G}\mathbf{u} - \mathbf{Q})
+$$
+
+**Stationarity conditions:**
+
+$$
+\frac{\partial \mathcal{L}}{\partial \mathbf{u}} = \mathbf{K}\mathbf{u} - \mathbf{P} + \mathbf{G}^T\boldsymbol{\lambda} = \mathbf{0}
+$$
+
+$$
+\frac{\partial \mathcal{L}}{\partial \boldsymbol{\lambda}} = \mathbf{G}\mathbf{u} - \mathbf{Q} = \mathbf{0}
+$$
+
+### Saddle-point system
+
+The KKT conditions form the saddle-point system:
 
 $$ \begin{bmatrix} \mathbf{K} & \mathbf{G}^T \\ \mathbf{G} & \mathbf{0} \end{bmatrix} \begin{bmatrix} \mathbf{u} \\ \boldsymbol{\lambda} \end{bmatrix} = \begin{bmatrix} \mathbf{P} \\ \mathbf{Q} \end{bmatrix} $$
 
-In `solve_lag_general`, the constraint rows are scaled to stay numerically compatible with the stiffness matrix. The function then builds the block matrix with `numpy.block` for dense systems, or `scipy.sparse.bmat` for sparse systems.
+**Physical interpretation of $\boldsymbol{\lambda}$:**
 
-```python
-    Gbar = scale * constraint_matrix
-    Qbar = scale * constraint_rhs
-    
-    # Building the Saddle-Point Matrix using np.block
-    Kbar = np.block(
-        [
-            [as_float_array(K), Gbar.T],
-            [
-                Gbar,
-                np.zeros(
-                    (constraint_matrix.shape[0], constraint_matrix.shape[0]),
-                    dtype=float,
-                ),
-            ],
-        ]
-    )
-```
+The Lagrange multipliers represent the constraint forces. From the first equation:
 
-The returned solution contains the physical displacement vector. If requested, the recovered multipliers are rescaled back to the original constraint units.
+$$
+\mathbf{K}\mathbf{u} = \mathbf{P} - \mathbf{G}^T\boldsymbol{\lambda}
+$$
 
-### Example: two-spring system
+The term $-\mathbf{G}^T\boldsymbol{\lambda}$ is the reaction force required to enforce the constraint.
+
+### Numerical conditioning
+
+The saddle-point matrix is indefinite. For numerical stability, `solve_lag_general` scales the constraint equations:
+
+$$
+\bar{\mathbf{G}} = s \cdot \mathbf{G}, \quad \bar{\mathbf{Q}} = s \cdot \mathbf{Q}
+$$
+
+where $s \sim 0.01 \cdot \max_i |K_{ii}|$ balances the constraint rows with the stiffness entries.
+
+After solving, the multipliers are rescaled: $\boldsymbol{\lambda} = s \cdot \bar{\boldsymbol{\lambda}}$
+
+### Example: rigid link constraint
 
 This example shows the same structure as the implementation: one equilibrium solve, one constraint equation, and one multiplier that reports the transmitted constraint force.
 
