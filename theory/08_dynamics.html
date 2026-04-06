@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Structural Dynamics and Time Integration &#8212; femlabpy 0.6.0 documentation</title>
+    <title>Structural Dynamics and Time Integration &#8212; femlabpy</title>
   
   
   
@@ -31,7 +31,7 @@
 <link href="../_static/styles/pydata-sphinx-theme.css?digest=7f76b32a3354e82990f2" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
-    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=985dfaa0" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=ba1a7e05" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../_static/scripts/fontawesome.js?digest=7f76b32a3354e82990f2"></script>
@@ -46,7 +46,7 @@
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'theory/08_dynamics';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
-    <script src="../_static/custom.js?v=35c928a7"></script>
+    <script src="../_static/custom.js?v=0184bad5"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Modal analysis and periodic boundaries" href="09_modal_periodic.html" />
@@ -119,7 +119,7 @@
   
   
   
-    <p class="title logo__title">femlabpy 0.6.0 documentation</p>
+    <p class="title logo__title">femlabpy</p>
   
 </a></div>
     
@@ -349,7 +349,7 @@
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Structural Dynamics and Time Integration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="09_modal_periodic.html">Modal analysis and periodic boundaries</a></li>
 <li class="toctree-l1"><a class="reference internal" href="10_io_mesh.html">Mesh I/O and Gmsh Import</a></li>
-<li class="toctree-l1"><a class="reference internal" href="11_nonlinear_solvers.html">Chapter 11: Nonlinear Solvers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11_nonlinear_solvers.html">Nonlinear Solvers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="12_plotting_postprocessing.html">Plotting and Postprocessing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="13_legacy_wrappers.html">Chapter 13: Legacy Wrappers</a></li>
 </ul>
@@ -425,31 +425,62 @@
 <h2>1. Mass and Damping Models<a class="headerlink" href="#mass-and-damping-models" title="Link to this heading">#</a></h2>
 <section id="mass-matrices-consistent-vs-lumped">
 <h3>1.1. Mass Matrices (Consistent vs. Lumped)<a class="headerlink" href="#mass-matrices-consistent-vs-lumped" title="Link to this heading">#</a></h3>
-<p><strong>Consistent Mass Matrix (<span class="math notranslate nohighlight">\(\mathbf{M}_c\)</span>):</strong>
-Derived using the same shape functions <span class="math notranslate nohighlight">\(\mathbf{N}(\mathbf{x})\)</span> used for the stiffness matrix. It is full (non-diagonal) and kinematically coupled:</p>
+<p><strong>Consistent Mass Matrix (<span class="math notranslate nohighlight">\(\mathbf{M}_c\)</span>):</strong></p>
+<p>The consistent mass matrix is derived from the kinetic energy expression:</p>
 <div class="math notranslate nohighlight">
 \[
-\mathbf{M}_c = \int_{\Omega^e} \rho \mathbf{N}^T \mathbf{N} \, d\Omega
+T = \frac{1}{2} \int_{\Omega} \rho \dot{\mathbf{u}}^T \dot{\mathbf{u}} \, dV
 \]</div>
-<p><strong>Lumped Mass Matrix (<span class="math notranslate nohighlight">\(\mathbf{M}_L\)</span>):</strong>
-A diagonal matrix that decouples inertial forces. It is strictly required for explicit time integration (e.g., Central Difference). Lumping is typically achieved via row-summation or the HRZ (Hinton-Rock-Zienkiewicz) scaling method:</p>
+<p>Substituting the FEM interpolation <span class="math notranslate nohighlight">\(\mathbf{u} = \mathbf{N} \mathbf{d}\)</span>:</p>
 <div class="math notranslate nohighlight">
 \[
-M_{L, ii} = \alpha \int_{\Omega^e} \rho N_i^2 \, d\Omega \quad \text{where} \quad \alpha = \frac{\int \rho \, d\Omega}{\sum \int \rho N_j^2 \, d\Omega}
+T = \frac{1}{2} \dot{\mathbf{d}}^T \underbrace{\int_{\Omega} \rho \mathbf{N}^T \mathbf{N} \, dV}_{\mathbf{M}_c} \dot{\mathbf{d}}
 \]</div>
+<p>For a T3 element, the consistent mass matrix is:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\mathbf{M}_c^{T3} = \frac{\rho A}{12} \begin{bmatrix} 2 &amp; 1 &amp; 1 \\ 1 &amp; 2 &amp; 1 \\ 1 &amp; 1 &amp; 2 \end{bmatrix} \otimes \mathbf{I}_2
+\end{split}\]</div>
+<p>For a Q4 element, numerical integration is used:</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbf{M}_c^{Q4} = \sum_{g} w_g \rho \mathbf{N}_g^T \mathbf{N}_g |\mathbf{J}_g| t
+\]</div>
+<p><strong>Lumped Mass Matrix (<span class="math notranslate nohighlight">\(\mathbf{M}_L\)</span>):</strong></p>
+<p>A diagonal approximation that decouples inertial forces. Two common methods:</p>
+<p><em>Row-sum lumping:</em>
+$<span class="math notranslate nohighlight">\(
+M_{L,ii} = \sum_j M_{c,ij}
+\)</span>$</p>
+<p><em>HRZ (Hinton-Rock-Zienkiewicz) scaling:</em>
+$<span class="math notranslate nohighlight">\(
+M_{L, ii} = \alpha \int_{\Omega^e} \rho N_i^2 \, d\Omega \quad \text{where} \quad \alpha = \frac{\int \rho \, dV}{\sum_j \int \rho N_j^2 \, dV}
+\)</span>$</p>
+<p>Lumped mass is required for explicit time integration (Central Difference).</p>
 </section>
 <section id="rayleigh-damping">
 <h3>1.2. Rayleigh Damping<a class="headerlink" href="#rayleigh-damping" title="Link to this heading">#</a></h3>
-<p>Rayleigh damping constructs the global damping matrix as a linear combination of the mass and stiffness matrices:</p>
+<p><strong>Derivation:</strong></p>
+<p>For mode <span class="math notranslate nohighlight">\(n\)</span> with natural frequency <span class="math notranslate nohighlight">\(\omega_n\)</span>, the modal damping ratio is:</p>
+<div class="math notranslate nohighlight">
+\[
+\zeta_n = \frac{\alpha}{2\omega_n} + \frac{\beta \omega_n}{2}
+\]</div>
+<p>Given target damping ratios <span class="math notranslate nohighlight">\(\zeta_1, \zeta_2\)</span> at frequencies <span class="math notranslate nohighlight">\(\omega_1, \omega_2\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{bmatrix} \frac{1}{2\omega_1} &amp; \frac{\omega_1}{2} \\ \frac{1}{2\omega_2} &amp; \frac{\omega_2}{2} \end{bmatrix} \begin{bmatrix} \alpha \\ \beta \end{bmatrix} = \begin{bmatrix} \zeta_1 \\ \zeta_2 \end{bmatrix}
+\end{split}\]</div>
+<p>Solving:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{bmatrix} \alpha \\ \beta \end{bmatrix} = \frac{2\omega_1\omega_2}{\omega_2^2 - \omega_1^2} \begin{bmatrix} \omega_2\zeta_1 - \omega_1\zeta_2 \\ \frac{\zeta_2 - \zeta_1}{\omega_1\omega_2}(\omega_2 - \omega_1) \end{bmatrix}
+\end{split}\]</div>
+<p>The global damping matrix is:</p>
 <div class="math notranslate nohighlight">
 \[
 \mathbf{C} = \alpha \mathbf{M} + \beta \mathbf{K}
 \]</div>
-<p>The coefficients <span class="math notranslate nohighlight">\(\alpha\)</span> (mass-proportional) and <span class="math notranslate nohighlight">\(\beta\)</span> (stiffness-proportional) are determined by specifying desired damping ratios <span class="math notranslate nohighlight">\(\zeta_1\)</span> and <span class="math notranslate nohighlight">\(\zeta_2\)</span> at two target natural frequencies <span class="math notranslate nohighlight">\(\omega_1\)</span> and <span class="math notranslate nohighlight">\(\omega_2\)</span>:</p>
-<div class="math notranslate nohighlight">
-\[\begin{split}
-\begin{bmatrix} \alpha \\ \beta \end{bmatrix} = \frac{2}{\omega_2^2 - \omega_1^2} \begin{bmatrix} \omega_2 &amp; -\omega_1 \\ -1/\omega_2 &amp; 1/\omega_1 \end{bmatrix} \begin{bmatrix} \omega_1 \zeta_1 \\ \omega_2 \zeta_2 \end{bmatrix}
-\end{split}\]</div>
 </section>
 </section>
 <section id="implicit-time-integration-newmark-beta-method">
@@ -526,6 +557,191 @@ M_{L, ii} = \alpha \int_{\Omega^e} \rho N_i^2 \, d\Omega \quad \text{where} \qua
 \]</div>
 <p><code class="docutils literal notranslate"><span class="pre">compute_frf()</span></code> evaluates this directly over a frequency vector to construct Bode plots (magnitude and phase vs. frequency).</p>
 </section>
+<hr class="docutils" />
+<section id="appendix-mathematical-foundations">
+<h2>Appendix: Mathematical Foundations<a class="headerlink" href="#appendix-mathematical-foundations" title="Link to this heading">#</a></h2>
+<section id="c-1-newmark-derivation-from-taylor-series">
+<h3>C.1 Newmark-β derivation from Taylor series<a class="headerlink" href="#c-1-newmark-derivation-from-taylor-series" title="Link to this heading">#</a></h3>
+<p>The Newmark method can be derived by considering Taylor series expansions and introducing a weighted average of accelerations.</p>
+<p><strong>Taylor expansion of displacement:</strong></p>
+<div class="math notranslate nohighlight">
+\[
+\mathbf{u}_{n+1} = \mathbf{u}_n + \Delta t \dot{\mathbf{u}}_n + \frac{\Delta t^2}{2} \ddot{\mathbf{u}}_n + \frac{\Delta t^3}{6} \dddot{\mathbf{u}}_n + O(\Delta t^4)
+\]</div>
+<p><strong>Newmark assumption:</strong> Replace the unknown third derivative term with a weighted average:</p>
+<div class="math notranslate nohighlight">
+\[
+\frac{\Delta t^2}{2} \ddot{\mathbf{u}}_n + \frac{\Delta t^3}{6} \dddot{\mathbf{u}}_n \approx \frac{\Delta t^2}{2} \left[ (1-2\beta)\ddot{\mathbf{u}}_n + 2\beta \ddot{\mathbf{u}}_{n+1} \right]
+\]</div>
+<p>This gives the Newmark displacement equation. The velocity equation follows similarly:</p>
+<div class="math notranslate nohighlight">
+\[
+\dot{\mathbf{u}}_{n+1} = \dot{\mathbf{u}}_n + \Delta t \ddot{\mathbf{u}}_n + \frac{\Delta t^2}{2} \dddot{\mathbf{u}}_n + O(\Delta t^3)
+\]</div>
+<p>Approximating:</p>
+<div class="math notranslate nohighlight">
+\[
+\ddot{\mathbf{u}}_n + \frac{\Delta t}{2} \dddot{\mathbf{u}}_n \approx (1-\gamma)\ddot{\mathbf{u}}_n + \gamma \ddot{\mathbf{u}}_{n+1}
+\]</div>
+</section>
+<section id="c-2-stability-analysis-via-amplification-matrix">
+<h3>C.2 Stability analysis via amplification matrix<a class="headerlink" href="#c-2-stability-analysis-via-amplification-matrix" title="Link to this heading">#</a></h3>
+<p>The stability of Newmark integration is analyzed through the amplification matrix. For a single DOF system:</p>
+<div class="math notranslate nohighlight">
+\[
+m\ddot{u} + c\dot{u} + ku = p(t)
+\]</div>
+<p>Define the state vector <span class="math notranslate nohighlight">\(\mathbf{x} = [u, \dot{u}]^T\)</span>. The recurrence relation is:</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbf{x}_{n+1} = \mathbf{A} \mathbf{x}_n + \mathbf{L} p_{n+1}
+\]</div>
+<p><strong>Spectral radius condition:</strong> For unconditional stability:</p>
+<div class="math notranslate nohighlight">
+\[
+\rho(\mathbf{A}) \leq 1 \quad \forall \, \Omega = \omega \Delta t
+\]</div>
+<p><strong>Proof for average acceleration (<span class="math notranslate nohighlight">\(\beta = 1/4\)</span>, <span class="math notranslate nohighlight">\(\gamma = 1/2\)</span>):</strong></p>
+<p>The amplification matrix for the undamped case is:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\mathbf{A} = \begin{bmatrix} 
+\frac{1 - \Omega^2/4}{1 + \Omega^2/4} &amp; \frac{\Delta t}{1 + \Omega^2/4} \\
+-\frac{\Omega^2}{\Delta t(1 + \Omega^2/4)} &amp; \frac{1 - \Omega^2/4}{1 + \Omega^2/4}
+\end{bmatrix}
+\end{split}\]</div>
+<p>The eigenvalues are:</p>
+<div class="math notranslate nohighlight">
+\[
+\lambda_{1,2} = \frac{(1 - \Omega^2/4) \pm i\Omega}{1 + \Omega^2/4}
+\]</div>
+<p>The spectral radius:</p>
+<div class="math notranslate nohighlight">
+\[
+\rho = |\lambda| = \sqrt{\frac{(1 - \Omega^2/4)^2 + \Omega^2}{(1 + \Omega^2/4)^2}} = 1
+\]</div>
+<p>for all <span class="math notranslate nohighlight">\(\Omega &gt; 0\)</span>. This proves unconditional stability with no amplitude decay. ∎</p>
+</section>
+<section id="c-3-accuracy-order-analysis">
+<h3>C.3 Accuracy order analysis<a class="headerlink" href="#c-3-accuracy-order-analysis" title="Link to this heading">#</a></h3>
+<p><strong>Local truncation error:</strong> For the Newmark displacement equation:</p>
+<div class="math notranslate nohighlight">
+\[
+\tau = \mathbf{u}(t_{n+1}) - \mathbf{u}_n - \Delta t \dot{\mathbf{u}}_n - \frac{\Delta t^2}{2}\left[(1-2\beta)\ddot{\mathbf{u}}_n + 2\beta \ddot{\mathbf{u}}_{n+1}\right]
+\]</div>
+<p>Expanding <span class="math notranslate nohighlight">\(\ddot{\mathbf{u}}_{n+1}\)</span> in Taylor series:</p>
+<div class="math notranslate nohighlight">
+\[
+\ddot{\mathbf{u}}_{n+1} = \ddot{\mathbf{u}}_n + \Delta t \dddot{\mathbf{u}}_n + O(\Delta t^2)
+\]</div>
+<p>Substituting:</p>
+<div class="math notranslate nohighlight">
+\[
+\tau = \frac{\Delta t^3}{6}\dddot{\mathbf{u}}_n - \beta \Delta t^3 \dddot{\mathbf{u}}_n + O(\Delta t^4) = \Delta t^3 \left(\frac{1}{6} - \beta\right)\dddot{\mathbf{u}}_n + O(\Delta t^4)
+\]</div>
+<p>For <span class="math notranslate nohighlight">\(\gamma = 1/2\)</span>, the method is <strong>second-order accurate</strong> regardless of <span class="math notranslate nohighlight">\(\beta\)</span>.</p>
+<p>For <span class="math notranslate nohighlight">\(\gamma \neq 1/2\)</span>, artificial damping is introduced:</p>
+<div class="math notranslate nohighlight">
+\[
+\zeta_{num} = \frac{\gamma - 1/2}{2} \omega \Delta t
+\]</div>
+</section>
+<section id="c-4-critical-time-step-for-explicit-methods">
+<h3>C.4 Critical time step for explicit methods<a class="headerlink" href="#c-4-critical-time-step-for-explicit-methods" title="Link to this heading">#</a></h3>
+<p>For the central difference method, the critical time step is:</p>
+<div class="math notranslate nohighlight">
+\[
+\Delta t_{cr} = \frac{2}{\omega_{max}}
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(\omega_{max}\)</span> is the highest natural frequency of the system.</p>
+<p><strong>Derivation:</strong> For the undamped recurrence:</p>
+<div class="math notranslate nohighlight">
+\[
+u_{n+1} = \left(2 - \Omega^2\right)u_n - u_{n-1}
+\]</div>
+<p>The characteristic equation is:</p>
+<div class="math notranslate nohighlight">
+\[
+\lambda^2 - (2 - \Omega^2)\lambda + 1 = 0
+\]</div>
+<p>For stability, we need <span class="math notranslate nohighlight">\(|\lambda| \leq 1\)</span>, which requires:</p>
+<div class="math notranslate nohighlight">
+\[
+|2 - \Omega^2| \leq 2 \implies 0 \leq \Omega^2 \leq 4 \implies \omega \Delta t \leq 2
+\]</div>
+<p>Therefore: <span class="math notranslate nohighlight">\(\Delta t \leq \frac{2}{\omega_{max}}\)</span> ∎</p>
+<p><strong>Practical estimate:</strong> For FEM meshes:</p>
+<div class="math notranslate nohighlight">
+\[
+\omega_{max} \approx \frac{2c}{h_{min}}
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(c = \sqrt{E/\rho}\)</span> is the wave speed and <span class="math notranslate nohighlight">\(h_{min}\)</span> is the smallest element dimension.</p>
+<p>Thus:</p>
+<div class="math notranslate nohighlight">
+\[
+\Delta t_{cr} \approx \frac{h_{min}}{c}
+\]</div>
+</section>
+<section id="c-5-modal-superposition">
+<h3>C.5 Modal superposition<a class="headerlink" href="#c-5-modal-superposition" title="Link to this heading">#</a></h3>
+<p>For large systems, direct integration is expensive. Modal superposition reduces the problem size.</p>
+<p><strong>Transformation:</strong> Using mass-normalized modes <span class="math notranslate nohighlight">\(\boldsymbol{\Phi}\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbf{u} = \boldsymbol{\Phi} \mathbf{q}
+\]</div>
+<p>The equations decouple:</p>
+<div class="math notranslate nohighlight">
+\[
+\ddot{q}_n + 2\zeta_n \omega_n \dot{q}_n + \omega_n^2 q_n = \phi_n^T \mathbf{p}(t)
+\]</div>
+<p>Each modal equation is a SDOF system that can be solved analytically or numerically.</p>
+<p><strong>Truncation:</strong> Only modes with <span class="math notranslate nohighlight">\(\omega_n \leq \omega_{cut}\)</span> are retained. The error is bounded by:</p>
+<div class="math notranslate nohighlight">
+\[
+\|\mathbf{u} - \mathbf{u}_{approx}\| \leq \frac{\|\mathbf{p}\|}{\omega_{cut}^2 m_{eff}}
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(m_{eff}\)</span> is the effective modal mass of neglected modes.</p>
+</section>
+<section id="c-6-energy-conservation">
+<h3>C.6 Energy conservation<a class="headerlink" href="#c-6-energy-conservation" title="Link to this heading">#</a></h3>
+<p>For conservative systems (<span class="math notranslate nohighlight">\(\mathbf{C} = 0\)</span>, <span class="math notranslate nohighlight">\(\mathbf{p} = 0\)</span>), the total energy should be preserved.</p>
+<p><strong>Definition:</strong></p>
+<div class="math notranslate nohighlight">
+\[
+E_n = \frac{1}{2}\dot{\mathbf{u}}_n^T \mathbf{M} \dot{\mathbf{u}}_n + \frac{1}{2}\mathbf{u}_n^T \mathbf{K} \mathbf{u}_n
+\]</div>
+<p><strong>Energy behavior:</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Energy</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Average acceleration</p></td>
+<td><p>Conserved exactly</p></td>
+</tr>
+<tr class="row-odd"><td><p>Linear acceleration</p></td>
+<td><p>Grows (unstable for large <span class="math notranslate nohighlight">\(\Delta t\)</span>)</p></td>
+</tr>
+<tr class="row-even"><td><p>Central difference</p></td>
+<td><p>Bounded oscillation</p></td>
+</tr>
+<tr class="row-odd"><td><p>HHT-α</p></td>
+<td><p>Dissipated (by design)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The average acceleration method satisfies:</p>
+<div class="math notranslate nohighlight">
+\[
+E_{n+1} = E_n \quad \forall n
+\]</div>
+<p>This is why it’s preferred for long-duration simulations where energy drift is unacceptable.</p>
+</section>
+</section>
 </section>
 
 
@@ -584,6 +800,15 @@ M_{L, ii} = \alpha \int_{\Omega^e} \rho N_i^2 \, d\Omega \quad \text{where} \qua
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#explicit-time-integration-central-difference-method">3. Explicit Time Integration: Central Difference Method</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dissipative-integration-hht-alpha-method">4. Dissipative Integration: HHT-<span class="math notranslate nohighlight">\(\alpha\)</span> Method</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#frequency-response-function-frf">5. Frequency Response Function (FRF)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#appendix-mathematical-foundations">Appendix: Mathematical Foundations</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#c-1-newmark-derivation-from-taylor-series">C.1 Newmark-β derivation from Taylor series</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#c-2-stability-analysis-via-amplification-matrix">C.2 Stability analysis via amplification matrix</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#c-3-accuracy-order-analysis">C.3 Accuracy order analysis</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#c-4-critical-time-step-for-explicit-methods">C.4 Critical time step for explicit methods</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#c-5-modal-superposition">C.5 Modal superposition</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#c-6-energy-conservation">C.6 Energy conservation</a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 

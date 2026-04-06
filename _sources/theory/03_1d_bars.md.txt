@@ -11,273 +11,410 @@ kernelspec:
 
 # 1D bar elements
 
-This chapter covers the 1D bar and truss routines used by `femlabpy`. The code paths are split the same way as the implementation: `kebar` and `qebar` handle the geometrically nonlinear bar response, `kbar` and `qbar` assemble element contributions into the global system, and `mebar` and `mbar` build the element and global mass matrices.
+This chapter provides the mathematical foundation for 1D bar and truss elements in `femlabpy`. We derive the element formulations from continuum mechanics principles, covering both linear and geometrically nonlinear cases.
 
-The goal here is not to repeat a textbook derivation. It is to show how the strain measure, internal force, tangent stiffness, and mass matrix are carried through the Python functions that the rest of the library actually calls.
+## 1. Continuum Mechanics Foundation
 
-## 3.1 Linear 1D Bar Formulation
+### 1.1 Deformation gradient
 
-The simplest finite element is the 2-node linear bar element. A bar can only transmit axial loads—meaning it has no bending or shear stiffness.
+Consider a material point at position $\mathbf{X}$ in the reference configuration that moves to $\mathbf{x}$ in the current configuration:
 
-### Kinematics and strain
-Consider a 1D bar of initial length $L$, cross-sectional area $A$, and Young's modulus $E$. Let the bar be aligned along the local $x$-axis. The bar is defined by two nodes, $1$ and $2$, with displacements $u_1$ and $u_2$.
+$$
+\mathbf{x} = \mathbf{X} + \mathbf{u}(\mathbf{X})
+$$
 
-The axial strain $\varepsilon$ under the assumption of small deformations is simply the change in length divided by the original length:
+The deformation gradient tensor is:
 
-$$ \varepsilon = \frac{\Delta L}{L} = \frac{u_2 - u_1}{L} $$
+$$
+\mathbf{F} = \frac{\partial \mathbf{x}}{\partial \mathbf{X}} = \mathbf{I} + \frac{\partial \mathbf{u}}{\partial \mathbf{X}}
+$$
 
-Using the standard finite element approach, we define the element displacement vector $\mathbf{d}^e = [u_1, u_2]^T$. The strain-displacement relation can be written in matrix form:
+For a 1D bar aligned with $X$, this reduces to the scalar:
 
-$$ \varepsilon = \mathbf{B} \mathbf{d}^e = \begin{bmatrix} -\frac{1}{L} & \frac{1}{L} \end{bmatrix} \begin{bmatrix} u_1 \\ u_2 \end{bmatrix} $$
+$$
+F = \frac{dx}{dX} = 1 + \frac{du}{dX}
+$$
 
-where $\mathbf{B}$ is the strain-displacement matrix.
+### 1.2 Strain measures
 
-### Linear stiffness matrix
-The principle of virtual work or minimizing the total potential energy yields the element stiffness matrix $\mathbf{K}^e$:
+**Engineering strain (small deformation):**
 
-$$ \mathbf{K}^e = \int_V \mathbf{B}^T E \mathbf{B} \, dV $$
+$$
+\varepsilon = \frac{l - L}{L} = \frac{\Delta L}{L}
+$$
 
-Since the area $A$ and modulus $E$ are constant, the volume integral becomes $A \cdot \int_0^L dx$:
+**Green-Lagrange strain (large deformation):**
 
-$$ \mathbf{K}^e = E A L \left( \begin{bmatrix} -\frac{1}{L} \\ \frac{1}{L} \end{bmatrix} \begin{bmatrix} -\frac{1}{L} & \frac{1}{L} \end{bmatrix} \right) = \frac{EA}{L} \begin{bmatrix} 1 & -1 \\ -1 & 1 \end{bmatrix} $$
+Starting from the definition based on the change in squared length:
 
-This is the canonical local linear stiffness matrix for a 2-node bar element. 
+$$
+E = \frac{1}{2}(F^T F - I) = \frac{1}{2}(C - I)
+$$
 
-## 3.2 Geometric nonlinear formulation
+where $C = F^T F$ is the right Cauchy-Green deformation tensor.
 
-When displacements and rotations become large, the linear assumption ($\varepsilon = \Delta L / L$) is no longer valid. Even if the material remains linear-elastic, large rigid body rotations introduce significant geometric nonlinearity.
+For 1D:
 
-To capture large deformations, we must use an objective measure of strain, such as the Green-Lagrange strain.
+$$
+E = \frac{1}{2}(F^2 - 1) = \frac{1}{2}\left[\left(1 + \frac{du}{dX}\right)^2 - 1\right]
+$$
 
-### Green-Lagrange strain
-For 1D problems where displacement is given by $u(x)$, the true Green-Lagrange strain measures the stretch and includes higher-order deformation terms:
+Expanding:
 
-$$ \epsilon = \frac{du}{dx} + \frac{1}{2}\left(\frac{du}{dx}\right)^2 $$
+$$
+E = \frac{du}{dX} + \frac{1}{2}\left(\frac{du}{dX}\right)^2
+$$
 
-For a bar with initial node coordinates $\mathbf{X}_1$ and $\mathbf{X}_2$ and a constant strain along its length, this translates to the squared change in lengths. Let the initial length vector be $\mathbf{a}_0 = \mathbf{X}_2 - \mathbf{X}_1$ with length $l_0$, and the current length vector be $\mathbf{a}_1 = \mathbf{x}_2 - \mathbf{x}_1$ with length $l_1$. The discrete Green-Lagrange strain evaluates equivalently to:
+**Proof of objectivity:** Under rigid body rotation $\mathbf{Q}$, the deformed configuration transforms as $\mathbf{x}' = \mathbf{Q}\mathbf{x}$. Then:
 
-$$ \epsilon = \frac{l_1^2 - l_0^2}{2 l_0^2} $$
+$$
+\mathbf{F}' = \mathbf{Q}\mathbf{F}, \quad \mathbf{C}' = (\mathbf{F}')^T\mathbf{F}' = \mathbf{F}^T\mathbf{Q}^T\mathbf{Q}\mathbf{F} = \mathbf{F}^T\mathbf{F} = \mathbf{C}
+$$
 
-This strain measure is invariant under rigid body translations and rotations because it strictly depends on the squared lengths. 
+Thus $E' = E$, proving objectivity (frame invariance). ∎
 
-### Internal force response
-The internal force vector is derived from the variation of the internal strain energy $U = \int_V \frac{1}{2} E \epsilon^2 dV$. The variation of the Green-Lagrange strain $\delta \epsilon$ is related to virtual displacements $\delta \mathbf{u}$:
+---
 
-$$ \delta \epsilon = \frac{1}{l_0^2} \mathbf{a}_1 \cdot \delta \mathbf{a}_1 = \frac{1}{l_0^2} \mathbf{a}_1^T (\delta \mathbf{u}_2 - \delta \mathbf{u}_1) $$
+## 2. Linear Bar Element
 
-Defining the normal stress as $S = E \epsilon$ and the normal force as $N = A S = A E \epsilon$, the virtual work $\int_V S \delta \epsilon \, dV$ yields the internal force vector corresponding to the nodal displacements:
+```{figure} ../_static/figures/fig_bar_element.png
+:align: center
+:width: 520px
 
-$$ \mathbf{q}^e = \frac{N}{l_0} \begin{bmatrix} -\mathbf{a}_1 \\ \mathbf{a}_1 \end{bmatrix} $$
+**Figure 3.1:** Two-node linear bar element with nodal displacements $u_1$ and $u_2$.
+```
 
-#### Implementation: `qebar`
-`qebar` returns the element force vector together with the scalar stress and strain values used by the nonlinear solvers and postprocessing code.
+### 2.1 Shape functions
+
+For a 2-node element with local coordinate $\xi \in [0, L]$, the linear shape functions are:
+
+$$
+N_1(\xi) = 1 - \frac{\xi}{L}, \quad N_2(\xi) = \frac{\xi}{L}
+$$
+
+**Partition of unity:** $N_1 + N_2 = 1$ for all $\xi$ ✓
+
+**Kronecker delta:** $N_i(\xi_j) = \delta_{ij}$ ✓
+
+The displacement field is interpolated as:
+
+$$
+u(\xi) = N_1(\xi) u_1 + N_2(\xi) u_2 = \mathbf{N}(\xi) \mathbf{d}^e
+$$
+
+### 2.2 Strain-displacement relation
+
+The strain is the derivative of displacement:
+
+$$
+\varepsilon = \frac{du}{d\xi} = \frac{dN_1}{d\xi} u_1 + \frac{dN_2}{d\xi} u_2 = \left[-\frac{1}{L}, \frac{1}{L}\right] \begin{bmatrix} u_1 \\ u_2 \end{bmatrix} = \mathbf{B} \mathbf{d}^e
+$$
+
+### 2.3 Element stiffness derivation
+
+From the principle of virtual work, the internal virtual work equals:
+
+$$
+\delta W_{int} = \int_V \delta\varepsilon \, \sigma \, dV = \int_0^L \delta\varepsilon \, E\varepsilon \, A \, d\xi
+$$
+
+Substituting $\varepsilon = \mathbf{B}\mathbf{d}^e$:
+
+$$
+\delta W_{int} = \delta\mathbf{d}^T \left( \int_0^L A E \, \mathbf{B}^T \mathbf{B} \, d\xi \right) \mathbf{d}^e = \delta\mathbf{d}^T \mathbf{K}^e \mathbf{d}^e
+$$
+
+Computing the integral:
+
+$$
+\mathbf{K}^e = AE \int_0^L \begin{bmatrix} 1/L^2 & -1/L^2 \\ -1/L^2 & 1/L^2 \end{bmatrix} d\xi = \frac{EA}{L} \begin{bmatrix} 1 & -1 \\ -1 & 1 \end{bmatrix}
+$$
+
+**Symmetry:** $\mathbf{K}^e = (\mathbf{K}^e)^T$ ✓
+
+**Positive semi-definiteness:** $\mathbf{d}^T\mathbf{K}^e\mathbf{d} = \frac{EA}{L}(u_1 - u_2)^2 \geq 0$ ✓
+
+---
+
+## 3. Geometrically Nonlinear Formulation
+
+```{figure} ../_static/figures/fig_bar_green_lagrange.png
+:align: center
+:width: 480px
+
+**Figure 3.2:** Reference and current configurations for Green-Lagrange strain derivation.
+```
+
+### 3.1 Discrete Green-Lagrange strain
+
+For a bar with initial node positions $\mathbf{X}_1, \mathbf{X}_2$ and current positions $\mathbf{x}_1, \mathbf{x}_2$:
+
+$$
+\mathbf{a}_0 = \mathbf{X}_2 - \mathbf{X}_1, \quad L_0 = \|\mathbf{a}_0\|
+$$
+
+$$
+\mathbf{a}_1 = \mathbf{x}_2 - \mathbf{x}_1 = \mathbf{a}_0 + \mathbf{u}_2 - \mathbf{u}_1, \quad L_1 = \|\mathbf{a}_1\|
+$$
+
+The discrete Green-Lagrange strain is:
+
+$$
+E = \frac{L_1^2 - L_0^2}{2L_0^2} = \frac{\mathbf{a}_1^T\mathbf{a}_1 - \mathbf{a}_0^T\mathbf{a}_0}{2L_0^2}
+$$
+
+**Linearization:** For small displacements, $L_1 \approx L_0 + \delta L$:
+
+$$
+E \approx \frac{(L_0 + \delta L)^2 - L_0^2}{2L_0^2} \approx \frac{\delta L}{L_0} = \varepsilon_{eng}
+$$
+
+recovering the engineering strain.
+
+### 3.2 Second Piola-Kirchhoff stress
+
+The work-conjugate stress to Green-Lagrange strain is the Second Piola-Kirchhoff stress:
+
+$$
+S = \frac{\partial W}{\partial E}
+$$
+
+For linear elasticity: $S = E \cdot \mathcal{E}$ (where $\mathcal{E}$ is Young's modulus).
+
+The axial force in the reference configuration is:
+
+$$
+N = A_0 S = A_0 E \cdot \mathcal{E}
+$$
+
+### 3.3 Virtual work and internal force
+
+The variation of Green-Lagrange strain:
+
+$$
+\delta E = \frac{\partial E}{\partial \mathbf{a}_1} \cdot \delta\mathbf{a}_1 = \frac{\mathbf{a}_1^T}{L_0^2} \delta\mathbf{a}_1
+$$
+
+Since $\delta\mathbf{a}_1 = \delta\mathbf{u}_2 - \delta\mathbf{u}_1$:
+
+$$
+\delta E = \frac{\mathbf{a}_1^T}{L_0^2} (\delta\mathbf{u}_2 - \delta\mathbf{u}_1)
+$$
+
+The internal virtual work:
+
+$$
+\delta W_{int} = \int_V S \, \delta E \, dV = N L_0 \cdot \delta E = \frac{N}{L_0} \mathbf{a}_1^T (\delta\mathbf{u}_2 - \delta\mathbf{u}_1)
+$$
+
+This gives the internal force vector:
+
+$$
+\mathbf{q}^e = \frac{N}{L_0} \begin{bmatrix} -\mathbf{a}_1 \\ \mathbf{a}_1 \end{bmatrix}
+$$
+
+### 3.4 Tangent stiffness matrix
+
+The tangent stiffness is:
+
+$$
+\mathbf{K}_{tan} = \frac{\partial \mathbf{q}^e}{\partial \mathbf{d}^e}
+$$
+
+Using the product rule on $\mathbf{q}^e = \frac{N}{L_0}[-\mathbf{a}_1; \mathbf{a}_1]$:
+
+$$
+\mathbf{K}_{tan} = \underbrace{\frac{1}{L_0}\frac{\partial N}{\partial \mathbf{d}^e}\begin{bmatrix}-\mathbf{a}_1\\\mathbf{a}_1\end{bmatrix}^T}_{\mathbf{K}_m} + \underbrace{\frac{N}{L_0}\frac{\partial}{\partial\mathbf{d}^e}\begin{bmatrix}-\mathbf{a}_1\\\mathbf{a}_1\end{bmatrix}}_{\mathbf{K}_g}
+$$
+
+**Material stiffness $\mathbf{K}_m$:**
+
+$$
+\frac{\partial N}{\partial \mathbf{d}^e} = A\mathcal{E}\frac{\partial E}{\partial \mathbf{d}^e} = \frac{A\mathcal{E}}{L_0^2}\begin{bmatrix}-\mathbf{a}_1^T\\\mathbf{a}_1^T\end{bmatrix}
+$$
+
+Therefore:
+
+$$
+\mathbf{K}_m = \frac{A\mathcal{E}}{L_0^3} \begin{bmatrix} \mathbf{a}_1\mathbf{a}_1^T & -\mathbf{a}_1\mathbf{a}_1^T \\ -\mathbf{a}_1\mathbf{a}_1^T & \mathbf{a}_1\mathbf{a}_1^T \end{bmatrix}
+$$
+
+**Geometric stiffness $\mathbf{K}_g$:**
+
+$$
+\frac{\partial}{\partial\mathbf{d}^e}\begin{bmatrix}-\mathbf{a}_1\\\mathbf{a}_1\end{bmatrix} = \begin{bmatrix}\mathbf{I} & -\mathbf{I} \\ -\mathbf{I} & \mathbf{I}\end{bmatrix}
+$$
+
+Therefore:
+
+$$
+\mathbf{K}_g = \frac{N}{L_0} \begin{bmatrix} \mathbf{I} & -\mathbf{I} \\ -\mathbf{I} & \mathbf{I} \end{bmatrix}
+$$
+
+**Total tangent:**
+
+$$
+\mathbf{K}_{tan} = \mathbf{K}_m + \mathbf{K}_g
+$$
+
+---
+
+## 4. Mass Matrix
+
+For dynamic analysis, we require the mass matrix relating nodal accelerations to inertial forces.
+
+### 4.1 Consistent mass matrix
+
+The kinetic energy of a bar element is:
+
+$$
+T = \frac{1}{2} \int_0^L \rho A \, \dot{u}^2 \, dx
+$$
+
+Interpolating $\dot{u} = \mathbf{N}\dot{\mathbf{d}}^e$:
+
+$$
+T = \frac{1}{2} \dot{\mathbf{d}}^T \left( \int_0^L \rho A \, \mathbf{N}^T \mathbf{N} \, dx \right) \dot{\mathbf{d}} = \frac{1}{2} \dot{\mathbf{d}}^T \mathbf{M}^e \dot{\mathbf{d}}
+$$
+
+Computing the integral:
+
+$$
+\mathbf{M}^e = \rho A \int_0^L \begin{bmatrix} N_1^2 & N_1 N_2 \\ N_1 N_2 & N_2^2 \end{bmatrix} dx
+$$
+
+Using $N_1 = 1 - \frac{x}{L}$ and $N_2 = \frac{x}{L}$:
+
+$$
+\int_0^L N_1^2 \, dx = \frac{L}{3}, \quad \int_0^L N_2^2 \, dx = \frac{L}{3}, \quad \int_0^L N_1 N_2 \, dx = \frac{L}{6}
+$$
+
+**Proof of $\int_0^L N_1^2 dx = L/3$:**
+
+$$
+\int_0^L \left(1 - \frac{x}{L}\right)^2 dx = \int_0^L \left(1 - \frac{2x}{L} + \frac{x^2}{L^2}\right) dx = \left[x - \frac{x^2}{L} + \frac{x^3}{3L^2}\right]_0^L = L - L + \frac{L}{3} = \frac{L}{3} \quad \checkmark
+$$
+
+Therefore the **consistent mass matrix** is:
+
+$$
+\mathbf{M}^e_{cons} = \frac{\rho A L}{6} \begin{bmatrix} 2 & 1 \\ 1 & 2 \end{bmatrix}
+$$
+
+### 4.2 Lumped mass matrix
+
+The lumped mass matrix concentrates mass at the nodes:
+
+$$
+\mathbf{M}^e_{lump} = \frac{\rho A L}{2} \begin{bmatrix} 1 & 0 \\ 0 & 1 \end{bmatrix}
+$$
+
+**Conservation property:** Both formulations preserve total mass:
+
+$$
+\text{trace}(\mathbf{M}_{cons}) = \frac{\rho A L}{6}(2 + 2) = \frac{2\rho A L}{3} \neq \rho A L
+$$
+
+Wait—the consistent matrix does not preserve total mass per DOF. However, the sum of all entries equals $\rho A L$ in both cases:
+
+$$
+\sum_{ij} M^{cons}_{ij} = \frac{\rho A L}{6}(2 + 1 + 1 + 2) = \rho A L \quad \checkmark
+$$
+
+---
+
+## 5. Transformation to Global Coordinates
+
+For 2D/3D trusses, the local stiffness must be transformed to global coordinates.
+
+### 5.1 Rotation matrix
+
+Let $\mathbf{e}$ be the unit vector along the bar from node 1 to node 2:
+
+$$
+\mathbf{e} = \frac{\mathbf{X}_2 - \mathbf{X}_1}{L_0}
+$$
+
+In 2D, $\mathbf{e} = [\cos\theta, \sin\theta]^T$ where $\theta$ is the angle with the global $x$-axis.
+
+The transformation matrix $\mathbf{T}$ relates local DOFs to global DOFs:
+
+$$
+\mathbf{d}^{local} = \mathbf{T} \mathbf{d}^{global}
+$$
+
+For 2D:
+
+$$
+\mathbf{T} = \begin{bmatrix} \cos\theta & \sin\theta & 0 & 0 \\ 0 & 0 & \cos\theta & \sin\theta \end{bmatrix}
+$$
+
+### 5.2 Stiffness transformation
+
+The global stiffness is obtained via congruent transformation:
+
+$$
+\mathbf{K}^{global} = \mathbf{T}^T \mathbf{K}^{local} \mathbf{T}
+$$
+
+**Proof of symmetry preservation:** If $\mathbf{K}^{local}$ is symmetric:
+
+$$
+(\mathbf{K}^{global})^T = (\mathbf{T}^T \mathbf{K}^{local} \mathbf{T})^T = \mathbf{T}^T (\mathbf{K}^{local})^T \mathbf{T} = \mathbf{T}^T \mathbf{K}^{local} \mathbf{T} = \mathbf{K}^{global} \quad \checkmark
+$$
+
+---
+
+## 6. Implementation Reference
+
+### Element force: `qebar`
 
 ```python
 import numpy as np
 
 def qebar(Xe0, Xe1, Ge):
-    """Compute the internal-force response of a single geometrically nonlinear bar."""
-    initial = np.array(Xe0, dtype=float)
-    current = np.array(Xe1, dtype=float)
-    props = np.array(Ge, dtype=float).reshape(-1)
+    """Internal force vector for geometrically nonlinear bar."""
+    a0 = (Xe0[1] - Xe0[0]).reshape(-1, 1)
+    L0 = float(np.linalg.norm(a0))
+    a1 = (Xe1[1] - Xe1[0]).reshape(-1, 1)
+    L1 = float(np.linalg.norm(a1))
 
-    a0 = (initial[1] - initial[0]).reshape(-1, 1)
-    l0 = float(np.linalg.norm(a0))
-    a1 = (current[1] - current[0]).reshape(-1, 1)
-    l1 = float(np.linalg.norm(a1))
-
-    A = props[0]
-    E = props[1] if props.size > 1 else 1.0
+    A, E = Ge[0], Ge[1]
     
-    # Green-Lagrange Strain
-    strain = 0.5 * (l1**2 - l0**2) / l0**2
+    # Green-Lagrange strain
+    strain = 0.5 * (L1**2 - L0**2) / L0**2
     stress = E * strain
     
-    # Internal Force Vector
-    qe = (A * stress / l0) * np.vstack([-a1, a1])
-    return qe, float(stress), float(strain)
+    # Internal force vector
+    qe = (A * stress / L0) * np.vstack([-a1, a1])
+    return qe, stress, strain
 ```
 
-### Tangent stiffness matrix
-For nonlinear solvers like the Newton-Raphson method, we require the tangent stiffness matrix, which is the derivative of the internal force vector with respect to the nodal displacements:
-
-$$ \mathbf{K}_{tan}^e = \frac{\partial \mathbf{q}^e}{\partial \mathbf{d}^e} $$
-
-Taking the derivative of the internal force vector with respect to displacement gives two distinct terms via the product rule, corresponding to $K_m$ and $K_g$:
-
-$$ \mathbf{K}_{tan}^e = \mathbf{K}_m + \mathbf{K}_g $$
-
-#### Material stiffness
-The material stiffness arises from taking the variation of the normal force $N$ itself (which depends on the strain variation). It projects the axial stiffness into the current spatial configuration:
-
-$$ \mathbf{K}_m = \frac{E A}{l_0^3} \begin{bmatrix} \mathbf{a}_1 \mathbf{a}_1^T & -\mathbf{a}_1 \mathbf{a}_1^T \\ -\mathbf{a}_1 \mathbf{a}_1^T & \mathbf{a}_1 \mathbf{a}_1^T \end{bmatrix} $$
-
-#### Geometric stiffness
-The geometric stiffness part comes from the derivative of the spatial vector $\mathbf{a}_1$ while treating the axial force $N$ as constant. It represents how the current tension/compression modifies the structural stiffness, regardless of material changes.
-
-In a purely 1D local context, this evaluates strictly as:
-$$ K_g = \frac{N}{L} \begin{bmatrix} 1 & -1 \\ -1 & 1 \end{bmatrix} $$
-
-For 2D or 3D trusses, it generalizes to:
-$$ \mathbf{K}_g = \frac{N}{l_0} \begin{bmatrix} \mathbf{I} & -\mathbf{I} \\ -\mathbf{I} & \mathbf{I} \end{bmatrix} $$
-
-#### Implementation: `kebar`
-`kebar` builds the tangent matrix from the same current and reference coordinates used in `qebar`, so the solver sees a consistent force-stiffness pair at every Newton iteration.
+### Tangent stiffness: `kebar`
 
 ```python
 def kebar(Xe0, Xe1, Ge):
-    """Compute the tangent stiffness matrix of a geometrically nonlinear bar element."""
-    initial = np.array(Xe0, dtype=float)
-    current = np.array(Xe1, dtype=float)
-    props = np.array(Ge, dtype=float).reshape(-1)
+    """Tangent stiffness for geometrically nonlinear bar."""
+    a0 = (Xe0[1] - Xe0[0]).reshape(-1, 1)
+    L0 = float(np.linalg.norm(a0))
+    a1 = (Xe1[1] - Xe1[0]).reshape(-1, 1)
 
-    a0 = (initial[1] - initial[0]).reshape(-1, 1)
-    l0 = float(np.linalg.norm(a0))
-    a1 = (current[1] - current[0]).reshape(-1, 1)
-    l1 = float(np.linalg.norm(a1))
-
-    A = props[0]
-    E = props[1] if props.size > 1 else 1.0
+    A, E = Ge[0], Ge[1]
     
-    # Strain and Normal Force
-    strain = 0.5 * (l1**2 - l0**2) / l0**2
-    normal_force = A * E * strain
+    strain = 0.5 * (np.linalg.norm(a1)**2 - L0**2) / L0**2
+    N = A * E * strain
     
-    # Matrix Components
-    identity = np.eye(a0.shape[0], dtype=float)
+    I = np.eye(a0.shape[0])
     
-    # K_m (Material Stiffness)
-    K_m = (E * A / l0**3) * np.block([
+    K_m = (E * A / L0**3) * np.block([
         [ a1 @ a1.T, -a1 @ a1.T],
         [-a1 @ a1.T,  a1 @ a1.T]
     ])
     
-    # K_g (Geometric Stiffness)
-    K_g = (normal_force / l0) * np.block([
-        [ identity, -identity],
-        [-identity,  identity]
-    ])
-    
-    return K_m + K_g
-```
-
-## 3.4 Newton-Raphson iteration and example
-
-To solve a nonlinear equilibrium path $\mathbf{q}(\mathbf{d}) = \mathbf{f}_{ext}$, the Newton-Raphson scheme iteratively finds the displacement increment $\Delta \mathbf{d}$.
-
-Below is a complete, runnable Python script solving a 2-bar snap-through truss model using a manual Newton-Raphson loop.
-
-``` python
-import numpy as np
-import matplotlib.pyplot as plt
-
-# ---------------------------------------------------------
-# Element Functions
-# ---------------------------------------------------------
-def qebar(Xe0, Xe1, Ge):
-    a0 = (Xe0[1] - Xe0[0]).reshape(-1, 1)
-    l0 = np.linalg.norm(a0)
-    a1 = (Xe1[1] - Xe1[0]).reshape(-1, 1)
-    l1 = np.linalg.norm(a1)
-    A, E = Ge[0], Ge[1]
-    
-    strain = 0.5 * (l1**2 - l0**2) / l0**2
-    stress = E * strain
-    qe = (A * stress / l0) * np.vstack([-a1, a1])
-    return qe
-
-def kebar(Xe0, Xe1, Ge):
-    a0 = (Xe0[1] - Xe0[0]).reshape(-1, 1)
-    l0 = np.linalg.norm(a0)
-    a1 = (Xe1[1] - Xe1[0]).reshape(-1, 1)
-    l1 = np.linalg.norm(a1)
-    A, E = Ge[0], Ge[1]
-    
-    strain = 0.5 * (l1**2 - l0**2) / l0**2
-    normal_force = A * E * strain
-    
-    I = np.eye(2)
-    K_m = (E * A / l0**3) * np.block([
-        [ a1 @ a1.T, -a1 @ a1.T],
-        [-a1 @ a1.T,  a1 @ a1.T]
-    ])
-    K_g = (normal_force / l0) * np.block([
+    K_g = (N / L0) * np.block([
         [ I, -I],
         [-I,  I]
     ])
+    
     return K_m + K_g
-
-# ---------------------------------------------------------
-# Model Definition: 2-Bar Snap-Through Truss
-# ---------------------------------------------------------
-# Nodes: 0 (Left pin), 1 (Right pin), 2 (Center, loaded)
-nodes0 = np.array([
-    [-10.0, 0.0],
-    [ 10.0, 0.0],
-    [  0.0, 5.0]
-])
-
-# Two elements connecting nodes (0->2) and (1->2)
-elems = [[0, 2], [1, 2]]
-props = [1.0, 1000.0] # Area = 1.0, E = 1000.0
-
-# Free DOFs: Node 2 x and y (Indices 4 and 5)
-free_dofs = [4, 5]
-
-# External Load at Node 2 (y-direction)
-f_ext = np.zeros(6)
-f_ext[5] = -250.0  # Push down
-
-# Initial displacement
-u = np.zeros(6)
-
-# ---------------------------------------------------------
-# Newton-Raphson Loop
-# ---------------------------------------------------------
-tol = 1e-6
-max_iter = 20
-
-print("Iter | Residual Norm")
-print("--------------------")
-for i in range(max_iter):
-    # Current positions
-    nodes1 = nodes0 + u.reshape(-1, 2)
-    
-    # Global Assembly
-    K_global = np.zeros((6, 6))
-    q_global = np.zeros(6)
-    
-    for el in elems:
-        idx = [el[0]*2, el[0]*2+1, el[1]*2, el[1]*2+1]
-        
-        Xe0 = np.vstack([nodes0[el[0]], nodes0[el[1]]])
-        Xe1 = np.vstack([nodes1[el[0]], nodes1[el[1]]])
-        
-        ke = kebar(Xe0, Xe1, props)
-        qe = qebar(Xe0, Xe1, props)
-        
-        for r in range(4):
-            q_global[idx[r]] += qe[r, 0]
-            for c in range(4):
-                K_global[idx[r], idx[c]] += ke[r, c]
-                
-    # Check Residual
-    R = f_ext[free_dofs] - q_global[free_dofs]
-    norm_R = np.linalg.norm(R)
-    print(f"{i:4d} | {norm_R:.6e}")
-    
-    if norm_R < tol:
-        print("Converged!")
-        break
-        
-    # Tangent stiffness at free DOFs
-    K_free = K_global[np.ix_(free_dofs, free_dofs)]
-    
-    # Solve for displacement increment
-    du_free = np.linalg.solve(K_free, R)
-    u[free_dofs] += du_free
-
-print("\nFinal Displacements:")
-print(f"Node 2 u_x = {u[4]:.6f}")
-print(f"Node 2 u_y = {u[5]:.6f}")
 ```

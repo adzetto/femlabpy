@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Chapter 11: Nonlinear Solvers &#8212; femlabpy 0.6.0 documentation</title>
+    <title>Nonlinear Solvers &#8212; femlabpy</title>
   
   
   
@@ -31,7 +31,7 @@
 <link href="../_static/styles/pydata-sphinx-theme.css?digest=7f76b32a3354e82990f2" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
-    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=985dfaa0" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=ba1a7e05" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../_static/scripts/fontawesome.js?digest=7f76b32a3354e82990f2"></script>
@@ -42,9 +42,11 @@
     <script src="../_static/documentation_options.js?v=8fa8b3e9"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'theory/11_nonlinear_solvers';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
-    <script src="../_static/custom.js?v=35c928a7"></script>
+    <script src="../_static/custom.js?v=0184bad5"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Plotting and Postprocessing" href="12_plotting_postprocessing.html" />
@@ -117,7 +119,7 @@
   
   
   
-    <p class="title logo__title">femlabpy 0.6.0 documentation</p>
+    <p class="title logo__title">femlabpy</p>
   
 </a></div>
     
@@ -347,7 +349,7 @@
 <li class="toctree-l1"><a class="reference internal" href="08_dynamics.html">Structural Dynamics and Time Integration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="09_modal_periodic.html">Modal analysis and periodic boundaries</a></li>
 <li class="toctree-l1"><a class="reference internal" href="10_io_mesh.html">Mesh I/O and Gmsh Import</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Chapter 11: Nonlinear Solvers</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Nonlinear Solvers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="12_plotting_postprocessing.html">Plotting and Postprocessing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="13_legacy_wrappers.html">Chapter 13: Legacy Wrappers</a></li>
 </ul>
@@ -393,7 +395,7 @@
     
     <li class="breadcrumb-item"><a href="index.html" class="nav-link">Theory and Reference Manual</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Chapter 11: Nonlinear Solvers</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Nonlinear Solvers</span></li>
   </ul>
 </nav>
 </div>
@@ -410,125 +412,361 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="chapter-11-nonlinear-solvers">
-<h1>Chapter 11: Nonlinear Solvers<a class="headerlink" href="#chapter-11-nonlinear-solvers" title="Link to this heading">#</a></h1>
-<p>This chapter covers the two nonlinear control flows implemented in the codebase:
-the orthogonal-residual load-stepping path for nonlinear bars and the Newton
-style elastoplastic solve for Q4 elements. Both routines are legacy-compatible
-wrappers around the actual element kernels and constraint helpers.</p>
-<section id="orthogonal-residual-solver">
-<h2>Orthogonal Residual Solver<a class="headerlink" href="#orthogonal-residual-solver" title="Link to this heading">#</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">solve_nlbar(X,</span> <span class="pre">T,</span> <span class="pre">G,</span> <span class="pre">C,</span> <span class="pre">P,</span> <span class="pre">...)</span></code> reproduces the nonlinear bar workflow used by
-the old FemLab classroom examples. The function is not a generic arc-length
-framework. It is a concrete solver with a specific data flow:</p>
+  <section class="tex2jax_ignore mathjax_ignore" id="nonlinear-solvers">
+<h1>Nonlinear Solvers<a class="headerlink" href="#nonlinear-solvers" title="Link to this heading">#</a></h1>
+<p>This chapter derives the mathematical foundations for nonlinear finite element analysis: Newton-Raphson iteration and arc-length methods. We then connect these to the <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> implementation.</p>
+<section id="the-nonlinear-problem">
+<h2>1. The Nonlinear Problem<a class="headerlink" href="#the-nonlinear-problem" title="Link to this heading">#</a></h2>
+<section id="equilibrium-equation">
+<h3>1.1 Equilibrium equation<a class="headerlink" href="#equilibrium-equation" title="Link to this heading">#</a></h3>
+<p>For a structure under load, equilibrium requires:</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbf{R}(\mathbf{u}) = \mathbf{F}^{ext} - \mathbf{F}^{int}(\mathbf{u}) = \mathbf{0}
+\]</div>
+<p>where:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\mathbf{u}\)</span> is the displacement vector</p></li>
+<li><p><span class="math notranslate nohighlight">\(\mathbf{F}^{ext}\)</span> is the external load vector</p></li>
+<li><p><span class="math notranslate nohighlight">\(\mathbf{F}^{int}(\mathbf{u})\)</span> is the internal force vector</p></li>
+<li><p><span class="math notranslate nohighlight">\(\mathbf{R}\)</span> is the residual (out-of-balance) force</p></li>
+</ul>
+<p>Nonlinearity arises from:</p>
+<ul class="simple">
+<li><p><strong>Material nonlinearity</strong>: <span class="math notranslate nohighlight">\(\boldsymbol{\sigma} = \boldsymbol{\sigma}(\boldsymbol{\varepsilon})\)</span> is nonlinear (plasticity, hyperelasticity)</p></li>
+<li><p><strong>Geometric nonlinearity</strong>: strain-displacement relation is nonlinear (large deformations)</p></li>
+</ul>
+</section>
+<section id="linearization">
+<h3>1.2 Linearization<a class="headerlink" href="#linearization" title="Link to this heading">#</a></h3>
+<p>The residual at <span class="math notranslate nohighlight">\(\mathbf{u} + \Delta\mathbf{u}\)</span> is approximated by Taylor expansion:</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbf{R}(\mathbf{u} + \Delta\mathbf{u}) \approx \mathbf{R}(\mathbf{u}) + \frac{\partial \mathbf{R}}{\partial \mathbf{u}} \Delta\mathbf{u}
+\]</div>
+<p>The tangent stiffness matrix is:</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbf{K}_T = -\frac{\partial \mathbf{R}}{\partial \mathbf{u}} = \frac{\partial \mathbf{F}^{int}}{\partial \mathbf{u}}
+\]</div>
+<p>For equilibrium at the new state:</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbf{R}(\mathbf{u} + \Delta\mathbf{u}) = \mathbf{0} \implies \mathbf{K}_T \Delta\mathbf{u} = \mathbf{R}(\mathbf{u})
+\]</div>
+</section>
+</section>
+<hr class="docutils" />
+<section id="newton-raphson-method">
+<h2>2. Newton-Raphson Method<a class="headerlink" href="#newton-raphson-method" title="Link to this heading">#</a></h2>
+<section id="standard-newton-raphson">
+<h3>2.1 Standard Newton-Raphson<a class="headerlink" href="#standard-newton-raphson" title="Link to this heading">#</a></h3>
+<p>The Newton-Raphson algorithm iteratively solves the nonlinear system:</p>
+<p><strong>Initialize:</strong> <span class="math notranslate nohighlight">\(\mathbf{u}^{(0)} = \mathbf{u}_n\)</span> (previous converged state)</p>
+<p><strong>Iterate</strong> for <span class="math notranslate nohighlight">\(k = 0, 1, 2, \ldots\)</span>:</p>
 <ol class="arabic simple">
-<li><p>start from zero displacement, zero internal force, and the applied nodal load
-table;</p></li>
-<li><p>build a tangent stiffness matrix with <code class="docutils literal notranslate"><span class="pre">kbar</span></code>;</p></li>
-<li><p>apply displacement constraints with <code class="docutils literal notranslate"><span class="pre">setbc</span></code>;</p></li>
-<li><p>solve a reference increment <code class="docutils literal notranslate"><span class="pre">du0</span></code>;</p></li>
-<li><p>iterate with an orthogonal residual correction until convergence;</p></li>
-<li><p>commit the load and displacement path;</p></li>
-<li><p>recover reactions with <code class="docutils literal notranslate"><span class="pre">reaction</span></code>.</p></li>
+<li><p>Compute residual:
+$<span class="math notranslate nohighlight">\(\mathbf{R}^{(k)} = \mathbf{F}^{ext} - \mathbf{F}^{int}(\mathbf{u}^{(k)})\)</span>$</p></li>
+<li><p>Check convergence:
+$<span class="math notranslate nohighlight">\(\|\mathbf{R}^{(k)}\| &lt; \text{tol} \implies \text{converged}\)</span>$</p></li>
+<li><p>Compute tangent stiffness:
+$<span class="math notranslate nohighlight">\(\mathbf{K}_T^{(k)} = \frac{\partial \mathbf{F}^{int}}{\partial \mathbf{u}}\bigg|_{\mathbf{u}^{(k)}}\)</span>$</p></li>
+<li><p>Solve for correction:
+$<span class="math notranslate nohighlight">\(\mathbf{K}_T^{(k)} \Delta\mathbf{u}^{(k)} = \mathbf{R}^{(k)}\)</span>$</p></li>
+<li><p>Update displacement:
+$<span class="math notranslate nohighlight">\(\mathbf{u}^{(k+1)} = \mathbf{u}^{(k)} + \Delta\mathbf{u}^{(k)}\)</span>$</p></li>
 </ol>
-<p>The returned dictionary contains the converged fields and the load path:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">u</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">q</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">S</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">E</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">R</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">f</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">U_path</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">F_path</span></code></p></li>
-</ul>
-<section id="what-the-loop-actually-does">
-<h3>What the loop actually does<a class="headerlink" href="#what-the-loop-actually-does" title="Link to this heading">#</a></h3>
-<p>The solver keeps three vectors in play:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">u</span></code>, the accumulated displacement state,</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">du</span></code>, the current incremental step,</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">f</span></code>, the accumulated external force state.</p></li>
-</ul>
-<p>For each load step it computes a fresh tangent matrix, solves a reference
-increment, then corrects that increment using the residual from
-<code class="docutils literal notranslate"><span class="pre">qbar(...,</span> <span class="pre">u</span> <span class="pre">+</span> <span class="pre">du)</span></code>. The ratio</p>
-<p><code class="docutils literal notranslate"><span class="pre">((dq.T</span> <span class="pre">&#64;</span> <span class="pre">du)</span> <span class="pre">/</span> <span class="pre">(df.T</span> <span class="pre">&#64;</span> <span class="pre">du))</span></code></p>
-<p>is the scalar update that moves the step along the orthogonal-residual path.
-If the corrector does not converge before <code class="docutils literal notranslate"><span class="pre">i_max</span></code>, the solver restarts with a
-smaller step.</p>
 </section>
-<section id="why-the-residual-norm-matters">
-<h3>Why the residual norm matters<a class="headerlink" href="#why-the-residual-norm-matters" title="Link to this heading">#</a></h3>
-<p>The helper <code class="docutils literal notranslate"><span class="pre">rnorm()</span></code> measures the residual on the constrained system in the same
-legacy convention as the old code. That means the convergence test is tied to the
-active degrees of freedom rather than a raw global vector norm.</p>
-</section>
-<section id="practical-meaning-of-the-inputs">
-<h3>Practical meaning of the inputs<a class="headerlink" href="#practical-meaning-of-the-inputs" title="Link to this heading">#</a></h3>
+<section id="convergence-properties">
+<h3>2.2 Convergence properties<a class="headerlink" href="#convergence-properties" title="Link to this heading">#</a></h3>
+<p>Newton-Raphson has quadratic convergence near the solution:</p>
+<div class="math notranslate nohighlight">
+\[
+\|\mathbf{u}^{(k+1)} - \mathbf{u}^*\| \leq C \|\mathbf{u}^{(k)} - \mathbf{u}^*\|^2
+\]</div>
+<p>This means the error squares each iteration, giving rapid convergence when close to the solution.</p>
+<p>However, convergence requires:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">X</span></code> is the node coordinate table.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">T</span></code> is the bar topology table.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">G</span></code> stores material and section data.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">C</span></code> stores prescribed displacements.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">P</span></code> stores nodal loads.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">plotdof</span></code> is one-based, because the original benchmark scripts were one-based.</p></li>
+<li><p>A good initial guess</p></li>
+<li><p>Non-singular tangent matrix</p></li>
+<li><p>Residual in the basin of convergence</p></li>
 </ul>
 </section>
+<section id="modified-newton-raphson">
+<h3>2.3 Modified Newton-Raphson<a class="headerlink" href="#modified-newton-raphson" title="Link to this heading">#</a></h3>
+<p>To reduce computation, the tangent can be held constant:</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbf{K}_T^{(0)} \Delta\mathbf{u}^{(k)} = \mathbf{R}^{(k)} \quad \forall k
+\]</div>
+<p>This gives linear (slower) convergence but avoids reforming and refactorizing <span class="math notranslate nohighlight">\(\mathbf{K}_T\)</span> each iteration.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="load-control-and-incremental-analysis">
+<h2>3. Load Control and Incremental Analysis<a class="headerlink" href="#load-control-and-incremental-analysis" title="Link to this heading">#</a></h2>
+<section id="load-incrementation">
+<h3>3.1 Load incrementation<a class="headerlink" href="#load-incrementation" title="Link to this heading">#</a></h3>
+<p>For path-dependent problems (plasticity), the load is applied in increments:</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbf{F}^{ext}_n = \lambda_n \hat{\mathbf{F}}
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(\lambda_n\)</span> is the load factor and <span class="math notranslate nohighlight">\(\hat{\mathbf{F}}\)</span> is the reference load.</p>
+<p>The solution proceeds through load steps <span class="math notranslate nohighlight">\(n = 1, 2, \ldots\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[
+\Delta\lambda_n = \lambda_n - \lambda_{n-1}
+\]</div>
+</section>
+<section id="predictor-corrector-scheme">
+<h3>3.2 Predictor-corrector scheme<a class="headerlink" href="#predictor-corrector-scheme" title="Link to this heading">#</a></h3>
+<p>Each load step uses:</p>
+<p><strong>Predictor:</strong> Apply load increment, compute initial displacement estimate</p>
+<div class="math notranslate nohighlight">
+\[
+\Delta\mathbf{u}^{(0)} = \mathbf{K}_T^{-1} (\Delta\lambda \hat{\mathbf{F}})
+\]</div>
+<p><strong>Corrector:</strong> Newton iterations to equilibrium</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbf{K}_T \delta\mathbf{u}^{(k)} = \mathbf{R}^{(k)}, \quad \mathbf{u}^{(k+1)} = \mathbf{u}^{(k)} + \delta\mathbf{u}^{(k)}
+\]</div>
+</section>
+</section>
+<hr class="docutils" />
+<section id="arc-length-methods">
+<h2>4. Arc-Length Methods<a class="headerlink" href="#arc-length-methods" title="Link to this heading">#</a></h2>
+<section id="motivation">
+<h3>4.1 Motivation<a class="headerlink" href="#motivation" title="Link to this heading">#</a></h3>
+<p>Standard load control fails at limit points where <span class="math notranslate nohighlight">\(\frac{d\lambda}{d\mathbf{u}} \to 0\)</span>. At such points, the load-displacement curve has a horizontal tangent and the structure exhibits snap-through or snap-back behavior.</p>
+<p>Arc-length methods treat the load factor <span class="math notranslate nohighlight">\(\lambda\)</span> as an additional unknown, allowing the solver to trace the complete equilibrium path including post-buckling and softening regimes.</p>
+</section>
+<section id="augmented-system">
+<h3>4.2 Augmented system<a class="headerlink" href="#augmented-system" title="Link to this heading">#</a></h3>
+<p>The equilibrium equation becomes:</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbf{R}(\mathbf{u}, \lambda) = \lambda \hat{\mathbf{F}} - \mathbf{F}^{int}(\mathbf{u}) = \mathbf{0}
+\]</div>
+<p>With <span class="math notranslate nohighlight">\(n\)</span> displacement DOFs and one unknown <span class="math notranslate nohighlight">\(\lambda\)</span>, we have <span class="math notranslate nohighlight">\(n\)</span> equations and <span class="math notranslate nohighlight">\(n+1\)</span> unknowns. An additional constraint equation is needed:</p>
+<div class="math notranslate nohighlight">
+\[
+g(\Delta\mathbf{u}, \Delta\lambda) = 0
+\]</div>
+</section>
+<section id="id1">
+<h3>4.3 Linearization<a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
+<p>Linearizing the equilibrium equation:</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbf{K}_T \delta\mathbf{u} - \delta\lambda \hat{\mathbf{F}} = \mathbf{R}^{(k)}
+\]</div>
+<p>The displacement correction can be decomposed:</p>
+<div class="math notranslate nohighlight">
+\[
+\delta\mathbf{u} = \delta\mathbf{u}_R + \delta\lambda \, \delta\mathbf{u}_F
+\]</div>
+<p>where:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\delta\mathbf{u}_R = \mathbf{K}_T^{-1} \mathbf{R}^{(k)}\)</span> (residual contribution)</p></li>
+<li><p><span class="math notranslate nohighlight">\(\delta\mathbf{u}_F = \mathbf{K}_T^{-1} \hat{\mathbf{F}}\)</span> (load contribution)</p></li>
+</ul>
+</section>
+<section id="spherical-arc-length-riks-method">
+<h3>4.4 Spherical arc-length (Riks method)<a class="headerlink" href="#spherical-arc-length-riks-method" title="Link to this heading">#</a></h3>
+<p>The constraint is a hypersphere in load-displacement space:</p>
+<div class="math notranslate nohighlight">
+\[
+g = \Delta\mathbf{u}^T \Delta\mathbf{u} + \psi^2 \Delta\lambda^2 \|\hat{\mathbf{F}}\|^2 - \Delta l^2 = 0
+\]</div>
+<p><strong>Derivation of <span class="math notranslate nohighlight">\(\delta\lambda\)</span>:</strong></p>
+<p>Substituting <span class="math notranslate nohighlight">\(\delta\mathbf{u} = \delta\mathbf{u}_R + \delta\lambda \, \delta\mathbf{u}_F\)</span> into the linearized constraint:</p>
+<div class="math notranslate nohighlight">
+\[
+(\Delta\mathbf{u} + \delta\mathbf{u})^T (\Delta\mathbf{u} + \delta\mathbf{u}) + \psi^2 (\Delta\lambda + \delta\lambda)^2 \|\hat{\mathbf{F}}\|^2 = \Delta l^2
+\]</div>
+<p>Keeping linear terms:</p>
+<div class="math notranslate nohighlight">
+\[
+2\Delta\mathbf{u}^T \delta\mathbf{u}_R + 2\Delta\mathbf{u}^T \delta\mathbf{u}_F \delta\lambda + 2\psi^2 \Delta\lambda \|\hat{\mathbf{F}}\|^2 \delta\lambda = \Delta l^2 - \|\Delta\mathbf{u}\|^2 - \psi^2\Delta\lambda^2\|\hat{\mathbf{F}}\|^2
+\]</div>
+<p>Solving for <span class="math notranslate nohighlight">\(\delta\lambda\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[
+\delta\lambda = \frac{-2\Delta\mathbf{u}^T \delta\mathbf{u}_R + \Delta l^2 - \|\Delta\mathbf{u}\|^2 - \psi^2\Delta\lambda^2\|\hat{\mathbf{F}}\|^2}{2(\Delta\mathbf{u}^T \delta\mathbf{u}_F + \psi^2 \Delta\lambda \|\hat{\mathbf{F}}\|^2)}
+\]</div>
+</section>
+<section id="cylindrical-arc-length-crisfield-method">
+<h3>4.5 Cylindrical arc-length (Crisfield method)<a class="headerlink" href="#cylindrical-arc-length-crisfield-method" title="Link to this heading">#</a></h3>
+<p>Uses displacement-only constraint:</p>
+<div class="math notranslate nohighlight">
+\[
+g = \Delta\mathbf{u}^T \Delta\mathbf{u} - \Delta l^2 = 0
+\]</div>
+<p>This yields a quadratic equation in <span class="math notranslate nohighlight">\(\delta\lambda\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[
+a_1 \delta\lambda^2 + a_2 \delta\lambda + a_3 = 0
+\]</div>
+<p>where:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(a_1 = \delta\mathbf{u}_F^T \delta\mathbf{u}_F\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(a_2 = 2(\Delta\mathbf{u} + \delta\mathbf{u}_R)^T \delta\mathbf{u}_F\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(a_3 = (\Delta\mathbf{u} + \delta\mathbf{u}_R)^T (\Delta\mathbf{u} + \delta\mathbf{u}_R) - \Delta l^2\)</span></p></li>
+</ul>
+<p>The root is chosen to maintain path direction (positive work criterion).</p>
+</section>
+<section id="orthogonal-residual-method-femlabpy">
+<h3>4.6 Orthogonal residual method (femlabpy)<a class="headerlink" href="#orthogonal-residual-method-femlabpy" title="Link to this heading">#</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> implementation uses orthogonality to the predictor:</p>
+<div class="math notranslate nohighlight">
+\[
+\delta\mathbf{u}^T \Delta\mathbf{u}^{(0)} = 0
+\]</div>
+<p><strong>Derivation:</strong></p>
+<p>Let <span class="math notranslate nohighlight">\(\Delta\mathbf{u}^{(0)} = \mathbf{K}_T^{-1} \hat{\mathbf{F}}\)</span> be the reference increment. The correction satisfies:</p>
+<div class="math notranslate nohighlight">
+\[
+(\delta\mathbf{u}_R + \delta\lambda \, \delta\mathbf{u}_F)^T \Delta\mathbf{u}^{(0)} = 0
+\]</div>
+<p>Solving:</p>
+<div class="math notranslate nohighlight">
+\[
+\delta\lambda = -\frac{\delta\mathbf{u}_R^T \Delta\mathbf{u}^{(0)}}{\delta\mathbf{u}_F^T \Delta\mathbf{u}^{(0)}} = \frac{\delta\mathbf{q}^T \Delta\mathbf{u}}{\delta\mathbf{f}^T \Delta\mathbf{u}}
+\]</div>
+<p>This is computationally efficient and robust for most structural problems.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="tangent-stiffness-matrix">
+<h2>5. Tangent Stiffness Matrix<a class="headerlink" href="#tangent-stiffness-matrix" title="Link to this heading">#</a></h2>
+<section id="material-tangent">
+<h3>5.1 Material tangent<a class="headerlink" href="#material-tangent" title="Link to this heading">#</a></h3>
+<p>From the constitutive relation <span class="math notranslate nohighlight">\(\boldsymbol{\sigma} = \boldsymbol{\sigma}(\boldsymbol{\varepsilon})\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbf{K}_T^{mat} = \int_V \mathbf{B}^T \mathbf{D}_T \mathbf{B} \, dV
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(\mathbf{D}_T = \frac{\partial \boldsymbol{\sigma}}{\partial \boldsymbol{\varepsilon}}\)</span> is the tangent modulus.</p>
+<p>For elasticity: <span class="math notranslate nohighlight">\(\mathbf{D}_T = \mathbf{D}\)</span> (constant)</p>
+<p>For plasticity: <span class="math notranslate nohighlight">\(\mathbf{D}_T = \mathbf{D}^{ep}\)</span> (consistent elastoplastic tangent)</p>
+</section>
+<section id="geometric-stiffness">
+<h3>5.2 Geometric stiffness<a class="headerlink" href="#geometric-stiffness" title="Link to this heading">#</a></h3>
+<p>For large deformations with the Green-Lagrange strain:</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbf{K}_T = \mathbf{K}_T^{mat} + \mathbf{K}_G
+\]</div>
+<p>The geometric stiffness arises from the variation of the strain-displacement matrix:</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbf{K}_G = \int_V \mathbf{G}^T \boldsymbol{\tau} \mathbf{G} \, dV
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(\mathbf{G}\)</span> contains shape function derivatives and <span class="math notranslate nohighlight">\(\boldsymbol{\tau}\)</span> is the stress matrix.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="convergence-criteria">
+<h2>6. Convergence Criteria<a class="headerlink" href="#convergence-criteria" title="Link to this heading">#</a></h2>
+<section id="residual-norm">
+<h3>6.1 Residual norm<a class="headerlink" href="#residual-norm" title="Link to this heading">#</a></h3>
+<p>Force equilibrium:</p>
+<div class="math notranslate nohighlight">
+\[
+\frac{\|\mathbf{R}^{(k)}\|}{\|\mathbf{F}^{ext}\|} &lt; \epsilon_R
+\]</div>
+</section>
+<section id="displacement-increment-norm">
+<h3>6.2 Displacement increment norm<a class="headerlink" href="#displacement-increment-norm" title="Link to this heading">#</a></h3>
+<p>Solution stationarity:</p>
+<div class="math notranslate nohighlight">
+\[
+\frac{\|\Delta\mathbf{u}^{(k)}\|}{\|\mathbf{u}^{(k)}\|} &lt; \epsilon_u
+\]</div>
+</section>
+<section id="energy-norm">
+<h3>6.3 Energy norm<a class="headerlink" href="#energy-norm" title="Link to this heading">#</a></h3>
+<p>Combined criterion:</p>
+<div class="math notranslate nohighlight">
+\[
+\frac{|\Delta\mathbf{u}^{(k)} \cdot \mathbf{R}^{(k)}|}{|\Delta\mathbf{u}^{(0)} \cdot \mathbf{R}^{(0)}|} &lt; \epsilon_E
+\]</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> helper <code class="docutils literal notranslate"><span class="pre">rnorm()</span></code> evaluates the residual on constrained DOFs, matching legacy conventions.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="implementation-in-femlabpy">
+<h2>7. Implementation in femlabpy<a class="headerlink" href="#implementation-in-femlabpy" title="Link to this heading">#</a></h2>
+<section id="orthogonal-residual-solver">
+<h3>7.1 Orthogonal residual solver<a class="headerlink" href="#orthogonal-residual-solver" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">solve_nlbar(X,</span> <span class="pre">T,</span> <span class="pre">G,</span> <span class="pre">C,</span> <span class="pre">P,</span> <span class="pre">...)</span></code> implements the nonlinear bar solver:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Step</p></th>
+<th class="head"><p>Action</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>1</p></td>
+<td><p>Initialize <span class="math notranslate nohighlight">\(\mathbf{u} = \mathbf{0}\)</span>, <span class="math notranslate nohighlight">\(\mathbf{f} = \mathbf{0}\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>2</p></td>
+<td><p>Build tangent with <code class="docutils literal notranslate"><span class="pre">kbar</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>3</p></td>
+<td><p>Apply BCs with <code class="docutils literal notranslate"><span class="pre">setbc</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>4</p></td>
+<td><p>Compute reference increment <span class="math notranslate nohighlight">\(\Delta\mathbf{u}_0\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p>5</p></td>
+<td><p>Orthogonal residual correction loop</p></td>
+</tr>
+<tr class="row-odd"><td><p>6</p></td>
+<td><p>Commit converged state</p></td>
+</tr>
+<tr class="row-even"><td><p>7</p></td>
+<td><p>Recover reactions with <code class="docutils literal notranslate"><span class="pre">reaction</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Returns: <code class="docutils literal notranslate"><span class="pre">u</span></code>, <code class="docutils literal notranslate"><span class="pre">q</span></code>, <code class="docutils literal notranslate"><span class="pre">S</span></code>, <code class="docutils literal notranslate"><span class="pre">E</span></code>, <code class="docutils literal notranslate"><span class="pre">R</span></code>, <code class="docutils literal notranslate"><span class="pre">f</span></code>, <code class="docutils literal notranslate"><span class="pre">U_path</span></code>, <code class="docutils literal notranslate"><span class="pre">F_path</span></code></p>
 </section>
 <section id="elastoplastic-solver">
-<h2>Elastoplastic Solver<a class="headerlink" href="#elastoplastic-solver" title="Link to this heading">#</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">solve_plastic(X,</span> <span class="pre">T,</span> <span class="pre">G,</span> <span class="pre">C,</span> <span class="pre">P,</span> <span class="pre">...)</span></code> handles the legacy Q4 elastoplastic cases.
-The code keeps the constitutive update inside the element routines and uses the
-solver only for load stepping and equilibrium enforcement.</p>
-<p>The solver supports two geometric branches:</p>
+<h3>7.2 Elastoplastic solver<a class="headerlink" href="#elastoplastic-solver" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">solve_plastic(X,</span> <span class="pre">T,</span> <span class="pre">G,</span> <span class="pre">C,</span> <span class="pre">P,</span> <span class="pre">...)</span></code> handles Q4 elastoplastic problems:</p>
+<p><strong>Geometry options:</strong></p>
 <ul class="simple">
-<li><p>plane stress through <code class="docutils literal notranslate"><span class="pre">kq4eps</span></code> and <code class="docutils literal notranslate"><span class="pre">qq4eps</span></code>;</p></li>
-<li><p>plane strain through <code class="docutils literal notranslate"><span class="pre">kq4epe</span></code> and <code class="docutils literal notranslate"><span class="pre">qq4epe</span></code>.</p></li>
+<li><p>Plane stress: <code class="docutils literal notranslate"><span class="pre">kq4eps</span></code>, <code class="docutils literal notranslate"><span class="pre">qq4eps</span></code></p></li>
+<li><p>Plane strain: <code class="docutils literal notranslate"><span class="pre">kq4epe</span></code>, <code class="docutils literal notranslate"><span class="pre">qq4epe</span></code></p></li>
 </ul>
-<p>It also supports two material laws selected by <code class="docutils literal notranslate"><span class="pre">material_type</span></code>:</p>
+<p><strong>Material options:</strong></p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">1</span></code> for von Mises;</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">2</span></code> for Drucker-Prager.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">material_type=1</span></code>: von Mises</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">material_type=2</span></code>: Drucker-Prager</p></li>
 </ul>
-<section id="plane-strain-and-plane-stress">
-<h3>Plane strain and plane stress<a class="headerlink" href="#plane-strain-and-plane-stress" title="Link to this heading">#</a></h3>
-<p>The <code class="docutils literal notranslate"><span class="pre">_solve_plastic_system()</span></code> helper chooses a symmetry-aware dense fallback for
-plane strain and the generic linear solver otherwise. That is a compatibility
-choice, not a new constitutive model.</p>
+<p><strong>State arrays:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">u</span></code>, <code class="docutils literal notranslate"><span class="pre">du</span></code>: displacement history</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">f</span></code>, <code class="docutils literal notranslate"><span class="pre">df</span></code>: external force state</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">S</span></code>, <code class="docutils literal notranslate"><span class="pre">E</span></code>: committed element stress/strain</p></li>
+</ul>
 </section>
-<section id="state-flow">
-<h3>State flow<a class="headerlink" href="#state-flow" title="Link to this heading">#</a></h3>
-<p>The plastic driver keeps the following state arrays:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">u</span></code> and <code class="docutils literal notranslate"><span class="pre">du</span></code> for the displacement history,</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">f</span></code> and <code class="docutils literal notranslate"><span class="pre">df</span></code> for the external force state,</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">S</span></code> and <code class="docutils literal notranslate"><span class="pre">E</span></code> for the committed element stress and strain-like history values.</p></li>
-</ul>
-<p>Inside each corrector iteration it:</p>
-<ol class="arabic simple">
-<li><p>rebuilds the tangent matrix from the current state;</p></li>
-<li><p>applies the boundary conditions;</p></li>
-<li><p>computes the internal force vector with the Q4 stress update routine;</p></li>
-<li><p>forms the residual <code class="docutils literal notranslate"><span class="pre">dq</span> <span class="pre">=</span> <span class="pre">q</span> <span class="pre">-</span> <span class="pre">f</span></code>;</p></li>
-<li><p>updates the step with the orthogonal residual correction;</p></li>
-<li><p>commits the element state when the step converges.</p></li>
-</ol>
-<p>The returned dictionary mirrors the bar solver and includes the same path
-vectors together with the element state arrays.</p>
-</section>
-<section id="what-to-read-in-the-source">
-<h3>What to read in the source<a class="headerlink" href="#what-to-read-in-the-source" title="Link to this heading">#</a></h3>
-<p>If you want to modify this solver, read the code in this order:</p>
-<ol class="arabic simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">solve_nlbar()</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">solve_plastic()</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">_solve_plastic_system()</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">kbar</span></code>, <code class="docutils literal notranslate"><span class="pre">qbar</span></code>, <code class="docutils literal notranslate"><span class="pre">kq4epe</span></code>, <code class="docutils literal notranslate"><span class="pre">kq4eps</span></code>, <code class="docutils literal notranslate"><span class="pre">qq4epe</span></code>, <code class="docutils literal notranslate"><span class="pre">qq4eps</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">setbc()</span></code>, <code class="docutils literal notranslate"><span class="pre">setload()</span></code>, and <code class="docutils literal notranslate"><span class="pre">reaction()</span></code></p></li>
-</ol>
-<p>That order matches the actual control flow and makes the restart behavior much
-easier to follow.</p>
+<section id="code-reading-order">
+<h3>7.3 Code reading order<a class="headerlink" href="#code-reading-order" title="Link to this heading">#</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>solve_nlbar()
+    └── kbar, qbar (element routines)
+    └── setbc, setload (constraints)
+    └── reaction (post-processing)
+
+solve_plastic()
+    └── kq4eps/kq4epe, qq4eps/qq4epe
+    └── _solve_plastic_system()
+</pre></div>
+</div>
 </section>
 </section>
 </section>
@@ -580,16 +818,46 @@ easier to follow.</p>
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#orthogonal-residual-solver">Orthogonal Residual Solver</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-the-loop-actually-does">What the loop actually does</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#why-the-residual-norm-matters">Why the residual norm matters</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#practical-meaning-of-the-inputs">Practical meaning of the inputs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-nonlinear-problem">1. The Nonlinear Problem</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#equilibrium-equation">1.1 Equilibrium equation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#linearization">1.2 Linearization</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#elastoplastic-solver">Elastoplastic Solver</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plane-strain-and-plane-stress">Plane strain and plane stress</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#state-flow">State flow</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-to-read-in-the-source">What to read in the source</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#newton-raphson-method">2. Newton-Raphson Method</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#standard-newton-raphson">2.1 Standard Newton-Raphson</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#convergence-properties">2.2 Convergence properties</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#modified-newton-raphson">2.3 Modified Newton-Raphson</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#load-control-and-incremental-analysis">3. Load Control and Incremental Analysis</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#load-incrementation">3.1 Load incrementation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#predictor-corrector-scheme">3.2 Predictor-corrector scheme</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#arc-length-methods">4. Arc-Length Methods</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#motivation">4.1 Motivation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#augmented-system">4.2 Augmented system</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">4.3 Linearization</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spherical-arc-length-riks-method">4.4 Spherical arc-length (Riks method)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#cylindrical-arc-length-crisfield-method">4.5 Cylindrical arc-length (Crisfield method)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#orthogonal-residual-method-femlabpy">4.6 Orthogonal residual method (femlabpy)</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tangent-stiffness-matrix">5. Tangent Stiffness Matrix</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#material-tangent">5.1 Material tangent</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#geometric-stiffness">5.2 Geometric stiffness</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#convergence-criteria">6. Convergence Criteria</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#residual-norm">6.1 Residual norm</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#displacement-increment-norm">6.2 Displacement increment norm</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#energy-norm">6.3 Energy norm</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#implementation-in-femlabpy">7. Implementation in femlabpy</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#orthogonal-residual-solver">7.1 Orthogonal residual solver</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#elastoplastic-solver">7.2 Elastoplastic solver</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#code-reading-order">7.3 Code reading order</a></li>
 </ul>
 </li>
 </ul>

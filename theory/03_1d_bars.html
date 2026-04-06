@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>1D bar elements &#8212; femlabpy 0.6.0 documentation</title>
+    <title>1D bar elements &#8212; femlabpy</title>
   
   
   
@@ -31,7 +31,7 @@
 <link href="../_static/styles/pydata-sphinx-theme.css?digest=7f76b32a3354e82990f2" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
-    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=985dfaa0" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=ba1a7e05" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../_static/scripts/fontawesome.js?digest=7f76b32a3354e82990f2"></script>
@@ -46,7 +46,7 @@
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'theory/03_1d_bars';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
-    <script src="../_static/custom.js?v=35c928a7"></script>
+    <script src="../_static/custom.js?v=0184bad5"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="2D Triangular Elements" href="04_2d_triangles.html" />
@@ -119,7 +119,7 @@
   
   
   
-    <p class="title logo__title">femlabpy 0.6.0 documentation</p>
+    <p class="title logo__title">femlabpy</p>
   
 </a></div>
     
@@ -349,7 +349,7 @@
 <li class="toctree-l1"><a class="reference internal" href="08_dynamics.html">Structural Dynamics and Time Integration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="09_modal_periodic.html">Modal analysis and periodic boundaries</a></li>
 <li class="toctree-l1"><a class="reference internal" href="10_io_mesh.html">Mesh I/O and Gmsh Import</a></li>
-<li class="toctree-l1"><a class="reference internal" href="11_nonlinear_solvers.html">Chapter 11: Nonlinear Solvers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11_nonlinear_solvers.html">Nonlinear Solvers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="12_plotting_postprocessing.html">Plotting and Postprocessing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="13_legacy_wrappers.html">Chapter 13: Legacy Wrappers</a></li>
 </ul>
@@ -414,267 +414,370 @@
                   
   <section class="tex2jax_ignore mathjax_ignore" id="d-bar-elements">
 <h1>1D bar elements<a class="headerlink" href="#d-bar-elements" title="Link to this heading">#</a></h1>
-<p>This chapter covers the 1D bar and truss routines used by <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code>. The code paths are split the same way as the implementation: <code class="docutils literal notranslate"><span class="pre">kebar</span></code> and <code class="docutils literal notranslate"><span class="pre">qebar</span></code> handle the geometrically nonlinear bar response, <code class="docutils literal notranslate"><span class="pre">kbar</span></code> and <code class="docutils literal notranslate"><span class="pre">qbar</span></code> assemble element contributions into the global system, and <code class="docutils literal notranslate"><span class="pre">mebar</span></code> and <code class="docutils literal notranslate"><span class="pre">mbar</span></code> build the element and global mass matrices.</p>
-<p>The goal here is not to repeat a textbook derivation. It is to show how the strain measure, internal force, tangent stiffness, and mass matrix are carried through the Python functions that the rest of the library actually calls.</p>
-<section id="linear-1d-bar-formulation">
-<h2>3.1 Linear 1D Bar Formulation<a class="headerlink" href="#linear-1d-bar-formulation" title="Link to this heading">#</a></h2>
-<p>The simplest finite element is the 2-node linear bar element. A bar can only transmit axial loads—meaning it has no bending or shear stiffness.</p>
-<section id="kinematics-and-strain">
-<h3>Kinematics and strain<a class="headerlink" href="#kinematics-and-strain" title="Link to this heading">#</a></h3>
-<p>Consider a 1D bar of initial length <span class="math notranslate nohighlight">\(L\)</span>, cross-sectional area <span class="math notranslate nohighlight">\(A\)</span>, and Young’s modulus <span class="math notranslate nohighlight">\(E\)</span>. Let the bar be aligned along the local <span class="math notranslate nohighlight">\(x\)</span>-axis. The bar is defined by two nodes, <span class="math notranslate nohighlight">\(1\)</span> and <span class="math notranslate nohighlight">\(2\)</span>, with displacements <span class="math notranslate nohighlight">\(u_1\)</span> and <span class="math notranslate nohighlight">\(u_2\)</span>.</p>
-<p>The axial strain <span class="math notranslate nohighlight">\(\varepsilon\)</span> under the assumption of small deformations is simply the change in length divided by the original length:</p>
+<p>This chapter provides the mathematical foundation for 1D bar and truss elements in <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code>. We derive the element formulations from continuum mechanics principles, covering both linear and geometrically nonlinear cases.</p>
+<section id="continuum-mechanics-foundation">
+<h2>1. Continuum Mechanics Foundation<a class="headerlink" href="#continuum-mechanics-foundation" title="Link to this heading">#</a></h2>
+<section id="deformation-gradient">
+<h3>1.1 Deformation gradient<a class="headerlink" href="#deformation-gradient" title="Link to this heading">#</a></h3>
+<p>Consider a material point at position <span class="math notranslate nohighlight">\(\mathbf{X}\)</span> in the reference configuration that moves to <span class="math notranslate nohighlight">\(\mathbf{x}\)</span> in the current configuration:</p>
 <div class="math notranslate nohighlight">
-\[ \varepsilon = \frac{\Delta L}{L} = \frac{u_2 - u_1}{L} \]</div>
-<p>Using the standard finite element approach, we define the element displacement vector <span class="math notranslate nohighlight">\(\mathbf{d}^e = [u_1, u_2]^T\)</span>. The strain-displacement relation can be written in matrix form:</p>
+\[
+\mathbf{x} = \mathbf{X} + \mathbf{u}(\mathbf{X})
+\]</div>
+<p>The deformation gradient tensor is:</p>
 <div class="math notranslate nohighlight">
-\[\begin{split} \varepsilon = \mathbf{B} \mathbf{d}^e = \begin{bmatrix} -\frac{1}{L} &amp; \frac{1}{L} \end{bmatrix} \begin{bmatrix} u_1 \\ u_2 \end{bmatrix} \end{split}\]</div>
-<p>where <span class="math notranslate nohighlight">\(\mathbf{B}\)</span> is the strain-displacement matrix.</p>
+\[
+\mathbf{F} = \frac{\partial \mathbf{x}}{\partial \mathbf{X}} = \mathbf{I} + \frac{\partial \mathbf{u}}{\partial \mathbf{X}}
+\]</div>
+<p>For a 1D bar aligned with <span class="math notranslate nohighlight">\(X\)</span>, this reduces to the scalar:</p>
+<div class="math notranslate nohighlight">
+\[
+F = \frac{dx}{dX} = 1 + \frac{du}{dX}
+\]</div>
 </section>
-<section id="linear-stiffness-matrix">
-<h3>Linear stiffness matrix<a class="headerlink" href="#linear-stiffness-matrix" title="Link to this heading">#</a></h3>
-<p>The principle of virtual work or minimizing the total potential energy yields the element stiffness matrix <span class="math notranslate nohighlight">\(\mathbf{K}^e\)</span>:</p>
+<section id="strain-measures">
+<h3>1.2 Strain measures<a class="headerlink" href="#strain-measures" title="Link to this heading">#</a></h3>
+<p><strong>Engineering strain (small deformation):</strong></p>
 <div class="math notranslate nohighlight">
-\[ \mathbf{K}^e = \int_V \mathbf{B}^T E \mathbf{B} \, dV \]</div>
-<p>Since the area <span class="math notranslate nohighlight">\(A\)</span> and modulus <span class="math notranslate nohighlight">\(E\)</span> are constant, the volume integral becomes <span class="math notranslate nohighlight">\(A \cdot \int_0^L dx\)</span>:</p>
+\[
+\varepsilon = \frac{l - L}{L} = \frac{\Delta L}{L}
+\]</div>
+<p><strong>Green-Lagrange strain (large deformation):</strong></p>
+<p>Starting from the definition based on the change in squared length:</p>
 <div class="math notranslate nohighlight">
-\[\begin{split} \mathbf{K}^e = E A L \left( \begin{bmatrix} -\frac{1}{L} \\ \frac{1}{L} \end{bmatrix} \begin{bmatrix} -\frac{1}{L} &amp; \frac{1}{L} \end{bmatrix} \right) = \frac{EA}{L} \begin{bmatrix} 1 &amp; -1 \\ -1 &amp; 1 \end{bmatrix} \end{split}\]</div>
-<p>This is the canonical local linear stiffness matrix for a 2-node bar element.</p>
+\[
+E = \frac{1}{2}(F^T F - I) = \frac{1}{2}(C - I)
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(C = F^T F\)</span> is the right Cauchy-Green deformation tensor.</p>
+<p>For 1D:</p>
+<div class="math notranslate nohighlight">
+\[
+E = \frac{1}{2}(F^2 - 1) = \frac{1}{2}\left[\left(1 + \frac{du}{dX}\right)^2 - 1\right]
+\]</div>
+<p>Expanding:</p>
+<div class="math notranslate nohighlight">
+\[
+E = \frac{du}{dX} + \frac{1}{2}\left(\frac{du}{dX}\right)^2
+\]</div>
+<p><strong>Proof of objectivity:</strong> Under rigid body rotation <span class="math notranslate nohighlight">\(\mathbf{Q}\)</span>, the deformed configuration transforms as <span class="math notranslate nohighlight">\(\mathbf{x}' = \mathbf{Q}\mathbf{x}\)</span>. Then:</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbf{F}' = \mathbf{Q}\mathbf{F}, \quad \mathbf{C}' = (\mathbf{F}')^T\mathbf{F}' = \mathbf{F}^T\mathbf{Q}^T\mathbf{Q}\mathbf{F} = \mathbf{F}^T\mathbf{F} = \mathbf{C}
+\]</div>
+<p>Thus <span class="math notranslate nohighlight">\(E' = E\)</span>, proving objectivity (frame invariance). ∎</p>
 </section>
 </section>
-<section id="geometric-nonlinear-formulation">
-<h2>3.2 Geometric nonlinear formulation<a class="headerlink" href="#geometric-nonlinear-formulation" title="Link to this heading">#</a></h2>
-<p>When displacements and rotations become large, the linear assumption (<span class="math notranslate nohighlight">\(\varepsilon = \Delta L / L\)</span>) is no longer valid. Even if the material remains linear-elastic, large rigid body rotations introduce significant geometric nonlinearity.</p>
-<p>To capture large deformations, we must use an objective measure of strain, such as the Green-Lagrange strain.</p>
-<section id="green-lagrange-strain">
-<h3>Green-Lagrange strain<a class="headerlink" href="#green-lagrange-strain" title="Link to this heading">#</a></h3>
-<p>For 1D problems where displacement is given by <span class="math notranslate nohighlight">\(u(x)\)</span>, the true Green-Lagrange strain measures the stretch and includes higher-order deformation terms:</p>
+<hr class="docutils" />
+<section id="linear-bar-element">
+<h2>2. Linear Bar Element<a class="headerlink" href="#linear-bar-element" title="Link to this heading">#</a></h2>
+<figure class="align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/fig_bar_element.png"><img alt="../_images/fig_bar_element.png" src="../_images/fig_bar_element.png" style="width: 520px;" />
+</a>
+<figcaption>
+<p><span class="caption-text"><strong>Figure 3.1:</strong> Two-node linear bar element with nodal displacements <span class="math notranslate nohighlight">\(u_1\)</span> and <span class="math notranslate nohighlight">\(u_2\)</span>.</span><a class="headerlink" href="#id1" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<section id="shape-functions">
+<h3>2.1 Shape functions<a class="headerlink" href="#shape-functions" title="Link to this heading">#</a></h3>
+<p>For a 2-node element with local coordinate <span class="math notranslate nohighlight">\(\xi \in [0, L]\)</span>, the linear shape functions are:</p>
 <div class="math notranslate nohighlight">
-\[ \epsilon = \frac{du}{dx} + \frac{1}{2}\left(\frac{du}{dx}\right)^2 \]</div>
-<p>For a bar with initial node coordinates <span class="math notranslate nohighlight">\(\mathbf{X}_1\)</span> and <span class="math notranslate nohighlight">\(\mathbf{X}_2\)</span> and a constant strain along its length, this translates to the squared change in lengths. Let the initial length vector be <span class="math notranslate nohighlight">\(\mathbf{a}_0 = \mathbf{X}_2 - \mathbf{X}_1\)</span> with length <span class="math notranslate nohighlight">\(l_0\)</span>, and the current length vector be <span class="math notranslate nohighlight">\(\mathbf{a}_1 = \mathbf{x}_2 - \mathbf{x}_1\)</span> with length <span class="math notranslate nohighlight">\(l_1\)</span>. The discrete Green-Lagrange strain evaluates equivalently to:</p>
+\[
+N_1(\xi) = 1 - \frac{\xi}{L}, \quad N_2(\xi) = \frac{\xi}{L}
+\]</div>
+<p><strong>Partition of unity:</strong> <span class="math notranslate nohighlight">\(N_1 + N_2 = 1\)</span> for all <span class="math notranslate nohighlight">\(\xi\)</span> ✓</p>
+<p><strong>Kronecker delta:</strong> <span class="math notranslate nohighlight">\(N_i(\xi_j) = \delta_{ij}\)</span> ✓</p>
+<p>The displacement field is interpolated as:</p>
 <div class="math notranslate nohighlight">
-\[ \epsilon = \frac{l_1^2 - l_0^2}{2 l_0^2} \]</div>
-<p>This strain measure is invariant under rigid body translations and rotations because it strictly depends on the squared lengths.</p>
+\[
+u(\xi) = N_1(\xi) u_1 + N_2(\xi) u_2 = \mathbf{N}(\xi) \mathbf{d}^e
+\]</div>
 </section>
-<section id="internal-force-response">
-<h3>Internal force response<a class="headerlink" href="#internal-force-response" title="Link to this heading">#</a></h3>
-<p>The internal force vector is derived from the variation of the internal strain energy <span class="math notranslate nohighlight">\(U = \int_V \frac{1}{2} E \epsilon^2 dV\)</span>. The variation of the Green-Lagrange strain <span class="math notranslate nohighlight">\(\delta \epsilon\)</span> is related to virtual displacements <span class="math notranslate nohighlight">\(\delta \mathbf{u}\)</span>:</p>
+<section id="strain-displacement-relation">
+<h3>2.2 Strain-displacement relation<a class="headerlink" href="#strain-displacement-relation" title="Link to this heading">#</a></h3>
+<p>The strain is the derivative of displacement:</p>
 <div class="math notranslate nohighlight">
-\[ \delta \epsilon = \frac{1}{l_0^2} \mathbf{a}_1 \cdot \delta \mathbf{a}_1 = \frac{1}{l_0^2} \mathbf{a}_1^T (\delta \mathbf{u}_2 - \delta \mathbf{u}_1) \]</div>
-<p>Defining the normal stress as <span class="math notranslate nohighlight">\(S = E \epsilon\)</span> and the normal force as <span class="math notranslate nohighlight">\(N = A S = A E \epsilon\)</span>, the virtual work <span class="math notranslate nohighlight">\(\int_V S \delta \epsilon \, dV\)</span> yields the internal force vector corresponding to the nodal displacements:</p>
-<div class="math notranslate nohighlight">
-\[\begin{split} \mathbf{q}^e = \frac{N}{l_0} \begin{bmatrix} -\mathbf{a}_1 \\ \mathbf{a}_1 \end{bmatrix} \end{split}\]</div>
-<section id="implementation-qebar">
-<h4>Implementation: <code class="docutils literal notranslate"><span class="pre">qebar</span></code><a class="headerlink" href="#implementation-qebar" title="Link to this heading">#</a></h4>
-<p><code class="docutils literal notranslate"><span class="pre">qebar</span></code> returns the element force vector together with the scalar stress and strain values used by the nonlinear solvers and postprocessing code.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-
-<span class="k">def</span><span class="w"> </span><span class="nf">qebar</span><span class="p">(</span><span class="n">Xe0</span><span class="p">,</span> <span class="n">Xe1</span><span class="p">,</span> <span class="n">Ge</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the internal-force response of a single geometrically nonlinear bar.&quot;&quot;&quot;</span>
-    <span class="n">initial</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Xe0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
-    <span class="n">current</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Xe1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
-    <span class="n">props</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Ge</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-
-    <span class="n">a0</span> <span class="o">=</span> <span class="p">(</span><span class="n">initial</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">initial</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="n">l0</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">a0</span><span class="p">))</span>
-    <span class="n">a1</span> <span class="o">=</span> <span class="p">(</span><span class="n">current</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">current</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="n">l1</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">a1</span><span class="p">))</span>
-
-    <span class="n">A</span> <span class="o">=</span> <span class="n">props</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">E</span> <span class="o">=</span> <span class="n">props</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">props</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="mf">1.0</span>
-    
-    <span class="c1"># Green-Lagrange Strain</span>
-    <span class="n">strain</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">l1</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="n">l0</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">l0</span><span class="o">**</span><span class="mi">2</span>
-    <span class="n">stress</span> <span class="o">=</span> <span class="n">E</span> <span class="o">*</span> <span class="n">strain</span>
-    
-    <span class="c1"># Internal Force Vector</span>
-    <span class="n">qe</span> <span class="o">=</span> <span class="p">(</span><span class="n">A</span> <span class="o">*</span> <span class="n">stress</span> <span class="o">/</span> <span class="n">l0</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="o">-</span><span class="n">a1</span><span class="p">,</span> <span class="n">a1</span><span class="p">])</span>
-    <span class="k">return</span> <span class="n">qe</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">stress</span><span class="p">),</span> <span class="nb">float</span><span class="p">(</span><span class="n">strain</span><span class="p">)</span>
-</pre></div>
-</div>
+\[\begin{split}
+\varepsilon = \frac{du}{d\xi} = \frac{dN_1}{d\xi} u_1 + \frac{dN_2}{d\xi} u_2 = \left[-\frac{1}{L}, \frac{1}{L}\right] \begin{bmatrix} u_1 \\ u_2 \end{bmatrix} = \mathbf{B} \mathbf{d}^e
+\end{split}\]</div>
 </section>
+<section id="element-stiffness-derivation">
+<h3>2.3 Element stiffness derivation<a class="headerlink" href="#element-stiffness-derivation" title="Link to this heading">#</a></h3>
+<p>From the principle of virtual work, the internal virtual work equals:</p>
+<div class="math notranslate nohighlight">
+\[
+\delta W_{int} = \int_V \delta\varepsilon \, \sigma \, dV = \int_0^L \delta\varepsilon \, E\varepsilon \, A \, d\xi
+\]</div>
+<p>Substituting <span class="math notranslate nohighlight">\(\varepsilon = \mathbf{B}\mathbf{d}^e\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[
+\delta W_{int} = \delta\mathbf{d}^T \left( \int_0^L A E \, \mathbf{B}^T \mathbf{B} \, d\xi \right) \mathbf{d}^e = \delta\mathbf{d}^T \mathbf{K}^e \mathbf{d}^e
+\]</div>
+<p>Computing the integral:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\mathbf{K}^e = AE \int_0^L \begin{bmatrix} 1/L^2 &amp; -1/L^2 \\ -1/L^2 &amp; 1/L^2 \end{bmatrix} d\xi = \frac{EA}{L} \begin{bmatrix} 1 &amp; -1 \\ -1 &amp; 1 \end{bmatrix}
+\end{split}\]</div>
+<p><strong>Symmetry:</strong> <span class="math notranslate nohighlight">\(\mathbf{K}^e = (\mathbf{K}^e)^T\)</span> ✓</p>
+<p><strong>Positive semi-definiteness:</strong> <span class="math notranslate nohighlight">\(\mathbf{d}^T\mathbf{K}^e\mathbf{d} = \frac{EA}{L}(u_1 - u_2)^2 \geq 0\)</span> ✓</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="geometrically-nonlinear-formulation">
+<h2>3. Geometrically Nonlinear Formulation<a class="headerlink" href="#geometrically-nonlinear-formulation" title="Link to this heading">#</a></h2>
+<figure class="align-center" id="id2">
+<a class="reference internal image-reference" href="../_images/fig_bar_green_lagrange.png"><img alt="../_images/fig_bar_green_lagrange.png" src="../_images/fig_bar_green_lagrange.png" style="width: 480px;" />
+</a>
+<figcaption>
+<p><span class="caption-text"><strong>Figure 3.2:</strong> Reference and current configurations for Green-Lagrange strain derivation.</span><a class="headerlink" href="#id2" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<section id="discrete-green-lagrange-strain">
+<h3>3.1 Discrete Green-Lagrange strain<a class="headerlink" href="#discrete-green-lagrange-strain" title="Link to this heading">#</a></h3>
+<p>For a bar with initial node positions <span class="math notranslate nohighlight">\(\mathbf{X}_1, \mathbf{X}_2\)</span> and current positions <span class="math notranslate nohighlight">\(\mathbf{x}_1, \mathbf{x}_2\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbf{a}_0 = \mathbf{X}_2 - \mathbf{X}_1, \quad L_0 = \|\mathbf{a}_0\|
+\]</div>
+<div class="math notranslate nohighlight">
+\[
+\mathbf{a}_1 = \mathbf{x}_2 - \mathbf{x}_1 = \mathbf{a}_0 + \mathbf{u}_2 - \mathbf{u}_1, \quad L_1 = \|\mathbf{a}_1\|
+\]</div>
+<p>The discrete Green-Lagrange strain is:</p>
+<div class="math notranslate nohighlight">
+\[
+E = \frac{L_1^2 - L_0^2}{2L_0^2} = \frac{\mathbf{a}_1^T\mathbf{a}_1 - \mathbf{a}_0^T\mathbf{a}_0}{2L_0^2}
+\]</div>
+<p><strong>Linearization:</strong> For small displacements, <span class="math notranslate nohighlight">\(L_1 \approx L_0 + \delta L\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[
+E \approx \frac{(L_0 + \delta L)^2 - L_0^2}{2L_0^2} \approx \frac{\delta L}{L_0} = \varepsilon_{eng}
+\]</div>
+<p>recovering the engineering strain.</p>
+</section>
+<section id="second-piola-kirchhoff-stress">
+<h3>3.2 Second Piola-Kirchhoff stress<a class="headerlink" href="#second-piola-kirchhoff-stress" title="Link to this heading">#</a></h3>
+<p>The work-conjugate stress to Green-Lagrange strain is the Second Piola-Kirchhoff stress:</p>
+<div class="math notranslate nohighlight">
+\[
+S = \frac{\partial W}{\partial E}
+\]</div>
+<p>For linear elasticity: <span class="math notranslate nohighlight">\(S = E \cdot \mathcal{E}\)</span> (where <span class="math notranslate nohighlight">\(\mathcal{E}\)</span> is Young’s modulus).</p>
+<p>The axial force in the reference configuration is:</p>
+<div class="math notranslate nohighlight">
+\[
+N = A_0 S = A_0 E \cdot \mathcal{E}
+\]</div>
+</section>
+<section id="virtual-work-and-internal-force">
+<h3>3.3 Virtual work and internal force<a class="headerlink" href="#virtual-work-and-internal-force" title="Link to this heading">#</a></h3>
+<p>The variation of Green-Lagrange strain:</p>
+<div class="math notranslate nohighlight">
+\[
+\delta E = \frac{\partial E}{\partial \mathbf{a}_1} \cdot \delta\mathbf{a}_1 = \frac{\mathbf{a}_1^T}{L_0^2} \delta\mathbf{a}_1
+\]</div>
+<p>Since <span class="math notranslate nohighlight">\(\delta\mathbf{a}_1 = \delta\mathbf{u}_2 - \delta\mathbf{u}_1\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[
+\delta E = \frac{\mathbf{a}_1^T}{L_0^2} (\delta\mathbf{u}_2 - \delta\mathbf{u}_1)
+\]</div>
+<p>The internal virtual work:</p>
+<div class="math notranslate nohighlight">
+\[
+\delta W_{int} = \int_V S \, \delta E \, dV = N L_0 \cdot \delta E = \frac{N}{L_0} \mathbf{a}_1^T (\delta\mathbf{u}_2 - \delta\mathbf{u}_1)
+\]</div>
+<p>This gives the internal force vector:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\mathbf{q}^e = \frac{N}{L_0} \begin{bmatrix} -\mathbf{a}_1 \\ \mathbf{a}_1 \end{bmatrix}
+\end{split}\]</div>
 </section>
 <section id="tangent-stiffness-matrix">
-<h3>Tangent stiffness matrix<a class="headerlink" href="#tangent-stiffness-matrix" title="Link to this heading">#</a></h3>
-<p>For nonlinear solvers like the Newton-Raphson method, we require the tangent stiffness matrix, which is the derivative of the internal force vector with respect to the nodal displacements:</p>
+<h3>3.4 Tangent stiffness matrix<a class="headerlink" href="#tangent-stiffness-matrix" title="Link to this heading">#</a></h3>
+<p>The tangent stiffness is:</p>
 <div class="math notranslate nohighlight">
-\[ \mathbf{K}_{tan}^e = \frac{\partial \mathbf{q}^e}{\partial \mathbf{d}^e} \]</div>
-<p>Taking the derivative of the internal force vector with respect to displacement gives two distinct terms via the product rule, corresponding to <span class="math notranslate nohighlight">\(K_m\)</span> and <span class="math notranslate nohighlight">\(K_g\)</span>:</p>
+\[
+\mathbf{K}_{tan} = \frac{\partial \mathbf{q}^e}{\partial \mathbf{d}^e}
+\]</div>
+<p>Using the product rule on <span class="math notranslate nohighlight">\(\mathbf{q}^e = \frac{N}{L_0}[-\mathbf{a}_1; \mathbf{a}_1]\)</span>:</p>
 <div class="math notranslate nohighlight">
-\[ \mathbf{K}_{tan}^e = \mathbf{K}_m + \mathbf{K}_g \]</div>
-<section id="material-stiffness">
-<h4>Material stiffness<a class="headerlink" href="#material-stiffness" title="Link to this heading">#</a></h4>
-<p>The material stiffness arises from taking the variation of the normal force <span class="math notranslate nohighlight">\(N\)</span> itself (which depends on the strain variation). It projects the axial stiffness into the current spatial configuration:</p>
+\[\begin{split}
+\mathbf{K}_{tan} = \underbrace{\frac{1}{L_0}\frac{\partial N}{\partial \mathbf{d}^e}\begin{bmatrix}-\mathbf{a}_1\\\mathbf{a}_1\end{bmatrix}^T}_{\mathbf{K}_m} + \underbrace{\frac{N}{L_0}\frac{\partial}{\partial\mathbf{d}^e}\begin{bmatrix}-\mathbf{a}_1\\\mathbf{a}_1\end{bmatrix}}_{\mathbf{K}_g}
+\end{split}\]</div>
+<p><strong>Material stiffness <span class="math notranslate nohighlight">\(\mathbf{K}_m\)</span>:</strong></p>
 <div class="math notranslate nohighlight">
-\[\begin{split} \mathbf{K}_m = \frac{E A}{l_0^3} \begin{bmatrix} \mathbf{a}_1 \mathbf{a}_1^T &amp; -\mathbf{a}_1 \mathbf{a}_1^T \\ -\mathbf{a}_1 \mathbf{a}_1^T &amp; \mathbf{a}_1 \mathbf{a}_1^T \end{bmatrix} \end{split}\]</div>
+\[\begin{split}
+\frac{\partial N}{\partial \mathbf{d}^e} = A\mathcal{E}\frac{\partial E}{\partial \mathbf{d}^e} = \frac{A\mathcal{E}}{L_0^2}\begin{bmatrix}-\mathbf{a}_1^T\\\mathbf{a}_1^T\end{bmatrix}
+\end{split}\]</div>
+<p>Therefore:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\mathbf{K}_m = \frac{A\mathcal{E}}{L_0^3} \begin{bmatrix} \mathbf{a}_1\mathbf{a}_1^T &amp; -\mathbf{a}_1\mathbf{a}_1^T \\ -\mathbf{a}_1\mathbf{a}_1^T &amp; \mathbf{a}_1\mathbf{a}_1^T \end{bmatrix}
+\end{split}\]</div>
+<p><strong>Geometric stiffness <span class="math notranslate nohighlight">\(\mathbf{K}_g\)</span>:</strong></p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\frac{\partial}{\partial\mathbf{d}^e}\begin{bmatrix}-\mathbf{a}_1\\\mathbf{a}_1\end{bmatrix} = \begin{bmatrix}\mathbf{I} &amp; -\mathbf{I} \\ -\mathbf{I} &amp; \mathbf{I}\end{bmatrix}
+\end{split}\]</div>
+<p>Therefore:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\mathbf{K}_g = \frac{N}{L_0} \begin{bmatrix} \mathbf{I} &amp; -\mathbf{I} \\ -\mathbf{I} &amp; \mathbf{I} \end{bmatrix}
+\end{split}\]</div>
+<p><strong>Total tangent:</strong></p>
+<div class="math notranslate nohighlight">
+\[
+\mathbf{K}_{tan} = \mathbf{K}_m + \mathbf{K}_g
+\]</div>
 </section>
-<section id="geometric-stiffness">
-<h4>Geometric stiffness<a class="headerlink" href="#geometric-stiffness" title="Link to this heading">#</a></h4>
-<p>The geometric stiffness part comes from the derivative of the spatial vector <span class="math notranslate nohighlight">\(\mathbf{a}_1\)</span> while treating the axial force <span class="math notranslate nohighlight">\(N\)</span> as constant. It represents how the current tension/compression modifies the structural stiffness, regardless of material changes.</p>
-<p>In a purely 1D local context, this evaluates strictly as:
-$<span class="math notranslate nohighlight">\( K_g = \frac{N}{L} \begin{bmatrix} 1 &amp; -1 \\ -1 &amp; 1 \end{bmatrix} \)</span>$</p>
-<p>For 2D or 3D trusses, it generalizes to:
-$<span class="math notranslate nohighlight">\( \mathbf{K}_g = \frac{N}{l_0} \begin{bmatrix} \mathbf{I} &amp; -\mathbf{I} \\ -\mathbf{I} &amp; \mathbf{I} \end{bmatrix} \)</span>$</p>
 </section>
-<section id="implementation-kebar">
-<h4>Implementation: <code class="docutils literal notranslate"><span class="pre">kebar</span></code><a class="headerlink" href="#implementation-kebar" title="Link to this heading">#</a></h4>
-<p><code class="docutils literal notranslate"><span class="pre">kebar</span></code> builds the tangent matrix from the same current and reference coordinates used in <code class="docutils literal notranslate"><span class="pre">qebar</span></code>, so the solver sees a consistent force-stiffness pair at every Newton iteration.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">kebar</span><span class="p">(</span><span class="n">Xe0</span><span class="p">,</span> <span class="n">Xe1</span><span class="p">,</span> <span class="n">Ge</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the tangent stiffness matrix of a geometrically nonlinear bar element.&quot;&quot;&quot;</span>
-    <span class="n">initial</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Xe0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
-    <span class="n">current</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Xe1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
-    <span class="n">props</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Ge</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<hr class="docutils" />
+<section id="mass-matrix">
+<h2>4. Mass Matrix<a class="headerlink" href="#mass-matrix" title="Link to this heading">#</a></h2>
+<p>For dynamic analysis, we require the mass matrix relating nodal accelerations to inertial forces.</p>
+<section id="consistent-mass-matrix">
+<h3>4.1 Consistent mass matrix<a class="headerlink" href="#consistent-mass-matrix" title="Link to this heading">#</a></h3>
+<p>The kinetic energy of a bar element is:</p>
+<div class="math notranslate nohighlight">
+\[
+T = \frac{1}{2} \int_0^L \rho A \, \dot{u}^2 \, dx
+\]</div>
+<p>Interpolating <span class="math notranslate nohighlight">\(\dot{u} = \mathbf{N}\dot{\mathbf{d}}^e\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[
+T = \frac{1}{2} \dot{\mathbf{d}}^T \left( \int_0^L \rho A \, \mathbf{N}^T \mathbf{N} \, dx \right) \dot{\mathbf{d}} = \frac{1}{2} \dot{\mathbf{d}}^T \mathbf{M}^e \dot{\mathbf{d}}
+\]</div>
+<p>Computing the integral:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\mathbf{M}^e = \rho A \int_0^L \begin{bmatrix} N_1^2 &amp; N_1 N_2 \\ N_1 N_2 &amp; N_2^2 \end{bmatrix} dx
+\end{split}\]</div>
+<p>Using <span class="math notranslate nohighlight">\(N_1 = 1 - \frac{x}{L}\)</span> and <span class="math notranslate nohighlight">\(N_2 = \frac{x}{L}\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[
+\int_0^L N_1^2 \, dx = \frac{L}{3}, \quad \int_0^L N_2^2 \, dx = \frac{L}{3}, \quad \int_0^L N_1 N_2 \, dx = \frac{L}{6}
+\]</div>
+<p><strong>Proof of <span class="math notranslate nohighlight">\(\int_0^L N_1^2 dx = L/3\)</span>:</strong></p>
+<div class="math notranslate nohighlight">
+\[
+\int_0^L \left(1 - \frac{x}{L}\right)^2 dx = \int_0^L \left(1 - \frac{2x}{L} + \frac{x^2}{L^2}\right) dx = \left[x - \frac{x^2}{L} + \frac{x^3}{3L^2}\right]_0^L = L - L + \frac{L}{3} = \frac{L}{3} \quad \checkmark
+\]</div>
+<p>Therefore the <strong>consistent mass matrix</strong> is:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\mathbf{M}^e_{cons} = \frac{\rho A L}{6} \begin{bmatrix} 2 &amp; 1 \\ 1 &amp; 2 \end{bmatrix}
+\end{split}\]</div>
+</section>
+<section id="lumped-mass-matrix">
+<h3>4.2 Lumped mass matrix<a class="headerlink" href="#lumped-mass-matrix" title="Link to this heading">#</a></h3>
+<p>The lumped mass matrix concentrates mass at the nodes:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\mathbf{M}^e_{lump} = \frac{\rho A L}{2} \begin{bmatrix} 1 &amp; 0 \\ 0 &amp; 1 \end{bmatrix}
+\end{split}\]</div>
+<p><strong>Conservation property:</strong> Both formulations preserve total mass:</p>
+<div class="math notranslate nohighlight">
+\[
+\text{trace}(\mathbf{M}_{cons}) = \frac{\rho A L}{6}(2 + 2) = \frac{2\rho A L}{3} \neq \rho A L
+\]</div>
+<p>Wait—the consistent matrix does not preserve total mass per DOF. However, the sum of all entries equals <span class="math notranslate nohighlight">\(\rho A L\)</span> in both cases:</p>
+<div class="math notranslate nohighlight">
+\[
+\sum_{ij} M^{cons}_{ij} = \frac{\rho A L}{6}(2 + 1 + 1 + 2) = \rho A L \quad \checkmark
+\]</div>
+</section>
+</section>
+<hr class="docutils" />
+<section id="transformation-to-global-coordinates">
+<h2>5. Transformation to Global Coordinates<a class="headerlink" href="#transformation-to-global-coordinates" title="Link to this heading">#</a></h2>
+<p>For 2D/3D trusses, the local stiffness must be transformed to global coordinates.</p>
+<section id="rotation-matrix">
+<h3>5.1 Rotation matrix<a class="headerlink" href="#rotation-matrix" title="Link to this heading">#</a></h3>
+<p>Let <span class="math notranslate nohighlight">\(\mathbf{e}\)</span> be the unit vector along the bar from node 1 to node 2:</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbf{e} = \frac{\mathbf{X}_2 - \mathbf{X}_1}{L_0}
+\]</div>
+<p>In 2D, <span class="math notranslate nohighlight">\(\mathbf{e} = [\cos\theta, \sin\theta]^T\)</span> where <span class="math notranslate nohighlight">\(\theta\)</span> is the angle with the global <span class="math notranslate nohighlight">\(x\)</span>-axis.</p>
+<p>The transformation matrix <span class="math notranslate nohighlight">\(\mathbf{T}\)</span> relates local DOFs to global DOFs:</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbf{d}^{local} = \mathbf{T} \mathbf{d}^{global}
+\]</div>
+<p>For 2D:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\mathbf{T} = \begin{bmatrix} \cos\theta &amp; \sin\theta &amp; 0 &amp; 0 \\ 0 &amp; 0 &amp; \cos\theta &amp; \sin\theta \end{bmatrix}
+\end{split}\]</div>
+</section>
+<section id="stiffness-transformation">
+<h3>5.2 Stiffness transformation<a class="headerlink" href="#stiffness-transformation" title="Link to this heading">#</a></h3>
+<p>The global stiffness is obtained via congruent transformation:</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbf{K}^{global} = \mathbf{T}^T \mathbf{K}^{local} \mathbf{T}
+\]</div>
+<p><strong>Proof of symmetry preservation:</strong> If <span class="math notranslate nohighlight">\(\mathbf{K}^{local}\)</span> is symmetric:</p>
+<div class="math notranslate nohighlight">
+\[
+(\mathbf{K}^{global})^T = (\mathbf{T}^T \mathbf{K}^{local} \mathbf{T})^T = \mathbf{T}^T (\mathbf{K}^{local})^T \mathbf{T} = \mathbf{T}^T \mathbf{K}^{local} \mathbf{T} = \mathbf{K}^{global} \quad \checkmark
+\]</div>
+</section>
+</section>
+<hr class="docutils" />
+<section id="implementation-reference">
+<h2>6. Implementation Reference<a class="headerlink" href="#implementation-reference" title="Link to this heading">#</a></h2>
+<section id="element-force-qebar">
+<h3>Element force: <code class="docutils literal notranslate"><span class="pre">qebar</span></code><a class="headerlink" href="#element-force-qebar" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-    <span class="n">a0</span> <span class="o">=</span> <span class="p">(</span><span class="n">initial</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">initial</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="n">l0</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">a0</span><span class="p">))</span>
-    <span class="n">a1</span> <span class="o">=</span> <span class="p">(</span><span class="n">current</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">current</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="n">l1</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">a1</span><span class="p">))</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">qebar</span><span class="p">(</span><span class="n">Xe0</span><span class="p">,</span> <span class="n">Xe1</span><span class="p">,</span> <span class="n">Ge</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Internal force vector for geometrically nonlinear bar.&quot;&quot;&quot;</span>
+    <span class="n">a0</span> <span class="o">=</span> <span class="p">(</span><span class="n">Xe0</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">Xe0</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">L0</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">a0</span><span class="p">))</span>
+    <span class="n">a1</span> <span class="o">=</span> <span class="p">(</span><span class="n">Xe1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">Xe1</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">L1</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">a1</span><span class="p">))</span>
 
-    <span class="n">A</span> <span class="o">=</span> <span class="n">props</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">E</span> <span class="o">=</span> <span class="n">props</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">props</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="mf">1.0</span>
+    <span class="n">A</span><span class="p">,</span> <span class="n">E</span> <span class="o">=</span> <span class="n">Ge</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Ge</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
     
-    <span class="c1"># Strain and Normal Force</span>
-    <span class="n">strain</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">l1</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="n">l0</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">l0</span><span class="o">**</span><span class="mi">2</span>
-    <span class="n">normal_force</span> <span class="o">=</span> <span class="n">A</span> <span class="o">*</span> <span class="n">E</span> <span class="o">*</span> <span class="n">strain</span>
+    <span class="c1"># Green-Lagrange strain</span>
+    <span class="n">strain</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">L1</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="n">L0</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">L0</span><span class="o">**</span><span class="mi">2</span>
+    <span class="n">stress</span> <span class="o">=</span> <span class="n">E</span> <span class="o">*</span> <span class="n">strain</span>
     
-    <span class="c1"># Matrix Components</span>
-    <span class="n">identity</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">a0</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
-    
-    <span class="c1"># K_m (Material Stiffness)</span>
-    <span class="n">K_m</span> <span class="o">=</span> <span class="p">(</span><span class="n">E</span> <span class="o">*</span> <span class="n">A</span> <span class="o">/</span> <span class="n">l0</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">block</span><span class="p">([</span>
-        <span class="p">[</span> <span class="n">a1</span> <span class="o">@</span> <span class="n">a1</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="o">-</span><span class="n">a1</span> <span class="o">@</span> <span class="n">a1</span><span class="o">.</span><span class="n">T</span><span class="p">],</span>
-        <span class="p">[</span><span class="o">-</span><span class="n">a1</span> <span class="o">@</span> <span class="n">a1</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>  <span class="n">a1</span> <span class="o">@</span> <span class="n">a1</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
-    <span class="p">])</span>
-    
-    <span class="c1"># K_g (Geometric Stiffness)</span>
-    <span class="n">K_g</span> <span class="o">=</span> <span class="p">(</span><span class="n">normal_force</span> <span class="o">/</span> <span class="n">l0</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">block</span><span class="p">([</span>
-        <span class="p">[</span> <span class="n">identity</span><span class="p">,</span> <span class="o">-</span><span class="n">identity</span><span class="p">],</span>
-        <span class="p">[</span><span class="o">-</span><span class="n">identity</span><span class="p">,</span>  <span class="n">identity</span><span class="p">]</span>
-    <span class="p">])</span>
-    
-    <span class="k">return</span> <span class="n">K_m</span> <span class="o">+</span> <span class="n">K_g</span>
+    <span class="c1"># Internal force vector</span>
+    <span class="n">qe</span> <span class="o">=</span> <span class="p">(</span><span class="n">A</span> <span class="o">*</span> <span class="n">stress</span> <span class="o">/</span> <span class="n">L0</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="o">-</span><span class="n">a1</span><span class="p">,</span> <span class="n">a1</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">qe</span><span class="p">,</span> <span class="n">stress</span><span class="p">,</span> <span class="n">strain</span>
 </pre></div>
 </div>
 </section>
-</section>
-</section>
-<section id="newton-raphson-iteration-and-example">
-<h2>3.4 Newton-Raphson iteration and example<a class="headerlink" href="#newton-raphson-iteration-and-example" title="Link to this heading">#</a></h2>
-<p>To solve a nonlinear equilibrium path <span class="math notranslate nohighlight">\(\mathbf{q}(\mathbf{d}) = \mathbf{f}_{ext}\)</span>, the Newton-Raphson scheme iteratively finds the displacement increment <span class="math notranslate nohighlight">\(\Delta \mathbf{d}\)</span>.</p>
-<p>Below is a complete, runnable Python script solving a 2-bar snap-through truss model using a manual Newton-Raphson loop.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
-
-<span class="c1"># ---------------------------------------------------------</span>
-<span class="c1"># Element Functions</span>
-<span class="c1"># ---------------------------------------------------------</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">qebar</span><span class="p">(</span><span class="n">Xe0</span><span class="p">,</span> <span class="n">Xe1</span><span class="p">,</span> <span class="n">Ge</span><span class="p">):</span>
+<section id="tangent-stiffness-kebar">
+<h3>Tangent stiffness: <code class="docutils literal notranslate"><span class="pre">kebar</span></code><a class="headerlink" href="#tangent-stiffness-kebar" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">kebar</span><span class="p">(</span><span class="n">Xe0</span><span class="p">,</span> <span class="n">Xe1</span><span class="p">,</span> <span class="n">Ge</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Tangent stiffness for geometrically nonlinear bar.&quot;&quot;&quot;</span>
     <span class="n">a0</span> <span class="o">=</span> <span class="p">(</span><span class="n">Xe0</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">Xe0</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="n">l0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">a0</span><span class="p">)</span>
+    <span class="n">L0</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">a0</span><span class="p">))</span>
     <span class="n">a1</span> <span class="o">=</span> <span class="p">(</span><span class="n">Xe1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">Xe1</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="n">l1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">a1</span><span class="p">)</span>
+
     <span class="n">A</span><span class="p">,</span> <span class="n">E</span> <span class="o">=</span> <span class="n">Ge</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Ge</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
     
-    <span class="n">strain</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">l1</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="n">l0</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">l0</span><span class="o">**</span><span class="mi">2</span>
-    <span class="n">stress</span> <span class="o">=</span> <span class="n">E</span> <span class="o">*</span> <span class="n">strain</span>
-    <span class="n">qe</span> <span class="o">=</span> <span class="p">(</span><span class="n">A</span> <span class="o">*</span> <span class="n">stress</span> <span class="o">/</span> <span class="n">l0</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="o">-</span><span class="n">a1</span><span class="p">,</span> <span class="n">a1</span><span class="p">])</span>
-    <span class="k">return</span> <span class="n">qe</span>
-
-<span class="k">def</span><span class="w"> </span><span class="nf">kebar</span><span class="p">(</span><span class="n">Xe0</span><span class="p">,</span> <span class="n">Xe1</span><span class="p">,</span> <span class="n">Ge</span><span class="p">):</span>
-    <span class="n">a0</span> <span class="o">=</span> <span class="p">(</span><span class="n">Xe0</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">Xe0</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="n">l0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">a0</span><span class="p">)</span>
-    <span class="n">a1</span> <span class="o">=</span> <span class="p">(</span><span class="n">Xe1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">Xe1</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="n">l1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">a1</span><span class="p">)</span>
-    <span class="n">A</span><span class="p">,</span> <span class="n">E</span> <span class="o">=</span> <span class="n">Ge</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Ge</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">strain</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">a1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="n">L0</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">L0</span><span class="o">**</span><span class="mi">2</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="n">A</span> <span class="o">*</span> <span class="n">E</span> <span class="o">*</span> <span class="n">strain</span>
     
-    <span class="n">strain</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">l1</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="n">l0</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">l0</span><span class="o">**</span><span class="mi">2</span>
-    <span class="n">normal_force</span> <span class="o">=</span> <span class="n">A</span> <span class="o">*</span> <span class="n">E</span> <span class="o">*</span> <span class="n">strain</span>
+    <span class="n">I</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">a0</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
     
-    <span class="n">I</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
-    <span class="n">K_m</span> <span class="o">=</span> <span class="p">(</span><span class="n">E</span> <span class="o">*</span> <span class="n">A</span> <span class="o">/</span> <span class="n">l0</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">block</span><span class="p">([</span>
+    <span class="n">K_m</span> <span class="o">=</span> <span class="p">(</span><span class="n">E</span> <span class="o">*</span> <span class="n">A</span> <span class="o">/</span> <span class="n">L0</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">block</span><span class="p">([</span>
         <span class="p">[</span> <span class="n">a1</span> <span class="o">@</span> <span class="n">a1</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="o">-</span><span class="n">a1</span> <span class="o">@</span> <span class="n">a1</span><span class="o">.</span><span class="n">T</span><span class="p">],</span>
         <span class="p">[</span><span class="o">-</span><span class="n">a1</span> <span class="o">@</span> <span class="n">a1</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>  <span class="n">a1</span> <span class="o">@</span> <span class="n">a1</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
     <span class="p">])</span>
-    <span class="n">K_g</span> <span class="o">=</span> <span class="p">(</span><span class="n">normal_force</span> <span class="o">/</span> <span class="n">l0</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">block</span><span class="p">([</span>
+    
+    <span class="n">K_g</span> <span class="o">=</span> <span class="p">(</span><span class="n">N</span> <span class="o">/</span> <span class="n">L0</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">block</span><span class="p">([</span>
         <span class="p">[</span> <span class="n">I</span><span class="p">,</span> <span class="o">-</span><span class="n">I</span><span class="p">],</span>
         <span class="p">[</span><span class="o">-</span><span class="n">I</span><span class="p">,</span>  <span class="n">I</span><span class="p">]</span>
     <span class="p">])</span>
+    
     <span class="k">return</span> <span class="n">K_m</span> <span class="o">+</span> <span class="n">K_g</span>
-
-<span class="c1"># ---------------------------------------------------------</span>
-<span class="c1"># Model Definition: 2-Bar Snap-Through Truss</span>
-<span class="c1"># ---------------------------------------------------------</span>
-<span class="c1"># Nodes: 0 (Left pin), 1 (Right pin), 2 (Center, loaded)</span>
-<span class="n">nodes0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
-    <span class="p">[</span><span class="o">-</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
-    <span class="p">[</span> <span class="mf">10.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
-    <span class="p">[</span>  <span class="mf">0.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">]</span>
-<span class="p">])</span>
-
-<span class="c1"># Two elements connecting nodes (0-&gt;2) and (1-&gt;2)</span>
-<span class="n">elems</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]]</span>
-<span class="n">props</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">]</span> <span class="c1"># Area = 1.0, E = 1000.0</span>
-
-<span class="c1"># Free DOFs: Node 2 x and y (Indices 4 and 5)</span>
-<span class="n">free_dofs</span> <span class="o">=</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
-
-<span class="c1"># External Load at Node 2 (y-direction)</span>
-<span class="n">f_ext</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
-<span class="n">f_ext</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mf">250.0</span>  <span class="c1"># Push down</span>
-
-<span class="c1"># Initial displacement</span>
-<span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
-
-<span class="c1"># ---------------------------------------------------------</span>
-<span class="c1"># Newton-Raphson Loop</span>
-<span class="c1"># ---------------------------------------------------------</span>
-<span class="n">tol</span> <span class="o">=</span> <span class="mf">1e-6</span>
-<span class="n">max_iter</span> <span class="o">=</span> <span class="mi">20</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Iter | Residual Norm&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--------------------&quot;</span><span class="p">)</span>
-<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_iter</span><span class="p">):</span>
-    <span class="c1"># Current positions</span>
-    <span class="n">nodes1</span> <span class="o">=</span> <span class="n">nodes0</span> <span class="o">+</span> <span class="n">u</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-    
-    <span class="c1"># Global Assembly</span>
-    <span class="n">K_global</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
-    <span class="n">q_global</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
-    
-    <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">elems</span><span class="p">:</span>
-        <span class="n">idx</span> <span class="o">=</span> <span class="p">[</span><span class="n">el</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span> <span class="n">el</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="mi">2</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">el</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span> <span class="n">el</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="mi">2</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
-        
-        <span class="n">Xe0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">nodes0</span><span class="p">[</span><span class="n">el</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">nodes0</span><span class="p">[</span><span class="n">el</span><span class="p">[</span><span class="mi">1</span><span class="p">]]])</span>
-        <span class="n">Xe1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">nodes1</span><span class="p">[</span><span class="n">el</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">nodes1</span><span class="p">[</span><span class="n">el</span><span class="p">[</span><span class="mi">1</span><span class="p">]]])</span>
-        
-        <span class="n">ke</span> <span class="o">=</span> <span class="n">kebar</span><span class="p">(</span><span class="n">Xe0</span><span class="p">,</span> <span class="n">Xe1</span><span class="p">,</span> <span class="n">props</span><span class="p">)</span>
-        <span class="n">qe</span> <span class="o">=</span> <span class="n">qebar</span><span class="p">(</span><span class="n">Xe0</span><span class="p">,</span> <span class="n">Xe1</span><span class="p">,</span> <span class="n">props</span><span class="p">)</span>
-        
-        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
-            <span class="n">q_global</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="n">r</span><span class="p">]]</span> <span class="o">+=</span> <span class="n">qe</span><span class="p">[</span><span class="n">r</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
-            <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
-                <span class="n">K_global</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="n">r</span><span class="p">],</span> <span class="n">idx</span><span class="p">[</span><span class="n">c</span><span class="p">]]</span> <span class="o">+=</span> <span class="n">ke</span><span class="p">[</span><span class="n">r</span><span class="p">,</span> <span class="n">c</span><span class="p">]</span>
-                
-    <span class="c1"># Check Residual</span>
-    <span class="n">R</span> <span class="o">=</span> <span class="n">f_ext</span><span class="p">[</span><span class="n">free_dofs</span><span class="p">]</span> <span class="o">-</span> <span class="n">q_global</span><span class="p">[</span><span class="n">free_dofs</span><span class="p">]</span>
-    <span class="n">norm_R</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">R</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">i</span><span class="si">:</span><span class="s2">4d</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">norm_R</span><span class="si">:</span><span class="s2">.6e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    
-    <span class="k">if</span> <span class="n">norm_R</span> <span class="o">&lt;</span> <span class="n">tol</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Converged!&quot;</span><span class="p">)</span>
-        <span class="k">break</span>
-        
-    <span class="c1"># Tangent stiffness at free DOFs</span>
-    <span class="n">K_free</span> <span class="o">=</span> <span class="n">K_global</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ix_</span><span class="p">(</span><span class="n">free_dofs</span><span class="p">,</span> <span class="n">free_dofs</span><span class="p">)]</span>
-    
-    <span class="c1"># Solve for displacement increment</span>
-    <span class="n">du_free</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">K_free</span><span class="p">,</span> <span class="n">R</span><span class="p">)</span>
-    <span class="n">u</span><span class="p">[</span><span class="n">free_dofs</span><span class="p">]</span> <span class="o">+=</span> <span class="n">du_free</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Final Displacements:&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Node 2 u_x = </span><span class="si">{</span><span class="n">u</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Node 2 u_y = </span><span class="si">{</span><span class="n">u</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
+</section>
 </section>
 </section>
 
@@ -725,26 +828,39 @@ $<span class="math notranslate nohighlight">\( \mathbf{K}_g = \frac{N}{l_0} \beg
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#linear-1d-bar-formulation">3.1 Linear 1D Bar Formulation</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#kinematics-and-strain">Kinematics and strain</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#linear-stiffness-matrix">Linear stiffness matrix</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#continuum-mechanics-foundation">1. Continuum Mechanics Foundation</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#deformation-gradient">1.1 Deformation gradient</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#strain-measures">1.2 Strain measures</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#geometric-nonlinear-formulation">3.2 Geometric nonlinear formulation</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#green-lagrange-strain">Green-Lagrange strain</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#internal-force-response">Internal force response</a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#implementation-qebar">Implementation: <code class="docutils literal notranslate"><span class="pre">qebar</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#linear-bar-element">2. Linear Bar Element</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#shape-functions">2.1 Shape functions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#strain-displacement-relation">2.2 Strain-displacement relation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#element-stiffness-derivation">2.3 Element stiffness derivation</a></li>
 </ul>
 </li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tangent-stiffness-matrix">Tangent stiffness matrix</a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#material-stiffness">Material stiffness</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#geometric-stiffness">Geometric stiffness</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#implementation-kebar">Implementation: <code class="docutils literal notranslate"><span class="pre">kebar</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#geometrically-nonlinear-formulation">3. Geometrically Nonlinear Formulation</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#discrete-green-lagrange-strain">3.1 Discrete Green-Lagrange strain</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#second-piola-kirchhoff-stress">3.2 Second Piola-Kirchhoff stress</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#virtual-work-and-internal-force">3.3 Virtual work and internal force</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tangent-stiffness-matrix">3.4 Tangent stiffness matrix</a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mass-matrix">4. Mass Matrix</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#consistent-mass-matrix">4.1 Consistent mass matrix</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#lumped-mass-matrix">4.2 Lumped mass matrix</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#newton-raphson-iteration-and-example">3.4 Newton-Raphson iteration and example</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#transformation-to-global-coordinates">5. Transformation to Global Coordinates</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#rotation-matrix">5.1 Rotation matrix</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#stiffness-transformation">5.2 Stiffness transformation</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#implementation-reference">6. Implementation Reference</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#element-force-qebar">Element force: <code class="docutils literal notranslate"><span class="pre">qebar</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tangent-stiffness-kebar">Tangent stiffness: <code class="docutils literal notranslate"><span class="pre">kebar</span></code></a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 

@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>API Reference &#8212; femlabpy 0.6.0 documentation</title>
+    <title>API Reference &#8212; femlabpy</title>
   
   
   
@@ -31,7 +31,7 @@
 <link href="_static/styles/pydata-sphinx-theme.css?digest=7f76b32a3354e82990f2" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
-    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=985dfaa0" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=ba1a7e05" />
   
   <!-- So that users can add custom icons -->
   <script defer src="_static/scripts/fontawesome.js?digest=7f76b32a3354e82990f2"></script>
@@ -44,7 +44,7 @@
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'api';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
-    <script src="_static/custom.js?v=35c928a7"></script>
+    <script src="_static/custom.js?v=0184bad5"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="femlabpy.core" href="generated/femlabpy.core.html" />
@@ -117,7 +117,7 @@
   
   
   
-    <p class="title logo__title">femlabpy 0.6.0 documentation</p>
+    <p class="title logo__title">femlabpy</p>
   
 </a></div>
     
@@ -414,80 +414,60 @@
                   
   <section id="api-reference">
 <h1>API Reference<a class="headerlink" href="#api-reference" title="Link to this heading">#</a></h1>
-<div class="fp-home-intro docutils container">
-<div class="fp-kicker docutils container">
-<p>Module-level ownership and full symbol reference</p>
-</div>
-<div class="fp-lead docutils container">
-<p>This section is the module-level reference for <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code>. It is
-organized to help with two tasks at the same time: finding the exact
-symbol you need and understanding which module owns which part of the
-workflow.</p>
-</div>
-</div>
-<div class="fp-card-grid docutils container">
-<div class="fp-card docutils container">
-<p><strong>Core workflow modules</strong></p>
+<div class="fp-hero fp-hero--compact">
+  <div class="fp-hero-title">API Reference</div>
+  <div class="fp-hero-subtitle">
+    Module-level documentation &mdash; find symbols, understand ownership, read full signatures.
+  </div>
+</div><div class="fp-card-grid docutils container">
+<div class="fp-card fp-card-accent-blue docutils container">
+<p><strong>Core Workflow</strong></p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">femlabpy.core</span></code> allocates the global containers.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">femlabpy.assembly</span></code> scatters element matrices and vectors.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">femlabpy.loads</span></code> maps nodal force tables into the global right-hand side.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">femlabpy.boundary</span></code> applies prescribed displacements and exact constraints.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">femlabpy.core</span></code> &amp;mdash; global array allocation</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">femlabpy.assembly</span></code> &amp;mdash; element scatter</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">femlabpy.loads</span></code> &amp;mdash; nodal force mapping</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">femlabpy.boundary</span></code> &amp;mdash; prescribed displacements</p></li>
+</ul>
+</div>
+<div class="fp-card fp-card-accent-red docutils container">
+<p><strong>Dynamics &amp; Nonlinear</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">femlabpy.dynamics</span></code> &amp;mdash; time-history solvers, FRF</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">femlabpy.damping</span></code> &amp;mdash; Rayleigh &amp; modal damping</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">femlabpy.modal</span></code> &amp;mdash; eigenproblem, participation</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">femlabpy.solvers</span></code> &amp;mdash; legacy nonlinear drivers</p></li>
+</ul>
+</div>
+<div class="fp-card fp-card-accent-green docutils container">
+<p><strong>Element Kernels</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">femlabpy.elements.bars</span></code> &amp;mdash; bar K, f, M</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">femlabpy.elements.triangles</span></code> &amp;mdash; T3 family</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">femlabpy.elements.quads</span></code> &amp;mdash; Q4 elastic/plastic/mass</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">femlabpy.elements.solids</span></code> &amp;mdash; T4 &amp; H8 solids</p></li>
 </ul>
 </div>
 <div class="fp-card docutils container">
-<p><strong>Dynamics and nonlinear modules</strong></p>
+<p><strong>Support &amp; I/O</strong></p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">femlabpy.dynamics</span></code> contains load builders, time-history solvers, FRF
-utilities, and response plotting helpers.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">femlabpy.damping</span></code> builds Rayleigh and modal damping matrices.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">femlabpy.modal</span></code> solves the eigenproblem and computes participation.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">femlabpy.solvers</span></code> exposes the larger legacy nonlinear drivers.</p></li>
-</ul>
-</div>
-<div class="fp-card docutils container">
-<p><strong>Element kernel modules</strong></p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">femlabpy.elements.bars</span></code> implements bar stiffness, internal-force, and mass routines.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">femlabpy.elements.triangles</span></code> implements the T3 family.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">femlabpy.elements.quads</span></code> implements Q4 elastic, scalar, plastic, and mass kernels.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">femlabpy.elements.solids</span></code> implements T4 and H8 solid kernels.</p></li>
-</ul>
-</div>
-<div class="fp-card docutils container">
-<p><strong>Support modules</strong></p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">femlabpy.periodic</span></code> handles periodic pairing, constraints, and homogenization.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">femlabpy.postprocess</span></code> extracts reactions and compact result tables.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">femlabpy.plotting</span></code> provides lightweight Matplotlib views.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">femlabpy.io.gmsh</span></code> reads Gmsh meshes into normalized tables.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">femlabpy.matlab</span></code> exposes packaged legacy benchmark decks and wrappers.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">femlabpy.materials</span></code> re-exports invariant and plasticity helpers.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">femlabpy.periodic</span></code> &amp;mdash; pairing &amp; homogenization</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">femlabpy.postprocess</span></code> &amp;mdash; reactions, result tables</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">femlabpy.plotting</span></code> &amp;mdash; Matplotlib views</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">femlabpy.io.gmsh</span></code> &amp;mdash; Gmsh mesh import</p></li>
 </ul>
 </div>
 </div>
-<section id="how-to-read-this-section">
-<h2>How To Read This Section<a class="headerlink" href="#how-to-read-this-section" title="Link to this heading">#</a></h2>
-<p>If you are new to the codebase, do not read the module pages in alphabetical
-order. Read them by responsibility:</p>
-<ol class="arabic simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">femlabpy.core</span></code> for global array allocation.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">femlabpy.assembly</span></code>, <code class="docutils literal notranslate"><span class="pre">femlabpy.loads</span></code>, and <code class="docutils literal notranslate"><span class="pre">femlabpy.boundary</span></code> for
-system construction.</p></li>
-<li><p>The element modules for low-level stiffness, internal-force, and mass kernels.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">femlabpy.modal</span></code>, <code class="docutils literal notranslate"><span class="pre">femlabpy.damping</span></code>, <code class="docutils literal notranslate"><span class="pre">femlabpy.dynamics</span></code>, and
-<code class="docutils literal notranslate"><span class="pre">femlabpy.solvers</span></code> for modal, transient, and nonlinear workflows.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">femlabpy.periodic</span></code> and <code class="docutils literal notranslate"><span class="pre">femlabpy.io.gmsh</span></code> for periodic or mesh-driven
-workflows.</p></li>
-</ol>
-<div class="fp-section-note docutils container">
-<p>Each module page now includes both a summary table and the full rendered
-documentation for its public functions and classes. The summary table is the
-fastest way to find a symbol, and the lower part of each page holds the full
-reference text.</p>
-</div>
-</section>
-<section id="complete-module-index">
+<div class="fp-callout-grid">
+  <div class="fp-callout fp-callout--blue">
+    <div class="fp-callout-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+    </div>
+    <div class="fp-callout-body">
+      <strong>Reading order</strong>
+      <p>Read by responsibility: <code>core</code> &rarr; <code>assembly / loads / boundary</code> &rarr; element kernels &rarr; dynamics &rarr; periodic / I/O.</p>
+    </div>
+  </div>
+</div><section id="complete-module-index">
 <h2>Complete Module Index<a class="headerlink" href="#complete-module-index" title="Link to this heading">#</a></h2>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
@@ -598,7 +578,6 @@ reference text.</p>
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-to-read-this-section">How To Read This Section</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#complete-module-index">Complete Module Index</a></li>
 </ul>
   </nav></div>

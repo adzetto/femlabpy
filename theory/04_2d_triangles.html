@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>2D Triangular Elements &#8212; femlabpy 0.6.0 documentation</title>
+    <title>2D Triangular Elements &#8212; femlabpy</title>
   
   
   
@@ -31,7 +31,7 @@
 <link href="../_static/styles/pydata-sphinx-theme.css?digest=7f76b32a3354e82990f2" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
-    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=985dfaa0" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=ba1a7e05" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../_static/scripts/fontawesome.js?digest=7f76b32a3354e82990f2"></script>
@@ -46,7 +46,7 @@
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'theory/04_2d_triangles';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
-    <script src="../_static/custom.js?v=35c928a7"></script>
+    <script src="../_static/custom.js?v=0184bad5"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="2D Isoparametric Quadrilateral Elements" href="05_2d_quads.html" />
@@ -119,7 +119,7 @@
   
   
   
-    <p class="title logo__title">femlabpy 0.6.0 documentation</p>
+    <p class="title logo__title">femlabpy</p>
   
 </a></div>
     
@@ -349,7 +349,7 @@
 <li class="toctree-l1"><a class="reference internal" href="08_dynamics.html">Structural Dynamics and Time Integration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="09_modal_periodic.html">Modal analysis and periodic boundaries</a></li>
 <li class="toctree-l1"><a class="reference internal" href="10_io_mesh.html">Mesh I/O and Gmsh Import</a></li>
-<li class="toctree-l1"><a class="reference internal" href="11_nonlinear_solvers.html">Chapter 11: Nonlinear Solvers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11_nonlinear_solvers.html">Nonlinear Solvers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="12_plotting_postprocessing.html">Plotting and Postprocessing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="13_legacy_wrappers.html">Chapter 13: Legacy Wrappers</a></li>
 </ul>
@@ -427,6 +427,13 @@ uses the same conventions throughout:</p>
 </ul>
 <section id="geometry-and-array-layout">
 <h2>Geometry and array layout<a class="headerlink" href="#geometry-and-array-layout" title="Link to this heading">#</a></h2>
+<figure class="align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/fig_t3_element.png"><img alt="../_images/fig_t3_element.png" src="../_images/fig_t3_element.png" style="width: 480px;" />
+</a>
+<figcaption>
+<p><span class="caption-text"><strong>Figure 4.1:</strong> 3-node constant strain triangle (T3/CST) with counter-clockwise node ordering and 2 DOFs per node.</span><a class="headerlink" href="#id1" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
 <p>The CST is the simplest 2D solid element, but the code is still careful about
 geometry because the element is only valid when the triangle has a positive
 area and the node order is counter-clockwise.</p>
@@ -448,14 +455,71 @@ different places:</p>
 </section>
 <section id="shape-functions-and-gradients">
 <h2>Shape functions and gradients<a class="headerlink" href="#shape-functions-and-gradients" title="Link to this heading">#</a></h2>
-<p>The triangle uses area coordinates, also called barycentric coordinates.
-Inside the element, the three shape functions are exactly those coordinates:</p>
+<section id="area-barycentric-coordinates">
+<h3>Area (barycentric) coordinates<a class="headerlink" href="#area-barycentric-coordinates" title="Link to this heading">#</a></h3>
+<p>The triangle uses area coordinates <span class="math notranslate nohighlight">\(L_1, L_2, L_3\)</span>. For a point <span class="math notranslate nohighlight">\(P\)</span> inside a triangle with vertices <span class="math notranslate nohighlight">\(1, 2, 3\)</span>:</p>
 <div class="math notranslate nohighlight">
 \[
-N_1 = L_1, \quad N_2 = L_2, \quad N_3 = L_3
+L_i = \frac{A_i}{A}
 \]</div>
-<p>The practical benefit is that the gradients are constant over the element.
-That is why the CST produces a constant strain field.</p>
+<p>where <span class="math notranslate nohighlight">\(A\)</span> is the total area and <span class="math notranslate nohighlight">\(A_i\)</span> is the area of the sub-triangle formed by replacing vertex <span class="math notranslate nohighlight">\(i\)</span> with point <span class="math notranslate nohighlight">\(P\)</span>.</p>
+<p>By construction, these coordinates satisfy:</p>
+<div class="math notranslate nohighlight">
+\[
+L_1 + L_2 + L_3 = 1
+\]</div>
+</section>
+<section id="derivation-of-shape-functions">
+<h3>Derivation of shape functions<a class="headerlink" href="#derivation-of-shape-functions" title="Link to this heading">#</a></h3>
+<p>The position of any point in the triangle is interpolated as:</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbf{x} = L_1 \mathbf{x}_1 + L_2 \mathbf{x}_2 + L_3 \mathbf{x}_3
+\]</div>
+<p>Expanding in <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(y\)</span> components with the partition of unity:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{cases}
+x = L_1 x_1 + L_2 x_2 + (1 - L_1 - L_2) x_3 \\
+y = L_1 y_1 + L_2 y_2 + (1 - L_1 - L_2) y_3
+\end{cases}
+\end{split}\]</div>
+<p>Rearranging:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{cases}
+x - x_3 = L_1 (x_1 - x_3) + L_2 (x_2 - x_3) \\
+y - y_3 = L_1 (y_1 - y_3) + L_2 (y_2 - y_3)
+\end{cases}
+\end{split}\]</div>
+<p>In matrix form:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{bmatrix} x - x_3 \\ y - y_3 \end{bmatrix} = \begin{bmatrix} x_1 - x_3 &amp; x_2 - x_3 \\ y_1 - y_3 &amp; y_2 - y_3 \end{bmatrix} \begin{bmatrix} L_1 \\ L_2 \end{bmatrix}
+\end{split}\]</div>
+<p>Inverting to solve for <span class="math notranslate nohighlight">\(L_1, L_2\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{bmatrix} L_1 \\ L_2 \end{bmatrix} = \frac{1}{2A} \begin{bmatrix} y_2 - y_3 &amp; x_3 - x_2 \\ y_3 - y_1 &amp; x_1 - x_3 \end{bmatrix} \begin{bmatrix} x - x_3 \\ y - y_3 \end{bmatrix}
+\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(2A = (x_1 - x_3)(y_2 - y_3) - (x_2 - x_3)(y_1 - y_3)\)</span> is twice the triangle area.</p>
+</section>
+<section id="shape-function-gradients">
+<h3>Shape function gradients<a class="headerlink" href="#shape-function-gradients" title="Link to this heading">#</a></h3>
+<p>Since <span class="math notranslate nohighlight">\(N_i = L_i\)</span>, the gradients follow directly from the inverse mapping:</p>
+<div class="math notranslate nohighlight">
+\[
+\frac{\partial N_1}{\partial x} = \frac{y_2 - y_3}{2A}, \quad \frac{\partial N_1}{\partial y} = \frac{x_3 - x_2}{2A}
+\]</div>
+<div class="math notranslate nohighlight">
+\[
+\frac{\partial N_2}{\partial x} = \frac{y_3 - y_1}{2A}, \quad \frac{\partial N_2}{\partial y} = \frac{x_1 - x_3}{2A}
+\]</div>
+<div class="math notranslate nohighlight">
+\[
+\frac{\partial N_3}{\partial x} = \frac{y_1 - y_2}{2A}, \quad \frac{\partial N_3}{\partial y} = \frac{x_2 - x_1}{2A}
+\]</div>
+<p>These gradients are <strong>constant</strong> over the element because they depend only on the vertex coordinates, not on position. This is why the CST produces a constant strain field.</p>
 <p>The source computes those gradients from the edge-difference helpers rather than
 by symbolic manipulation at runtime. For a single triangle, the derivative array
 is built as:</p>
@@ -470,21 +534,39 @@ is built as:</p>
 </ul>
 <p>This layout is reused in both the solid and scalar-potential kernels.</p>
 </section>
+</section>
 <section id="strain-displacement-matrix">
 <h2>Strain-displacement matrix<a class="headerlink" href="#strain-displacement-matrix" title="Link to this heading">#</a></h2>
-<p>For plane stress and plane strain, each node has two DOFs, so the local
-displacement vector is</p>
+<section id="derivation-from-kinematics">
+<h3>Derivation from kinematics<a class="headerlink" href="#derivation-from-kinematics" title="Link to this heading">#</a></h3>
+<p>For 2D plane problems, the strain-displacement relations are:</p>
+<div class="math notranslate nohighlight">
+\[
+\varepsilon_{xx} = \frac{\partial u}{\partial x}, \quad \varepsilon_{yy} = \frac{\partial v}{\partial y}, \quad \gamma_{xy} = \frac{\partial u}{\partial y} + \frac{\partial v}{\partial x}
+\]</div>
+<p>Using the finite element interpolation <span class="math notranslate nohighlight">\(u = \sum_i N_i u_i\)</span> and <span class="math notranslate nohighlight">\(v = \sum_i N_i v_i\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[
+\varepsilon_{xx} = \sum_i \frac{\partial N_i}{\partial x} u_i, \quad \varepsilon_{yy} = \sum_i \frac{\partial N_i}{\partial y} v_i
+\]</div>
+<div class="math notranslate nohighlight">
+\[
+\gamma_{xy} = \sum_i \left( \frac{\partial N_i}{\partial y} u_i + \frac{\partial N_i}{\partial x} v_i \right)
+\]</div>
+<p>For the element displacement vector:</p>
 <div class="math notranslate nohighlight">
 \[
 \mathbf{u}^e = [u_1, v_1, u_2, v_2, u_3, v_3]^T
 \]</div>
-<p>The strain vector in Voigt form is</p>
+<p>The strain vector in Voigt form is:</p>
 <div class="math notranslate nohighlight">
 \[
-\boldsymbol{\varepsilon} = [\varepsilon_{xx}, \varepsilon_{yy}, \gamma_{xy}]^T
+\boldsymbol{\varepsilon} = [\varepsilon_{xx}, \varepsilon_{yy}, \gamma_{xy}]^T = \mathbf{B} \mathbf{u}^e
 \]</div>
-<p>The source assembles the <code class="docutils literal notranslate"><span class="pre">B</span></code> matrix directly from the derivative table instead
-of branching on the three strain components. The layout is:</p>
+</section>
+<section id="strain-displacement-matrix-structure">
+<h3>Strain-displacement matrix structure<a class="headerlink" href="#strain-displacement-matrix-structure" title="Link to this heading">#</a></h3>
+<p>Using the notation <span class="math notranslate nohighlight">\(b_i = y_{j} - y_{k}\)</span> and <span class="math notranslate nohighlight">\(c_i = x_{k} - x_{j}\)</span> (cyclic permutation), where indices <span class="math notranslate nohighlight">\((i,j,k)\)</span> cycle through <span class="math notranslate nohighlight">\((1,2,3)\)</span>:</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}
 \mathbf{B} = \frac{1}{2A}
@@ -494,13 +576,40 @@ b_1 &amp; 0 &amp; b_2 &amp; 0 &amp; b_3 &amp; 0 \\
 c_1 &amp; b_1 &amp; c_2 &amp; b_2 &amp; c_3 &amp; b_3
 \end{bmatrix}
 \end{split}\]</div>
-<p>In code, that becomes a small dense matrix multiply with no numerical
-integration loop because the CST is exact with one constant <code class="docutils literal notranslate"><span class="pre">B</span></code> matrix.</p>
+<p>This can be written as <span class="math notranslate nohighlight">\(\mathbf{B} = [\mathbf{B}_1 | \mathbf{B}_2 | \mathbf{B}_3]\)</span> where each <span class="math notranslate nohighlight">\(\mathbf{B}_i\)</span> is:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\mathbf{B}_i = \frac{1}{2A} \begin{bmatrix} b_i &amp; 0 \\ 0 &amp; c_i \\ c_i &amp; b_i \end{bmatrix}
+\end{split}\]</div>
 </section>
-<section id="element-stiffness-in-ket3e">
-<h2>Element stiffness in <code class="docutils literal notranslate"><span class="pre">ket3e</span></code><a class="headerlink" href="#element-stiffness-in-ket3e" title="Link to this heading">#</a></h2>
-<p>The single-element stiffness routine is the cleanest place to see the element
-logic:</p>
+<section id="why-the-cst-is-constant-strain">
+<h3>Why the CST is constant strain<a class="headerlink" href="#why-the-cst-is-constant-strain" title="Link to this heading">#</a></h3>
+<p>Since <span class="math notranslate nohighlight">\(b_i\)</span> and <span class="math notranslate nohighlight">\(c_i\)</span> depend only on nodal coordinates (not on position within the element), <span class="math notranslate nohighlight">\(\mathbf{B}\)</span> is constant. Therefore:</p>
+<div class="math notranslate nohighlight">
+\[
+\boldsymbol{\varepsilon} = \mathbf{B} \mathbf{u}^e = \text{constant over the element}
+\]</div>
+<p>This is the defining characteristic of the Constant Strain Triangle.</p>
+</section>
+</section>
+<section id="element-stiffness-derivation">
+<h2>Element stiffness derivation<a class="headerlink" href="#element-stiffness-derivation" title="Link to this heading">#</a></h2>
+<section id="principle-of-virtual-work">
+<h3>Principle of virtual work<a class="headerlink" href="#principle-of-virtual-work" title="Link to this heading">#</a></h3>
+<p>The element stiffness matrix is derived from the strain energy:</p>
+<div class="math notranslate nohighlight">
+\[
+U = \frac{1}{2} \int_{\Omega^e} \boldsymbol{\varepsilon}^T \mathbf{D} \boldsymbol{\varepsilon} \, dA = \frac{1}{2} (\mathbf{u}^e)^T \left( \int_{\Omega^e} \mathbf{B}^T \mathbf{D} \mathbf{B} \, dA \right) \mathbf{u}^e
+\]</div>
+<p>Since <span class="math notranslate nohighlight">\(\mathbf{B}\)</span> is constant over the element:</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbf{K}^e = \int_{\Omega^e} \mathbf{B}^T \mathbf{D} \mathbf{B} \, dA = \mathbf{B}^T \mathbf{D} \mathbf{B} \cdot A
+\]</div>
+<p>This is exact—no numerical integration is needed.</p>
+</section>
+<section id="implementation-in-ket3e">
+<h3>Implementation in <code class="docutils literal notranslate"><span class="pre">ket3e</span></code><a class="headerlink" href="#implementation-in-ket3e" title="Link to this heading">#</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">a</span><span class="p">,</span> <span class="n">area</span> <span class="o">=</span> <span class="n">_triangle_geometry</span><span class="p">(</span><span class="n">Xe</span><span class="p">)</span>
 <span class="n">dN</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">area</span><span class="p">))</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">([</span><span class="o">-</span><span class="n">a</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">a</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]])</span><span class="o">.</span><span class="n">T</span>
 <span class="n">B</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
@@ -523,6 +632,7 @@ points. The CST has constant strain, so the exact element matrix is simply</p>
 \]</div>
 <p>The optional third entry in <code class="docutils literal notranslate"><span class="pre">Ge</span></code> switches between plane stress and plane strain.
 The function reads <code class="docutils literal notranslate"><span class="pre">Ge[2]</span></code> only when it is present and equal to <code class="docutils literal notranslate"><span class="pre">2</span></code>.</p>
+</section>
 </section>
 <section id="batched-assembly-in-kt3e">
 <h2>Batched assembly in <code class="docutils literal notranslate"><span class="pre">kt3e</span></code><a class="headerlink" href="#batched-assembly-in-kt3e" title="Link to this heading">#</a></h2>
@@ -611,6 +721,138 @@ pattern used throughout the library:</p>
 <p>That structure makes the CST easy to audit and also makes the batched assembly
 path fast enough for larger meshes.</p>
 </section>
+<hr class="docutils" />
+<section id="appendix-constitutive-matrix-derivations">
+<h2>Appendix: Constitutive Matrix Derivations<a class="headerlink" href="#appendix-constitutive-matrix-derivations" title="Link to this heading">#</a></h2>
+<section id="a-1-3d-hooke-s-law">
+<h3>A.1 3D Hooke’s Law<a class="headerlink" href="#a-1-3d-hooke-s-law" title="Link to this heading">#</a></h3>
+<p>The full 3D stress-strain relationship for isotropic linear elasticity:</p>
+<div class="math notranslate nohighlight">
+\[
+\boldsymbol{\sigma} = \mathbf{D}^{3D} \boldsymbol{\varepsilon}
+\]</div>
+<p>In matrix form:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{bmatrix} \sigma_{xx} \\ \sigma_{yy} \\ \sigma_{zz} \\ \tau_{xy} \\ \tau_{yz} \\ \tau_{xz} \end{bmatrix}
+= \frac{E}{(1+\nu)(1-2\nu)}
+\begin{bmatrix}
+1-\nu &amp; \nu &amp; \nu &amp; 0 &amp; 0 &amp; 0 \\
+\nu &amp; 1-\nu &amp; \nu &amp; 0 &amp; 0 &amp; 0 \\
+\nu &amp; \nu &amp; 1-\nu &amp; 0 &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; 0 &amp; \frac{1-2\nu}{2} &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; 0 &amp; 0 &amp; \frac{1-2\nu}{2} &amp; 0 \\
+0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; \frac{1-2\nu}{2}
+\end{bmatrix}
+\begin{bmatrix} \varepsilon_{xx} \\ \varepsilon_{yy} \\ \varepsilon_{zz} \\ \gamma_{xy} \\ \gamma_{yz} \\ \gamma_{xz} \end{bmatrix}
+\end{split}\]</div>
+</section>
+<section id="a-2-plane-stress-derivation">
+<h3>A.2 Plane stress derivation<a class="headerlink" href="#a-2-plane-stress-derivation" title="Link to this heading">#</a></h3>
+<p><strong>Assumption:</strong> <span class="math notranslate nohighlight">\(\sigma_{zz} = \tau_{xz} = \tau_{yz} = 0\)</span> (thin plate in <span class="math notranslate nohighlight">\(xy\)</span>-plane)</p>
+<p>From the third row of 3D Hooke’s law:</p>
+<div class="math notranslate nohighlight">
+\[
+\sigma_{zz} = \frac{E}{(1+\nu)(1-2\nu)} \left[ \nu\varepsilon_{xx} + \nu\varepsilon_{yy} + (1-\nu)\varepsilon_{zz} \right] = 0
+\]</div>
+<p>Solving for <span class="math notranslate nohighlight">\(\varepsilon_{zz}\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[
+\varepsilon_{zz} = -\frac{\nu}{1-\nu}(\varepsilon_{xx} + \varepsilon_{yy})
+\]</div>
+<p>Substituting back into the <span class="math notranslate nohighlight">\(\sigma_{xx}\)</span> equation:</p>
+<div class="math notranslate nohighlight">
+\[
+\sigma_{xx} = \frac{E}{(1+\nu)(1-2\nu)} \left[ (1-\nu)\varepsilon_{xx} + \nu\varepsilon_{yy} + \nu\varepsilon_{zz} \right]
+\]</div>
+<div class="math notranslate nohighlight">
+\[
+= \frac{E}{(1+\nu)(1-2\nu)} \left[ (1-\nu)\varepsilon_{xx} + \nu\varepsilon_{yy} - \frac{\nu^2}{1-\nu}(\varepsilon_{xx} + \varepsilon_{yy}) \right]
+\]</div>
+<p>Simplifying (after algebra):</p>
+<div class="math notranslate nohighlight">
+\[
+\sigma_{xx} = \frac{E}{1-\nu^2} \left[ \varepsilon_{xx} + \nu\varepsilon_{yy} \right]
+\]</div>
+<p>The resulting <strong>plane stress</strong> constitutive matrix:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\mathbf{D}_{ps} = \frac{E}{1-\nu^2}
+\begin{bmatrix}
+1 &amp; \nu &amp; 0 \\
+\nu &amp; 1 &amp; 0 \\
+0 &amp; 0 &amp; \frac{1-\nu}{2}
+\end{bmatrix}
+\end{split}\]</div>
+</section>
+<section id="a-3-plane-strain-derivation">
+<h3>A.3 Plane strain derivation<a class="headerlink" href="#a-3-plane-strain-derivation" title="Link to this heading">#</a></h3>
+<p><strong>Assumption:</strong> <span class="math notranslate nohighlight">\(\varepsilon_{zz} = \gamma_{xz} = \gamma_{yz} = 0\)</span> (thick body constrained in <span class="math notranslate nohighlight">\(z\)</span>-direction)</p>
+<p>Direct substitution of <span class="math notranslate nohighlight">\(\varepsilon_{zz} = 0\)</span> into 3D Hooke’s law:</p>
+<div class="math notranslate nohighlight">
+\[
+\sigma_{xx} = \frac{E}{(1+\nu)(1-2\nu)} \left[ (1-\nu)\varepsilon_{xx} + \nu\varepsilon_{yy} \right]
+\]</div>
+<div class="math notranslate nohighlight">
+\[
+\sigma_{yy} = \frac{E}{(1+\nu)(1-2\nu)} \left[ \nu\varepsilon_{xx} + (1-\nu)\varepsilon_{yy} \right]
+\]</div>
+<div class="math notranslate nohighlight">
+\[
+\tau_{xy} = \frac{E}{2(1+\nu)} \gamma_{xy} = G \gamma_{xy}
+\]</div>
+<p>The <strong>plane strain</strong> constitutive matrix:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\mathbf{D}_{p\varepsilon} = \frac{E}{(1+\nu)(1-2\nu)}
+\begin{bmatrix}
+1-\nu &amp; \nu &amp; 0 \\
+\nu &amp; 1-\nu &amp; 0 \\
+0 &amp; 0 &amp; \frac{1-2\nu}{2}
+\end{bmatrix}
+\end{split}\]</div>
+</section>
+<section id="a-4-out-of-plane-stress-in-plane-strain">
+<h3>A.4 Out-of-plane stress in plane strain<a class="headerlink" href="#a-4-out-of-plane-stress-in-plane-strain" title="Link to this heading">#</a></h3>
+<p>In plane strain, <span class="math notranslate nohighlight">\(\sigma_{zz} \neq 0\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[
+\sigma_{zz} = \nu(\sigma_{xx} + \sigma_{yy}) = \frac{E\nu}{(1+\nu)(1-2\nu)}(\varepsilon_{xx} + \varepsilon_{yy})
+\]</div>
+<p>This stress must be considered in yield criteria (e.g., von Mises).</p>
+</section>
+<section id="a-5-relationship-between-plane-stress-and-plane-strain">
+<h3>A.5 Relationship between plane stress and plane strain<a class="headerlink" href="#a-5-relationship-between-plane-stress-and-plane-strain" title="Link to this heading">#</a></h3>
+<p>The two formulations are related through the substitution:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Plane Stress</p></th>
+<th class="head"><p>Plane Strain Equivalent</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(E\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\frac{E}{1-\nu^2}\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(\nu\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\frac{\nu}{1-\nu}\)</span></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Proof:</strong> Starting from plane strain matrix with substitutions:</p>
+<div class="math notranslate nohighlight">
+\[
+\frac{E'}{(1+\nu')(1-2\nu')} = \frac{E/(1-\nu^2)}{(1+\frac{\nu}{1-\nu})(1-\frac{2\nu}{1-\nu})}
+\]</div>
+<p>Simplifying the denominator:</p>
+<div class="math notranslate nohighlight">
+\[
+\left(1+\frac{\nu}{1-\nu}\right) = \frac{1}{1-\nu}, \quad \left(1-\frac{2\nu}{1-\nu}\right) = \frac{1-3\nu}{1-\nu}
+\]</div>
+<p>After simplification, we recover the plane stress matrix. ∎</p>
+</section>
+</section>
 </section>
 
 
@@ -661,13 +903,35 @@ path fast enough for larger meshes.</p>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#geometry-and-array-layout">Geometry and array layout</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#shape-functions-and-gradients">Shape functions and gradients</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#strain-displacement-matrix">Strain-displacement matrix</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#element-stiffness-in-ket3e">Element stiffness in <code class="docutils literal notranslate"><span class="pre">ket3e</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#shape-functions-and-gradients">Shape functions and gradients</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#area-barycentric-coordinates">Area (barycentric) coordinates</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#derivation-of-shape-functions">Derivation of shape functions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#shape-function-gradients">Shape function gradients</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#strain-displacement-matrix">Strain-displacement matrix</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#derivation-from-kinematics">Derivation from kinematics</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#strain-displacement-matrix-structure">Strain-displacement matrix structure</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#why-the-cst-is-constant-strain">Why the CST is constant strain</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#element-stiffness-derivation">Element stiffness derivation</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#principle-of-virtual-work">Principle of virtual work</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#implementation-in-ket3e">Implementation in <code class="docutils literal notranslate"><span class="pre">ket3e</span></code></a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#batched-assembly-in-kt3e">Batched assembly in <code class="docutils literal notranslate"><span class="pre">kt3e</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#stress-and-flux-recovery">Stress and flux recovery</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#scalar-potential-version">Scalar potential version</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">Summary</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#appendix-constitutive-matrix-derivations">Appendix: Constitutive Matrix Derivations</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-1-3d-hooke-s-law">A.1 3D Hooke’s Law</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-2-plane-stress-derivation">A.2 Plane stress derivation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-3-plane-strain-derivation">A.3 Plane strain derivation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-4-out-of-plane-stress-in-plane-strain">A.4 Out-of-plane stress in plane strain</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-5-relationship-between-plane-stress-and-plane-strain">A.5 Relationship between plane stress and plane strain</a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 

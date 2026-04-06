@@ -1,81 +1,66 @@
 API Reference
 =============
 
-.. container:: fp-home-intro
+.. raw:: html
 
-   .. container:: fp-kicker
-
-      Module-level ownership and full symbol reference
-
-   .. container:: fp-lead
-
-      This section is the module-level reference for ``femlabpy``. It is
-      organized to help with two tasks at the same time: finding the exact
-      symbol you need and understanding which module owns which part of the
-      workflow.
+   <div class="fp-hero fp-hero--compact">
+     <div class="fp-hero-title">API Reference</div>
+     <div class="fp-hero-subtitle">
+       Module-level documentation &mdash; find symbols, understand ownership, read full signatures.
+     </div>
+   </div>
 
 .. container:: fp-card-grid
 
+   .. container:: fp-card fp-card--accent-blue
+
+      **Core Workflow**
+
+      - ``femlabpy.core`` &mdash; global array allocation
+      - ``femlabpy.assembly`` &mdash; element scatter
+      - ``femlabpy.loads`` &mdash; nodal force mapping
+      - ``femlabpy.boundary`` &mdash; prescribed displacements
+
+   .. container:: fp-card fp-card--accent-red
+
+      **Dynamics & Nonlinear**
+
+      - ``femlabpy.dynamics`` &mdash; time-history solvers, FRF
+      - ``femlabpy.damping`` &mdash; Rayleigh & modal damping
+      - ``femlabpy.modal`` &mdash; eigenproblem, participation
+      - ``femlabpy.solvers`` &mdash; legacy nonlinear drivers
+
+   .. container:: fp-card fp-card--accent-green
+
+      **Element Kernels**
+
+      - ``femlabpy.elements.bars`` &mdash; bar K, f, M
+      - ``femlabpy.elements.triangles`` &mdash; T3 family
+      - ``femlabpy.elements.quads`` &mdash; Q4 elastic/plastic/mass
+      - ``femlabpy.elements.solids`` &mdash; T4 & H8 solids
+
    .. container:: fp-card
 
-      **Core workflow modules**
+      **Support & I/O**
 
-      - ``femlabpy.core`` allocates the global containers.
-      - ``femlabpy.assembly`` scatters element matrices and vectors.
-      - ``femlabpy.loads`` maps nodal force tables into the global right-hand side.
-      - ``femlabpy.boundary`` applies prescribed displacements and exact constraints.
+      - ``femlabpy.periodic`` &mdash; pairing & homogenization
+      - ``femlabpy.postprocess`` &mdash; reactions, result tables
+      - ``femlabpy.plotting`` &mdash; Matplotlib views
+      - ``femlabpy.io.gmsh`` &mdash; Gmsh mesh import
 
-   .. container:: fp-card
+.. raw:: html
 
-      **Dynamics and nonlinear modules**
-
-      - ``femlabpy.dynamics`` contains load builders, time-history solvers, FRF
-        utilities, and response plotting helpers.
-      - ``femlabpy.damping`` builds Rayleigh and modal damping matrices.
-      - ``femlabpy.modal`` solves the eigenproblem and computes participation.
-      - ``femlabpy.solvers`` exposes the larger legacy nonlinear drivers.
-
-   .. container:: fp-card
-
-      **Element kernel modules**
-
-      - ``femlabpy.elements.bars`` implements bar stiffness, internal-force, and mass routines.
-      - ``femlabpy.elements.triangles`` implements the T3 family.
-      - ``femlabpy.elements.quads`` implements Q4 elastic, scalar, plastic, and mass kernels.
-      - ``femlabpy.elements.solids`` implements T4 and H8 solid kernels.
-
-   .. container:: fp-card
-
-      **Support modules**
-
-      - ``femlabpy.periodic`` handles periodic pairing, constraints, and homogenization.
-      - ``femlabpy.postprocess`` extracts reactions and compact result tables.
-      - ``femlabpy.plotting`` provides lightweight Matplotlib views.
-      - ``femlabpy.io.gmsh`` reads Gmsh meshes into normalized tables.
-      - ``femlabpy.matlab`` exposes packaged legacy benchmark decks and wrappers.
-      - ``femlabpy.materials`` re-exports invariant and plasticity helpers.
-
-How To Read This Section
-------------------------
-
-If you are new to the codebase, do not read the module pages in alphabetical
-order. Read them by responsibility:
-
-1. ``femlabpy.core`` for global array allocation.
-2. ``femlabpy.assembly``, ``femlabpy.loads``, and ``femlabpy.boundary`` for
-   system construction.
-3. The element modules for low-level stiffness, internal-force, and mass kernels.
-4. ``femlabpy.modal``, ``femlabpy.damping``, ``femlabpy.dynamics``, and
-   ``femlabpy.solvers`` for modal, transient, and nonlinear workflows.
-5. ``femlabpy.periodic`` and ``femlabpy.io.gmsh`` for periodic or mesh-driven
-   workflows.
-
-.. container:: fp-section-note
-
-   Each module page now includes both a summary table and the full rendered
-   documentation for its public functions and classes. The summary table is the
-   fastest way to find a symbol, and the lower part of each page holds the full
-   reference text.
+   <div class="fp-callout-grid">
+     <div class="fp-callout fp-callout--blue">
+       <div class="fp-callout-icon">
+         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+       </div>
+       <div class="fp-callout-body">
+         <strong>Reading order</strong>
+         <p>Read by responsibility: <code>core</code> &rarr; <code>assembly / loads / boundary</code> &rarr; element kernels &rarr; dynamics &rarr; periodic / I/O.</p>
+       </div>
+     </div>
+   </div>
 
 Complete Module Index
 ---------------------

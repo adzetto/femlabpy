@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>2D Isoparametric Quadrilateral Elements &#8212; femlabpy 0.6.0 documentation</title>
+    <title>2D Isoparametric Quadrilateral Elements &#8212; femlabpy</title>
   
   
   
@@ -31,7 +31,7 @@
 <link href="../_static/styles/pydata-sphinx-theme.css?digest=7f76b32a3354e82990f2" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
-    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=985dfaa0" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=ba1a7e05" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../_static/scripts/fontawesome.js?digest=7f76b32a3354e82990f2"></script>
@@ -46,7 +46,7 @@
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'theory/05_2d_quads';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
-    <script src="../_static/custom.js?v=35c928a7"></script>
+    <script src="../_static/custom.js?v=0184bad5"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="3D Solid Elements: Tetrahedrons and Hexahedrons" href="06_3d_solids.html" />
@@ -119,7 +119,7 @@
   
   
   
-    <p class="title logo__title">femlabpy 0.6.0 documentation</p>
+    <p class="title logo__title">femlabpy</p>
   
 </a></div>
     
@@ -349,7 +349,7 @@
 <li class="toctree-l1"><a class="reference internal" href="08_dynamics.html">Structural Dynamics and Time Integration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="09_modal_periodic.html">Modal analysis and periodic boundaries</a></li>
 <li class="toctree-l1"><a class="reference internal" href="10_io_mesh.html">Mesh I/O and Gmsh Import</a></li>
-<li class="toctree-l1"><a class="reference internal" href="11_nonlinear_solvers.html">Chapter 11: Nonlinear Solvers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11_nonlinear_solvers.html">Nonlinear Solvers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="12_plotting_postprocessing.html">Plotting and Postprocessing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="13_legacy_wrappers.html">Chapter 13: Legacy Wrappers</a></li>
 </ul>
@@ -428,6 +428,13 @@ uses a consistent set of array conventions:</p>
 </ul>
 <section id="bilinear-shape-functions">
 <h2>Bilinear shape functions<a class="headerlink" href="#bilinear-shape-functions" title="Link to this heading">#</a></h2>
+<figure class="align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/fig_q4_isoparametric.png"><img alt="../_images/fig_q4_isoparametric.png" src="../_images/fig_q4_isoparametric.png" style="width: 600px;" />
+</a>
+<figcaption>
+<p><span class="caption-text"><strong>Figure 5.1:</strong> Isoparametric mapping from parent domain [−1,1]² to physical Q4 element. Gauss points shown as red dots.</span><a class="headerlink" href="#id1" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
 <p>The parent domain is the square <code class="docutils literal notranslate"><span class="pre">[-1,</span> <span class="pre">1]</span> <span class="pre">x</span> <span class="pre">[-1,</span> <span class="pre">1]</span></code>. The four bilinear shape
 functions are the tensor product of 1D linear Lagrange polynomials:</p>
 <div class="math notranslate nohighlight">
@@ -445,32 +452,48 @@ module.</p>
 </section>
 <section id="isoparametric-mapping-and-the-jacobian">
 <h2>Isoparametric mapping and the Jacobian<a class="headerlink" href="#isoparametric-mapping-and-the-jacobian" title="Link to this heading">#</a></h2>
-<p>For a given Gauss point <code class="docutils literal notranslate"><span class="pre">(xi,</span> <span class="pre">eta)</span></code>, the physical coordinates and field values
-are interpolated with the same shape functions:</p>
+<p>For a given point <span class="math notranslate nohighlight">\((\xi, \eta)\)</span> in the parent domain, the physical coordinates are interpolated using the same shape functions:</p>
 <div class="math notranslate nohighlight">
 \[
-x(\xi, \eta) = \sum_i N_i x_i, \quad y(\xi, \eta) = \sum_i N_i y_i
+x(\xi, \eta) = \sum_{i=1}^{4} N_i(\xi, \eta) x_i, \quad y(\xi, \eta) = \sum_{i=1}^{4} N_i(\xi, \eta) y_i
 \]</div>
-<p>The source evaluates the Jacobian transpose directly as</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">dN</span> <span class="o">=</span> <span class="n">_q4_dN</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">nnodes</span><span class="p">)</span>
-<span class="n">Jt</span> <span class="o">=</span> <span class="n">dN</span> <span class="o">@</span> <span class="n">Xe</span>
-</pre></div>
-</div>
-<p>Here <code class="docutils literal notranslate"><span class="pre">dN</span></code> has shape <code class="docutils literal notranslate"><span class="pre">(2,</span> <span class="pre">4)</span></code>:</p>
+<section id="jacobian-matrix-derivation">
+<h3>Jacobian matrix derivation<a class="headerlink" href="#jacobian-matrix-derivation" title="Link to this heading">#</a></h3>
+<p>To relate parent and physical derivatives, we use the chain rule:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{bmatrix} \frac{\partial N_i}{\partial x} \\ \frac{\partial N_i}{\partial y} \end{bmatrix} = \mathbf{J}^{-1} \begin{bmatrix} \frac{\partial N_i}{\partial \xi} \\ \frac{\partial N_i}{\partial \eta} \end{bmatrix}
+\end{split}\]</div>
+<p>where the Jacobian matrix is:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\mathbf{J} = \begin{bmatrix} \frac{\partial x}{\partial \xi} &amp; \frac{\partial y}{\partial \xi} \\ \frac{\partial x}{\partial \eta} &amp; \frac{\partial y}{\partial \eta} \end{bmatrix} = \begin{bmatrix} \sum_i \frac{\partial N_i}{\partial \xi} x_i &amp; \sum_i \frac{\partial N_i}{\partial \xi} y_i \\ \sum_i \frac{\partial N_i}{\partial \eta} x_i &amp; \sum_i \frac{\partial N_i}{\partial \eta} y_i \end{bmatrix}
+\end{split}\]</div>
+<p>In matrix form: <span class="math notranslate nohighlight">\(\mathbf{J}^T = \frac{\partial \mathbf{N}}{\partial \boldsymbol{\xi}} \cdot \mathbf{X}_e\)</span></p>
+<p>where <span class="math notranslate nohighlight">\(\frac{\partial \mathbf{N}}{\partial \boldsymbol{\xi}}\)</span> is the <span class="math notranslate nohighlight">\(2 \times 4\)</span> matrix of parent derivatives.</p>
+</section>
+<section id="computing-physical-derivatives">
+<h3>Computing physical derivatives<a class="headerlink" href="#computing-physical-derivatives" title="Link to this heading">#</a></h3>
+<p>The shape function derivatives in physical coordinates are found by solving:</p>
+<div class="math notranslate nohighlight">
+\[
+\frac{\partial \mathbf{N}}{\partial \mathbf{x}} = \mathbf{J}^{-T} \frac{\partial \mathbf{N}}{\partial \boldsymbol{\xi}}
+\]</div>
+<p>The source uses <code class="docutils literal notranslate"><span class="pre">np.linalg.solve(Jt,</span> <span class="pre">dN)</span></code> where <code class="docutils literal notranslate"><span class="pre">Jt</span> <span class="pre">=</span> <span class="pre">dN</span> <span class="pre">&#64;</span> <span class="pre">Xe</span></code>, which:</p>
 <ul class="simple">
-<li><p>row 0 contains <code class="docutils literal notranslate"><span class="pre">dN/dxi</span></code></p></li>
-<li><p>row 1 contains <code class="docutils literal notranslate"><span class="pre">dN/deta</span></code></p></li>
+<li><p>Avoids explicit inverse computation</p></li>
+<li><p>Is numerically stable for distorted elements</p></li>
 </ul>
-<p>and <code class="docutils literal notranslate"><span class="pre">Jt</span></code> is a <code class="docutils literal notranslate"><span class="pre">2</span> <span class="pre">x</span> <span class="pre">2</span></code> matrix that maps parent-space derivatives to physical
-derivatives.</p>
-<p>The implementation intentionally uses <code class="docutils literal notranslate"><span class="pre">np.linalg.solve(Jt,</span> <span class="pre">dN)</span></code> instead of
-<code class="docutils literal notranslate"><span class="pre">np.linalg.inv(Jt)</span> <span class="pre">&#64;</span> <span class="pre">dN</span></code>. That is the right choice for two reasons:</p>
-<ul class="simple">
-<li><p>it avoids forming an explicit inverse</p></li>
-<li><p>it is numerically safer when the element is distorted</p></li>
-</ul>
-<p>The determinant of <code class="docutils literal notranslate"><span class="pre">Jt</span></code> is the area scaling factor that converts parent-space
-quadrature weights into physical area weights.</p>
+</section>
+<section id="area-transformation">
+<h3>Area transformation<a class="headerlink" href="#area-transformation" title="Link to this heading">#</a></h3>
+<p>The determinant <span class="math notranslate nohighlight">\(|\mathbf{J}|\)</span> transforms area elements:</p>
+<div class="math notranslate nohighlight">
+\[
+dx \, dy = |\mathbf{J}| \, d\xi \, d\eta
+\]</div>
+<p>This scaling factor appears in all integration formulas.</p>
+</section>
 </section>
 <section id="strain-displacement-matrix">
 <h2>Strain-displacement matrix<a class="headerlink" href="#strain-displacement-matrix" title="Link to this heading">#</a></h2>
@@ -507,21 +530,59 @@ element math stays in one place.</p>
 </section>
 <section id="gauss-legendre-integration">
 <h2>Gauss-Legendre integration<a class="headerlink" href="#gauss-legendre-integration" title="Link to this heading">#</a></h2>
-<p>The Q4 element uses the standard <code class="docutils literal notranslate"><span class="pre">2</span> <span class="pre">x</span> <span class="pre">2</span></code> Gauss rule. The source stores the
-abscissas and weights in <code class="docutils literal notranslate"><span class="pre">_q4_gauss_points()</span></code>:</p>
+<figure class="align-center" id="id2">
+<a class="reference internal image-reference" href="../_images/fig_gauss_2x2.png"><img alt="../_images/fig_gauss_2x2.png" src="../_images/fig_gauss_2x2.png" style="width: 400px;" />
+</a>
+<figcaption>
+<p><span class="caption-text"><strong>Figure 5.2:</strong> The <span class="math notranslate nohighlight">\(2 \times 2\)</span> Gauss-Legendre quadrature points in the parent domain <span class="math notranslate nohighlight">\([-1,1]^2\)</span>.</span><a class="headerlink" href="#id2" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<section id="mathematical-foundation">
+<h3>Mathematical foundation<a class="headerlink" href="#mathematical-foundation" title="Link to this heading">#</a></h3>
+<p>The element integrals cannot be evaluated analytically for general quadrilaterals, so we use Gauss-Legendre quadrature:</p>
+<div class="math notranslate nohighlight">
+\[
+\int_{-1}^{1} \int_{-1}^{1} f(\xi, \eta) \, d\xi \, d\eta \approx \sum_{i=1}^{n} \sum_{j=1}^{m} w_i w_j f(\xi_i, \eta_j)
+\]</div>
+<p>The Gauss points <span class="math notranslate nohighlight">\(\xi_i\)</span> are the roots of Legendre polynomials, and the weights <span class="math notranslate nohighlight">\(w_i\)</span> are chosen to integrate polynomials of degree <span class="math notranslate nohighlight">\(2n-1\)</span> exactly.</p>
+</section>
+<section id="point-rule-derivation">
+<h3>2-point rule derivation<a class="headerlink" href="#point-rule-derivation" title="Link to this heading">#</a></h3>
+<p>For the 2-point rule, we require exact integration of cubic polynomials. The points and weights are:</p>
+<div class="math notranslate nohighlight">
+\[
+\xi_1 = -\frac{1}{\sqrt{3}}, \quad \xi_2 = +\frac{1}{\sqrt{3}}, \quad w_1 = w_2 = 1
+\]</div>
+<p><strong>Proof:</strong> These values can be derived by requiring exact integration of <span class="math notranslate nohighlight">\(1, \xi, \xi^2, \xi^3\)</span>:</p>
+<p>From <span class="math notranslate nohighlight">\(\int_{-1}^{1} 1 \, d\xi = 2\)</span>: <span class="math notranslate nohighlight">\(w_1 + w_2 = 2\)</span></p>
+<p>From <span class="math notranslate nohighlight">\(\int_{-1}^{1} \xi \, d\xi = 0\)</span>: <span class="math notranslate nohighlight">\(w_1 \xi_1 + w_2 \xi_2 = 0\)</span></p>
+<p>From <span class="math notranslate nohighlight">\(\int_{-1}^{1} \xi^2 \, d\xi = \frac{2}{3}\)</span>: <span class="math notranslate nohighlight">\(w_1 \xi_1^2 + w_2 \xi_2^2 = \frac{2}{3}\)</span></p>
+<p>From <span class="math notranslate nohighlight">\(\int_{-1}^{1} \xi^3 \, d\xi = 0\)</span>: <span class="math notranslate nohighlight">\(w_1 \xi_1^3 + w_2 \xi_2^3 = 0\)</span></p>
+<p>Solving with symmetry (<span class="math notranslate nohighlight">\(\xi_2 = -\xi_1\)</span>, <span class="math notranslate nohighlight">\(w_1 = w_2\)</span>): <span class="math notranslate nohighlight">\(\xi_1 = -1/\sqrt{3}\)</span>, <span class="math notranslate nohighlight">\(w_1 = 1\)</span>.</p>
+</section>
+<section id="application-to-element-stiffness">
+<h3>Application to element stiffness<a class="headerlink" href="#application-to-element-stiffness" title="Link to this heading">#</a></h3>
+<p>The Q4 stiffness matrix is:</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbf{K}^e = \int_{\Omega^e} \mathbf{B}^T \mathbf{D} \mathbf{B} \, t \, dA
+\]</div>
+<p>Transforming to parent coordinates:</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbf{K}^e = \int_{-1}^{1} \int_{-1}^{1} \mathbf{B}^T(\xi,\eta) \mathbf{D} \mathbf{B}(\xi,\eta) \, t \, |\mathbf{J}(\xi,\eta)| \, d\xi \, d\eta
+\]</div>
+<p>With <span class="math notranslate nohighlight">\(2 \times 2\)</span> Gauss quadrature (4 points total):</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbf{K}^e = \sum_{i=1}^{2} \sum_{j=1}^{2} w_i w_j \, \mathbf{B}_{ij}^T \mathbf{D} \mathbf{B}_{ij} \, t \, |\mathbf{J}_{ij}|
+\]</div>
+<p>The source stores the Gauss points in <code class="docutils literal notranslate"><span class="pre">_q4_gauss_points()</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">3.0</span><span class="p">)</span>
 <span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Each of the four integration points is visited in a nested loop. The helper
-<code class="docutils literal notranslate"><span class="pre">_q4_gp_index(i,</span> <span class="pre">j)</span></code> flattens the tensor-product indexing into the row order
-used by the returned Gauss-point tables.</p>
-<p>For a linear elastic problem, the stiffness matrix is accumulated as</p>
-<div class="math notranslate nohighlight">
-\[
-\mathbf{K}^e = \sum w_i w_j \mathbf{B}^T \mathbf{D} \mathbf{B} |\mathbf{J}| t
-\]</div>
-<p>where <code class="docutils literal notranslate"><span class="pre">t</span></code> is the thickness stored in <code class="docutils literal notranslate"><span class="pre">Ge[3]</span></code> when provided, otherwise <code class="docutils literal notranslate"><span class="pre">1.0</span></code>.</p>
+</section>
 </section>
 <section id="implementation-in-femlabpy">
 <h2>Implementation in femlabpy<a class="headerlink" href="#implementation-in-femlabpy" title="Link to this heading">#</a></h2>
@@ -621,6 +682,122 @@ style:</p>
 <p>That split keeps the code readable and makes it easier to reason about the
 exact shape of each array at every stage.</p>
 </section>
+<hr class="docutils" />
+<section id="appendix-mathematical-foundations">
+<h2>Appendix: Mathematical Foundations<a class="headerlink" href="#appendix-mathematical-foundations" title="Link to this heading">#</a></h2>
+<section id="b-1-shape-function-tensor-product-construction">
+<h3>B.1 Shape function tensor product construction<a class="headerlink" href="#b-1-shape-function-tensor-product-construction" title="Link to this heading">#</a></h3>
+<p>The bilinear shape functions are constructed as tensor products of 1D linear Lagrange polynomials:</p>
+<div class="math notranslate nohighlight">
+\[
+N_i(\xi, \eta) = L_{I}^{\xi}(\xi) \cdot L_{J}^{\eta}(\eta)
+\]</div>
+<p>where <span class="math notranslate nohighlight">\((I, J)\)</span> is the 1D index pair corresponding to node <span class="math notranslate nohighlight">\(i\)</span>.</p>
+<p><strong>1D linear Lagrange polynomials:</strong></p>
+<div class="math notranslate nohighlight">
+\[
+L_1^{\xi}(\xi) = \frac{1-\xi}{2}, \quad L_2^{\xi}(\xi) = \frac{1+\xi}{2}
+\]</div>
+<p><strong>Verification of partition of unity:</strong></p>
+<div class="math notranslate nohighlight">
+\[
+\sum_{i=1}^{4} N_i = \frac{1}{4}\left[(1-\xi)(1-\eta) + (1+\xi)(1-\eta) + (1+\xi)(1+\eta) + (1-\xi)(1+\eta)\right]
+\]</div>
+<div class="math notranslate nohighlight">
+\[
+= \frac{1}{4}\left[(1-\eta)(2) + (1+\eta)(2)\right] = \frac{1}{4}(4) = 1 \quad \checkmark
+\]</div>
+<p><strong>Verification of Kronecker delta property:</strong></p>
+<p>At node 1 (<span class="math notranslate nohighlight">\(\xi=-1, \eta=-1\)</span>):</p>
+<div class="math notranslate nohighlight">
+\[
+N_1 = \frac{1}{4}(2)(2) = 1, \quad N_2 = \frac{1}{4}(0)(2) = 0, \quad N_3 = \frac{1}{4}(0)(0) = 0, \quad N_4 = \frac{1}{4}(2)(0) = 0 \quad \checkmark
+\]</div>
+</section>
+<section id="b-2-jacobian-positive-definiteness">
+<h3>B.2 Jacobian positive definiteness<a class="headerlink" href="#b-2-jacobian-positive-definiteness" title="Link to this heading">#</a></h3>
+<p>For a valid element, the Jacobian determinant must be positive at all Gauss points:</p>
+<div class="math notranslate nohighlight">
+\[
+|\mathbf{J}| &gt; 0
+\]</div>
+<p><strong>Physical interpretation:</strong> The Jacobian determinant represents the ratio of physical to parent area:</p>
+<div class="math notranslate nohighlight">
+\[
+|\mathbf{J}| = \frac{\partial(x,y)}{\partial(\xi,\eta)}
+\]</div>
+<p>If <span class="math notranslate nohighlight">\(|\mathbf{J}| \leq 0\)</span> at any point, the element is either inverted or has zero area, making it invalid.</p>
+<p><strong>For a rectangular element</strong> with corners at <span class="math notranslate nohighlight">\((0,0), (a,0), (a,b), (0,b)\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\mathbf{J} = \begin{bmatrix} a/2 &amp; 0 \\ 0 &amp; b/2 \end{bmatrix}, \quad |\mathbf{J}| = \frac{ab}{4}
+\end{split}\]</div>
+<p>The total area is:</p>
+<div class="math notranslate nohighlight">
+\[
+A = \int_{-1}^{1}\int_{-1}^{1} |\mathbf{J}| \, d\xi \, d\eta = \frac{ab}{4} \cdot 4 = ab \quad \checkmark
+\]</div>
+</section>
+<section id="b-3-gauss-quadrature-error-analysis">
+<h3>B.3 Gauss quadrature error analysis<a class="headerlink" href="#b-3-gauss-quadrature-error-analysis" title="Link to this heading">#</a></h3>
+<p>For <span class="math notranslate nohighlight">\(n\)</span>-point Gauss-Legendre quadrature, the integration is exact for polynomials up to degree <span class="math notranslate nohighlight">\(2n-1\)</span>.</p>
+<p><strong>Error bound:</strong> For a function <span class="math notranslate nohighlight">\(f \in C^{2n}[-1,1]\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[
+E_n = \int_{-1}^{1} f(x) dx - \sum_{i=1}^{n} w_i f(x_i) = \frac{2^{2n+1}(n!)^4}{(2n+1)[(2n)!]^3} f^{(2n)}(\xi)
+\]</div>
+<p>for some <span class="math notranslate nohighlight">\(\xi \in (-1, 1)\)</span>.</p>
+<p><strong>For Q4 with 2×2 integration:</strong></p>
+<p>The integrand <span class="math notranslate nohighlight">\(\mathbf{B}^T \mathbf{D} \mathbf{B} |\mathbf{J}|\)</span> involves:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\mathbf{B}\)</span>: linear in <span class="math notranslate nohighlight">\(\xi, \eta\)</span> (from shape function derivatives)</p></li>
+<li><p><span class="math notranslate nohighlight">\(|\mathbf{J}|\)</span>: bilinear in <span class="math notranslate nohighlight">\(\xi, \eta\)</span></p></li>
+</ul>
+<p>Product degree: <span class="math notranslate nohighlight">\(1 + 1 + 2 = 4\)</span> (approximately)</p>
+<p>The 2-point rule integrates degree 3 exactly, so there is a small integration error for distorted elements. This is acceptable for most practical applications.</p>
+</section>
+<section id="b-4-rank-and-eigenvalue-analysis">
+<h3>B.4 Rank and eigenvalue analysis<a class="headerlink" href="#b-4-rank-and-eigenvalue-analysis" title="Link to this heading">#</a></h3>
+<p>The Q4 stiffness matrix has:</p>
+<ul class="simple">
+<li><p>Size: <span class="math notranslate nohighlight">\(8 \times 8\)</span></p></li>
+<li><p>Rank: 5 (for 2D elasticity)</p></li>
+<li><p>Null space: 3 rigid body modes (2 translations + 1 rotation)</p></li>
+</ul>
+<p><strong>Eigenvalue structure:</strong></p>
+<p>For a unit square with <span class="math notranslate nohighlight">\(E=1\)</span>, <span class="math notranslate nohighlight">\(\nu=0.3\)</span>, the stiffness eigenvalues are:</p>
+<div class="math notranslate nohighlight">
+\[
+\lambda_1 = \lambda_2 = \lambda_3 = 0 \quad \text{(rigid body modes)}
+\]</div>
+<div class="math notranslate nohighlight">
+\[
+\lambda_4, \ldots, \lambda_8 &gt; 0 \quad \text{(deformation modes)}
+\]</div>
+<p>This confirms proper element formulation—exactly 3 zero eigenvalues for 2D.</p>
+</section>
+<section id="b-5-patch-test-verification">
+<h3>B.5 Patch test verification<a class="headerlink" href="#b-5-patch-test-verification" title="Link to this heading">#</a></h3>
+<p>The element must pass the constant strain patch test, which verifies that a mesh of elements can exactly represent a constant strain field.</p>
+<p><strong>Conditions:</strong> For a mesh under prescribed boundary displacements that produce constant strain <span class="math notranslate nohighlight">\(\boldsymbol{\varepsilon}_0\)</span>:</p>
+<ol class="arabic simple">
+<li><p>All elements should compute <span class="math notranslate nohighlight">\(\boldsymbol{\varepsilon} = \boldsymbol{\varepsilon}_0\)</span></p></li>
+<li><p>Internal nodal forces should cancel at shared nodes</p></li>
+<li><p>Reaction forces should equal applied loads</p></li>
+</ol>
+<p><strong>Mathematical requirement:</strong> The shape functions must be able to reproduce linear displacement fields exactly:</p>
+<div class="math notranslate nohighlight">
+\[
+u(x,y) = a_0 + a_1 x + a_2 y
+\]</div>
+<p>For bilinear Q4 elements, this is satisfied since:</p>
+<div class="math notranslate nohighlight">
+\[
+\sum_i N_i = 1, \quad \sum_i N_i x_i = x, \quad \sum_i N_i y_i = y
+\]</div>
+<p>These are the completeness conditions for first-order accuracy.</p>
+</section>
+</section>
 </section>
 
 
@@ -671,9 +848,19 @@ exact shape of each array at every stage.</p>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bilinear-shape-functions">Bilinear shape functions</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#isoparametric-mapping-and-the-jacobian">Isoparametric mapping and the Jacobian</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#isoparametric-mapping-and-the-jacobian">Isoparametric mapping and the Jacobian</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#jacobian-matrix-derivation">Jacobian matrix derivation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#computing-physical-derivatives">Computing physical derivatives</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#area-transformation">Area transformation</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#strain-displacement-matrix">Strain-displacement matrix</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gauss-legendre-integration">Gauss-Legendre integration</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gauss-legendre-integration">Gauss-Legendre integration</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mathematical-foundation">Mathematical foundation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#point-rule-derivation">2-point rule derivation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#application-to-element-stiffness">Application to element stiffness</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#implementation-in-femlabpy">Implementation in femlabpy</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#keq4e"><code class="docutils literal notranslate"><span class="pre">keq4e</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#qeq4e"><code class="docutils literal notranslate"><span class="pre">qeq4e</span></code></a></li>
@@ -682,6 +869,14 @@ exact shape of each array at every stage.</p>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#scalar-potential-version">Scalar potential version</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">Summary</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#appendix-mathematical-foundations">Appendix: Mathematical Foundations</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#b-1-shape-function-tensor-product-construction">B.1 Shape function tensor product construction</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#b-2-jacobian-positive-definiteness">B.2 Jacobian positive definiteness</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#b-3-gauss-quadrature-error-analysis">B.3 Gauss quadrature error analysis</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#b-4-rank-and-eigenvalue-analysis">B.4 Rank and eigenvalue analysis</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#b-5-patch-test-verification">B.5 Patch test verification</a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 

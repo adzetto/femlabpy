@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Theory and Reference Manual &#8212; femlabpy 0.6.0 documentation</title>
+    <title>Theory and Reference Manual &#8212; femlabpy</title>
   
   
   
@@ -31,7 +31,7 @@
 <link href="../_static/styles/pydata-sphinx-theme.css?digest=7f76b32a3354e82990f2" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
-    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=985dfaa0" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=ba1a7e05" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../_static/scripts/fontawesome.js?digest=7f76b32a3354e82990f2"></script>
@@ -46,7 +46,7 @@
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'theory/index';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
-    <script src="../_static/custom.js?v=35c928a7"></script>
+    <script src="../_static/custom.js?v=0184bad5"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Core Assembly in Finite Element Analysis" href="01_core_assembly.html" />
@@ -119,7 +119,7 @@
   
   
   
-    <p class="title logo__title">femlabpy 0.6.0 documentation</p>
+    <p class="title logo__title">femlabpy</p>
   
 </a></div>
     
@@ -349,7 +349,7 @@
 <li class="toctree-l1"><a class="reference internal" href="08_dynamics.html">Structural Dynamics and Time Integration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="09_modal_periodic.html">Modal analysis and periodic boundaries</a></li>
 <li class="toctree-l1"><a class="reference internal" href="10_io_mesh.html">Mesh I/O and Gmsh Import</a></li>
-<li class="toctree-l1"><a class="reference internal" href="11_nonlinear_solvers.html">Chapter 11: Nonlinear Solvers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11_nonlinear_solvers.html">Nonlinear Solvers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="12_plotting_postprocessing.html">Plotting and Postprocessing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="13_legacy_wrappers.html">Chapter 13: Legacy Wrappers</a></li>
 </ul>
@@ -411,78 +411,62 @@
                   
   <section class="tex2jax_ignore mathjax_ignore" id="theory-and-reference-manual">
 <h1>Theory and Reference Manual<a class="headerlink" href="#theory-and-reference-manual" title="Link to this heading">#</a></h1>
-<div class="fp-home-intro docutils container">
-<div class="fp-kicker docutils container">
-<p>Implementation-aligned derivations</p>
+<div class="fp-hero fp-hero--compact">
+  <div class="fp-hero-title">Theory &amp; Reference Manual</div>
+  <div class="fp-hero-subtitle">
+    Implementation-aligned derivations that connect equations, indexing rules, and constitutive updates to the exact array operations used in the source tree.
+  </div>
 </div>
-<div class="fp-lead docutils container">
-<p>These chapters explain the mathematical structure behind the actual <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code>
-implementation. The goal is not to repeat generic FEM lecture notes, but to
-connect equations, indexing rules, and constitutive updates to the exact array
-operations used in the source tree.</p>
+<div class="fp-card-grid fp-card-grid--primary">
+  <div class="fp-card fp-card--accent-blue">
+    <h3>Core Mechanics</h3>
+    <span class="fp-chip">3 chapters</span>
+    <ul class="fp-chapter-list">
+      <li><a href="01_core_assembly.html">01 &mdash; Assembly &amp; Global Indexing</a></li>
+      <li><a href="02_boundary_loads.html">02 &mdash; Boundary Conditions &amp; Loads</a></li>
+      <li><a href="03_1d_bars.html">03 &mdash; 1-D Bar Formulations</a></li>
+    </ul>
+  </div>
+  <div class="fp-card fp-card--accent-red">
+    <h3>Element Families</h3>
+    <span class="fp-chip">4 chapters</span>
+    <ul class="fp-chapter-list">
+      <li><a href="04_2d_triangles.html">04 &mdash; Triangular Elements (T3)</a></li>
+      <li><a href="05_2d_quads.html">05 &mdash; Quadrilateral Elements (Q4)</a></li>
+      <li><a href="06_3d_solids.html">06 &mdash; Tetrahedra &amp; Hexahedra</a></li>
+      <li><a href="07_plasticity.html">07 &mdash; Constitutive Return Mapping</a></li>
+    </ul>
+  </div>
+  <div class="fp-card fp-card--accent-green">
+    <h3>Dynamics, Periodicity &amp; I/O</h3>
+    <span class="fp-chip">6 chapters</span>
+    <ul class="fp-chapter-list">
+      <li><a href="08_dynamics.html">08 &mdash; Time Integration</a></li>
+      <li><a href="09_modal_periodic.html">09 &mdash; Modal &amp; Periodic</a></li>
+      <li><a href="10_io_mesh.html">10 &mdash; Mesh Import</a></li>
+      <li><a href="11_nonlinear_solvers.html">11 &mdash; Nonlinear Solvers</a></li>
+      <li><a href="12_plotting_postprocessing.html">12 &mdash; Plotting</a></li>
+      <li><a href="13_legacy_wrappers.html">13 &mdash; Legacy Wrappers</a></li>
+    </ul>
+  </div>
 </div>
-</div>
-<div class="fp-card-grid docutils container">
-<div class="fp-card docutils container">
-<p class="rubric" id="scope">Scope</p>
-<ul class="simple">
-<li><p>Core assembly and boundary-condition logic.</p></li>
-<li><p>Bar, triangle, quadrilateral, and solid element formulations.</p></li>
-<li><p>Plasticity, modal analysis, damping, dynamic time integration, and periodicity.</p></li>
-<li><p>Mesh I/O, plotting, and legacy wrapper behavior.</p></li>
-</ul>
-</div>
-<div class="fp-card docutils container">
-<p class="rubric" id="suggested-order">Suggested Order</p>
-<ol class="arabic simple">
-<li><p>Start with the assembly and boundary chapters.</p></li>
-<li><p>Continue into the element-family chapters for the formulations you use.</p></li>
-<li><p>Read the later chapters for dynamics, periodicity, nonlinear solvers, and I/O.</p></li>
-</ol>
-</div>
-</div>
-<section id="chapter-groups">
-<h2>Chapter Groups<a class="headerlink" href="#chapter-groups" title="Link to this heading">#</a></h2>
-<div class="fp-card-grid docutils container">
-<div class="fp-card docutils container">
-<p class="rubric" id="core-mechanics">Core Mechanics</p>
-<ul class="simple">
-<li><p><strong>01:</strong> Assembly logic and global indexing.</p></li>
-<li><p><strong>02:</strong> Boundary conditions and load treatment.</p></li>
-<li><p><strong>03:</strong> One-dimensional bar formulations.</p></li>
-</ul>
-</div>
-<div class="fp-card docutils container">
-<p class="rubric" id="element-families">Element Families</p>
-<ul class="simple">
-<li><p><strong>04:</strong> Three-node triangular elements.</p></li>
-<li><p><strong>05:</strong> Quadrilateral elements, including elastoplastic variants.</p></li>
-<li><p><strong>06:</strong> Tetrahedral and hexahedral solids.</p></li>
-<li><p><strong>07:</strong> Stress invariants and constitutive return mapping.</p></li>
-</ul>
-</div>
-<div class="fp-card docutils container">
-<p class="rubric" id="dynamics-periodicity-and-i-o">Dynamics, Periodicity, and I/O</p>
-<ul class="simple">
-<li><p><strong>08:</strong> Dynamics and time integration.</p></li>
-<li><p><strong>09:</strong> Modal reduction and periodic constraints.</p></li>
-<li><p><strong>10:</strong> Mesh import and normalized data structures.</p></li>
-<li><p><strong>11:</strong> Nonlinear legacy solver drivers.</p></li>
-<li><p><strong>12:</strong> Plotting and post-processing.</p></li>
-<li><p><strong>13:</strong> Legacy wrappers and compatibility behavior.</p></li>
-</ul>
-</div>
-</div>
-<div class="fp-section-note docutils container">
-<p>Section titles in this manual are kept as plain text on purpose. Mathematical
-symbols and derivations stay in the body text so the sidebar and section
-navigation remain clean and readable.</p>
+<div class="fp-callout-grid">
+  <div class="fp-callout fp-callout--blue">
+    <div class="fp-callout-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+    </div>
+    <div class="fp-callout-body">
+      <strong>Reading order</strong>
+      <p>Start with assembly (01-02), then the element families you use, then dynamics and I/O last.</p>
+    </div>
+  </div>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="01_core_assembly.html">Core Assembly in Finite Element Analysis</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="01_core_assembly.html#introduction">Introduction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="01_core_assembly.html#assembly-identity-and-meaning">Assembly identity and meaning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="01_core_assembly.html#variational-foundation">1. Variational Foundation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="01_core_assembly.html#assembly-identity-and-derivation">2. Assembly Identity and Derivation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="01_core_assembly.html#python-implementation-with-numpy-ix">Python implementation with <code class="docutils literal notranslate"><span class="pre">numpy.ix_</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="01_core_assembly.html#sparse-and-dense-assembly-in-assmk">Sparse and dense assembly in <code class="docutils literal notranslate"><span class="pre">assmk</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="01_core_assembly.html#complete-example-3-element-manual-assembly">Complete example: 3-element manual assembly</a></li>
@@ -491,25 +475,29 @@ navigation remain clean and readable.</p>
 <li class="toctree-l1"><a class="reference internal" href="02_boundary_loads.html">Boundary conditions and loads</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="02_boundary_loads.html#applying-external-loads">2.1 Applying external loads</a></li>
 <li class="toctree-l2"><a class="reference internal" href="02_boundary_loads.html#dirichlet-boundary-conditions">2.2 Dirichlet boundary conditions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="02_boundary_loads.html#general-constraints">2.3 General constraints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="02_boundary_loads.html#multi-point-constraints-lagrange-multipliers">2.3 Multi-point constraints (Lagrange multipliers)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="02_boundary_loads.html#summary">Summary</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="03_1d_bars.html">1D bar elements</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="03_1d_bars.html#linear-1d-bar-formulation">3.1 Linear 1D Bar Formulation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="03_1d_bars.html#geometric-nonlinear-formulation">3.2 Geometric nonlinear formulation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="03_1d_bars.html#newton-raphson-iteration-and-example">3.4 Newton-Raphson iteration and example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="03_1d_bars.html#continuum-mechanics-foundation">1. Continuum Mechanics Foundation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="03_1d_bars.html#linear-bar-element">2. Linear Bar Element</a></li>
+<li class="toctree-l2"><a class="reference internal" href="03_1d_bars.html#geometrically-nonlinear-formulation">3. Geometrically Nonlinear Formulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="03_1d_bars.html#mass-matrix">4. Mass Matrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="03_1d_bars.html#transformation-to-global-coordinates">5. Transformation to Global Coordinates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="03_1d_bars.html#implementation-reference">6. Implementation Reference</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="04_2d_triangles.html">2D Triangular Elements</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="04_2d_triangles.html#geometry-and-array-layout">Geometry and array layout</a></li>
 <li class="toctree-l2"><a class="reference internal" href="04_2d_triangles.html#shape-functions-and-gradients">Shape functions and gradients</a></li>
 <li class="toctree-l2"><a class="reference internal" href="04_2d_triangles.html#strain-displacement-matrix">Strain-displacement matrix</a></li>
-<li class="toctree-l2"><a class="reference internal" href="04_2d_triangles.html#element-stiffness-in-ket3e">Element stiffness in <code class="docutils literal notranslate"><span class="pre">ket3e</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="04_2d_triangles.html#element-stiffness-derivation">Element stiffness derivation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="04_2d_triangles.html#batched-assembly-in-kt3e">Batched assembly in <code class="docutils literal notranslate"><span class="pre">kt3e</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="04_2d_triangles.html#stress-and-flux-recovery">Stress and flux recovery</a></li>
 <li class="toctree-l2"><a class="reference internal" href="04_2d_triangles.html#scalar-potential-version">Scalar potential version</a></li>
 <li class="toctree-l2"><a class="reference internal" href="04_2d_triangles.html#summary">Summary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="04_2d_triangles.html#appendix-constitutive-matrix-derivations">Appendix: Constitutive Matrix Derivations</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="05_2d_quads.html">2D Isoparametric Quadrilateral Elements</a><ul>
@@ -520,20 +508,23 @@ navigation remain clean and readable.</p>
 <li class="toctree-l2"><a class="reference internal" href="05_2d_quads.html#implementation-in-femlabpy">Implementation in femlabpy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="05_2d_quads.html#scalar-potential-version">Scalar potential version</a></li>
 <li class="toctree-l2"><a class="reference internal" href="05_2d_quads.html#summary">Summary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="05_2d_quads.html#appendix-mathematical-foundations">Appendix: Mathematical Foundations</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="06_3d_solids.html">3D Solid Elements: Tetrahedrons and Hexahedrons</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="06_3d_solids.html#the-4-node-tetrahedron-element">1. The 4-Node Tetrahedron Element</a></li>
-<li class="toctree-l2"><a class="reference internal" href="06_3d_solids.html#the-8-node-hexahedron-element">2. The 8-Node Hexahedron Element</a></li>
-<li class="toctree-l2"><a class="reference internal" href="06_3d_solids.html#practical-reading-guide">3. Practical reading guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="06_3d_solids.html#preliminaries-3d-elasticity">Preliminaries: 3D Elasticity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="06_3d_solids.html#the-4-node-tetrahedron-element-t4">1. The 4-Node Tetrahedron Element (T4)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="06_3d_solids.html#the-8-node-hexahedron-element-h8">2. The 8-Node Hexahedron Element (H8)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="06_3d_solids.html#implementation-notes">3. Implementation Notes</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="07_plasticity.html">Constitutive Models and Plasticity</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="07_plasticity.html#elasticity-and-invariant-helpers">1. Elasticity and invariant helpers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="07_plasticity.html#plane-stress-von-mises-plasticity">2. Plane-stress von Mises plasticity</a></li>
-<li class="toctree-l2"><a class="reference internal" href="07_plasticity.html#drucker-prager-plasticity">3. Drucker-Prager plasticity</a></li>
-<li class="toctree-l2"><a class="reference internal" href="07_plasticity.html#consistent-tangent-in-the-solver-flow">4. Consistent tangent in the solver flow</a></li>
-<li class="toctree-l2"><a class="reference internal" href="07_plasticity.html#how-to-read-the-module">5. How to read the module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="07_plasticity.html#stress-invariants-and-decomposition">1. Stress Invariants and Decomposition</a></li>
+<li class="toctree-l2"><a class="reference internal" href="07_plasticity.html#von-mises-yield-criterion">2. Von Mises Yield Criterion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="07_plasticity.html#return-mapping-algorithm">3. Return Mapping Algorithm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="07_plasticity.html#drucker-prager-plasticity">4. Drucker-Prager Plasticity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="07_plasticity.html#material-row-layout">5. Material Row Layout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="07_plasticity.html#implementation-summary">6. Implementation Summary</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="08_dynamics.html">Structural Dynamics and Time Integration</a><ul>
@@ -542,10 +533,11 @@ navigation remain clean and readable.</p>
 <li class="toctree-l2"><a class="reference internal" href="08_dynamics.html#explicit-time-integration-central-difference-method">3. Explicit Time Integration: Central Difference Method</a></li>
 <li class="toctree-l2"><a class="reference internal" href="08_dynamics.html#dissipative-integration-hht-alpha-method">4. Dissipative Integration: HHT-<span class="math notranslate nohighlight">\(\alpha\)</span> Method</a></li>
 <li class="toctree-l2"><a class="reference internal" href="08_dynamics.html#frequency-response-function-frf">5. Frequency Response Function (FRF)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="08_dynamics.html#appendix-mathematical-foundations">Appendix: Mathematical Foundations</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="09_modal_periodic.html">Modal analysis and periodic boundaries</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="09_modal_periodic.html#modal-analysis">1. Modal analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="09_modal_periodic.html#modal-analysis">1. Modal Analysis</a></li>
 <li class="toctree-l2"><a class="reference internal" href="09_modal_periodic.html#periodic-boundaries">2. Periodic boundaries</a></li>
 <li class="toctree-l2"><a class="reference internal" href="09_modal_periodic.html#volume-averages-and-homogenization">3. Volume averages and homogenization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="09_modal_periodic.html#practical-workflow">4. Practical workflow</a></li>
@@ -558,13 +550,20 @@ navigation remain clean and readable.</p>
 <li class="toctree-l2"><a class="reference internal" href="10_io_mesh.html#practical-extraction">4. Practical Extraction</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="11_nonlinear_solvers.html">Chapter 11: Nonlinear Solvers</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="11_nonlinear_solvers.html#orthogonal-residual-solver">Orthogonal Residual Solver</a></li>
-<li class="toctree-l2"><a class="reference internal" href="11_nonlinear_solvers.html#elastoplastic-solver">Elastoplastic Solver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11_nonlinear_solvers.html">Nonlinear Solvers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="11_nonlinear_solvers.html#the-nonlinear-problem">1. The Nonlinear Problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11_nonlinear_solvers.html#newton-raphson-method">2. Newton-Raphson Method</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11_nonlinear_solvers.html#load-control-and-incremental-analysis">3. Load Control and Incremental Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11_nonlinear_solvers.html#arc-length-methods">4. Arc-Length Methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11_nonlinear_solvers.html#tangent-stiffness-matrix">5. Tangent Stiffness Matrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11_nonlinear_solvers.html#convergence-criteria">6. Convergence Criteria</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11_nonlinear_solvers.html#implementation-in-femlabpy">7. Implementation in femlabpy</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="12_plotting_postprocessing.html">Plotting and Postprocessing</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="12_plotting_postprocessing.html#mesh-and-field-plotting">Mesh and Field Plotting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12_plotting_postprocessing.html#stress-recovery-mathematics">1. Stress Recovery Mathematics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12_plotting_postprocessing.html#reaction-forces">2. Reaction Forces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12_plotting_postprocessing.html#mesh-and-field-plotting">3. Mesh and Field Plotting</a></li>
 <li class="toctree-l2"><a class="reference internal" href="12_plotting_postprocessing.html#element-contours">Element Contours</a></li>
 <li class="toctree-l2"><a class="reference internal" href="12_plotting_postprocessing.html#reactions">Reactions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="12_plotting_postprocessing.html#typical-workflow">Typical Workflow</a></li>
@@ -581,7 +580,6 @@ navigation remain clean and readable.</p>
 </li>
 </ul>
 </div>
-</section>
 </section>
 
 
@@ -622,18 +620,6 @@ navigation remain clean and readable.</p>
                 <dialog id="pst-secondary-sidebar-modal"></dialog>
                 <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
-
-  <div class="sidebar-secondary-item">
-<div
-    id="pst-page-navigation-heading-2"
-    class="page-toc tocsection onthispage">
-    <i class="fa-solid fa-list"></i> On this page
-  </div>
-  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
-    <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#chapter-groups">Chapter Groups</a></li>
-</ul>
-  </nav></div>
 
   <div class="sidebar-secondary-item">
 

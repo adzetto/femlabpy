@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Modal analysis and periodic boundaries &#8212; femlabpy 0.6.0 documentation</title>
+    <title>Modal analysis and periodic boundaries &#8212; femlabpy</title>
   
   
   
@@ -31,7 +31,7 @@
 <link href="../_static/styles/pydata-sphinx-theme.css?digest=7f76b32a3354e82990f2" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
-    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=985dfaa0" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=ba1a7e05" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../_static/scripts/fontawesome.js?digest=7f76b32a3354e82990f2"></script>
@@ -46,7 +46,7 @@
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'theory/09_modal_periodic';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
-    <script src="../_static/custom.js?v=35c928a7"></script>
+    <script src="../_static/custom.js?v=0184bad5"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Mesh I/O and Gmsh Import" href="10_io_mesh.html" />
@@ -119,7 +119,7 @@
   
   
   
-    <p class="title logo__title">femlabpy 0.6.0 documentation</p>
+    <p class="title logo__title">femlabpy</p>
   
 </a></div>
     
@@ -349,7 +349,7 @@
 <li class="toctree-l1"><a class="reference internal" href="08_dynamics.html">Structural Dynamics and Time Integration</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Modal analysis and periodic boundaries</a></li>
 <li class="toctree-l1"><a class="reference internal" href="10_io_mesh.html">Mesh I/O and Gmsh Import</a></li>
-<li class="toctree-l1"><a class="reference internal" href="11_nonlinear_solvers.html">Chapter 11: Nonlinear Solvers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11_nonlinear_solvers.html">Nonlinear Solvers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="12_plotting_postprocessing.html">Plotting and Postprocessing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="13_legacy_wrappers.html">Chapter 13: Legacy Wrappers</a></li>
 </ul>
@@ -426,60 +426,102 @@ and one-based legacy tables. <code class="docutils literal notranslate"><span cl
 the periodic module builds a constraint system and solves the resulting
 saddle-point problem with Lagrange multipliers.</p>
 <section id="modal-analysis">
-<h2>1. Modal analysis<a class="headerlink" href="#modal-analysis" title="Link to this heading">#</a></h2>
-<p>The modal solver works on the generalized eigenvalue problem</p>
+<h2>1. Modal Analysis<a class="headerlink" href="#modal-analysis" title="Link to this heading">#</a></h2>
+<section id="generalized-eigenvalue-problem">
+<h3>1.1 Generalized eigenvalue problem<a class="headerlink" href="#generalized-eigenvalue-problem" title="Link to this heading">#</a></h3>
+<p>The free vibration equation without damping is:</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbf{M}\ddot{\mathbf{u}} + \mathbf{K}\mathbf{u} = \mathbf{0}
+\]</div>
+<p>Assuming harmonic motion <span class="math notranslate nohighlight">\(\mathbf{u}(t) = \boldsymbol{\phi} e^{i\omega t}\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[
+-\omega^2 \mathbf{M}\boldsymbol{\phi} e^{i\omega t} + \mathbf{K}\boldsymbol{\phi} e^{i\omega t} = \mathbf{0}
+\]</div>
+<p>This yields the generalized eigenvalue problem:</p>
 <div class="math notranslate nohighlight">
 \[
 \mathbf{K}\boldsymbol{\phi} = \omega^2 \mathbf{M}\boldsymbol{\phi}
 \]</div>
-<p>where <code class="docutils literal notranslate"><span class="pre">omega</span></code> is the circular natural frequency and <code class="docutils literal notranslate"><span class="pre">phi</span></code> is the mode shape.
-<code class="docutils literal notranslate"><span class="pre">solve_modal(K,</span> <span class="pre">M,</span> <span class="pre">n_modes=10,</span> <span class="pre">C_bc=None,</span> <span class="pre">dof=2,</span> <span class="pre">sigma=0.0)</span></code> returns a
-<code class="docutils literal notranslate"><span class="pre">ModalResult</span></code> dataclass with these fields:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">eigenvalues</span></code>: the squared frequencies, <code class="docutils literal notranslate"><span class="pre">omega^2</span></code>,</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">omega</span></code>: circular frequencies in rad/s,</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">freq_hz</span></code>: frequencies in Hz,</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">period</span></code>: modal periods in seconds,</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">mode_shapes</span></code>: full-size mode shape vectors with zeros at constrained DOFs,</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">participation</span></code>: modal participation factors per direction,</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">effective_mass</span></code>: effective modal mass per direction.</p></li>
-</ul>
-<section id="how-the-solver-reduces-the-system">
-<h3>How the solver reduces the system<a class="headerlink" href="#how-the-solver-reduces-the-system" title="Link to this heading">#</a></h3>
-<p>The implementation does not solve the full constrained system directly. It
-first builds a boolean mask of free DOFs from <code class="docutils literal notranslate"><span class="pre">C_bc</span></code> with <code class="docutils literal notranslate"><span class="pre">_get_free_dofs()</span></code>,
-then extracts the reduced matrices with <code class="docutils literal notranslate"><span class="pre">_reduce_system()</span></code>. The reduction uses
-<code class="docutils literal notranslate"><span class="pre">np.ix_</span></code> so both the stiffness and mass matrices are sliced consistently:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">free_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">free_mask</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-<span class="n">K_red</span> <span class="o">=</span> <span class="n">K</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ix_</span><span class="p">(</span><span class="n">free_idx</span><span class="p">,</span> <span class="n">free_idx</span><span class="p">)]</span>
-<span class="n">M_red</span> <span class="o">=</span> <span class="n">M</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ix_</span><span class="p">(</span><span class="n">free_idx</span><span class="p">,</span> <span class="n">free_idx</span><span class="p">)]</span>
-</pre></div>
-</div>
-<p>That matters because the solver is preserving the generalized eigenvalue
-structure, not just deleting rows and columns arbitrarily.</p>
-<p>For small systems, <code class="docutils literal notranslate"><span class="pre">solve_modal()</span></code> uses dense <code class="docutils literal notranslate"><span class="pre">scipy.linalg.eigh</span></code>. For larger
-systems it switches to <code class="docutils literal notranslate"><span class="pre">scipy.sparse.linalg.eigsh</span></code> with shift-invert. After the
-eigensolve, the eigenvectors are mass-normalized on the reduced system and then
-expanded back to the full DOF space.</p>
+<p>where <span class="math notranslate nohighlight">\(\omega\)</span> is the circular natural frequency and <span class="math notranslate nohighlight">\(\boldsymbol{\phi}\)</span> is the mode shape.</p>
 </section>
-<section id="participation-factors-and-effective-mass">
-<h3>Participation factors and effective mass<a class="headerlink" href="#participation-factors-and-effective-mass" title="Link to this heading">#</a></h3>
-<p>The internal helper <code class="docutils literal notranslate"><span class="pre">_modal_participation()</span></code> builds a unit influence vector for
-each spatial direction and evaluates</p>
+<section id="orthogonality-of-modes">
+<h3>1.2 Orthogonality of modes<a class="headerlink" href="#orthogonality-of-modes" title="Link to this heading">#</a></h3>
+<p>For distinct eigenvalues <span class="math notranslate nohighlight">\(\omega_m^2 \neq \omega_n^2\)</span>, the mode shapes satisfy:</p>
 <div class="math notranslate nohighlight">
 \[
-\Gamma_{n,j} = \frac{\phi_n^T \mathbf{M} r_j}{\phi_n^T \mathbf{M}\phi_n}
+\boldsymbol{\phi}_m^T \mathbf{M} \boldsymbol{\phi}_n = 0, \quad \boldsymbol{\phi}_m^T \mathbf{K} \boldsymbol{\phi}_n = 0 \quad (m \neq n)
 \]</div>
-<p>For mass-normalized modes, the denominator is one, so the effective modal mass
-reduces to the square of the participation factor. The code uses the full mass
-matrix after expansion so the returned arrays are aligned with the original DOF
-numbering.</p>
+<p><strong>Proof:</strong> From the eigenvalue equations:
+$<span class="math notranslate nohighlight">\(
+\mathbf{K}\boldsymbol{\phi}_m = \omega_m^2 \mathbf{M}\boldsymbol{\phi}_m, \quad \mathbf{K}\boldsymbol{\phi}_n = \omega_n^2 \mathbf{M}\boldsymbol{\phi}_n
+\)</span>$</p>
+<p>Pre-multiply the first by <span class="math notranslate nohighlight">\(\boldsymbol{\phi}_n^T\)</span> and the second by <span class="math notranslate nohighlight">\(\boldsymbol{\phi}_m^T\)</span>:
+$<span class="math notranslate nohighlight">\(
+\boldsymbol{\phi}_n^T \mathbf{K}\boldsymbol{\phi}_m = \omega_m^2 \boldsymbol{\phi}_n^T \mathbf{M}\boldsymbol{\phi}_m
+\)</span><span class="math notranslate nohighlight">\(
+\)</span><span class="math notranslate nohighlight">\(
+\boldsymbol{\phi}_m^T \mathbf{K}\boldsymbol{\phi}_n = \omega_n^2 \boldsymbol{\phi}_m^T \mathbf{M}\boldsymbol{\phi}_n
+\)</span>$</p>
+<p>Since <span class="math notranslate nohighlight">\(\mathbf{K}\)</span> and <span class="math notranslate nohighlight">\(\mathbf{M}\)</span> are symmetric, transposing gives equal LHS. Subtracting:
+$<span class="math notranslate nohighlight">\(
+(\omega_m^2 - \omega_n^2) \boldsymbol{\phi}_n^T \mathbf{M}\boldsymbol{\phi}_m = 0
+\)</span>$</p>
+<p>For <span class="math notranslate nohighlight">\(\omega_m \neq \omega_n\)</span>: <span class="math notranslate nohighlight">\(\boldsymbol{\phi}_n^T \mathbf{M}\boldsymbol{\phi}_m = 0\)</span> ∎</p>
 </section>
-<section id="plotting-modes">
-<h3>Plotting modes<a class="headerlink" href="#plotting-modes" title="Link to this heading">#</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">plot_modes(T,</span> <span class="pre">X,</span> <span class="pre">phi,</span> <span class="pre">dof,</span> <span class="pre">mode_indices=None,</span> <span class="pre">scale=1.0)</span></code> deforms the mesh for
-one or more modes and is intentionally separate from the solver. The solver is
-responsible for modal data; the plotting helper is responsible for presenting
+<section id="mass-normalization">
+<h3>1.3 Mass normalization<a class="headerlink" href="#mass-normalization" title="Link to this heading">#</a></h3>
+<p>Modes are typically normalized such that:</p>
+<div class="math notranslate nohighlight">
+\[
+\boldsymbol{\phi}_n^T \mathbf{M} \boldsymbol{\phi}_n = 1
+\]</div>
+<p>This implies:
+$<span class="math notranslate nohighlight">\(
+\boldsymbol{\phi}_n^T \mathbf{K} \boldsymbol{\phi}_n = \omega_n^2
+\)</span>$</p>
+</section>
+<section id="modal-participation-factors">
+<h3>1.4 Modal participation factors<a class="headerlink" href="#modal-participation-factors" title="Link to this heading">#</a></h3>
+<p>The participation factor for mode <span class="math notranslate nohighlight">\(n\)</span> in direction <span class="math notranslate nohighlight">\(j\)</span> quantifies how much the mode contributes to the response under uniform excitation:</p>
+<div class="math notranslate nohighlight">
+\[
+\Gamma_{n,j} = \frac{\boldsymbol{\phi}_n^T \mathbf{M} \mathbf{r}_j}{\boldsymbol{\phi}_n^T \mathbf{M}\boldsymbol{\phi}_n}
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(\mathbf{r}_j\)</span> is a unit influence vector (ones for DOFs in direction <span class="math notranslate nohighlight">\(j\)</span>, zeros elsewhere).</p>
+<p>For mass-normalized modes (<span class="math notranslate nohighlight">\(\boldsymbol{\phi}_n^T \mathbf{M}\boldsymbol{\phi}_n = 1\)</span>):</p>
+<div class="math notranslate nohighlight">
+\[
+\Gamma_{n,j} = \boldsymbol{\phi}_n^T \mathbf{M} \mathbf{r}_j
+\]</div>
+</section>
+<section id="effective-modal-mass">
+<h3>1.5 Effective modal mass<a class="headerlink" href="#effective-modal-mass" title="Link to this heading">#</a></h3>
+<p>The effective modal mass in direction <span class="math notranslate nohighlight">\(j\)</span> is:</p>
+<div class="math notranslate nohighlight">
+\[
+M_{eff,n,j} = \Gamma_{n,j}^2 \cdot (\boldsymbol{\phi}_n^T \mathbf{M}\boldsymbol{\phi}_n) = \Gamma_{n,j}^2
+\]</div>
+<p>The sum of effective masses equals the total mass:</p>
+<div class="math notranslate nohighlight">
+\[
+\sum_{n=1}^{N} M_{eff,n,j} = \mathbf{r}_j^T \mathbf{M} \mathbf{r}_j = M_{total,j}
+\]</div>
+</section>
+<section id="implementation-details">
+<h3>1.6 Implementation details<a class="headerlink" href="#implementation-details" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">solve_modal(K,</span> <span class="pre">M,</span> <span class="pre">n_modes=10,</span> <span class="pre">C_bc=None,</span> <span class="pre">dof=2,</span> <span class="pre">sigma=0.0)</span></code> returns a <code class="docutils literal notranslate"><span class="pre">ModalResult</span></code> with:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">eigenvalues</span></code>: <span class="math notranslate nohighlight">\(\omega^2\)</span></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">omega</span></code>: circular frequencies (rad/s)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">freq_hz</span></code>: <span class="math notranslate nohighlight">\(f = \omega/(2\pi)\)</span> (Hz)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">period</span></code>: <span class="math notranslate nohighlight">\(T = 1/f\)</span> (seconds)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mode_shapes</span></code>: mass-normalized eigenvectors</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">participation</span></code>: <span class="math notranslate nohighlight">\(\Gamma_{n,j}\)</span> per direction</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">effective_mass</span></code>: <span class="math notranslate nohighlight">\(M_{eff,n,j}\)</span> per direction</p></li>
+</ul>
+<p>The solver reduces the system by removing constrained DOFs before solving, then expands results back to full size.
 it.</p>
 </section>
 </section>
@@ -632,10 +674,13 @@ linear solver.</p>
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#modal-analysis">1. Modal analysis</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-the-solver-reduces-the-system">How the solver reduces the system</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#participation-factors-and-effective-mass">Participation factors and effective mass</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plotting-modes">Plotting modes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#modal-analysis">1. Modal Analysis</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#generalized-eigenvalue-problem">1.1 Generalized eigenvalue problem</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#orthogonality-of-modes">1.2 Orthogonality of modes</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mass-normalization">1.3 Mass normalization</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#modal-participation-factors">1.4 Modal participation factors</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#effective-modal-mass">1.5 Effective modal mass</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#implementation-details">1.6 Implementation details</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#periodic-boundaries">2. Periodic boundaries</a><ul class="nav section-nav flex-column">

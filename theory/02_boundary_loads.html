@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Boundary conditions and loads &#8212; femlabpy 0.6.0 documentation</title>
+    <title>Boundary conditions and loads &#8212; femlabpy</title>
   
   
   
@@ -31,7 +31,7 @@
 <link href="../_static/styles/pydata-sphinx-theme.css?digest=7f76b32a3354e82990f2" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
-    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=985dfaa0" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=ba1a7e05" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../_static/scripts/fontawesome.js?digest=7f76b32a3354e82990f2"></script>
@@ -46,7 +46,7 @@
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'theory/02_boundary_loads';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
-    <script src="../_static/custom.js?v=35c928a7"></script>
+    <script src="../_static/custom.js?v=0184bad5"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="1D bar elements" href="03_1d_bars.html" />
@@ -119,7 +119,7 @@
   
   
   
-    <p class="title logo__title">femlabpy 0.6.0 documentation</p>
+    <p class="title logo__title">femlabpy</p>
   
 </a></div>
     
@@ -349,7 +349,7 @@
 <li class="toctree-l1"><a class="reference internal" href="08_dynamics.html">Structural Dynamics and Time Integration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="09_modal_periodic.html">Modal analysis and periodic boundaries</a></li>
 <li class="toctree-l1"><a class="reference internal" href="10_io_mesh.html">Mesh I/O and Gmsh Import</a></li>
-<li class="toctree-l1"><a class="reference internal" href="11_nonlinear_solvers.html">Chapter 11: Nonlinear Solvers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11_nonlinear_solvers.html">Nonlinear Solvers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="12_plotting_postprocessing.html">Plotting and Postprocessing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="13_legacy_wrappers.html">Chapter 13: Legacy Wrappers</a></li>
 </ul>
@@ -453,81 +453,101 @@
 <p>Dirichlet boundary conditions specify known values of the primary field variable at certain nodes or components:</p>
 <div class="math notranslate nohighlight">
 \[ u_i = \bar{u}_i \quad \forall i \in \mathcal{C} \]</div>
-<p>The code uses a direct-elimination strategy with a scaled diagonal entry. That is close to the textbook “large spring” idea, but the implementation is more careful: before a constrained row is overwritten, its coupling terms are moved to the right-hand side so non-zero prescribed values are handled correctly.</p>
-<p>The active helper is <code class="docutils literal notranslate"><span class="pre">setbc(K,</span> <span class="pre">p,</span> <span class="pre">C,</span> <span class="pre">dof)</span></code>. The constraint table <code class="docutils literal notranslate"><span class="pre">C</span></code> follows the same legacy layout used throughout the repository:</p>
-<p><code class="docutils literal notranslate"><span class="pre">[node,</span> <span class="pre">value]</span></code> for scalar problems.
-<code class="docutils literal notranslate"><span class="pre">[node,</span> <span class="pre">local_dof,</span> <span class="pre">value]</span></code> for vector problems.</p>
-<section id="how-setbc-works">
-<h3>How <code class="docutils literal notranslate"><span class="pre">setbc</span></code> works<a class="headerlink" href="#how-setbc-works" title="Link to this heading">#</a></h3>
-<p>The implementation in <code class="docutils literal notranslate"><span class="pre">src/femlabpy/boundary.py</span></code> does four things in order:</p>
+<section id="mathematical-formulation">
+<h3>Mathematical formulation<a class="headerlink" href="#mathematical-formulation" title="Link to this heading">#</a></h3>
+<p>Consider the partitioned system:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{bmatrix} \mathbf{K}_{ff} &amp; \mathbf{K}_{fc} \\ \mathbf{K}_{cf} &amp; \mathbf{K}_{cc} \end{bmatrix} \begin{bmatrix} \mathbf{u}_f \\ \mathbf{u}_c \end{bmatrix} = \begin{bmatrix} \mathbf{P}_f \\ \mathbf{P}_c \end{bmatrix}
+\end{split}\]</div>
+<p>where subscript <span class="math notranslate nohighlight">\(f\)</span> denotes free DOFs and <span class="math notranslate nohighlight">\(c\)</span> denotes constrained DOFs with <span class="math notranslate nohighlight">\(\mathbf{u}_c = \bar{\mathbf{u}}_c\)</span>.</p>
+<p><strong>Condensed system:</strong> The free DOFs satisfy:</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbf{K}_{ff} \mathbf{u}_f = \mathbf{P}_f - \mathbf{K}_{fc} \bar{\mathbf{u}}_c
+\]</div>
+<p>The term <span class="math notranslate nohighlight">\(\mathbf{K}_{fc} \bar{\mathbf{u}}_c\)</span> transfers the effect of prescribed displacements to the right-hand side.</p>
+<p><strong>Reaction forces:</strong> After solving for <span class="math notranslate nohighlight">\(\mathbf{u}_f\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbf{R}_c = \mathbf{K}_{cf} \mathbf{u}_f + \mathbf{K}_{cc} \bar{\mathbf{u}}_c - \mathbf{P}_c
+\]</div>
+</section>
+<section id="penalty-method-alternative">
+<h3>Penalty method alternative<a class="headerlink" href="#penalty-method-alternative" title="Link to this heading">#</a></h3>
+<p>Instead of elimination, constrained DOFs can be enforced with a large spring:</p>
+<div class="math notranslate nohighlight">
+\[
+K_{ii} \leftarrow K_{ii} + k_s, \quad P_i \leftarrow P_i + k_s \bar{u}_i
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(k_s \gg \max(K_{ii})\)</span>. This approximately enforces <span class="math notranslate nohighlight">\(u_i \approx \bar{u}_i\)</span>.</p>
+</section>
+<section id="implementation-in-setbc">
+<h3>Implementation in <code class="docutils literal notranslate"><span class="pre">setbc</span></code><a class="headerlink" href="#implementation-in-setbc" title="Link to this heading">#</a></h3>
+<p>The code uses a hybrid approach that maintains matrix symmetry:</p>
 <ol class="arabic simple">
-<li><p>It computes a diagonal scale <code class="docutils literal notranslate"><span class="pre">ks</span></code> from the current stiffness matrix.</p></li>
-<li><p>It converts the 1-based node/component pairs into global DOF indices.</p></li>
-<li><p>It subtracts the coupling contribution of each constrained DOF from the global load vector.</p></li>
-<li><p>It zeros the row and column, then places <code class="docutils literal notranslate"><span class="pre">ks</span></code> on the diagonal and <code class="docutils literal notranslate"><span class="pre">ks</span> <span class="pre">*</span> <span class="pre">value</span></code> in the load vector.</p></li>
+<li><p>Compute scale: <span class="math notranslate nohighlight">\(k_s = 0.1 \cdot \max_i |K_{ii}|\)</span></p></li>
+<li><p>Transfer coupling to RHS: <span class="math notranslate nohighlight">\(\mathbf{P} \leftarrow \mathbf{P} - \mathbf{K}_{:,j} \bar{u}_j\)</span></p></li>
+<li><p>Zero row and column: <span class="math notranslate nohighlight">\(K_{j,:} = 0\)</span>, <span class="math notranslate nohighlight">\(K_{:,j} = 0\)</span></p></li>
+<li><p>Set diagonal and load: <span class="math notranslate nohighlight">\(K_{jj} = k_s\)</span>, <span class="math notranslate nohighlight">\(P_j = k_s \bar{u}_j\)</span></p></li>
 </ol>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="n">ks</span> <span class="o">=</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="n">max_abs_diagonal</span><span class="p">(</span><span class="n">K</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">ks</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
-        <span class="n">ks</span> <span class="o">=</span> <span class="mf">1.0</span>
-
-    <span class="c1"># ... (DOF parsing omitted for brevity) ...</span>
-
-    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cdofs</span><span class="p">)):</span>
-        <span class="n">j</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">cdofs</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
-        <span class="n">val</span> <span class="o">=</span> <span class="n">cvals</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
-        <span class="c1"># Transfer coupling forces to RHS *before* zeroing the column.</span>
-        <span class="k">if</span> <span class="n">val</span> <span class="o">!=</span> <span class="mf">0.0</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">sparse</span><span class="p">:</span>
-                <span class="n">col_j</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">K</span><span class="p">[:,</span> <span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">toarray</span><span class="p">())</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">col_j</span> <span class="o">=</span> <span class="n">K</span><span class="p">[:,</span> <span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-            <span class="n">p</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-=</span> <span class="n">col_j</span> <span class="o">*</span> <span class="n">val</span>
-            
-        <span class="c1"># Zero row and column, set diagonal spring.</span>
-        <span class="n">K</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">K</span><span class="p">[:,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">K</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">ks</span>
-        <span class="n">p</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">ks</span> <span class="o">*</span> <span class="n">val</span>
-</pre></div>
-</div>
-<p>This procedure keeps the constrained value exactly visible in the modified system and avoids leaving stale coupling terms in the matrix.</p>
+<p>This preserves symmetry and gives exact constraint enforcement.</p>
 </section>
 </section>
 <hr class="docutils" />
-<section id="general-constraints">
-<h2>2.3 General constraints<a class="headerlink" href="#general-constraints" title="Link to this heading">#</a></h2>
-<p>Some problems need multi-point constraints instead of single-node fixities. In that case the condition has the form:</p>
+<section id="multi-point-constraints-lagrange-multipliers">
+<h2>2.3 Multi-point constraints (Lagrange multipliers)<a class="headerlink" href="#multi-point-constraints-lagrange-multipliers" title="Link to this heading">#</a></h2>
+<p>Multi-point constraints couple multiple DOFs:</p>
 <div class="math notranslate nohighlight">
 \[ \mathbf{G} \mathbf{u} = \mathbf{Q} \]</div>
-<p>where <span class="math notranslate nohighlight">\(\mathbf{G}\)</span> is the constraint matrix and <span class="math notranslate nohighlight">\(\mathbf{Q}\)</span> is the constraint right-hand side. <code class="docutils literal notranslate"><span class="pre">femlabpy</span></code> handles this with Lagrange multipliers through <code class="docutils literal notranslate"><span class="pre">solve_lag_general</span></code>.</p>
-<section id="building-the-saddle-point-system">
-<h3>Building the saddle-point system<a class="headerlink" href="#building-the-saddle-point-system" title="Link to this heading">#</a></h3>
-<p>The augmented system couples the unknown displacements and the multipliers:</p>
+<p>where <span class="math notranslate nohighlight">\(\mathbf{G}\)</span> is the <span class="math notranslate nohighlight">\(m \times n\)</span> constraint matrix and <span class="math notranslate nohighlight">\(\mathbf{Q}\)</span> is the <span class="math notranslate nohighlight">\(m \times 1\)</span> constraint RHS.</p>
+<section id="variational-formulation">
+<h3>Variational formulation<a class="headerlink" href="#variational-formulation" title="Link to this heading">#</a></h3>
+<p>The constrained minimization problem:</p>
+<div class="math notranslate nohighlight">
+\[
+\min_{\mathbf{u}} \frac{1}{2}\mathbf{u}^T\mathbf{K}\mathbf{u} - \mathbf{u}^T\mathbf{P} \quad \text{subject to} \quad \mathbf{G}\mathbf{u} = \mathbf{Q}
+\]</div>
+<p>The Lagrangian is:</p>
+<div class="math notranslate nohighlight">
+\[
+\mathcal{L}(\mathbf{u}, \boldsymbol{\lambda}) = \frac{1}{2}\mathbf{u}^T\mathbf{K}\mathbf{u} - \mathbf{u}^T\mathbf{P} + \boldsymbol{\lambda}^T(\mathbf{G}\mathbf{u} - \mathbf{Q})
+\]</div>
+<p><strong>Stationarity conditions:</strong></p>
+<div class="math notranslate nohighlight">
+\[
+\frac{\partial \mathcal{L}}{\partial \mathbf{u}} = \mathbf{K}\mathbf{u} - \mathbf{P} + \mathbf{G}^T\boldsymbol{\lambda} = \mathbf{0}
+\]</div>
+<div class="math notranslate nohighlight">
+\[
+\frac{\partial \mathcal{L}}{\partial \boldsymbol{\lambda}} = \mathbf{G}\mathbf{u} - \mathbf{Q} = \mathbf{0}
+\]</div>
+</section>
+<section id="saddle-point-system">
+<h3>Saddle-point system<a class="headerlink" href="#saddle-point-system" title="Link to this heading">#</a></h3>
+<p>The KKT conditions form the saddle-point system:</p>
 <div class="math notranslate nohighlight">
 \[\begin{split} \begin{bmatrix} \mathbf{K} &amp; \mathbf{G}^T \\ \mathbf{G} &amp; \mathbf{0} \end{bmatrix} \begin{bmatrix} \mathbf{u} \\ \boldsymbol{\lambda} \end{bmatrix} = \begin{bmatrix} \mathbf{P} \\ \mathbf{Q} \end{bmatrix} \end{split}\]</div>
-<p>In <code class="docutils literal notranslate"><span class="pre">solve_lag_general</span></code>, the constraint rows are scaled to stay numerically compatible with the stiffness matrix. The function then builds the block matrix with <code class="docutils literal notranslate"><span class="pre">numpy.block</span></code> for dense systems, or <code class="docutils literal notranslate"><span class="pre">scipy.sparse.bmat</span></code> for sparse systems.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="n">Gbar</span> <span class="o">=</span> <span class="n">scale</span> <span class="o">*</span> <span class="n">constraint_matrix</span>
-    <span class="n">Qbar</span> <span class="o">=</span> <span class="n">scale</span> <span class="o">*</span> <span class="n">constraint_rhs</span>
-    
-    <span class="c1"># Building the Saddle-Point Matrix using np.block</span>
-    <span class="n">Kbar</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">block</span><span class="p">(</span>
-        <span class="p">[</span>
-            <span class="p">[</span><span class="n">as_float_array</span><span class="p">(</span><span class="n">K</span><span class="p">),</span> <span class="n">Gbar</span><span class="o">.</span><span class="n">T</span><span class="p">],</span>
-            <span class="p">[</span>
-                <span class="n">Gbar</span><span class="p">,</span>
-                <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
-                    <span class="p">(</span><span class="n">constraint_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">constraint_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
-                    <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
-                <span class="p">),</span>
-            <span class="p">],</span>
-        <span class="p">]</span>
-    <span class="p">)</span>
-</pre></div>
-</div>
-<p>The returned solution contains the physical displacement vector. If requested, the recovered multipliers are rescaled back to the original constraint units.</p>
+<p><strong>Physical interpretation of <span class="math notranslate nohighlight">\(\boldsymbol{\lambda}\)</span>:</strong></p>
+<p>The Lagrange multipliers represent the constraint forces. From the first equation:</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbf{K}\mathbf{u} = \mathbf{P} - \mathbf{G}^T\boldsymbol{\lambda}
+\]</div>
+<p>The term <span class="math notranslate nohighlight">\(-\mathbf{G}^T\boldsymbol{\lambda}\)</span> is the reaction force required to enforce the constraint.</p>
 </section>
-<section id="example-two-spring-system">
-<h3>Example: two-spring system<a class="headerlink" href="#example-two-spring-system" title="Link to this heading">#</a></h3>
+<section id="numerical-conditioning">
+<h3>Numerical conditioning<a class="headerlink" href="#numerical-conditioning" title="Link to this heading">#</a></h3>
+<p>The saddle-point matrix is indefinite. For numerical stability, <code class="docutils literal notranslate"><span class="pre">solve_lag_general</span></code> scales the constraint equations:</p>
+<div class="math notranslate nohighlight">
+\[
+\bar{\mathbf{G}} = s \cdot \mathbf{G}, \quad \bar{\mathbf{Q}} = s \cdot \mathbf{Q}
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(s \sim 0.01 \cdot \max_i |K_{ii}|\)</span> balances the constraint rows with the stiffness entries.</p>
+<p>After solving, the multipliers are rescaled: <span class="math notranslate nohighlight">\(\boldsymbol{\lambda} = s \cdot \bar{\boldsymbol{\lambda}}\)</span></p>
+</section>
+<section id="example-rigid-link-constraint">
+<h3>Example: rigid link constraint<a class="headerlink" href="#example-rigid-link-constraint" title="Link to this heading">#</a></h3>
 <p>This example shows the same structure as the implementation: one equilibrium solve, one constraint equation, and one multiplier that reports the transmitted constraint force.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
@@ -637,12 +657,16 @@
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dirichlet-boundary-conditions">2.2 Dirichlet boundary conditions</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-setbc-works">How <code class="docutils literal notranslate"><span class="pre">setbc</span></code> works</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mathematical-formulation">Mathematical formulation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#penalty-method-alternative">Penalty method alternative</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#implementation-in-setbc">Implementation in <code class="docutils literal notranslate"><span class="pre">setbc</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#general-constraints">2.3 General constraints</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#building-the-saddle-point-system">Building the saddle-point system</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-two-spring-system">Example: two-spring system</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#multi-point-constraints-lagrange-multipliers">2.3 Multi-point constraints (Lagrange multipliers)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#variational-formulation">Variational formulation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#saddle-point-system">Saddle-point system</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#numerical-conditioning">Numerical conditioning</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-rigid-link-constraint">Example: rigid link constraint</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">Summary</a></li>
