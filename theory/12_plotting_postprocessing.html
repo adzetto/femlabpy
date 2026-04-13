@@ -510,10 +510,20 @@ arrows.</p>
 </section>
 <section id="plotu">
 <h3><code class="docutils literal notranslate"><span class="pre">plotu</span></code><a class="headerlink" href="#plotu" title="Link to this heading">#</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">plotu(T,</span> <span class="pre">X,</span> <span class="pre">u,</span> <span class="pre">...)</span></code> draws a scalar nodal field over a 2D or 3D mesh. In 2D it
-uses <code class="docutils literal notranslate"><span class="pre">PolyCollection</span></code>. In 3D it uses <code class="docutils literal notranslate"><span class="pre">Poly3DCollection</span></code>.</p>
-<p>The function does not attempt to infer the meaning of the scalar field. It just
-colors each element by the mean value of its nodal samples.</p>
+<p><code class="docutils literal notranslate"><span class="pre">plotu(T,</span> <span class="pre">X,</span> <span class="pre">u,</span> <span class="pre">dof=None,</span> <span class="pre">component=0,</span> <span class="pre">...)</span></code> draws a nodal contour field. It
+accepts either:</p>
+<ul class="simple">
+<li><p>one scalar value per node,</p></li>
+<li><p>a nodal array with several components per node, or</p></li>
+<li><p>a flattened global vector with length <code class="docutils literal notranslate"><span class="pre">nn</span> <span class="pre">*</span> <span class="pre">dof</span></code>.</p></li>
+</ul>
+<p>When several components are available, <code class="docutils literal notranslate"><span class="pre">component=0</span></code> plots the nodal magnitude
+and <code class="docutils literal notranslate"><span class="pre">component=1,</span> <span class="pre">2,</span> <span class="pre">...</span></code> selects a specific component. Flat Gmsh coordinate
+arrays of the form <code class="docutils literal notranslate"><span class="pre">(x,</span> <span class="pre">y,</span> <span class="pre">z)</span></code> are reduced automatically to a 2D plotting view
+when all out-of-plane coordinates are constant.</p>
+<p>The contour still works the same way internally: each element is colored by the
+mean of its nodal samples, using <code class="docutils literal notranslate"><span class="pre">PolyCollection</span></code> in 2D and
+<code class="docutils literal notranslate"><span class="pre">Poly3DCollection</span></code> in 3D.</p>
 </section>
 </section>
 <section id="element-contours">
@@ -588,7 +598,7 @@ handles the bookkeeping required to report reactions cleanly.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">plotelem</span></code> for geometry,</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">plotforces</span></code> for loads,</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">plotbc</span></code> for constraints,</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">plotu</span></code> for scalar nodal fields,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">plotu</span></code> for scalar nodal fields or displacement-component contours,</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">plotq4</span></code> or <code class="docutils literal notranslate"><span class="pre">plott3</span></code> for stress or strain contours.</p></li>
 </ul>
 </section>

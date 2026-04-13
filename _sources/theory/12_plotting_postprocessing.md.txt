@@ -111,11 +111,21 @@ That distinction matches the actual solver behavior:
 
 ### `plotu`
 
-`plotu(T, X, u, ...)` draws a scalar nodal field over a 2D or 3D mesh. In 2D it
-uses `PolyCollection`. In 3D it uses `Poly3DCollection`.
+`plotu(T, X, u, dof=None, component=0, ...)` draws a nodal contour field. It
+accepts either:
 
-The function does not attempt to infer the meaning of the scalar field. It just
-colors each element by the mean value of its nodal samples.
+- one scalar value per node,
+- a nodal array with several components per node, or
+- a flattened global vector with length `nn * dof`.
+
+When several components are available, `component=0` plots the nodal magnitude
+and `component=1, 2, ...` selects a specific component. Flat Gmsh coordinate
+arrays of the form `(x, y, z)` are reduced automatically to a 2D plotting view
+when all out-of-plane coordinates are constant.
+
+The contour still works the same way internally: each element is colored by the
+mean of its nodal samples, using `PolyCollection` in 2D and
+`Poly3DCollection` in 3D.
 
 ## Element Contours
 
@@ -189,5 +199,5 @@ Then use the plotting helpers to inspect the result:
 - `plotelem` for geometry,
 - `plotforces` for loads,
 - `plotbc` for constraints,
-- `plotu` for scalar nodal fields,
+- `plotu` for scalar nodal fields or displacement-component contours,
 - `plotq4` or `plott3` for stress or strain contours.
