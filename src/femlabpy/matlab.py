@@ -268,18 +268,24 @@ def elastic(
     C,
     P,
     *,
+    etype: str | None = None,
     dof: int | None = None,
     plot: bool = False,
     scale: float = 5.0,
 ) -> dict[str, Any]:
     """
-    Solve a linear Q4 elasticity problem following the original ``elastic.m`` workflow.
+    Solve a linear 2D elasticity problem following the original ``elastic.m``
+    workflow.
 
     Parameters
     ----------
     T, X, G, C, P:
         Legacy FemLab topology, coordinates, material data, prescribed
         displacements, and nodal loads.
+    etype:
+        Element family used by the topology table. Supported values are
+        ``"q4"`` and ``"t3"``. When omitted, the wrapper infers the type from
+        the number of nodes per element.
     dof:
         Degrees of freedom per node. Defaults to ``X.shape[1]``.
     plot:
@@ -291,32 +297,76 @@ def elastic(
     Returns
     -------
     dict
-        Legacy FemLab matrices together with the nonlinear stepping controls
-        expected by :func:`plastps` and :func:`plastpe`.
+        Linear elastic solution, recovered stresses and strains, reactions,
+        normalized input data, and optional Matplotlib figures.
 
     Algorithm
     ---------
-    Returns the benchmark data directly.
+    1. Normalize the legacy input arrays and determine the element type.
+    2. Reduce planar Gmsh coordinates from ``(x, y, z)`` to ``(x, y)`` when
+       the problem is two-dimensional.
+    3. Assemble the global stiffness matrix using either the T3 or Q4 kernels.
+    4. Apply nodal loads and displacement constraints.
+    5. Solve the linear system and recover element stresses, strains, and
+       reactions.
+    6. If requested, generate element and stress plots matching the selected
+       element family.
 
     Mathematical Formulation
     ------------------------
-    N/A
+    Solves the linear equilibrium system `K @ u = p` for a two-dimensional
+    structural mesh, then recovers stresses and strains with the matching
+    element post-processing kernel.
     """
 
     from .boundary import setbc
     from .core import init
-    from .elements import kq4e, qq4e
+    from .elements import kq4e, kt3e, qq4e, qt3e
     from .loads import setload
-    from .plotting import plotbc, plotelem, plotforces, plotq4
+    from .plotting import plotbc, plotelem, plotforces, plotq4, plott3
     from .postprocess import reaction
 
     data = _legacy_bundle(T, X, G, C, P, dof=dof)
-    K, p, q = init(data["X"].shape[0], int(data["dof"]), use_sparse=False)
-    K = kq4e(K, data["T"], data["X"], data["G"])
+
+    topology = data["T"]
+    if topology.ndim != 2 or topology.shape[1] < 4:
+        raise ValueError("Topology table must contain element nodes and a property id.")
+
+    nodes_per_element = topology.shape[1] - 1
+    inferred_etype = {3: "t3", 4: "q4"}.get(nodes_per_element)
+    if inferred_etype is None:
+        raise ValueError(
+            "Unsupported topology width for elastic(): "
+            f"expected 3-node triangles or 4-node quadrilaterals, got "
+            f"{nodes_per_element} nodes per element."
+        )
+    resolved_etype = inferred_etype if etype is None else str(etype).lower()
+    if resolved_etype not in {"t3", "q4"}:
+        raise ValueError("etype must be one of {'t3', 'q4'}")
+    if resolved_etype != inferred_etype:
+        raise ValueError(
+            f"Topology implies etype='{inferred_etype}', but etype='{resolved_etype}' was requested."
+        )
+
+    coords = data["X"]
+    if coords.shape[1] < 2:
+        raise ValueError("elastic() requires at least two coordinate columns.")
+    if coords.shape[1] > 2:
+        coords = coords[:, :2].copy()
+        data["X"] = coords
+
+    K, p, q = init(coords.shape[0], int(data["dof"]), use_sparse=False)
+    if resolved_etype == "q4":
+        K = kq4e(K, topology, coords, data["G"])
+    else:
+        K = kt3e(K, topology, coords, data["G"])
     p = setload(p, data["P"])
     K, p, _ = setbc(K, p, data["C"], int(data["dof"]))
     u = np.linalg.solve(K, p)
-    q, S, E = qq4e(q, data["T"], data["X"], data["G"], u)
+    if resolved_etype == "q4":
+        q, S, E = qq4e(q, topology, coords, data["G"], u)
+    else:
+        q, S, E = qt3e(q, topology, coords, data["G"], u)
     R = reaction(q, data["C"], int(data["dof"]))
 
     figures = []
@@ -324,16 +374,19 @@ def elastic(
         from matplotlib import pyplot as plt
 
         fig_geom, ax_geom = plt.subplots()
-        plotelem(data["T"], data["X"], ax=ax_geom)
-        plotforces(data["T"], data["X"], data["P"], ax=ax_geom)
-        plotbc(data["T"], data["X"], data["C"], ax=ax_geom)
-        U = u.reshape(data["X"].shape)
-        plotelem(data["T"], data["X"] + float(scale) * U, line_style="k--", ax=ax_geom)
-        ax_geom.set_title("Linear elastic Q4 response")
+        plotelem(topology, coords, ax=ax_geom)
+        plotforces(topology, coords, data["P"], ax=ax_geom)
+        plotbc(topology, coords, data["C"], ax=ax_geom)
+        U = u.reshape(coords.shape)
+        plotelem(topology, coords + float(scale) * U, line_style="k--", ax=ax_geom)
+        ax_geom.set_title(f"Linear elastic {resolved_etype.upper()} response")
         figures.append(fig_geom)
 
         fig_stress, ax_stress = plt.subplots()
-        plotq4(data["T"], data["X"], S, 1, ax=ax_stress)
+        if resolved_etype == "q4":
+            plotq4(topology, coords, S, 1, ax=ax_stress)
+        else:
+            plott3(topology, coords, S, 1, ax=ax_stress)
         ax_stress.set_title("Stress component 1")
         figures.append(fig_stress)
 

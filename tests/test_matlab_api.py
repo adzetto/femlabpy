@@ -29,6 +29,48 @@ def test_elastic_alias_matches_cantilever_runner():
     np.testing.assert_allclose(result["S"], reference["S"])
 
 
+def test_elastic_auto_detects_t3_and_reduces_planar_gmsh_coordinates():
+    X = np.array(
+        [
+            [0.0, 0.0, 0.0],
+            [1.0, 0.0, 0.0],
+            [0.0, 1.0, 0.0],
+        ],
+        dtype=float,
+    )
+    T = np.array([[1, 2, 3, 1]], dtype=int)
+    G = np.array([[210000.0, 0.3, 1.0]], dtype=float)
+    C = np.array([[1, 1, 0.0], [1, 2, 0.0], [2, 2, 0.0]], dtype=float)
+    P = np.array([[2, 1, 100.0]], dtype=float)
+
+    result = fp.elastic(T, X, G, C, P, dof=2)
+
+    assert result["u"].shape == (6, 1)
+    assert result["S"].shape == (1, 3)
+    assert result["E"].shape == (1, 3)
+    assert result["data"]["X"].shape == (3, 2)
+    assert np.isfinite(result["u"]).all()
+
+
+def test_elastic_accepts_explicit_t3_etype():
+    X = np.array(
+        [
+            [0.0, 0.0, 0.0],
+            [1.0, 0.0, 0.0],
+            [0.0, 1.0, 0.0],
+        ],
+        dtype=float,
+    )
+    T = np.array([[1, 2, 3, 1]], dtype=int)
+    G = np.array([[210000.0, 0.3, 1.0]], dtype=float)
+    C = np.array([[1, 1, 0.0], [1, 2, 0.0], [2, 2, 0.0]], dtype=float)
+    P = np.array([[2, 1, 100.0]], dtype=float)
+
+    result = fp.elastic(T, X, G, C, P, dof=2, etype="t3")
+
+    assert result["u"].shape == (6, 1)
+
+
 def test_flow_aliases_execute():
     q4 = fp.flowq4(plot=False)
     t3 = fp.flowt3(plot=False)

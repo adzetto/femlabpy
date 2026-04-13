@@ -5,8 +5,25 @@ A Python port of the legacy Scilab FemLab wrapper, derived from the original
 MATLAB FemLab teaching toolbox by O. Hededal and S. Krenk at Aalborg University.
 """
 
+import os
+import shutil
+
 __version__ = "0.6.0"
 __author__ = "Muhammet Yagcioglu"
+
+
+def _configure_windows_help_pager() -> None:
+    """Prefer an explicit Windows pager path so ``help()`` works reliably."""
+    if os.name != "nt":
+        return
+    if os.environ.get("MANPAGER") or os.environ.get("PAGER"):
+        return
+    pager = shutil.which("more.com") or shutil.which("more")
+    if pager:
+        os.environ["PAGER"] = pager
+
+
+_configure_windows_help_pager()
 
 from .assembly import assmk, assmq
 from .boundary import rnorm, setbc, solve_lag, solve_lag_general
