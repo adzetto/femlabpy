@@ -61,10 +61,10 @@ def init(nn: int, dof: int, *, dynamic: bool = False, use_sparse: bool | None = 
 
     Algorithm
     ---------
-    1. Compute the total degrees of freedom $N = \text{nn} \times \text{dof}$.
-    2. Allocate a zero matrix $\mathbf{K} \in \mathbb{R}^{N \times N}$ for the stiffness matrix.
-    3. Allocate zero vectors $\mathbf{p}, \mathbf{q} \in \mathbb{R}^{N \times 1}$ for the load and internal force vectors.
-    4. If $\text{dynamic}$ is `True`, also allocate a mass matrix $\mathbf{M} \in \mathbb{R}^{N \times N}$.
+    1. Compute the total number of degrees of freedom `N = nn * dof`.
+    2. Allocate a zero `N x N` stiffness matrix `K`.
+    3. Allocate zero `N x 1` load and internal-force vectors `p` and `q`.
+    4. If `dynamic` is `True`, also allocate a zero `N x N` mass matrix `M`.
 
     When ``dynamic=False`` (default), returns ``(K, p, q)`` for backward
     compatibility.  When ``dynamic=True``, returns ``(K, M, p, q)``.

@@ -62,16 +62,15 @@ def find_periodic_pairs(X, axis: int, tol: float = 1e-6):
 
     Mathematical Formulation
     ------------------------
-    Let $\Omega = [x_{min}, x_{max}] \times [y_{min}, y_{max}]$ be the domain.
-    Nodes $P_L$ and $P_R$ are matched if:
-    $$ |x_{L,i} - x_{min}| < \epsilon \quad \text{and} \quad |x_{R,i} - x_{max}| < \epsilon $$
-    and for all transverse axes $j \neq i$:
-    $$ |x_{L,j} - x_{R,j}| \le \epsilon $$
-    where $\epsilon$ is the matching tolerance.
+    Let the periodic direction be `axis = i`. A node on the left boundary is
+    matched with a node on the right boundary when its coordinate in the
+    periodic direction is within the tolerance of `x_min` or `x_max`, and the
+    coordinates in all transverse directions agree within the same tolerance.
 
     Algorithm
     ---------
-    1. Identify all nodes on the left and right boundaries using the $i$-th coordinate.
+    1. Identify all nodes on the left and right boundaries using the chosen
+       coordinate axis.
     2. Extract the transverse coordinates for both sets.
     3. Construct a KD-Tree of the right boundary nodes.
     4. Query the KD-Tree using the left boundary nodes to find the closest matches.
@@ -154,15 +153,14 @@ def find_all_periodic_pairs(X, periodic_axes, tol: float = 1e-6) -> dict:
 
     Mathematical Formulation
     ------------------------
-    Applies the formulation from `find_periodic_pairs` repeatedly:
-    $$ \mathcal{P}_k = \{ (P_L, P_R)_k \mid \text{periodic on axis } k \} $$
-    for each $k \in \text{periodic\_axes}$.
+    Repeats the same node-matching procedure used by `find_periodic_pairs` for
+    each axis listed in `periodic_axes`.
 
     Algorithm
     ---------
-    1. Iterate over each provided axis $k$.
-    2. Call `find_periodic_pairs` for axis $k$.
-    3. Store the resulting pairs in a dictionary keyed by $k$.
+    1. Iterate over each provided axis.
+    2. Call `find_periodic_pairs` for that axis.
+    3. Store the resulting pairs in a dictionary keyed by the axis index.
     """
     return {axis: find_periodic_pairs(X, axis, tol) for axis in periodic_axes}
 
@@ -200,17 +198,19 @@ def periodic_constraints(X, pairs, dof: int, *, eps_macro=None):
 
     Mathematical Formulation
     ------------------------
-    Periodic boundary conditions enforce constraints on the displacement field $\mathbf{u}$:
-    $$ \mathbf{u}_R - \mathbf{u}_L = \boldsymbol{\varepsilon}_{M} (\mathbf{x}_R - \mathbf{x}_L) $$
-    where $\boldsymbol{\varepsilon}_{M}$ is the macroscopic strain tensor.
-    This translates to a linear system $\mathbf{G} \mathbf{u} = \mathbf{Q}$, where $\mathbf{G}$ maps the left and right DOFs to $+1$ and $-1$, and $\mathbf{Q} = \boldsymbol{\varepsilon}_{M} \Delta \mathbf{x}$.
+    Periodic boundary conditions enforce
+    `u_right - u_left = eps_macro @ (x_right - x_left)`.
+    This is written as a linear system `G @ u = Q`, where `G` maps the left
+    and right degrees of freedom to `-1` and `+1`, and `Q` contains the
+    macro-strain offsets.
 
     Algorithm
     ---------
-    1. Initialize a sparse or dense $\mathbf{G}$ matrix and RHS vector $\mathbf{Q}$.
-    2. Convert Voigt macroscopic strain $\boldsymbol{\varepsilon}_{M}$ into tensor form.
-    3. Loop over all node pairs $(L, R)$.
-    4. For each degree of freedom, set $G_{ij}$ entries and populate $Q_i$.
+    1. Initialize the constraint matrix `G` and right-hand side vector `Q`.
+    2. Convert the Voigt macroscopic strain to tensor form.
+    3. Loop over all node pairs.
+    4. For each degree of freedom, populate the corresponding `G` entries and
+       the RHS value in `Q`.
     """
     X = as_float_array(X)
     pairs = np.asarray(pairs, dtype=int)
@@ -273,14 +273,13 @@ def apply_macro_strain(X, pairs, eps_macro, dof: int):
 
     Mathematical Formulation
     ------------------------
-    Calculates the RHS constraint vector $\mathbf{Q}$ given by:
-    $$ \mathbf{Q} = \boldsymbol{\varepsilon}_{M} (\mathbf{x}_R - \mathbf{x}_L) $$
-    where $\boldsymbol{\varepsilon}_{M}$ is the macroscopic strain and $\mathbf{x}_R, \mathbf{x}_L$ are paired coordinates.
+    Computes the right-hand side vector `Q` associated with the macro-strain
+    term in the periodic constraint equation.
 
     Algorithm
     ---------
-    1. Delegate call to `periodic_constraints` passing `eps_macro`.
-    2. Extract and return only the RHS constraint vector $\mathbf{Q}$.
+    1. Delegate to `periodic_constraints` with `eps_macro`.
+    2. Extract and return only the right-hand side vector `Q`.
     """
     _, Q = periodic_constraints(X, pairs, dof, eps_macro=eps_macro)
     return Q
@@ -321,15 +320,15 @@ def solve_periodic(K, p, X, pairs, dof: int, *, eps_macro=None, return_lagrange=
 
     Mathematical Formulation
     ------------------------
-    The constrained minimization of the potential energy is solved using the augmented system:
-    $$ \begin{bmatrix} \mathbf{K} & \mathbf{G}^T \\ \mathbf{G} & \mathbf{0} \end{bmatrix} \begin{bmatrix} \mathbf{u} \\ \boldsymbol{\lambda} \end{bmatrix} = \begin{bmatrix} \mathbf{p} \\ \mathbf{Q} \end{bmatrix} $$
-    where $\mathbf{K}$ is stiffness, $\mathbf{G}$ is the constraint matrix, and $\boldsymbol{\lambda}$ represents nodal reaction forces at boundaries.
+    The constrained system is solved in block form as
+    `[[K, G.T], [G, 0]] [u; lambda] = [p; Q]`, where `lambda` contains the
+    Lagrange multipliers associated with the periodic constraints.
 
     Algorithm
     ---------
-    1. Call `periodic_constraints` to build $\mathbf{G}$ and $\mathbf{Q}$.
+    1. Call `periodic_constraints` to build `G` and `Q`.
     2. Assemble the block matrix system.
-    3. Solve the block system for displacements $\mathbf{u}$ and Lagrange multipliers $\boldsymbol{\lambda}$.
+    3. Solve the block system for displacements and Lagrange multipliers.
     """
     G, Q = periodic_constraints(X, pairs, dof, eps_macro=eps_macro)
     return solve_lag_general(K, p, G, Q, return_lagrange=return_lagrange)
@@ -368,15 +367,17 @@ def volume_average_stress(T, X, G_mat, u, dof: int, *, element_type: str = "q4")
 
     Mathematical Formulation
     ------------------------
-    The homogenized macroscopic stress tensor $\langle \boldsymbol{\sigma} \rangle$ is:
-    $$ \langle \boldsymbol{\sigma} \rangle = \frac{1}{|\Omega|} \int_{\Omega} \boldsymbol{\sigma}(\mathbf{x}) d\Omega \approx \frac{1}{\sum_{e} V_e} \sum_{e} \bar{\boldsymbol{\sigma}}_e V_e $$
-    where $V_e$ is the volume (or area) of element $e$ and $\bar{\boldsymbol{\sigma}}_e$ is its average stress.
+    The homogenized stress is computed as the volume-weighted average of the
+    element stresses. Each element contributes its average stress multiplied by
+    its area or volume, and the final result is divided by the total area or
+    volume of the domain.
 
     Algorithm
     ---------
     1. Loop through all elements and extract nodal displacements.
-    2. Calculate element area/volume $V_e$ and element-averaged stress $\bar{\boldsymbol{\sigma}}_e$.
-    3. Sum $\bar{\boldsymbol{\sigma}}_e V_e$ over all elements and divide by total volume $|\Omega|$.
+    2. Calculate the element area or volume and the element-averaged stress.
+    3. Form the weighted sum over all elements and divide by the total domain
+       measure.
     """
     from .elements.triangles import qt3e, _triangle_batch_geometry
     from .elements.quads import qq4e
@@ -435,14 +436,13 @@ def volume_average_strain(T, X, G_mat, u, dof: int, *, element_type: str = "q4")
 
     Mathematical Formulation
     ------------------------
-    The homogenized macroscopic strain tensor $\langle \boldsymbol{\varepsilon} \rangle$ is:
-    $$ \langle \boldsymbol{\varepsilon} \rangle = \frac{1}{|\Omega|} \int_{\Omega} \boldsymbol{\varepsilon}(\mathbf{x}) d\Omega \approx \frac{1}{\sum_{e} V_e} \sum_{e} \bar{\boldsymbol{\varepsilon}}_e V_e $$
-    where $V_e$ is the element area/volume and $\bar{\boldsymbol{\varepsilon}}_e$ is the element strain.
+    The homogenized strain is computed as the volume-weighted average of the
+    element strains over the domain.
 
     Algorithm
     ---------
-    1. Process all elements to evaluate the element-averaged strain fields $\bar{\boldsymbol{\varepsilon}}_e$.
-    2. Compute individual element volumes $V_e$.
+    1. Process all elements to evaluate the element-averaged strain fields.
+    2. Compute the individual element areas or volumes.
     3. Perform a volume-weighted average across the domain.
     """
     from .elements.triangles import qt3e, _triangle_batch_geometry
@@ -522,15 +522,17 @@ def homogenize(K, T, X, G_mat, pairs, dof: int, *, element_type: str = "q4"):
 
     Mathematical Formulation
     ------------------------
-    Computes the effective $3 \times 3$ (or $6 \times 6$) stiffness tensor $\mathbf{C}_{eff}$ by applying macro-strains.
-    $$ \langle \boldsymbol{\sigma} \rangle = \mathbf{C}_{eff} \boldsymbol{\varepsilon}_{M} $$
-    By applying canonical strains $\boldsymbol{\varepsilon}_{M}^{(k)} = \mathbf{e}_k$, we find the $k$-th column of $\mathbf{C}_{eff}$.
+    Computes the effective `3 x 3` or `6 x 6` stiffness matrix `C_eff` by
+    applying independent macro-strain cases and measuring the corresponding
+    volume-averaged stresses. Each unit strain case fills one column of
+    `C_eff`.
 
     Algorithm
     ---------
     1. Apply 3 (or 6 in 3D) load cases representing unit macro-strains.
-    2. Solve Lagrange multiplier system $\mathbf{G} \mathbf{u} = \mathbf{Q}$ for each case.
-    3. Compute volume averaged stress $\langle \boldsymbol{\sigma} \rangle$ to fill $\mathbf{C}_{eff}$.
+    2. Solve the periodic constraint system for each case.
+    3. Compute the volume-averaged stress to fill the corresponding column of
+       `C_eff`.
     """
     X = as_float_array(X)
     ndim = X.shape[1]
@@ -585,13 +587,13 @@ def fix_corner(X, C_existing, dof: int):
 
     Mathematical Formulation
     ------------------------
-    To prevent rigid body translations, the node closest to the origin (corner) is fully fixed:
-    $$ u_i(\mathbf{x}_{corner}) = 0 \quad \text{for all DOFs } i $$
-    This resolves the singularity in the stiffness matrix $\mathbf{K}$ when purely periodic conditions are applied.
+    To prevent rigid-body translations, the node closest to the domain corner
+    is fully fixed. This removes the null modes that would otherwise make the
+    periodic stiffness system singular.
 
     Algorithm
     ---------
-    1. Find the node closest to $\min(\mathbf{x})$.
+    1. Find the node closest to the minimum coordinate corner.
     2. Add boundary condition constraints setting all degrees of freedom at this node to 0.
     3. Append to existing constraints.
     """
@@ -636,9 +638,9 @@ def check_periodic_mesh(X, axis: int, tol: float = 1e-6) -> dict:
 
     Mathematical Formulation
     ------------------------
-    Validates geometrical periodicity:
-    $$ | \{P \mid x_i = x_{min}\} | = | \{P \mid x_i = x_{max}\} | $$
-    Checks whether opposite boundaries contain an equal number of matching nodal coordinates within tolerance $\epsilon$.
+    Validates geometric periodicity by checking that opposite boundaries have
+    the same number of nodes and that those nodes can be matched within the
+    specified tolerance.
 
     Algorithm
     ---------
@@ -696,8 +698,9 @@ def _voigt_to_tensor(eps_voigt, ndim):
 
     Mathematical Formulation
     ------------------------
-    Converts a $3 \times 1$ or $6 \times 1$ Voigt strain vector into a standard strain tensor. For 2D:
-    $$ \boldsymbol{\varepsilon} = \begin{bmatrix} \varepsilon_{xx} & \frac{1}{2}\gamma_{xy} \\ \frac{1}{2}\gamma_{xy} & \varepsilon_{yy} \end{bmatrix} $$
+    Converts a `3 x 1` or `6 x 1` Voigt strain vector into the corresponding
+    symmetric strain tensor. In 2D, `[exx, eyy, gxy]` becomes
+    `[[exx, gxy / 2], [gxy / 2, eyy]]`.
 
     Algorithm
     ---------

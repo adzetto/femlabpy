@@ -12,15 +12,18 @@ def yieldvm(S, G, dL, Sy):
 
     Mathematical Formulation
     ------------------------
-    Evaluates the plane-stress von Mises yield condition implicitly in terms of the plastic multiplier $\Delta\gamma$:
-    $f(\Delta\gamma) = \frac{(\sigma_{11} + \sigma_{22})^2}{\xi_1^2} + \frac{3(\sigma_{11} - \sigma_{22})^2}{\xi_2^2} + \frac{12\sigma_{12}^2}{\xi_2^2} - 1 = 0$
-    where $\xi_1 = 2S_y + \Delta\gamma E_1$ and $\xi_2 = 2S_y + \Delta\gamma E_2$.
+    Evaluates the plane-stress von Mises consistency residual as a scalar
+    function of the plastic multiplier increment `dL`. Using
+    `s1 = sigma11 + sigma22`, `s2 = sigma11 - sigma22`,
+    `xi1 = 2 * Sy + dL * E1`, and `xi2 = 2 * Sy + dL * E2`, the returned
+    value is:
+    `s1**2 / xi1**2 + 3 * s2**2 / xi2**2 + 12 * sigma12**2 / xi2**2 - 1`.
 
     Algorithm
     ---------
     1. Unpack stress and material parameters.
-    2. Compute effective moduli $E_1$ and $E_2$.
-    3. Evaluate the non-linear yield function residual $f(\Delta\gamma)$.
+    2. Compute the effective moduli `E1` and `E2`.
+    3. Evaluate the nonlinear yield residual for the current `dL`.
 
     Parameters
     ----------
@@ -61,8 +64,8 @@ def dyieldvm(S, G, dL, Sy):
 
     Mathematical Formulation
     ------------------------
-    Computes the derivative of the yield function residual with respect to the plastic multiplier:
-    $\frac{\partial f}{\partial \Delta\gamma} = \frac{-2E_1(\sigma_{11}+\sigma_{22})^2}{\xi_1^3} - \frac{2E_2(3(\sigma_{11}-\sigma_{22})^2 + 12\sigma_{12}^2)}{\xi_2^3}$
+    Computes the derivative of the scalar consistency residual returned by
+    `yieldvm` with respect to the plastic multiplier increment `dL`.
 
     Algorithm
     ---------
@@ -105,7 +108,9 @@ def stressvm(S, G, Sy):
 
     Mathematical Formulation
     ------------------------
-    Radial Return mapping for J2 plasticity: $\sigma_{n+1} = s_{trial} (1 - \frac{3G \Delta \gamma}{q_{trial}}) + p I$.
+    Applies the legacy radial-return update for J2 plasticity in plane stress.
+    The correction scales the trial deviatoric stress back onto the yield
+    surface while preserving the mean stress component.
 
     Algorithm
     ---------
@@ -158,9 +163,10 @@ def stressdp(S, G, Sy0, dE, dS):
 
     Mathematical Formulation
     ------------------------
-    Drucker-Prager yield criterion: $f(\sigma) = q + \phi p - S_y \le 0$.
-    The elastoplastic tangent and residual are formulated as:
-    $R = \Delta \varepsilon - C (\Delta \sigma) - \Delta\gamma \frac{\partial f}{\partial \sigma} = 0$.
+    Uses the Drucker-Prager yield criterion with residual
+    `f = q + phi * p - Sy0`. The local Newton system enforces consistency
+    between the strain increment, the stress correction, and the plastic
+    multiplier increment.
 
     Algorithm
     ---------

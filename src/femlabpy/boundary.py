@@ -50,18 +50,16 @@ def solve_lag_general(
 
     Algorithm
     ---------
-    1. Define the scaling factor $\alpha = 10^{-2} \times \max_i |K_{ii}|$.
-    2. Form the scaled constraint matrix $\bar{\mathbf{G}} = \alpha \mathbf{G}$ and right-hand side $\bar{\mathbf{Q}} = \alpha \mathbf{Q}$.
-    3. Assemble the augmented matrix:
-       $$
-       \bar{\mathbf{K}} = \begin{bmatrix} \mathbf{K} & \bar{\mathbf{G}}^T \\ \bar{\mathbf{G}} & \mathbf{0} \end{bmatrix}
-       $$
-    4. Assemble the augmented right-hand side:
-       $$
-       \bar{\mathbf{p}} = \begin{bmatrix} \mathbf{p} \\ \bar{\mathbf{Q}} \end{bmatrix}
-       $$
-    5. Solve the augmented system $\bar{\mathbf{K}} \mathbf{x} = \bar{\mathbf{p}}$ to obtain the solution $\mathbf{u}$ and scaled Lagrange multipliers $\bar{\boldsymbol{\lambda}}$.
-    6. If requested, recover the physical multipliers $\boldsymbol{\lambda} = \alpha \bar{\boldsymbol{\lambda}}$.
+    1. Define the scaling factor `alpha = 1e-2 * max(abs(diag(K)))`.
+    2. Form the scaled constraint matrix `Gbar = alpha * G` and scaled
+       right-hand side `Qbar = alpha * Q`.
+    3. Assemble the augmented matrix in block form
+       `[[K, Gbar.T], [Gbar, 0]]`.
+    4. Assemble the augmented right-hand side as `[p; Qbar]`.
+    5. Solve the augmented system to obtain the displacement vector and the
+       scaled Lagrange multipliers.
+    6. If requested, recover the physical multipliers with
+       `lambda = alpha * lambda_bar`.
     """
 
     constraint_matrix = as_float_array(G)
@@ -148,12 +146,12 @@ def setbc(K, p, C, dof: int = 1):
 
     Algorithm
     ---------
-    1. Calculate a penalty stiffness $k_s = 0.1 \times \max_i |K_{ii}|$.
-    2. For each constraint $j$ with prescribed value $d$:
-       a. Transfer coupling forces to the RHS: $p_i \leftarrow p_i - K_{ij} d$ for $i \neq j$.
-       b. Zero out the corresponding row and column: $K_{ij} = 0$ and $K_{ji} = 0$ for all $i$.
-       c. Place the penalty stiffness on the diagonal: $K_{jj} = k_s$.
-       d. Set the corresponding load entry: $p_j = k_s d$.
+    1. Calculate a penalty stiffness `ks = 0.1 * max(abs(diag(K)))`.
+    2. For each constrained DOF `j` with prescribed value `d`:
+       a. Transfer coupling forces to the RHS with `p[i] -= K[i, j] * d`.
+       b. Zero the corresponding row and column.
+       c. Place the penalty stiffness on the diagonal with `K[j, j] = ks`.
+       d. Set the constrained load entry with `p[j] = ks * d`.
 
     Parameters
     ----------
@@ -258,13 +256,12 @@ def solve_lag(K, p, C=None, dof: int = 1, *, return_lagrange: bool = False):
 
     Algorithm
     ---------
-    1. Map the nodal constraints given in $\mathbf{C}$ to global degree of freedom indices $j$.
-    2. Construct the Boolean constraint matrix $\mathbf{G}$ where $G_{ij} = 1$ if constraint $i$ acts on DOF $j$, and $0$ otherwise.
-    3. Extract the constraint values into the vector $\mathbf{Q}$.
-    4. Delegate the solution to the general augmented Lagrangian solver to compute $\mathbf{u}$ and $\boldsymbol{\lambda}$ satisfying:
-       $$
-       \begin{bmatrix} \mathbf{K} & \mathbf{G}^T \\ \mathbf{G} & \mathbf{0} \end{bmatrix} \begin{bmatrix} \mathbf{u} \\ \boldsymbol{\lambda} \end{bmatrix} = \begin{bmatrix} \mathbf{p} \\ \mathbf{Q} \end{bmatrix}
-       $$
+    1. Map the nodal constraints in `C` to global degree-of-freedom indices.
+    2. Construct the Boolean constraint matrix `G` with one unit entry per
+       constrained degree of freedom.
+    3. Extract the prescribed values into the vector `Q`.
+    4. Delegate the solution to `solve_lag_general`, which solves the block
+       system `[[K, G.T], [G, 0]] [u; lambda] = [p; Q]`.
 
     Returns
     -------
@@ -317,12 +314,9 @@ def rnorm(f, C, dof: int):
 
     Algorithm
     ---------
-    1. Map the constrained nodal degrees of freedom in $\mathbf{C}$ to global indices $I_c$.
-    2. Identify the unconstrained index set $I_u = \{1, 2, \ldots, N\} \setminus I_c$.
-    3. Compute the Euclidean norm over the unconstrained components:
-       $$
-       \|\mathbf{f}_{I_u}\|_2 = \sqrt{\sum_{i \in I_u} f_i^2}
-       $$
+    1. Map the constrained nodal degrees of freedom in `C` to global indices.
+    2. Identify the complementary set of unconstrained indices.
+    3. Compute the Euclidean norm using only the unconstrained entries.
 
     Returns
     -------

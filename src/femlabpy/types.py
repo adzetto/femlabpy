@@ -9,7 +9,8 @@ import numpy as np
 @dataclass
 class GmshMesh:
     """
-    Parsed Gmsh mesh representing a domain $\Omega \subset \mathbb{R}^3$ with both normalized Python fields and legacy FemLab aliases.
+    Parsed Gmsh mesh with both normalized Python fields and legacy FemLab
+    aliases.
 
     Lowercase attributes such as ``positions``, ``element_infos``, and
     ``triangles`` form the stable Python API used internally by ``femlabpy``.

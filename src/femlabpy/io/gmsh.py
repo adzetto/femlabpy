@@ -516,9 +516,9 @@ def load_gmsh2(filename, which=None) -> GmshMesh:
     Algorithm
     ---------
     1. Parse the MSH file header to determine version (2.2 vs 4.1).
-    2. Extract $N \times 3$ nodal coordinates, $\mathbf{X} \in \mathbb{R}^{N \times 3}$.
-    3. Map Physical Groups to element properties using $\mathcal{M}: \mathbb{Z}^+ \to \mathcal{P}$.
-    4. Return a `GmshMesh` dataclass containing the tessellation $\mathcal{T}$.
+    2. Extract the `N x 3` nodal coordinate array.
+    3. Map Physical Groups to the element-property fields used by FemLab.
+    4. Return a `GmshMesh` dataclass containing the normalized topology data.
     """
     positions, bounds_min, bounds_max, _, elements = _parse_gmsh_file(filename)
     if which is None:

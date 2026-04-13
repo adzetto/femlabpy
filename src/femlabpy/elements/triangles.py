@@ -260,14 +260,15 @@ def qet3e(Xe, Ge, Ue):
 
     Mathematical Formulation
     ------------------------
-    The internal forces are $q_e = A B^T \sigma_e$. The strain is $\epsilon_e = B u_e$ and the stress is $\sigma_e = D \epsilon_e$.
+    The internal-force vector is `qe = area * B.T @ sigma_e`. The strain is
+    `epsilon_e = B @ ue`, and the stress is `sigma_e = D @ epsilon_e`.
 
     Algorithm
     ---------
-    1. Compute the area $A$ and the strain-displacement matrix $B$.
-    2. Compute the constitutive matrix $D$.
-    3. Evaluate strains $\epsilon_e = B u_e$ and stresses $\sigma_e = D \epsilon_e$.
-    4. Compute internal forces $q_e = A B^T \sigma_e$.
+    1. Compute the element area and the strain-displacement matrix `B`.
+    2. Compute the constitutive matrix `D`.
+    3. Evaluate the element strains and stresses.
+    4. Compute the element internal-force vector.
 
     Examples
     --------
@@ -422,14 +423,16 @@ def qt3e(q, T, X, G, u):
 
     Mathematical Formulation
     ------------------------
-    The global internal force vector $q$ is assembled from element forces $q_e = A_e B_e^T \sigma_e$. Element strains are $\epsilon_e = B_e u_e$ and stresses are $\sigma_e = D_e \epsilon_e$.
+    The global internal-force vector is assembled from the element forces
+    `qe = area_e * B_e.T @ sigma_e`. Element strains are
+    `epsilon_e = B_e @ ue`, and element stresses are `sigma_e = D_e @ epsilon_e`.
 
     Algorithm
     ---------
-    1. Extract element displacements $u_e$ using the connectivity matrix.
-    2. Compute $A_e$, $B_e$, and $D_e$ for all elements.
-    3. Evaluate strains $\epsilon_e = B_e u_e$ and stresses $\sigma_e = D_e \epsilon_e$.
-    4. Compute element forces $q_e = A_e B_e^T \sigma_e$ and scatter them into $q$.
+    1. Extract element displacements using the connectivity matrix.
+    2. Compute the element areas, `B` matrices, and constitutive matrices.
+    3. Evaluate the element strains and stresses.
+    4. Compute the element forces and scatter them into the global vector.
 
     Examples
     --------
@@ -485,13 +488,16 @@ def ket3p(Xe, Ge):
 
     Mathematical Formulation
     ------------------------
-    The conductivity matrix is $K_e = A B^T D B$, where $D = k I$ is the isotropic conductivity. The optional reaction term is $\frac{b A}{12} \begin{bmatrix} 2 & 1 & 1 \\ 1 & 2 & 1 \\ 1 & 1 & 2 \end{bmatrix}$.
+    The conductivity matrix is `Ke = area * B.T @ D @ B`, where
+    `D = k * I` is the isotropic conductivity tensor. If the optional
+    reaction coefficient `b` is present, the routine adds
+    `(b * area / 12) * [[2, 1, 1], [1, 2, 1], [1, 1, 2]]`.
 
     Algorithm
     ---------
-    1. Compute the triangle area $A$.
-    2. Construct the gradient operator $B$.
-    3. Compute the conductivity portion $A B^T D B$.
+    1. Compute the triangle area.
+    2. Construct the gradient operator `B`.
+    3. Compute the conductivity term `area * B.T @ D @ B`.
     4. Add the reaction term if specified.
     """
     a, area = _triangle_geometry(Xe)
@@ -528,13 +534,16 @@ def qet3p(Xe, Ge, Ue):
 
     Mathematical Formulation
     ------------------------
-    The flux vector is given by $q_e = A B^T \sigma_e$, where $\sigma_e = D \epsilon_e$ and $\epsilon_e = B u_e$. For scalar problems, $\epsilon_e$ is the potential gradient and $\sigma_e$ is the flux.
+    The equivalent nodal flux vector is `qe = area * B.T @ sigma_e`, where
+    `epsilon_e = B @ ue` is the potential gradient and
+    `sigma_e = D @ epsilon_e` is the flux.
 
     Algorithm
     ---------
-    1. Compute the area $A$ and the gradient operator $B$.
-    2. Evaluate gradients $\epsilon_e = B u_e$ and fluxes $\sigma_e = D \epsilon_e$.
-    3. Compute the equivalent nodal fluxes $q_e = A B^T \sigma_e$.
+    1. Compute the area and the gradient operator `B`.
+    2. Evaluate the gradient `epsilon_e = B @ ue` and the flux
+       `sigma_e = D @ epsilon_e`.
+    3. Compute the equivalent nodal flux vector `qe = area * B.T @ sigma_e`.
     """
     a, area = _triangle_geometry(Xe)
     B = (1.0 / (2.0 * area)) * np.column_stack([-a[:, 1], a[:, 0]]).T
@@ -569,13 +578,15 @@ def kt3p(K, T, X, G):
 
     Mathematical Formulation
     ------------------------
-    The global conductivity matrix $K$ is assembled from $K_e = A_e B_e^T D_e B_e$ plus optional reaction terms.
+    The global conductivity matrix is assembled from the element matrices
+    `Ke = area_e * B_e.T @ D_e @ B_e`, plus the optional reaction terms.
 
     Algorithm
     ---------
-    1. Vectorize the computation of areas $A_e$ and gradient operators $B_e$.
-    2. Compute the element matrices $K_e = A_e k_e B_e^T B_e$ and add reaction contributions.
-    3. Scatter the element matrices into the global conductivity matrix $K$.
+    1. Vectorize the computation of element areas and gradient operators.
+    2. Compute the element matrices and add reaction contributions when
+       present.
+    3. Scatter the element matrices into the global conductivity matrix.
     """
     topology = as_float_array(T)
     coordinates = as_float_array(X)
@@ -638,14 +649,16 @@ def qt3p(q, T, X, G, u):
 
     Mathematical Formulation
     ------------------------
-    The global flux vector $q$ is assembled from element fluxes $q_e = A_e B_e^T \sigma_e$. The gradients are $\epsilon_e = B_e u_e$ and fluxes $\sigma_e = k_e \epsilon_e$.
+    The global flux vector is assembled from element vectors
+    `qe = area_e * B_e.T @ sigma_e`. The gradients are `epsilon_e = B_e @ ue`,
+    and the fluxes are `sigma_e = k_e * epsilon_e`.
 
     Algorithm
     ---------
-    1. Extract element potentials $u_e$.
-    2. Compute $A_e$ and $B_e$ for all elements.
-    3. Evaluate gradients $\epsilon_e = B_e u_e$ and fluxes $\sigma_e = k_e \epsilon_e$.
-    4. Scatter the element vectors into the global vector $q$.
+    1. Extract the element potentials.
+    2. Compute the element areas and gradient operators.
+    3. Evaluate the gradients and fluxes for each element.
+    4. Scatter the element vectors into the global flux vector.
     """
     topology = as_float_array(T)
     coordinates = as_float_array(X)
@@ -692,12 +705,14 @@ def met3e(Xe, Ge, *, lumped: bool = False):
 
     Mathematical Formulation
     ------------------------
-    The consistent mass matrix is $M_e = \frac{\rho t A}{12} \begin{bmatrix} 2 & 1 & 1 \\ 1 & 2 & 1 \\ 1 & 1 & 2 \end{bmatrix} \otimes I_2$. The lumped mass matrix is $M_e = \frac{\rho t A}{3} I_6$.
+    The consistent mass matrix is
+    `(rho * t * area / 12) * kron([[2, 1, 1], [1, 2, 1], [1, 1, 2]], I2)`.
+    The lumped mass matrix is `(rho * t * area / 3) * I6`.
 
     Algorithm
     ---------
-    1. Compute the area $A$ of the triangle.
-    2. Determine density $\rho$ and thickness $t$.
+    1. Compute the triangle area.
+    2. Determine density `rho` and thickness `t`.
     3. Check the `lumped` flag.
     4. Construct the corresponding mass matrix and return it.
     """
@@ -739,14 +754,16 @@ def mt3e(M, T, X, G, *, lumped: bool = False):
 
     Mathematical Formulation
     ------------------------
-    The global mass matrix $M$ is assembled from $M_e$. Consistent elements use the $\frac{\rho t A}{12}$ block while lumped elements sum $\frac{\rho t A}{3}$ onto the diagonal.
+    The global mass matrix is assembled from the element mass matrices.
+    Consistent elements use the standard `rho * t * area / 12` block matrix,
+    while lumped elements add `rho * t * area / 3` to the diagonal entries.
 
     Algorithm
     ---------
-    1. Vectorize the computation of areas $A_e$.
-    2. Determine $\rho$ and $t$ per element.
-    3. If lumped, scatter $\frac{\rho t A}{3}$ directly to the diagonal of $M$.
-    4. If consistent, compute element matrices and scatter into $M$.
+    1. Vectorize the computation of element areas.
+    2. Determine `rho` and `t` for each element.
+    3. If lumped, scatter the diagonal mass contribution directly into `M`.
+    4. If consistent, compute the element matrices and scatter them into `M`.
     """
     topology = as_float_array(T)
     coordinates = as_float_array(X)

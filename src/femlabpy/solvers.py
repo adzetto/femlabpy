@@ -41,8 +41,7 @@ def _scalar(value: object) -> float:
 
     Mathematical Formulation
     ------------------------
-    Extracts a scalar from a tensor :math:`\mathbf{T}`:
-    .. math:: t = \mathbf{T}_{0, 0, \dots, 0}
+    Flattens the input and returns the first entry as a Python float.
 
     Algorithm
     ---------
@@ -57,13 +56,12 @@ def _column(values: list[float]) -> np.ndarray:
 
     Mathematical Formulation
     ------------------------
-    Constructs a column vector :math:`\mathbf{v} \in \mathbb{R}^{n \times 1}`:
-    .. math:: \mathbf{v} = [v_1, v_2, \dots, v_n]^T
+    Constructs an `n x 1` floating-point column vector from the input list.
 
     Algorithm
     ---------
     1. Convert the input list to a numpy array.
-    2. Reshape the array to :math:`(n, 1)`.
+    2. Reshape the array to `(n, 1)`.
     """
     return np.asarray(values, dtype=float).reshape(-1, 1)
 
@@ -73,8 +71,7 @@ def _solve_plastic_system(matrix, rhs, *, plane_strain: bool):
 
     Mathematical Formulation
     ------------------------
-    Solves the linear system of equations:
-    .. math:: \mathbf{K} \mathbf{u} = \mathbf{f}
+    Solves the linear system `K u = f`.
 
     Algorithm
     ---------
@@ -111,27 +108,25 @@ def solve_nlbar(
     Tracks the load-displacement path of a snap-through structure using the
     Orthogonal Residual Method. The fundamental constraint requires that the
     iterative displacement updates remain orthogonal to the previous increment:
+    `du_i.T @ du_(i+1) = 0`.
 
-    .. math:: \Delta u_i^T \Delta u_{i+1} = 0
-
-    The external force vector is scaled by a load parameter :math:`\lambda`,
-    where :math:`f_{ext} = \lambda P`. The residual at iteration :math:`k` is:
-
-    .. math:: r^{(k)} = \lambda^{(k)} P - f_{int}(u^{(k)})
+    The external force vector is scaled by a load parameter `lambda`, so
+    `f_ext = lambda * P`. The residual at each iteration is the difference
+    between the scaled external load and the current internal force.
 
     Algorithm
     ---------
-    1. Initialize nodal displacements :math:`u = 0`, load scaling :math:`\lambda = 0`.
-    2. Compute the tangent stiffness matrix :math:`K_T(u)`.
-    3. Solve for the reference displacement increment :math:`\Delta u_0 = K_T^{-1} P`.
+    1. Initialize nodal displacements `u = 0` and load scaling `lambda = 0`.
+    2. Compute the tangent stiffness matrix `K_T(u)`.
+    3. Solve for the reference displacement increment.
     4. Loop over load steps:
-       a. Predictor: :math:`\Delta u = \alpha \Delta u_0` (scaled by arc-length).
+       a. Predictor: scale the reference increment by the current arc length.
        b. Corrector loop (until convergence):
-          i. Compute internal forces :math:`q(u + \Delta u)`.
-          ii. Compute load increment :math:`\xi = \frac{(q - f)^T \Delta u}{P^T \Delta u}`.
-          iii. Compute residual :math:`r = -(q - f) + \xi P`.
-          iv. Solve :math:`K_T \delta u = r`.
-          v. Update :math:`\Delta u \leftarrow \Delta u + \delta u`.
+          i. Compute the internal forces for the trial displacement.
+          ii. Compute the scalar load increment.
+          iii. Form the corrected residual vector.
+          iv. Solve the tangent system for the displacement correction.
+          v. Update the current increment.
        c. Update total displacements and forces.
 
     Parameters
@@ -282,27 +277,28 @@ def solve_plastic(
     ------------------------
     Tracks the elastoplastic load-displacement path using the Orthogonal Residual
     Method. The equilibrium equation balances internal and external forces:
+    the internal force vector assembled from the element stresses must balance
+    the scaled external load `lambda * P`.
 
-    .. math:: \int_V B^T \sigma(u) \, dV = \lambda P
-
-    The iterative displacement increment :math:`\Delta u` is constrained by:
-
-    .. math:: \Delta u_i^T \Delta u_{i+1} = 0
+    The iterative displacement increment is constrained so that successive
+    corrections remain orthogonal in the sense used by the orthogonal residual
+    method.
 
     Algorithm
     ---------
-    1. Initialize displacements :math:`u = 0` and plastic internal history variables.
-    2. Compute the tangent stiffness matrix :math:`K_T` based on current state.
-    3. Solve for reference step :math:`\Delta u_0 = K_T^{-1} P`.
+    1. Initialize displacements `u = 0` and the plastic internal history
+       variables.
+    2. Compute the tangent stiffness matrix `K_T` based on the current state.
+    3. Solve for the reference step.
     4. Loop over load increments:
        a. Predictor step based on arc-length scaling.
        b. Corrector iterations:
           i. Integrate element stresses and update internal variables.
-          ii. Assemble internal force vector :math:`q`.
-          iii. Evaluate load increment :math:`\xi = \frac{(q - f)^T \Delta u}{P^T \Delta u}`.
-          iv. Compute residual :math:`r = -q + f + \xi P`.
-          v. Solve :math:`K_T \delta u = r` and update :math:`\Delta u`.
-       c. Commit internal history variables (stress :math:`S`, strain :math:`E`).
+          ii. Assemble the internal force vector `q`.
+          iii. Evaluate the scalar load increment.
+          iv. Compute the corrected residual vector.
+          v. Solve the tangent system and update the displacement increment.
+       c. Commit the updated stress and strain history variables.
        d. Update total load and displacement fields.
 
     Parameters
@@ -322,7 +318,8 @@ def solve_plastic(
         Selects the plane-strain constitutive update when ``True`` and the
         plane-stress update when ``False``. For the small legacy plane-strain
         classroom systems, the linear solves use a symmetry-aware dense
-        fallback that better reproduces MATLAB's historical ``\\`` behavior.
+        fallback that better reproduces MATLAB's historical backslash-solver
+        behavior.
     material_type:
         ``1`` for von Mises and ``2`` for Drucker-Prager, matching the original
         FemLab element routines.

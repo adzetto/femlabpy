@@ -573,7 +573,8 @@ def nlbar(
 
     Mathematical Formulation
     ------------------------
-    Solves the nonlinear equilibrium equations $R(u, \lambda) = F_{int}(u) - \lambda P_{ref} = 0$.
+    Solves the nonlinear equilibrium equations
+    `R(u, lambda) = F_int(u) - lambda * P_ref = 0`.
     """
 
     from .plotting import plotelem
