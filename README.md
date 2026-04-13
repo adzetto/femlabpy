@@ -225,7 +225,7 @@ print("Displacements:", u.ravel())
 
 | Function | Description |
 | --- | --- |
-| `elastic(T, X, G, C, P, dof=2)` | Solve linear elastic problem with Q4 elements. Returns dict with u (displacements), S (stresses), E (strains), R (reactions). |
+| `elastic(T, X, G, C, P, dof=2, etype=None)` | Solve a linear elastic T3 or Q4 problem. The wrapper auto-detects the element family from `T` unless `etype` is given explicitly. |
 | `flowq4(plot=False)` | Solve potential/thermal problem on Q4 mesh. Returns nodal temperatures and fluxes. |
 | `flowt3(plot=False)` | Solve potential/thermal problem on T3 mesh. Returns nodal temperatures and fluxes. |
 | `nlbar(T, X, G, C, P, no_loadsteps, i_max, tol)` | Solve geometrically nonlinear truss with orthogonal residual method. Returns load-displacement path. |
@@ -339,7 +339,7 @@ GmshMesh attributes:
 | `plotelem(T, X, numbers=False)` | Plot undeformed mesh. numbers=True shows node/element labels. |
 | `plotforces(T, X, P, dof, scale=1)` | Plot load arrows on mesh. |
 | `plotbc(T, X, C, dof)` | Plot boundary condition markers. |
-| `plotu(T, X, u, dof, component=0)` | Plot scalar nodal field as contour. component: 0=magnitude, 1=x, 2=y. |
+| `plotu(T, X, u, dof=None, component=0)` | Plot a scalar nodal field or a contour extracted from a flattened displacement vector. `component=0` plots magnitude, `1` plots x, `2` plots y. |
 | `plotq4(T, X, S, component=0)` | Plot Q4 Gauss point field as contour. |
 | `plott3(T, X, S, component=0)` | Plot T3 element field as contour. |
 

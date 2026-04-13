@@ -14,7 +14,7 @@ Public entry points
 - ``plotforces`` and ``plotbc`` overlay external loads and constraints.
 - ``plotq4`` and ``plott3`` reconstruct scalar fields for quadrilateral and
   triangular meshes.
-- ``plotu`` draws the displaced mesh.
+- ``plotu`` draws scalar nodal fields or displacement-derived contours.
 """
 
 from __future__ import annotations
@@ -37,6 +37,80 @@ def _axis(ax=None, ndim: int = 2):
     return axis
 
 
+def _plot_coords(X):
+    """Return plotting coordinates, collapsing flat ``(x, y, z)`` meshes to 2D."""
+    coords = as_float_array(X)
+    if coords.ndim != 2:
+        raise ValueError("X must be a two-dimensional coordinate array.")
+    if coords.shape[1] == 1:
+        return np.column_stack([coords[:, 0], np.zeros(coords.shape[0])])
+    if coords.shape[1] > 2:
+        extra = coords[:, 2:]
+        if extra.size > 0 and np.allclose(extra, extra[0]):
+            return coords[:, :2].copy()
+    return coords
+
+
+def _plot_values(u, nn: int, dof: int | None = None, component: int = 0):
+    """Resolve scalar nodal values from scalar, vector, or flattened input."""
+    data = as_float_array(u)
+    if data.ndim == 0:
+        raise ValueError("u must contain at least one nodal value.")
+
+    flat = data.reshape(-1)
+    nodal = None
+    resolved_dof = dof
+
+    if data.ndim == 1 or (data.ndim == 2 and 1 in data.shape):
+        if dof is None:
+            if flat.size != nn:
+                raise ValueError(
+                    "When dof is omitted, u must contain one scalar value per node."
+                )
+            return flat
+        if flat.size == nn:
+            return flat
+        if flat.size != nn * dof:
+            raise ValueError(
+                f"u must contain either {nn} nodal values or {nn * dof} "
+                f"flattened values for dof={dof}."
+            )
+        nodal = flat.reshape(nn, dof)
+        resolved_dof = dof
+    elif data.ndim == 2:
+        if data.shape[0] == nn:
+            nodal = data
+        elif data.shape[1] == nn:
+            nodal = data.T
+        else:
+            raise ValueError(
+                "u must be a nodal array with shape (nn,), (nn, ncomp), or a "
+                "flattened vector with length nn * dof."
+            )
+        resolved_dof = nodal.shape[1] if dof is None else dof
+        if nodal.shape[1] < resolved_dof:
+            raise ValueError(
+                f"u provides {nodal.shape[1]} nodal components, but dof={resolved_dof} "
+                "was requested."
+            )
+    else:
+        raise ValueError("u must be one- or two-dimensional.")
+
+    if nodal is None or resolved_dof is None:
+        raise ValueError("Could not resolve nodal values for plotting.")
+    if component < 0:
+        raise ValueError("component must be non-negative.")
+    if nodal.shape[1] == 1:
+        return nodal[:, 0]
+    if component == 0:
+        return np.linalg.norm(nodal[:, :resolved_dof], axis=1)
+    if component > resolved_dof:
+        raise ValueError(
+            f"component={component} is out of range for dof={resolved_dof}."
+        )
+    return nodal[:, component - 1]
+
+
 def plotelem(
     T, X, line_style: str = "k-", nonum: bool = False, noelem: bool = False, ax=None
 ):
@@ -44,17 +118,15 @@ def plotelem(
 
     Algorithm
     ---------
-    1. Extract element nodal coordinates.
-    2. Build a `matplotlib.collections.PolyCollection`.
-    3. Map internal stresses to a colormap using `vmin` and `vmax`.
+    1. Normalize the plotting coordinates, reducing flat Gmsh ``(x, y, z)``
+       input to a planar ``(x, y)`` view.
+    2. Loop over the element rows and draw the corresponding polygon or line.
+    3. Optionally annotate node ids or element ids.
     """
     topology = as_float_array(T).astype(int)
-    coords = as_float_array(X)
+    coords = _plot_coords(X)
     ndim = coords.shape[1]
     ax = _axis(ax, ndim)
-    if ndim == 1:
-        coords = np.column_stack([coords[:, 0], np.zeros(coords.shape[0])])
-        ndim = 2
     for idx, row in enumerate(topology, start=1):
         nodes = row[:-1] - 1
         order = list(nodes)
@@ -86,7 +158,7 @@ def plotforces(T, X, P, ax=None):
     3. Map internal stresses to a colormap using `vmin` and `vmax`.
     """
     _ = T
-    coords = as_float_array(X)
+    coords = _plot_coords(X)
     loads = as_float_array(P)
     ax = _axis(ax, 2)
     if loads.size == 0:
@@ -115,7 +187,7 @@ def plotbc(T, X, C, ax=None):
     3. Map internal stresses to a colormap using `vmin` and `vmax`.
     """
     _ = T
-    coords = as_float_array(X)
+    coords = _plot_coords(X)
     constraints = as_float_array(C)
     ax = _axis(ax, 2)
     span = np.ptp(coords[:, :2], axis=0)
@@ -159,7 +231,7 @@ def plotq4(T, X, S, scomp: int, ax=None):
     3. Map internal stresses to a colormap using `vmin` and `vmax`.
     """
     topology = as_float_array(T).astype(int)
-    coords = as_float_array(X)
+    coords = _plot_coords(X)
     values = as_float_array(S)
     ncomp = values.shape[1] // 4
     if scomp > ncomp:
@@ -211,7 +283,7 @@ def plott3(T, X, S, scomp: int, ax=None):
     3. Map internal stresses to a colormap using `vmin` and `vmax`.
     """
     topology = as_float_array(T).astype(int)
-    coords = as_float_array(X)
+    coords = _plot_coords(X)
     values = as_float_array(S)
     if scomp > values.shape[1]:
         raise ValueError(f"Requested component {scomp} is not available.")
@@ -232,18 +304,40 @@ def plott3(T, X, S, scomp: int, ax=None):
     return ax
 
 
-def plotu(T, X, u, ax=None):
-    """Plot a scalar nodal field over a 2D or 3D mesh.
+def plotu(T, X, u, dof: int | None = None, component: int = 0, ax=None):
+    """Plot a scalar nodal field or displacement-derived contour.
+
+    Parameters
+    ----------
+    T : array_like
+        Element topology table with one-based node ids and a trailing property id.
+    X : array_like
+        Nodal coordinates. Flat Gmsh ``(x, y, z)`` meshes are plotted in 2D.
+    u : array_like
+        Either one scalar value per node, a ``(nn, ncomp)`` nodal field, or a
+        flattened global vector with length ``nn * dof``.
+    dof : int, optional
+        Degrees of freedom per node when ``u`` is passed as a flattened global
+        vector. When omitted, ``u`` is treated as a scalar nodal field unless it
+        is already shaped as ``(nn, ncomp)``.
+    component : int, default 0
+        Which nodal component to plot when ``u`` contains multiple values per
+        node. Use ``0`` for magnitude, ``1`` for the first component,
+        ``2`` for the second component, and so on.
+    ax : matplotlib.axes.Axes, optional
+        Existing Matplotlib axes. A new axes object is created when omitted.
 
     Algorithm
     ---------
-    1. Extract element nodal coordinates.
-    2. Build a `matplotlib.collections.PolyCollection`.
-    3. Map internal stresses to a colormap using `vmin` and `vmax`.
+    1. Normalize the coordinates for plotting, collapsing flat ``(x, y, z)``
+       geometry to a planar view when appropriate.
+    2. Resolve one scalar value per node from ``u``. Flattened vectors use
+       ``dof`` and ``component`` to extract a component or displacement magnitude.
+    3. Color each element by the mean of its nodal values.
     """
     topology = as_float_array(T).astype(int)
-    coords = as_float_array(X)
-    values = as_float_array(u).reshape(-1)
+    coords = _plot_coords(X)
+    values = _plot_values(u, coords.shape[0], dof=dof, component=component)
     ndim = coords.shape[1]
     ax = _axis(ax, ndim)
     if ndim == 2:

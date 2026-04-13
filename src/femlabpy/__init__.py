@@ -8,7 +8,7 @@ MATLAB FemLab teaching toolbox by O. Hededal and S. Krenk at Aalborg University.
 import os
 import shutil
 
-__version__ = "0.6.0"
+__version__ = "0.6.1"
 __author__ = "Muhammet Yagcioglu"
 
 
