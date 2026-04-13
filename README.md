@@ -144,13 +144,9 @@ result_t3 = fp.flowt3(plot=True)
 ### Nonlinear truss (large deformation)
 
 ```python
-case = fp.bar01()
-result = fp.nlbar(
-    case["T"], case["X"], case["G"], case["C"], case["P"],
-    no_loadsteps=20,
-    i_max=50,
-    tol=1e-6
-)
+from femlabpy.examples import run_bar01_nlbar
+
+result = run_bar01_nlbar(plot=True)
 print("Load path:", result["F_path"].ravel())
 print("Displacement path:", result["U_path"].ravel())
 ```
@@ -181,7 +177,7 @@ import numpy as np
 # Initialize arrays
 nn = 4  # number of nodes
 dof = 2  # degrees of freedom per node
-K, p = fp.init(nn, dof)
+K, p, q = fp.init(nn, dof)
 
 # Element connectivity and coordinates
 T = np.array([[1, 2, 3, 4, 1]])  # Q4 element
@@ -192,11 +188,11 @@ G = np.array([[210000, 0.3, 1, 1]])
 K = fp.kq4e(K, T, X, G)
 
 # Apply boundary conditions
-C = np.array([[1, 1, 0], [1, 2, 0], [4, 2, 0]])
+C = np.array([[1, 1, 0], [1, 2, 0], [4, 1, 0]])
 P = np.array([[2, 1, 1000], [3, 1, 1000]])
 
-p = fp.setload(p, P, dof)
-K, p, ks = fp.setbc(K, p, C, dof)
+p = fp.setload(p, P)
+K, p, _ = fp.setbc(K, p, C, dof)
 
 # Solve
 u = np.linalg.solve(K, p)
@@ -228,9 +224,9 @@ print("Displacements:", u.ravel())
 | `elastic(T, X, G, C, P, dof=2, etype=None)` | Solve a linear elastic T3 or Q4 problem. The wrapper auto-detects the element family from `T` unless `etype` is given explicitly. |
 | `flowq4(plot=False)` | Solve potential/thermal problem on Q4 mesh. Returns nodal temperatures and fluxes. |
 | `flowt3(plot=False)` | Solve potential/thermal problem on T3 mesh. Returns nodal temperatures and fluxes. |
-| `nlbar(T, X, G, C, P, no_loadsteps, i_max, tol)` | Solve geometrically nonlinear truss with orthogonal residual method. Returns load-displacement path. |
-| `plastps(T, X, G, C, P, ...)` | Solve plane stress elastoplastic problem with von Mises yield. |
-| `plastpe(T, X, G, C, P, ...)` | Solve plane strain elastoplastic problem with von Mises yield. |
+| `nlbar(T, X, G, C, P, *, no_loadsteps, i_max, i_d, plotdof, tol=1e-8, ...)` | Solve a geometrically nonlinear truss with the legacy orthogonal-residual controls. |
+| `plastps(T, X, G, C, P, *, no_loadsteps, i_max, i_d, plotdof, ...)` | Solve the plane-stress elastoplastic legacy driver. |
+| `plastpe(T, X, G, C, P, *, no_loadsteps, i_max, i_d, plotdof, ...)` | Solve the plane-strain elastoplastic legacy driver. |
 
 </details>
 
@@ -287,15 +283,15 @@ print("Displacements:", u.ravel())
 
 | Function | Description |
 | --- | --- |
-| `init(nn, dof)` | Initialize global stiffness K (nn*dof x nn*dof) and load vector p (nn*dof x 1). |
+| `init(nn, dof, *, dynamic=False, use_sparse=None)` | Initialize the global FEM arrays. Returns `(K, p, q)` by default and `(K, M, p, q)` when `dynamic=True`. |
 | `assmk(K, ke, nodes, dof)` | Assemble single element stiffness ke into global K at specified nodes. |
 | `assmq(q, qe, nodes, dof)` | Assemble single element force qe into global internal force vector q. |
-| `setload(p, P, dof)` | Set nodal loads from P matrix [node, dof, value]. Replaces existing loads. |
-| `addload(p, P, dof)` | Add nodal loads from P matrix. Accumulates with existing loads. |
+| `setload(p, P)` | Set nodal loads from the FemLab load table. Replaces existing values at the referenced global DOFs. |
+| `addload(p, P)` | Add nodal loads from the FemLab load table. Accumulates with existing values. |
 | `setbc(K, p, C, dof)` | Apply Dirichlet BCs using direct elimination. Zeros rows/columns, sets diagonal. |
 | `solve_lag(K, p, C, dof)` | Solve with Lagrange multipliers for Dirichlet constraints. |
 | `solve_lag_general(K, p, G, Q)` | Solve with general linear constraints Gu = Q. |
-| `reaction(K_orig, u, p_orig, C, dof)` | Extract support reactions at constrained DOFs. |
+| `reaction(q, C, dof, comp=None)` | Extract support reactions from the assembled internal-force vector at constrained DOFs. |
 | `rnorm(r, C, dof)` | Compute residual norm excluding constrained DOFs. |
 
 </details>
@@ -336,12 +332,12 @@ GmshMesh attributes:
 
 | Function | Description |
 | --- | --- |
-| `plotelem(T, X, numbers=False)` | Plot undeformed mesh. numbers=True shows node/element labels. |
-| `plotforces(T, X, P, dof, scale=1)` | Plot load arrows on mesh. |
-| `plotbc(T, X, C, dof)` | Plot boundary condition markers. |
+| `plotelem(T, X, line_style="k-", nonum=False, noelem=False)` | Plot the undeformed mesh and optionally annotate node or element ids. |
+| `plotforces(T, X, P)` | Plot load arrows on the mesh. |
+| `plotbc(T, X, C)` | Plot boundary-condition markers. |
 | `plotu(T, X, u, dof=None, component=0)` | Plot a scalar nodal field or a contour extracted from a flattened displacement vector. `component=0` plots magnitude, `1` plots x, `2` plots y. |
-| `plotq4(T, X, S, component=0)` | Plot Q4 Gauss point field as contour. |
-| `plott3(T, X, S, component=0)` | Plot T3 element field as contour. |
+| `plotq4(T, X, S, scomp)` | Plot a one-based Q4 stress or strain component reconstructed from Gauss-point data. |
+| `plott3(T, X, S, scomp)` | Plot a one-based T3 stress or strain component. |
 
 </details>
 
