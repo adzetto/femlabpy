@@ -1,21 +1,28 @@
 import os
 import sys
 import inspect
+from pathlib import Path
 
 from numpydoc.docscrape import NumpyDocString
 from numpydoc.docscrape_sphinx import SphinxDocString
 
 DOCS_DIR = os.path.abspath(os.path.dirname(__file__))
 SRC_DIR = os.path.abspath(os.path.join(DOCS_DIR, "..", "src"))
+REPO_DIR = Path(DOCS_DIR).parent
 
 sys.path.insert(0, SRC_DIR)
+
+from femlabpy import __version__ as PACKAGE_VERSION
+
+from _release_history import generate_release_history
 
 project = "femlabpy"
 copyright = "2026, femlabpy contributors"
 author = "femlabpy contributors"
 
 # The full version, including alpha/beta/rc tags
-release = "0.6.0"
+release = PACKAGE_VERSION
+version = PACKAGE_VERSION
 
 extensions = [
     "sphinx.ext.autodoc",
@@ -85,7 +92,13 @@ def linkcode_resolve(domain, info):
 
 
 templates_path = ["_templates"]
-exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "EDITABLE_TARGETS.md"]
+exclude_patterns = [
+    "_build",
+    "Thumbs.db",
+    ".DS_Store",
+    "EDITABLE_TARGETS.md",
+    "_generated/releases_body.md",
+]
 
 # MyST setup
 myst_enable_extensions = [
@@ -123,3 +136,5 @@ numpydoc_class_members_toctree = False
 
 # Allow custom sections in numpydoc
 numpydoc_custom_sections = list(CUSTOM_NUMPYDOC_SECTIONS)
+
+generate_release_history(REPO_DIR / "docs" / "_generated" / "releases_body.md")

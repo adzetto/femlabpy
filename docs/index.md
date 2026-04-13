@@ -5,7 +5,7 @@
 
 <div class="fp-hero">
   <div class="fp-hero-meta">
-    <span class="fp-meta-badge">v0.6.0</span>
+    <span class="fp-meta-badge">v0.6.2</span>
     <span class="fp-meta-badge">MIT License</span>
     <span class="fp-meta-badge">Python &ge; 3.9</span>
   </div>
@@ -40,6 +40,7 @@
   <div class="fp-hero-actions">
     <a href="theory/index.html" class="fp-btn fp-btn-primary">Explore the Theory</a>
     <a href="manual/index.html" class="fp-btn fp-btn-secondary">Read the User Guide</a>
+    <a href="releases.html" class="fp-btn fp-btn-ghost">Browse Releases</a>
     <a href="https://github.com/adzetto/femlabpy" class="fp-btn fp-btn-ghost">View on GitHub</a>
   </div>
 </div>
@@ -52,6 +53,7 @@ Tutorials <tutorials>
 Guide <manual/index>
 Theory <theory/index>
 API <api>
+Releases <releases>
 MATLAB Mapping <matlab_python_mapping>
 Roadmap & Arch <roadmap>
 ```
@@ -81,6 +83,12 @@ Roadmap & Arch <roadmap>
 </div>
 
 <div class="fp-card-grid fp-card-grid--secondary">
+  <div class="fp-card">
+    <div class="fp-icon"><svg xmlns="http://www.w3.org/2000/svg" height="28" viewBox="0 -960 960 960" width="28"><path d="M280-80q-33 0-56.5-23.5T200-160v-640h80v640h480v-280h80v280q0 33-23.5 56.5T760-80H280Zm200-240L320-480l56-58 64 64v-326h80v326l64-64 56 58-160 160Zm-200 0v160-160Zm480-200v-280H480v-80h280q33 0 56.5 23.5T840-800v280h-80Z"/></svg></div>
+    <h2>Release History</h2>
+    <p>Read the tagged release timeline, generated directly from version history and commit ranges, with formulas and raw commit subjects for each version.</p>
+    <a href="releases.html">Open the release notes &rarr;</a>
+  </div>
   <div class="fp-card">
     <div class="fp-icon"><svg xmlns="http://www.w3.org/2000/svg" height="28" viewBox="0 -960 960 960" width="28"><path d="M160-160v-80h110l-16-14q-52-46-73-105t-21-119q0-111 66.5-197.5T400-790v84q-72 26-116 88.5T240-478q0 45 17 87.5t53 78.5l10 12v-100h80v240H160Zm400-10v-84q72-26 116-88.5T720-482q0-45-17-87.5T650-648l-10-12v100h-80v-240h240v80H690l16 14q49 49 71.5 106.5T800-482q0 111-66.5 197.5T560-170Z"/></svg></div>
     <h2>MATLAB Mapping</h2>
